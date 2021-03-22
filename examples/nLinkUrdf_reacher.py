@@ -7,8 +7,8 @@ import numpy as np
 def main():
     n = 3
     #env = gym.make('nLink-reacher-acc-v0', n=n, dt=0.01)
-    env = gym.make('nLink-urdf-reacher-tor-v0', n=n, dt=0.01, render=True)
-    defaultAction = np.ones(n) * 8
+    env = gym.make('nLink-urdf-reacher-vel-v0', n=n, dt=0.01, render=True)
+    defaultAction = np.ones(n) * 0.1
     n_episodes = 1
     n_steps = 1000
     cumReward = 0.0

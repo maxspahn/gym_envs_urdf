@@ -3,21 +3,20 @@ import numpy as np
 import time
 import pybullet as p
 from pybullet_utils import bullet_client
-from pandaReacher.resources.pandaRobot import PandaRobot
-from pandaReacher.resources.plane import Plane
+from nLinkUrdfReacher.resources.nLinkRobot import NLinkRobot
+from nLinkUrdfReacher.resources.plane import Plane
 import matplotlib.pyplot as plt
 
 
-class PandaReacherTorEnv(gym.Env):
+class NLinkUrdfVelReacherEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, render=False, dt=0.01):
-        print("init")
-        self._n = 7
+    def __init__(self, render=False, n=3, dt=0.01):
+        self._n = n
         self._dt = dt
         self.np_random, _ = gym.utils.seeding.np_random()
-        self.robot = PandaRobot()
-        (self.observation_space, self.action_space) = self.robot.getTorqueSpaces()
+        self.robot = NLinkRobot(n=n)
+        (self.observation_space, self.action_space) = self.robot.getVelSpaces()
         self._isRender = render
         self.clientId = -1
         self.done = False
@@ -40,7 +39,7 @@ class PandaReacherTorEnv(gym.Env):
     def step(self, action):
         # Feed action to the robot and get observation of robot's state
         self._nSteps += 1
-        self.robot.apply_torque_action(action)
+        self.robot.apply_vel_action(action)
         self._p.stepSimulation()
         ob = self.robot.get_observation()
 
@@ -86,7 +85,6 @@ class PandaReacherTorEnv(gym.Env):
         )
         self.plane = Plane()
         self.robot.reset()
-        self.robot.disableVelocityControl()
         self._p.setGravity(0, 0, -10)
 
         p.stepSimulation()

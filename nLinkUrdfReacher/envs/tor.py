@@ -16,7 +16,7 @@ class NLinkUrdfTorReacherEnv(gym.Env):
         self._dt = dt
         self.np_random, _ = gym.utils.seeding.np_random()
         self.robot = NLinkRobot(n=n)
-        (self.observation_space, self.action_space) = self.robot.getSpaces()
+        (self.observation_space, self.action_space) = self.robot.getTorqueSpaces()
         self._isRender = render
         self.clientId = -1
         self.done = False
@@ -39,7 +39,7 @@ class NLinkUrdfTorReacherEnv(gym.Env):
     def step(self, action):
         # Feed action to the robot and get observation of robot's state
         self._nSteps += 1
-        self.robot.apply_action(action)
+        self.robot.apply_torque_action(action)
         self._p.stepSimulation()
         ob = self.robot.get_observation()
 
@@ -85,6 +85,7 @@ class NLinkUrdfTorReacherEnv(gym.Env):
         )
         self.plane = Plane()
         self.robot.reset()
+        self.robot.disableVelocityControl()
         self._p.setGravity(0, 0, -10)
 
         p.stepSimulation()

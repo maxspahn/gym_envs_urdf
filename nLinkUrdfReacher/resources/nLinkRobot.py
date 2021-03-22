@@ -11,37 +11,51 @@ class NLinkRobot:
     def __init__(self, n):
         self._n = n
         self.f_name = os.path.join(os.path.dirname(__file__), 'nlink_' + str(n) + '.urdf')
+        self.readLimits()
 
     def reset(self):
         self.robot = p.loadURDF(fileName=self.f_name,
                               basePosition=[0, 0, 0.1])
         # Joint indices as found by p.getJointInfo()
         self.robot_joints = list(range(1, self._n + 1))
-        self._friction = 0.0
-        self.disableVelocityControl()
 
-    def getSpaces(self):
+    def readLimits(self):
         robot = URDF.load(self.f_name)
-        limitPos_j = np.zeros((2, self._n))
-        limitVel_j = np.zeros((2, self._n))
-        limitTor_j = np.zeros((2, self._n))
+        self._limitPos_j = np.zeros((2, self._n))
+        self._limitVel_j = np.zeros((2, self._n))
+        self._limitTor_j = np.zeros((2, self._n))
         for i in range(self._n):
             joint = robot.joints[i+1]
-            limitPos_j[0, i] = joint.limit.lower
-            limitPos_j[1, i] = joint.limit.upper
-            limitVel_j[0, i] = -joint.limit.velocity
-            limitVel_j[1, i] = joint.limit.velocity
-            limitTor_j[0, i] = -joint.limit.effort
-            limitTor_j[1, i] = joint.limit.effort
-        xu = np.concatenate((limitPos_j[1, :], limitVel_j[1, :]))
-        xl = np.concatenate((limitPos_j[0, :], limitVel_j[0, :]))
-        uu = limitTor_j[1, :]
-        ul = limitTor_j[0, :]
+            self._limitPos_j[0, i] = joint.limit.lower
+            self._limitPos_j[1, i] = joint.limit.upper
+            self._limitVel_j[0, i] = -joint.limit.velocity
+            self._limitVel_j[1, i] = joint.limit.velocity
+            self._limitTor_j[0, i] = -joint.limit.effort
+            self._limitTor_j[1, i] = joint.limit.effort
+
+    def getLimits(self):
+        return (self._limitPos_j, self._limitVel_j, self._limitTor_j)
+
+    def getTorqueSpaces(self):
+        xu = np.concatenate((self._limitPos_j[1, :], self._limitVel_j[1, :]))
+        xl = np.concatenate((self._limitPos_j[0, :], self._limitVel_j[0, :]))
+        uu = self._limitTor_j[1, :]
+        ul = self._limitTor_j[0, :]
+        ospace = gym.spaces.Box(low=xl, high=xu, dtype=np.float64)
+        aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
+        return(ospace, aspace)
+
+    def getVelSpaces(self):
+        xu = self._limitPos_j[1, :]
+        xl = self._limitPos_j[0, :]
+        uu = self._limitVel_j[1, :]
+        ul = self._limitVel_j[0, :]
         ospace = gym.spaces.Box(low=xl, high=xu, dtype=np.float64)
         aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
         return(ospace, aspace)
 
     def disableVelocityControl(self):
+        self._friction = 0.0
         for i in range(self._n):
             p.setJointMotorControl2(
                 self.robot,
@@ -53,11 +67,17 @@ class NLinkRobot:
     def get_ids(self):
         return self.robot
 
-    def apply_action(self, action):
+    def apply_torque_action(self, torques):
         for i in range(self._n):
             p.setJointMotorControl2(self.robot, self.robot_joints[i],
                                         controlMode=p.TORQUE_CONTROL,
-                                        force=action[i])
+                                        force=torques[i])
+
+    def apply_vel_action(self, vels):
+        for i in range(self._n):
+            p.setJointMotorControl2(self.robot, self.robot_joints[i],
+                                        controlMode=p.VELOCITY_CONTROL,
+                                        targetVelocity=vels[i])
 
     def get_observation(self):
         # Get Joint Configurations
