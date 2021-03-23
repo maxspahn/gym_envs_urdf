@@ -19,12 +19,13 @@ class PandaRobot:
         # Joint indices as found by p.getJointInfo()
 
     def getLimits(self):
-        return (self._limitPos_j, self._limitVel_j, self._limitTor_j)
+        return (self._limitPos_j, self._limitVel_j, self._limitTor_j, self._limitAcc_j)
 
     def readLimits(self):
         robot = URDF.load(self.f_name)
         self._limitPos_j = np.zeros((2, self._n))
         self._limitVel_j = np.zeros((2, self._n))
+        self._limitAcc_j = np.zeros((2, self._n))
         self._limitTor_j = np.zeros((2, self._n))
         for i in range(self._n):
             joint = robot.joints[i+1]
@@ -34,6 +35,9 @@ class PandaRobot:
             self._limitVel_j[1, i] = joint.limit.velocity
             self._limitTor_j[0, i] = -joint.limit.effort
             self._limitTor_j[1, i] = joint.limit.effort
+        accLimit = np.array([15.0, 7.5, 10.0, 12.5, 15.0, 20.0, 20.0])
+        self._limitAcc_j[0, :] = -accLimit
+        self._limitAcc_j[1, :] = accLimit
 
     def getTorqueSpaces(self):
         xu = np.concatenate((self._limitPos_j[1, :], self._limitVel_j[1, :]))

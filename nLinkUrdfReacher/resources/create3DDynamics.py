@@ -68,6 +68,7 @@ def create3DDynamics(n):
     # parameters and variables
     q = ca.SX.sym('q', n)
     qdot = ca.SX.sym('qdot', n)
+    qddot = ca.SX.sym('qddot', n)
     g = ca.SX.sym('g', 1)
     g_vec = ca.vertcat(np.zeros((2, 1)), g)
     I_j = ca.SX.sym('I_j', (9, n))
@@ -175,13 +176,19 @@ def create3DDynamics(n):
     d2L_dqdqdot = ca.jacobian(dL_dq, qdot)
     d2L_dqdot2 = ca.jacobian(dL_dqdot, qdot)
 
+    M = d2L_dqdot2
+    F = d2L_dqdqdot
+    f = dL_dq
+
+    tau_forward = ca.mtimes(M, qddot) + ca.mtimes(F, qdot) - f
+
     # equation of motion 
     # M * q_ddot + F q_dot - f = tau
     # augmented for first order system
     tau_aug = ca.vertcat(np.zeros((n, 1)), tau)
-    f_aug = ca.vertcat(np.zeros((n, 1)), dL_dq)
-    F_aug = ca.horzcat(np.zeros((2*n, n)), ca.vertcat(-1*np.identity(n), d2L_dqdqdot))
-    M_aug = ca.vertcat(ca.horzcat(np.identity(n), np.zeros((n, n))), ca.horzcat(np.zeros((n, n)), d2L_dqdot2))
+    f_aug = ca.vertcat(np.zeros((n, 1)), f)
+    F_aug = ca.horzcat(np.zeros((2*n, n)), ca.vertcat(-1*np.identity(n), F))
+    M_aug = ca.vertcat(ca.horzcat(np.identity(n), np.zeros((n, n))), ca.horzcat(np.zeros((n, n)), M))
     """
     print('---')
     print(f_aug)
@@ -209,7 +216,8 @@ def create3DDynamics(n):
     """
     dynamics = ca.Function("dynamics", [q, qdot, com, m, I_j, g, axis_j, off_j, tau], [xdot])
     fk = ca.Function("fk", [q, qdot, axis_j, off_j, off_ee], [fk])
-    return dynamics, fk
+    tau_fun = ca.Function("tau", [q, qdot, com, m, I_j, g, axis_j, off_j, qddot], [tau_forward])
+    return dynamics, fk, tau_fun
 
 def main():
     if len(sys.argv) == 1:
@@ -217,7 +225,7 @@ def main():
     else:
         n = int(sys.argv[1])
     print("Creating dynamics for urdf with " + str(n) + " joints")
-    dynamics, fk = createDynamics(n)
+    dynamics, fk, _ = create3DDynamics(n)
     # save system
     dynamics_name = "./dynamics_" + str(n) + "_link.casadi"
     fk_name = "./fk_" + str(n) + "_link.casadi"
