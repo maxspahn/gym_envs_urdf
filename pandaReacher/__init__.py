@@ -7,3 +7,7 @@ register(
     id='panda-reacher-vel-v0',
     entry_point='pandaReacher.envs:PandaReacherVelEnv'
 )
+register(
+    id='panda-reacher-acc-v0',
+    entry_point='pandaReacher.envs:PandaReacherAccEnv'
+)

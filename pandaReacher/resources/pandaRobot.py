@@ -48,6 +48,15 @@ class PandaRobot:
         aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
         return(ospace, aspace)
 
+    def getAccSpaces(self):
+        xu = np.concatenate((self._limitPos_j[1, :], self._limitVel_j[1, :]))
+        xl = np.concatenate((self._limitPos_j[0, :], self._limitVel_j[0, :]))
+        uu = self._limitAcc_j[1, :]
+        ul = self._limitAcc_j[0, :]
+        ospace = gym.spaces.Box(low=xl, high=xu, dtype=np.float64)
+        aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
+        return(ospace, aspace)
+
     def getVelSpaces(self):
         xu = self._limitPos_j[1, :]
         xl = self._limitPos_j[0, :]
@@ -75,6 +84,19 @@ class PandaRobot:
             p.setJointMotorControl2(self.robot, self.robot_joints[i],
                                         controlMode=p.TORQUE_CONTROL,
                                         force=torques[i])
+
+    def apply_acc_action(self, accs):
+        q = []
+        qdot = []
+        for i in range(self._n):
+            pos, vel, _, _= p.getJointState(self.robot, self.robot_joints[i])
+            q.append(pos)
+            qdot.append(vel)
+        qddot = list(accs)
+        q = list(q)
+        qdot = list(qdot)
+        tau = p.calculateInverseDynamics(self.robot, q, qdot, qddot)
+        self.apply_torque_action(tau)
 
     def apply_vel_action(self, vels):
         for i in range(self._n):
