@@ -10,6 +10,7 @@ Dependencies should be installed through pip installation, see below.
 ## Installation
 ```bash
 pip3 install -e .
+```
 
 ## Switching
 
@@ -19,6 +20,7 @@ Actions are torques to the individual joints.
 ```python
 env = gym.make('panda-reacher-tor-v0', n=3, dt=0.01, k=2.1)
 ```
+
 ## Examples
 
 Simple examples can be found in the corresponding folder.
