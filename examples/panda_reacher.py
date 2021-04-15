@@ -6,6 +6,7 @@ import numpy as np
 
 def main():
     #env = gym.make('panda-reacher-tor-v0', dt=0.01, render=True)
+    #env = gym.make('panda-reacher-acc-v0', dt=0.01, render=True)
     env = gym.make('panda-reacher-vel-v0', dt=0.01, render=True)
     defaultAction = np.ones(7) * 0.1
     n_episodes = 1
