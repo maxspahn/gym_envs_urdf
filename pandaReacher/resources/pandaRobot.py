@@ -15,8 +15,18 @@ class PandaRobot:
 
     def reset(self):
         self.robot = p.loadURDF(fileName=self.f_name,
-                              basePosition=[0, 0, 0.1])
+                              basePosition=[0, 0, 0.0])
         # Joint indices as found by p.getJointInfo()
+        poss = np.array([0.0000, 0.0000, 0.0000, -1.501, 0.0000, 1.8675, 0.0000])
+        for i in range(self._n):
+            p.setJointMotorControl2(self.robot, self.robot_joints[i],
+                                        controlMode=p.POSITION_CONTROL,
+                                        targetPosition=poss[i])
+        print("Bringing to home position..")
+        pre_steps = 100
+        for i in range(pre_steps):
+            p.stepSimulation()
+        print("Reached home position")
 
     def getLimits(self):
         return (self._limitPos_j, self._limitVel_j, self._limitTor_j, self._limitAcc_j)
