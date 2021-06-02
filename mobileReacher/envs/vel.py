@@ -11,12 +11,13 @@ import matplotlib.pyplot as plt
 class MobileReacherVelEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, render=False, dt=0.01):
+    def __init__(self, render=False, dt=0.01, gripper=False):
         print("init")
         self._n = 10
+        self._gripper = gripper
         self._dt = dt
         self.np_random, _ = gym.utils.seeding.np_random()
-        self.robot = MobileRobot()
+        self.robot = MobileRobot(gripper=gripper)
         (self.observation_space, self.action_space) = self.robot.getVelSpaces()
         self._isRender = render
         self.clientId = -1
@@ -42,6 +43,8 @@ class MobileReacherVelEnv(gym.Env):
         print(action)
         self._nSteps += 1
         self.robot.apply_vel_action(action)
+        if self._gripper:
+            self.robot.moveGripper(action[-1])
         self._p.stepSimulation()
         ob = self.robot.get_observation()
 

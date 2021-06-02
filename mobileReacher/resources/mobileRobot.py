@@ -7,10 +7,15 @@ import numpy as np
 
 
 class MobileRobot:
-    def __init__(self):
+    def __init__(self, gripper=False):
         self._n = 10
-        self.f_name = os.path.join(os.path.dirname(__file__), 'mobilePanda.urdf')
+        self._gripper = gripper
+        if gripper:
+            self.f_name = os.path.join(os.path.dirname(__file__), 'mobilePandaWithGripper.urdf')
+        else:
+            self.f_name = os.path.join(os.path.dirname(__file__), 'mobilePanda.urdf')
         self.robot_joints = [0, 1, 2, 4, 5, 6, 7, 8, 9, 10]
+        self.gripper_joints = [13, 14]
         self.readLimits()
 
     def reset(self, poss=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.501, 0.0, 1.8675, 0.0])):
@@ -54,6 +59,9 @@ class MobileRobot:
         xl = np.concatenate((self._limitPos_j[0, :], self._limitVel_j[0, :]))
         uu = self._limitTor_j[1, :]
         ul = self._limitTor_j[0, :]
+        if self._gripper:
+            uu = np.concatenate((uu, np.array([1])))
+            ul = np.concatenate((ul, np.array([-1])))
         ospace = gym.spaces.Box(low=xl, high=xu, dtype=np.float64)
         aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
         return(ospace, aspace)
@@ -63,6 +71,9 @@ class MobileRobot:
         xl = np.concatenate((self._limitPos_j[0, :], self._limitVel_j[0, :]))
         uu = self._limitAcc_j[1, :]
         ul = self._limitAcc_j[0, :]
+        if self._gripper:
+            uu = np.concatenate((uu, np.array([1])))
+            ul = np.concatenate((ul, np.array([-1])))
         ospace = gym.spaces.Box(low=xl, high=xu, dtype=np.float64)
         aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
         return(ospace, aspace)
@@ -72,6 +83,9 @@ class MobileRobot:
         xl = self._limitPos_j[0, :]
         uu = self._limitVel_j[1, :]
         ul = self._limitVel_j[0, :]
+        if self._gripper:
+            uu = np.concatenate((uu, np.array([1])))
+            ul = np.concatenate((ul, np.array([-1])))
         ospace = gym.spaces.Box(low=xl, high=xu, dtype=np.float64)
         aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
         return(ospace, aspace)
@@ -98,13 +112,19 @@ class MobileRobot:
     def apply_acc_action(self, accs):
         q = []
         qdot = []
+        qddot = []
         for i in range(self._n):
             pos, vel, _, _= p.getJointState(self.robot, self.robot_joints[i])
+            print(pos)
             q.append(pos)
             qdot.append(vel)
         qddot = list(accs)
         q = list(q)
         qdot = list(qdot)
+        if self._gripper:
+            q += [0.0, 0.0]
+            qdot += [0.0, 0.0]
+            qddot += [0.0, 0.0]
         tau = p.calculateInverseDynamics(self.robot, q, qdot, qddot)
         self.apply_torque_action(tau)
 
@@ -113,6 +133,13 @@ class MobileRobot:
             p.setJointMotorControl2(self.robot, self.robot_joints[i],
                                         controlMode=p.VELOCITY_CONTROL,
                                         targetVelocity=vels[i])
+
+    def moveGripper(self, gripperVel):
+        # TODO Why can't I use velocity control here..
+        for i in range(2):
+            p.setJointMotorControl2(self.robot, self.gripper_joints[i],
+                                        controlMode=p.POSITION_CONTROL,
+                                        targetPosition=gripperVel)
 
     def get_observation(self):
         # Get Joint Configurations

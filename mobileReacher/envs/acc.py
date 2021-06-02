@@ -11,12 +11,13 @@ import matplotlib.pyplot as plt
 class MobileReacherAccEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, render=False, dt=0.01):
+    def __init__(self, render=False, dt=0.01, gripper=False):
         print("init")
         self._n = 10
+        self._gripper = gripper
         self._dt = dt
         self.np_random, _ = gym.utils.seeding.np_random()
-        self.robot = MobileRobot()
+        self.robot = MobileRobot(gripper)
         (self.observation_space, self.action_space) = self.robot.getAccSpaces()
         self._isRender = render
         self.clientId = -1
@@ -40,7 +41,11 @@ class MobileReacherAccEnv(gym.Env):
     def step(self, action):
         # Feed action to the robot and get observation of robot's state
         self._nSteps += 1
-        self.robot.apply_acc_action(action)
+        if self._gripper:
+            self.robot.apply_acc_action(action[:-1])
+            self.robot.moveGripper(action[-1])
+        else:
+            self.robot.apply_acc_action(action)
         self._p.stepSimulation()
         ob = self.robot.get_observation()
 
