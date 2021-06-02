@@ -11,7 +11,7 @@ class AccController(object):
     """Simple forward controller acceleration to torque"""
 
     def __init__(self, n, com, m, I, g, axis, off_j, k):
-        self.dynamics_fun, _, self.tau_fun = create3DDynamics(n)
+        self.dynamics_fun, _, self.tau_fun, self.M_fun = create3DDynamics(n)
         self._n = n
         self._com = com
         self._m = m
@@ -22,6 +22,7 @@ class AccController(object):
         self._k = k
 
     def control(self, q, qdot, qddot):
+        t = self.M_fun(q, qdot, self._com, self._m, self._I, self._g, self._axis, self._off_j)
         tau = self.tau_fun(
             q,
             qdot,
@@ -34,21 +35,10 @@ class AccController(object):
             self._k, 
             qddot,
         )
-        """
-        acc = self.dynamics_fun(
-            q,
-            qdot,
-            self._com,
-            self._m,
-            self._I,
-            self._g,
-            self._axis,
-            self._off_j,
-            self._k, 
-            tau
-        )
-        print("Acc : ", acc[self._n:2 * self._n])
-        """
+        M = t[0]
+        T = t[1]
+        V = t[2]
+        r = t[3]
         return tau
 
 class NLinkUrdfAccController(AccController):

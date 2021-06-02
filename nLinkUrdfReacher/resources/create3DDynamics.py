@@ -141,6 +141,7 @@ def create3DDynamics(n):
         T_0ib = ca.mtimes(T_0ib, T_i1bib)
         # transform to center of mass T_ibic = i'_T_ic
         T_ibic = makeTrans(com[:, i])
+        print(T_ibic)
         T_0ic = ca.mtimes(T_0ib, T_ibic)
         r_0ic = T_0ic[0:3, 3]
         # transfor to end effector for forward kinematics T_ibiee = i'_T_iee
@@ -234,6 +235,9 @@ def create3DDynamics(n):
     print(test_eval)
 
     """
+    M_fun= ca.Function(
+        "M", [q, qdot, com, m, I_j, g, axis_j, off_j], [M, T, V, r_0ic]
+    )
     dynamics = ca.Function(
         "dynamics", [q, qdot, com, m, I_j, g, axis_j, off_j, k, tau], [xdot]
     )
@@ -241,7 +245,7 @@ def create3DDynamics(n):
     tau_fun = ca.Function(
         "tau", [q, qdot, com, m, I_j, g, axis_j, off_j, k, qddot], [tau_forward]
     )
-    return dynamics, fk, tau_fun
+    return dynamics, fk, tau_fun, M_fun
 
 
 def main():

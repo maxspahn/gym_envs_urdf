@@ -7,26 +7,31 @@ import numpy as np
 
 
 class PandaRobot:
-    def __init__(self):
+    def __init__(self, gripper=False):
         self._n = 7
-        self.f_name = os.path.join(os.path.dirname(__file__), 'panda.urdf')
+        self._gripper = gripper
+        if gripper:
+            self.f_name = os.path.join(os.path.dirname(__file__), 'pandaWithGripper.urdf')
+        else:
+            self.f_name = os.path.join(os.path.dirname(__file__), 'panda.urdf')
         self.readLimits()
         self.robot_joints = list(range(1, self._n + 1))
+        self.gripper_joints = [10, 11]
 
-    def reset(self):
+    def reset(self, poss=np.array([0.0, 0.0, 0.0, -1.501, 0.0, 1.8675, 0.0])):
         self.robot = p.loadURDF(fileName=self.f_name,
                               basePosition=[0, 0, 0.0])
         # Joint indices as found by p.getJointInfo()
-        poss = np.array([0.0000, 0.0000, 0.0000, -1.501, 0.0000, 1.8675, 0.0000])
+        numJoints = p.getNumJoints(self.robot)
         for i in range(self._n):
             p.setJointMotorControl2(self.robot, self.robot_joints[i],
                                         controlMode=p.POSITION_CONTROL,
                                         targetPosition=poss[i])
-        print("Bringing to home position..")
+        print("Bringing to initial position..")
         pre_steps = 100
         for i in range(pre_steps):
             p.stepSimulation()
-        print("Reached home position")
+        print("Reached initial position")
 
     def getLimits(self):
         return (self._limitPos_j, self._limitVel_j, self._limitTor_j, self._limitAcc_j)
@@ -72,6 +77,9 @@ class PandaRobot:
         xl = self._limitPos_j[0, :]
         uu = self._limitVel_j[1, :]
         ul = self._limitVel_j[0, :]
+        if self._gripper:
+            uu = np.concatenate((uu, np.array([1])))
+            ul = np.concatenate((ul, np.array([-1])))
         ospace = gym.spaces.Box(low=xl, high=xu, dtype=np.float64)
         aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
         return(ospace, aspace)
@@ -105,6 +113,10 @@ class PandaRobot:
         qddot = list(accs)
         q = list(q)
         qdot = list(qdot)
+        if self._gripper:
+            q += [0.0, 0.0]
+            qdot += [0.0, 0.0]
+            qddot += [0.0, 0.0]
         tau = p.calculateInverseDynamics(self.robot, q, qdot, qddot)
         self.apply_torque_action(tau)
 
@@ -113,6 +125,12 @@ class PandaRobot:
             p.setJointMotorControl2(self.robot, self.robot_joints[i],
                                         controlMode=p.VELOCITY_CONTROL,
                                         targetVelocity=vels[i])
+
+    def moveGripper(self, gripperVel):
+        for i in range(2):
+            p.setJointMotorControl2(self.robot, self.gripper_joints[i],
+                                        controlMode=p.VELOCITY_CONTROL,
+                                        targetVelocity=gripperVel)
 
     def get_observation(self):
         # Get Joint Configurations
