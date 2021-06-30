@@ -42,8 +42,6 @@ class PandaReacherVelEnv(gym.Env):
         # Feed action to the robot and get observation of robot's state
         self._nSteps += 1
         self.robot.apply_vel_action(action)
-        if self._gripper:
-            self.robot.moveGripper(action[-1])
         self._p.stepSimulation()
         ob = self.robot.get_observation()
 

@@ -7,13 +7,13 @@ import numpy as np
 def main():
     #env = gym.make('mobile-reacher-tor-v0', dt=0.01, render=True)
     #env = gym.make('mobile-reacher-vel-v0', dt=0.01, render=True)
-    env = gym.make('mobile-reacher-vel-v0', dt=0.01, render=True, gripper=True)
+    env = gym.make('mobile-reacher-acc-v0', dt=0.01, render=True, gripper=False)
     defaultAction = np.zeros(11)
     defaultAction[2] = 0.0
     defaultAction[5] = -0.0
     defaultAction[-1] = 3.5
     n_episodes = 1
-    n_steps = 1000
+    n_steps = 100000
     cumReward = 0.0
     for e in range(n_episodes):
         ob = env.reset()
@@ -25,7 +25,7 @@ def main():
             else:
                 defaultAction[-1] = 1.0
             action = env.action_space.sample()
-            action = defaultAction
+            action = defaultAction[:-1]
             ob, reward, done, info = env.step(action)
             cumReward += reward
 

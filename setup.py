@@ -6,5 +6,6 @@ setup(
     install_requires=['gym',
                       'numpy',
                       'casadi', 
+                      'pybullet', 
                       'urdfpy']
 )

@@ -5,6 +5,7 @@ import pybullet as p
 from pybullet_utils import bullet_client
 from pandaReacher.resources.pandaRobot import PandaRobot
 from pandaReacher.resources.plane import Plane
+from pandaReacher.resources.scene import Scene
 import matplotlib.pyplot as plt
 
 
@@ -14,7 +15,6 @@ class PandaReacherAccEnv(gym.Env):
     def __init__(self, render=False, dt=0.01, gripper=False):
         print("init")
         self._gripper = gripper
-        self._n = 7
         self._dt = dt
         self.np_random, _ = gym.utils.seeding.np_random()
         self.robot = PandaRobot(gripper)
@@ -34,18 +34,20 @@ class PandaReacherAccEnv(gym.Env):
                 cid = p.connect(p.GUI)
         else:
             p.connect(p.DIRECT)
+        self._p.setPhysicsEngineParameter(
+            fixedTimeStep=self._dt, numSubSteps=self._numSubSteps
+        )
         #self.reset(initialSet=True)
         #self.initSim(timeStep=0.01, numSubSteps=20)
+
+    def addObstacle(self, pos, filename):
+        self.robot.addObstacle(pos, filename)
 
 
     def step(self, action):
         # Feed action to the robot and get observation of robot's state
         self._nSteps += 1
-        if self._gripper:
-            self.robot.apply_acc_action(action[:-1])
-            self.robot.moveGripper(action[-1])
-        else:
-            self.robot.apply_acc_action(action)
+        self.robot.apply_acc_action(action)
         self._p.stepSimulation()
         ob = self.robot.get_observation()
 
@@ -61,26 +63,7 @@ class PandaReacherAccEnv(gym.Env):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
         return [seed]
 
-    def initSim(self, numSubSteps):
-        if self.isRender:
-            self._p = bullet_client.BulletClient(connection_mode=pybullet.GUI)
-        else:
-            self._p = bullet_client.BulletClient()
-        self.clientId = self._p._client
-
-        self._p.setPhysicsEngineParameter(
-            fixedTimeStep=self._dt, numSubSteps=numSubSteps
-        )
-        self._p.setGravity(0, 0, -10)
-        # Load the plane and robot
-        self.plane = Plane(self.clientId)
-        #self.robot = GenericReacherPanda(self.clientId)
-        self.done = False
-
-        # Visual element of the goal
-        self.initState = self._p.saveState()
-
-    def reset(self, q0=np.array([0.0, 0.0, 0.0, -1.501, 0.0, 1.8675, 0.0]), initialSet=False):
+    def reset(self, q0=np.array([0.0, 0.0, 0.0, -1.501, 0.0, 1.8675, 0.0, 0.0, 0.0]), initialSet=False):
         if not initialSet:
             print("Run " + str(self._nSteps) + " steps in this run")
             self._nSteps = 0
@@ -90,9 +73,10 @@ class PandaReacherAccEnv(gym.Env):
             fixedTimeStep=self._dt, numSubSteps=self._numSubSteps
         )
         self.plane = Plane()
+        self.Scene = Scene()
         self.robot.reset(poss=q0)
         self.robot.disableVelocityControl()
-        self._p.setGravity(0, 0, -10)
+        self._p.setGravity(0, 0, -9.81)
 
         p.stepSimulation()
 
@@ -103,15 +87,6 @@ class PandaReacherAccEnv(gym.Env):
 
     def render(self, mode="none"):
         return
-        """
-        if mode == "human":
-            self.isRender = True
-        else:
-            self.isRender = False
-        if self.initialRender:
-            self.initialRender = False
-            self.initSim(timeStep=0.02, numSubSteps=20)
-        """
 
     def close(self):
         self._p.disconnect()
