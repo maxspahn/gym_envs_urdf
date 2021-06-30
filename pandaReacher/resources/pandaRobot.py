@@ -6,7 +6,6 @@ import math
 from urdfpy import URDF
 import numpy as np
 import urdf2casadi.urdfparser as u2c
-import rbdl
 
 
 class PandaRobot:
@@ -31,8 +30,10 @@ class PandaRobot:
         self.readLimits()
 
     def getId(self, tip):
+        """
         rbdl_file = self.f_name[:-5] + '_no_world.urdf'
         self._panda_rbdl = rbdl.loadModel(rbdl_file)
+        """
         panda_u2c = u2c.URDFparser()
         panda_u2c.from_file(self.f_name)
         root = 'panda_link0'
@@ -138,8 +139,10 @@ class PandaRobot:
             pos, vel, _, _= p.getJointState(self.robot, self.control_joints[i])
             q.append(pos)
             qdot.append(vel)
+        """
         tau_rbdl = np.zeros(self._n)
         rbdl.InverseDynamics(self._panda_rbdl, np.array(q), np.array(qdot), accs, tau_rbdl)
+        """
         qddot = list(accs)
         q = list(q)
         qdot = list(qdot)
@@ -151,7 +154,7 @@ class PandaRobot:
         #print(tau_rbdl - np.array(tau))
         #print(np.linalg.norm(tau_rbdl - np.array(tau)))
         #print("----")
-        self.apply_torque_action(tau_rbdl)
+        self.apply_torque_action(tau)
 
     def apply_vel_action(self, vels):
         for i in range(self._n):
