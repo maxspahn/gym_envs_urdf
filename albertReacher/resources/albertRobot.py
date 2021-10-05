@@ -104,6 +104,7 @@ class AlbertRobot:
         qddot = list(accs)
         q = list(q)
         qdot = list(qdot)
+        # TODO: Fails probable due to mismatch in dimension <29-09-21, mspahn> #
         tau = p.calculateInverseDynamics(self.robot, q, qdot, qddot)
         self.apply_torque_action(tau)
 

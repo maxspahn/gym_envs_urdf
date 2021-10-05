@@ -1,6 +1,5 @@
 import gym
 import albertReacher
-import albert
 import time
 import numpy as np
 

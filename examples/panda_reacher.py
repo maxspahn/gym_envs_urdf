@@ -5,10 +5,9 @@ import numpy as np
 
 
 def main():
-    #env = gym.make('panda-reacher-tor-v0', dt=0.01, render=True)
     gripper = True
-    env = gym.make('panda-reacher-acc-v0', dt=0.01, render=True, gripper=gripper)
-    #env = gym.make('panda-reacher-vel-v0', dt=0.01, render=True)
+    # env = gym.make('panda-reacher-acc-v0', dt=0.01, render=True, gripper=gripper)
+    env = gym.make('panda-reacher-vel-v0', dt=0.01, render=True, gripper=gripper)
     defaultAction = np.ones(9) * 0.0
     n_episodes = 1
     n_steps = 1000

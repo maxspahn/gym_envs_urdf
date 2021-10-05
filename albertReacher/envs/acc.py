@@ -77,7 +77,7 @@ class AlbertReacherAccEnv(gym.Env):
         # Visual element of the goal
         self.initState = self._p.saveState()
 
-    def reset(self, q0=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.501, 0.0, 1.8675, 0.0]), initialSet=False):
+    def reset(self, initialSet=False):
         if not initialSet:
             print("Run " + str(self._nSteps) + " steps in this run")
             self._nSteps = 0
@@ -87,7 +87,7 @@ class AlbertReacherAccEnv(gym.Env):
             fixedTimeStep=self._dt, numSubSteps=self._numSubSteps
         )
         self.plane = Plane()
-        self.robot.reset(poss=q0)
+        self.robot.reset()
         self.robot.disableVelocityControl()
         self._p.setGravity(0, 0, -10)
 
