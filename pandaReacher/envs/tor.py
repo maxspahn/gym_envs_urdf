@@ -71,7 +71,7 @@ class PandaReacherTorEnv(gym.Env):
         self._p.setPhysicsEngineParameter(
             fixedTimeStep=self._dt, numSubSteps=numSubSteps
         )
-        self._p.setGravity(0, 0, -10)
+        self._p.setGravity(0, 0, -9.81)
         # Load the plane and robot
         self.plane = Plane(self.clientId)
         #self.robot = GenericReacherPanda(self.clientId)
@@ -92,7 +92,7 @@ class PandaReacherTorEnv(gym.Env):
         self.plane = Plane()
         self.robot.reset()
         self.robot.disableVelocityControl()
-        self._p.setGravity(0, 0, -10)
+        self._p.setGravity(0, 0, -9.81)
 
         p.stepSimulation()
 

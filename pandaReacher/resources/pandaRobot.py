@@ -3,6 +3,7 @@ import pybullet_data
 import gym
 import os
 import math
+import rbdl
 from urdfpy import URDF
 import numpy as np
 import urdf2casadi.urdfparser as u2c
@@ -30,10 +31,8 @@ class PandaRobot:
         self.readLimits()
 
     def getId(self, tip):
-        """
         rbdl_file = self.f_name[:-5] + '_no_world.urdf'
         self._panda_rbdl = rbdl.loadModel(rbdl_file)
-        """
         panda_u2c = u2c.URDFparser()
         panda_u2c.from_file(self.f_name)
         root = 'panda_link0'
@@ -49,7 +48,7 @@ class PandaRobot:
     def reset(self, poss=np.array([0.0, 0.0, 0.0, -1.501, 0.0, 1.8675, 0.0, 0.02, 0.02])):
         self.robot = p.loadURDF(fileName=self.f_name, useFixedBase=True,
                             flags=p.URDF_USE_INERTIA_FROM_FILE, 
-                              basePosition=[0, 0, 0.2])
+                              basePosition=[0, 0, 0.0])
         # Joint indices as found by p.getJointInfo()
         numJoints = p.getNumJoints(self.robot)
         for i in range(self._n):
@@ -142,18 +141,18 @@ class PandaRobot:
         """
         tau_rbdl = np.zeros(self._n)
         rbdl.InverseDynamics(self._panda_rbdl, np.array(q), np.array(qdot), accs, tau_rbdl)
+        print("----")
+        # tau = self._id_u2c(q, qdot, qddot)
+        # print("tau_rbdl : ", tau_rbdl)
+        # print("tau_pb : ", np.array(tau))
+        # print(tau_rbdl - np.array(tau))
+        # print(np.linalg.norm(tau_rbdl - np.array(tau)))
+        print("----")
         """
         qddot = list(accs)
         q = list(q)
         qdot = list(qdot)
         tau = p.calculateInverseDynamics(self.robot, q, qdot, qddot)
-        #print("----")
-        #tau = self._id_u2c(q, qdot, qddot)
-        #print("tau_rbdl : ", tau_rbdl)
-        #print("tau_pb : ", np.array(tau))
-        #print(tau_rbdl - np.array(tau))
-        #print(np.linalg.norm(tau_rbdl - np.array(tau)))
-        #print("----")
         self.apply_torque_action(tau)
 
     def apply_vel_action(self, vels):

@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 class PandaReacherVelEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, render=False, dt=0.01, gripper=False):
+    def __init__(self, render=True, n=7, dt=0.01, gripper=False):
         print("init")
         self._n = 7
         self._dt = dt

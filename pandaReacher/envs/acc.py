@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 class PandaReacherAccEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, render=False, dt=0.01, gripper=False):
+    def __init__(self, render=True, n=7, dt=0.01, gripper=False):
         print("init")
         self._gripper = gripper
         self._dt = dt
@@ -24,7 +24,7 @@ class PandaReacherAccEnv(gym.Env):
         self.done = False
         self.rendered_img = None
         self.render_rot_matrix = None
-        self._numSubSteps= 20
+        self._numSubSteps = 20
         self._nSteps = 0
         self._maxSteps = 10000000
         self._p = p
