@@ -1,6 +1,5 @@
 import gym
 import albertReacher
-import time
 import numpy as np
 
 
@@ -18,7 +17,6 @@ def main():
         ob = env.reset()
         print("Starting episode")
         for i in range(n_steps):
-            time.sleep(env._dt)
             action = env.action_space.sample()
             action = defaultAction
             ob, reward, done, info = env.step(action)

@@ -1,6 +1,5 @@
 import gym
 import mobileReacher
-import time
 import numpy as np
 
 
@@ -19,7 +18,6 @@ def main():
         ob = env.reset()
         print("Starting episode")
         for i in range(n_steps):
-            time.sleep(env._dt)
             if (int(i/100))%2 == 0:
                 defaultAction[-1] = -1.0
             else:
