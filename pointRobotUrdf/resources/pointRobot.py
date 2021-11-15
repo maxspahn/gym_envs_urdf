@@ -10,6 +10,7 @@ import numpy as np
 class PointRobot:
     def __init__(self):
         self._n = 2
+        self._sensors = []
         self.f_name = os.path.join(os.path.dirname(__file__), 'pointRobot.urdf')
         self.readLimits()
 
@@ -36,6 +37,10 @@ class PointRobot:
         accLimit = np.array([1.0, 1.0])
         self._limitAcc_j[0, :] = -accLimit[0:self._n]
         self._limitAcc_j[1, :] = accLimit[0:self._n]
+
+    def addSensor(self, sensor):
+        self._sensors.append(sensor)
+        return sensor.getOSpaceSize()
 
     def getLimits(self):
         return (self._limitPos_j, self._limitVel_j, self._limitTor_j)
@@ -123,13 +128,14 @@ class PointRobot:
     def get_observation(self):
         joint_pos_list = []
         joint_vel_list = []
-        for i in range(self._n):
-            pos, vel, _, _= p.getJointState(self.robot, self.robot_joints[i])
-            joint_pos_list.append(pos)
-            joint_vel_list.append(vel)
-        joint_pos = tuple(joint_pos_list)
-        joint_vel = tuple(joint_vel_list)
+        linkState = p.getLinkState(self.robot, 1, 1)
+        joint_pos = np.array(linkState[0][0:2])
+        joint_vel = np.array(linkState[6][0:2])
+        # Get sensor data
+        ob = np.concatenate((joint_pos, joint_vel))
+        for sensor in self._sensors:
+            obSen = sensor.sense(self.robot)
+            ob = np.concatenate((ob, obSen))
 
-        # Concatenate position, orientation, velocity
-        self.observation = (joint_pos+ joint_vel)
+        self.observation = ob
         return self.observation

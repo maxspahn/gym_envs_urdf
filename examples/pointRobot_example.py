@@ -1,12 +1,15 @@
 import gym
 from gym import envs
 import pointRobotUrdf
+from sensors.lidar import Lidar
 import time
 import numpy as np
 
 
 def main():
     env = gym.make('pointRobotUrdf-acc-v0', dt=0.05, render=True)
+    lidar = Lidar(4, nbRays=4)
+    env.addSensor(lidar)
     defaultAction = np.array([0.0, 0.0])
     n_episodes = 1
     n_steps = 100000
