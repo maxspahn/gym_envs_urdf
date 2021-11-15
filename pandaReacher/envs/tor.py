@@ -5,7 +5,6 @@ import pybullet as p
 from pybullet_utils import bullet_client
 from pandaReacher.resources.pandaRobot import PandaRobot
 from pandaReacher.resources.plane import Plane
-import matplotlib.pyplot as plt
 
 
 class PandaReacherTorEnv(gym.Env):
