@@ -1,4 +1,5 @@
 import gym
+from gym.spaces import Dict, Box
 import numpy as np
 import time
 import pybullet as p
@@ -33,7 +34,13 @@ class PointRobotEnv(gym.Env):
         else:
             p.connect(p.DIRECT)
         self.reset(initialSet=True)
-        #self.initSim(timeStep=0.01, numSubSteps=20)
+
+    def addSensor(self, sensor):
+        self.robot.addSensor(sensor)
+        self.observation_space = Dict({
+            "jointStates": self.observation_space,
+            "sensor1": Box(-10, 10, shape=(sensor.getOSpaceSize(), )),
+        })
 
     @abstractmethod
     def setSpaces(self):
