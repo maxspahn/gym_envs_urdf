@@ -5,7 +5,6 @@ import pybullet as p
 from pybullet_utils import bullet_client
 from nLinkUrdfReacher.resources.nLinkRobot import NLinkRobot
 from nLinkUrdfReacher.resources.plane import Plane
-import matplotlib.pyplot as plt
 
 
 class NLinkUrdfTorReacherEnv(gym.Env):
