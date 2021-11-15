@@ -7,3 +7,7 @@ register(
     id='nLink-urdf-reacher-vel-v0',
     entry_point='nLinkUrdfReacher.envs:NLinkUrdfVelReacherEnv'
 )
+register(
+    id='nLink-urdf-reacher-acc-v0',
+    entry_point='nLinkUrdfReacher.envs:NLinkUrdfAccReacherEnv'
+)
