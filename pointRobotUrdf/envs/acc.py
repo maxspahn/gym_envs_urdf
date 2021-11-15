@@ -8,12 +8,16 @@ from pointRobotUrdf.resources.plane import Plane
 from pointRobotUrdf.envs.genericEnv import PointRobotEnv
 
 
-class PointRobotVelEnv(PointRobotEnv):
+class PointRobotAccEnv(PointRobotEnv):
+
+    def reset(self, initialSet=False, pos=np.zeros(2), vel=np.zeros(2)):
+        super().reset(initialSet=initialSet, pos=pos, vel=vel)
+        self.robot.disableVelocityControl()
 
     def step(self, action):
         # Feed action to the robot and get observation of robot's state
         self._nSteps += 1
-        self.robot.apply_vel_action(action)
+        self.robot.apply_acc_action(action)
         self._p.stepSimulation()
         ob = self.robot.get_observation()
 
@@ -28,4 +32,5 @@ class PointRobotVelEnv(PointRobotEnv):
         return ob, reward, self.done, {}
 
     def setSpaces(self):
-        (self.observation_space, self.action_space) = self.robot.getVelSpaces()
+        (self.observation_space, self.action_space) = self.robot.getAccSpaces()
+
