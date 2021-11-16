@@ -56,6 +56,8 @@ class PandaReacherTorEnv(gym.Env):
         if self._nSteps > self._maxSteps:
             reward = reward + 1
             self.done = True
+        if self._isRender:
+            self.render()
         return ob, reward, self.done, {}
 
     def seed(self, seed=None):

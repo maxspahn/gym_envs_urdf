@@ -106,7 +106,7 @@ class MobileReacherTorEnv(gym.Env):
         return robot_ob
 
     def render(self, mode="none"):
-        self.dt()
+        time.sleep(self.dt())
         return
         """
         if mode == "human":
