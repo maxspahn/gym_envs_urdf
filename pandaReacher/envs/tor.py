@@ -36,6 +36,8 @@ class PandaReacherTorEnv(gym.Env):
         #self.reset(initialSet=True)
         #self.initSim(timeStep=0.01, numSubSteps=20)
 
+    def dt(self):
+        return self._dt
 
     def step(self, action):
         # Feed action to the robot and get observation of robot's state
@@ -54,6 +56,8 @@ class PandaReacherTorEnv(gym.Env):
         if self._nSteps > self._maxSteps:
             reward = reward + 1
             self.done = True
+        if self._isRender:
+            self.render()
         return ob, reward, self.done, {}
 
     def seed(self, seed=None):
@@ -101,6 +105,7 @@ class PandaReacherTorEnv(gym.Env):
         return robot_ob
 
     def render(self, mode="none"):
+        time.sleep(self.dt())
         return
         """
         if mode == "human":
