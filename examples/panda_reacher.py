@@ -1,13 +1,12 @@
 import gym
 import pandaReacher
-import time
 import numpy as np
 
 
 def main():
     gripper = True
-    # env = gym.make('panda-reacher-acc-v0', dt=0.01, render=True, gripper=gripper)
-    env = gym.make('panda-reacher-vel-v0', dt=0.01, render=True, gripper=gripper)
+    env = gym.make('panda-reacher-acc-v0', dt=0.01, render=True, gripper=gripper)
+    #env = gym.make('panda-reacher-vel-v0', dt=0.01, render=True, gripper=gripper)
     defaultAction = np.ones(9) * 0.0
     n_episodes = 1
     n_steps = 1000
@@ -22,7 +21,6 @@ def main():
             else:
                 defaultAction[7] = 1.0
                 defaultAction[8] = 1.0
-            time.sleep(env._dt)
             action = env.action_space.sample()
             if gripper:
                 action = defaultAction[0:9]

@@ -1,13 +1,12 @@
 import gym
 import nLinkUrdfReacher
-import time
 import numpy as np
 
 
 def main():
     n = 3
     #env = gym.make('nLink-reacher-acc-v0', n=n, dt=0.01)
-    env = gym.make('nLink-urdf-reacher-vel-v0', n=n, dt=0.01, render=True)
+    env = gym.make('nLink-urdf-reacher-acc-v0', n=n, dt=0.01, render=True)
     defaultAction = np.ones(n) * 0.1
     n_episodes = 1
     n_steps = 1000
@@ -16,7 +15,6 @@ def main():
         ob = env.reset()
         print("Starting episode")
         for i in range(n_steps):
-            time.sleep(env._dt)
             action = env.action_space.sample()
             action = defaultAction
             ob, reward, done, info = env.step(action)
