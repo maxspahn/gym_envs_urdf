@@ -34,6 +34,8 @@ class NLinkUrdfVelReacherEnv(gym.Env):
         self.reset(initialSet=True)
         #self.initSim(timeStep=0.01, numSubSteps=20)
 
+    def dt(self):
+        return self._dt
 
     def step(self, action):
         # Feed action to the robot and get observation of robot's state
@@ -94,6 +96,7 @@ class NLinkUrdfVelReacherEnv(gym.Env):
         return robot_ob
 
     def render(self, mode="none"):
+        time.sleep((self.dt()))
         return
         """
         if mode == "human":
