@@ -6,7 +6,6 @@ from pybullet_utils import bullet_client
 from pandaReacher.resources.pandaRobot import PandaRobot
 from pandaReacher.resources.plane import Plane
 from pandaReacher.resources.scene import Scene
-import matplotlib.pyplot as plt
 
 
 class PandaReacherAccEnv(gym.Env):
@@ -17,7 +16,7 @@ class PandaReacherAccEnv(gym.Env):
         self._gripper = gripper
         self._dt = dt
         self.np_random, _ = gym.utils.seeding.np_random()
-        self.robot = PandaRobot(gripper)
+        self.robot = PandaRobot(gripper, friction=0.02)
         (self.observation_space, self.action_space) = self.robot.getAccSpaces()
         self._isRender = render
         self.clientId = -1

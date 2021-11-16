@@ -5,7 +5,6 @@ import pybullet as p
 from pybullet_utils import bullet_client
 from albertReacher.resources.albertRobot import AlbertRobot
 from albertReacher.resources.plane import Plane
-import matplotlib.pyplot as plt
 
 
 class AlbertReacherTorEnv(gym.Env):

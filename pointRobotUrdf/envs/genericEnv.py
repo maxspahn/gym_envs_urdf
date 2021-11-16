@@ -1,23 +1,24 @@
 import gym
+from gym.spaces import Dict, Box
 import numpy as np
 import time
 import pybullet as p
 from pybullet_utils import bullet_client
-from albertReacher.resources.albertRobot import AlbertRobot
-from albertReacher.resources.plane import Plane
+from pointRobotUrdf.resources.pointRobot import PointRobot
+from pointRobotUrdf.resources.plane import Plane
+
+from abc import abstractmethod
 
 
-class AlbertReacherAccEnv(gym.Env):
+class PointRobotEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
     def __init__(self, render=False, dt=0.01):
-        print("WARNING: THIS ENVIRONMENT DOES NOT WORK DUE TO MISSING INVERSE DYNAMICS")
-        self._n = 9
         self._dt = dt
         self.np_random, _ = gym.utils.seeding.np_random()
-        self.robot = AlbertRobot()
-        (self.observation_space, self.action_space) = self.robot.getAccSpaces()
-        self._isRender = render
+        self.robot = PointRobot()
+        self.setSpaces()
+        self._render = render
         self.clientId = -1
         self.done = False
         self.rendered_img = None
@@ -26,44 +27,44 @@ class AlbertReacherAccEnv(gym.Env):
         self._nSteps = 0
         self._maxSteps = 10000000
         self._p = p
-        if self._isRender:
+        if self._render:
             cid = p.connect(p.SHARED_MEMORY)
             if (cid < 0):
                 cid = p.connect(p.GUI)
         else:
             p.connect(p.DIRECT)
-        #self.reset(initialSet=True)
-        #self.initSim(timeStep=0.01, numSubSteps=20)
+        self.reset(initialSet=True)
+
+    def addSensor(self, sensor):
+        self.robot.addSensor(sensor)
+        self.observation_space = Dict({
+            "jointStates": self.observation_space,
+            "sensor1": Box(-10, 10, shape=(sensor.getOSpaceSize(), )),
+        })
+
+    @abstractmethod
+    def setSpaces(self):
+        pass
 
     def dt(self):
         return self._dt
 
+    def setWalls(self, limits=[[-2, -2], [2, 2]]):
+        self.robot.setWalls(limits)
+
+    @abstractmethod
     def step(self, action):
-        # Feed action to the robot and get observation of robot's state
-        print("WARNING: THIS ENVIRONMENT DOES NOT WORK DUE TO MISSING INVERSE DYNAMICS")
-        self._nSteps += 1
-        self.robot.apply_vel_action_wheels(action[0:2])
-        self.robot.apply_acc_action(action[2:])
-        print("WARNING: THIS ENVIRONMENT DOES NOT WORK DUE TO MISSING INVERSE DYNAMICS")
-        self._p.stepSimulation()
-        ob = self.robot.get_observation()
+        pass
 
-        # Done by running off boundaries
-        reward = 1.0
-
-        if self._nSteps > self._maxSteps:
-            reward = reward + 1
-            self.done = True
-        if self._isRender:
-            self.render()
-        return ob, reward, self.done, {}
+    def addObstacle(self, pos, filename):
+        self.robot.addObstacle(pos, filename)
 
     def seed(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
         return [seed]
 
     def initSim(self, numSubSteps):
-        if self.isRender:
+        if self._render:
             self._p = bullet_client.BulletClient(connection_mode=pybullet.GUI)
         else:
             self._p = bullet_client.BulletClient()
@@ -80,7 +81,7 @@ class AlbertReacherAccEnv(gym.Env):
         # Visual element of the goal
         self.initState = self._p.saveState()
 
-    def reset(self, initialSet=False):
+    def reset(self, initialSet=False, pos=np.zeros(2), vel=np.zeros(2)):
         if not initialSet:
             print("Run " + str(self._nSteps) + " steps in this run")
             self._nSteps = 0
@@ -90,8 +91,7 @@ class AlbertReacherAccEnv(gym.Env):
             fixedTimeStep=self._dt, numSubSteps=self._numSubSteps
         )
         self.plane = Plane()
-        self.robot.reset()
-        self.robot.disableVelocityControl()
+        self.robot.reset(pos=pos, vel=vel)
         self._p.setGravity(0, 0, -10)
 
         p.stepSimulation()
@@ -104,15 +104,6 @@ class AlbertReacherAccEnv(gym.Env):
     def render(self, mode="none"):
         time.sleep(self.dt())
         return
-        """
-        if mode == "human":
-            self.isRender = True
-        else:
-            self.isRender = False
-        if self.initialRender:
-            self.initialRender = False
-            self.initSim(timeStep=0.02, numSubSteps=20)
-        """
 
     def close(self):
         self._p.disconnect()

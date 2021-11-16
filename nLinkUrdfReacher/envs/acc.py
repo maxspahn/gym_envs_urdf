@@ -1,21 +1,18 @@
 import gym
-import numpy as np
-import time
 import pybullet as p
 from pybullet_utils import bullet_client
-from albertReacher.resources.albertRobot import AlbertRobot
-from albertReacher.resources.plane import Plane
+from nLinkUrdfReacher.resources.nLinkRobot import NLinkRobot
+from nLinkUrdfReacher.resources.plane import Plane
 
 
-class AlbertReacherAccEnv(gym.Env):
+class NLinkUrdfAccReacherEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, render=False, dt=0.01):
-        print("WARNING: THIS ENVIRONMENT DOES NOT WORK DUE TO MISSING INVERSE DYNAMICS")
-        self._n = 9
+    def __init__(self, render=False, n=3, dt=0.01):
+        self._n = n
         self._dt = dt
         self.np_random, _ = gym.utils.seeding.np_random()
-        self.robot = AlbertRobot()
+        self.robot = NLinkRobot(n=n)
         (self.observation_space, self.action_space) = self.robot.getAccSpaces()
         self._isRender = render
         self.clientId = -1
@@ -32,19 +29,14 @@ class AlbertReacherAccEnv(gym.Env):
                 cid = p.connect(p.GUI)
         else:
             p.connect(p.DIRECT)
-        #self.reset(initialSet=True)
+        self.reset(initialSet=True)
         #self.initSim(timeStep=0.01, numSubSteps=20)
 
-    def dt(self):
-        return self._dt
 
     def step(self, action):
         # Feed action to the robot and get observation of robot's state
-        print("WARNING: THIS ENVIRONMENT DOES NOT WORK DUE TO MISSING INVERSE DYNAMICS")
         self._nSteps += 1
-        self.robot.apply_vel_action_wheels(action[0:2])
-        self.robot.apply_acc_action(action[2:])
-        print("WARNING: THIS ENVIRONMENT DOES NOT WORK DUE TO MISSING INVERSE DYNAMICS")
+        self.robot.apply_acc_action(action)
         self._p.stepSimulation()
         ob = self.robot.get_observation()
 
@@ -54,8 +46,6 @@ class AlbertReacherAccEnv(gym.Env):
         if self._nSteps > self._maxSteps:
             reward = reward + 1
             self.done = True
-        if self._isRender:
-            self.render()
         return ob, reward, self.done, {}
 
     def seed(self, seed=None):
@@ -75,6 +65,7 @@ class AlbertReacherAccEnv(gym.Env):
         self._p.setGravity(0, 0, -10)
         # Load the plane and robot
         self.plane = Plane(self.clientId)
+        #self.robot = GenericReacherPanda(self.clientId)
         self.done = False
 
         # Visual element of the goal
@@ -102,7 +93,6 @@ class AlbertReacherAccEnv(gym.Env):
         return robot_ob
 
     def render(self, mode="none"):
-        time.sleep(self.dt())
         return
         """
         if mode == "human":

@@ -5,7 +5,6 @@ import pybullet as p
 from pybullet_utils import bullet_client
 from mobileReacher.resources.mobileRobot import MobileRobot
 from mobileReacher.resources.plane import Plane
-import matplotlib.pyplot as plt
 
 
 class MobileReacherVelEnv(gym.Env):
