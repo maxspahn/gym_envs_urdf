@@ -10,11 +10,10 @@ class TiagoRobot:
     def __init__(self):
         self._n = 19
         self.f_name = os.path.join(os.path.dirname(__file__), 'tiago_dual.urdf')
-        self.setJointIds()
+        self.setJointIdsUrdf()
         self.readLimits()
 
-    def setJointIds(self):
-        """
+    def setJointIdsUrdf(self):
         # Finding out the joint names
         wheel_joint_names = ['wheel_right_joint', 'wheel_left_joint']
         torso_joint_name = ['torso_lift_joint']
@@ -23,22 +22,32 @@ class TiagoRobot:
         arm_left_joint_names = ['arm_left_' + str(i) + '_joint' for i in range(8)]
         self._joint_names = wheel_joint_names + torso_joint_name + head_joint_names + arm_right_joint_names + arm_left_joint_names
         robot = URDF.load(self.f_name)
-        self.robot_joints_urdf = {}
+        self.robot_joints_urdf = []
         for i, joint in enumerate(robot.joints):
-            print(i, joint.name)
-        """
-        # wheels, torso, head, leftarm, rightarm
-        self.robot_joints_urdf = [14, 16, 27, 28, 29, 37, 38, 39, 40, 41, 42, 43, 52, 53, 54, 55, 56, 57, 58]
-        self.robot_joints_control = [13, 15, 25, 26, 27, 35, 36, 37, 38, 39, 40, 41, 50, 51, 52, 53, 54, 55, 56]
-        self.robot_joints_gripper = []
+            if joint.name in self._joint_names:
+                self.robot_joints_urdf.append(i)
+            print(joint.name)
         return
+
+    def setJointIdsControl(self):
+        self.robot_joints_control = []
+        self.caster_joints = []
+        for _id in range(p.getNumJoints(self.robot)):
+            joint_name = p.getJointInfo(self.robot, _id)[1].decode('UTF-8')
+            if joint_name in self._joint_names:
+                self.robot_joints_control.append(_id)
+            if 'caster' in joint_name:
+                self.caster_joints.append(_id)
+        self.robot_joints_gripper = []
 
     def reset(self):
         self.robot = p.loadURDF(fileName=self.f_name,
-                              basePosition=[0, 0, 0.05])
+                              basePosition=[0, 0, 0.15], flags=p.URDF_USE_SELF_COLLISION)
+        self.setJointIdsControl()
         # Joint indices as found by p.getJointInfo()
         # set castor wheel friction to zero
-        for i in [21, 22]:
+        print(self.caster_joints)
+        for i in self.caster_joints:
             p.setJointMotorControl2(
                 self.robot,
                 jointIndex=i,

@@ -56,90 +56,6 @@
     <parent link="base_link"/>
     <child link="base_laser_link"/>
   </joint>
-  <link name="base_sonar_03_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.001"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="pmb2_description/meshes/sensors/srf05.stl"/>
-      </geometry>
-      <material name="DarkGrey"/>
-    </visual>
-  </link>
-  <joint name="base_sonar_03_joint" type="fixed">
-    <origin rpy="0 0 2.35619449019" xyz="-0.183 0.183 0.173"/>
-    <axis xyz="0 0 1"/>
-    <parent link="base_link"/>
-    <child link="base_sonar_03_link"/>
-  </joint>
-  <link name="base_sonar_02_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.001"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="pmb2_description/meshes/sensors/srf05.stl"/>
-      </geometry>
-      <material name="DarkGrey"/>
-    </visual>
-  </link>
-  <joint name="base_sonar_02_joint" type="fixed">
-    <origin rpy="0 0 3.14159265359" xyz="-0.259 0.0 0.173"/>
-    <axis xyz="0 0 1"/>
-    <parent link="base_link"/>
-    <child link="base_sonar_02_link"/>
-  </joint>
-  <link name="base_sonar_01_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.001"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="pmb2_description/meshes/sensors/srf05.stl"/>
-      </geometry>
-      <material name="DarkGrey"/>
-    </visual>
-  </link>
-  <joint name="base_sonar_01_joint" type="fixed">
-    <origin rpy="0 0 3.92699081699" xyz="-0.183 -0.183 0.173"/>
-    <axis xyz="0 0 1"/>
-    <parent link="base_link"/>
-    <child link="base_sonar_01_link"/>
-  </joint>
-  <link name="base_mic_front_left_link"/>
-  <joint name="base_mic_front_left_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.23182 0.03902 0.195"/>
-    <child link="base_mic_front_left_link"/>
-    <parent link="base_link"/>
-  </joint>
-  <link name="base_mic_front_right_link"/>
-  <joint name="base_mic_front_right_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.23182 -0.03902 0.195"/>
-    <child link="base_mic_front_right_link"/>
-    <parent link="base_link"/>
-  </joint>
-  <link name="base_mic_back_left_link"/>
-  <joint name="base_mic_back_left_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="-0.1082 -0.0599 0.195"/>
-    <child link="base_mic_back_left_link"/>
-    <parent link="base_link"/>
-  </joint>
-  <link name="base_mic_back_right_link"/>
-  <joint name="base_mic_back_right_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="-0.1082 -0.13789 0.195"/>
-    <child link="base_mic_back_right_link"/>
-    <parent link="base_link"/>
-  </joint>
   <!-- Base -->
   <link name="base_link">
     <inertial>
@@ -163,12 +79,14 @@
     </collision>
   </link>
   <!-- Base footprint -->
+  <!--
   <link name="base_footprint"/>
   <joint name="base_footprint_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0.0985"/>
     <child link="base_link"/>
     <parent link="base_footprint"/>
   </joint>
+  -->
   <link name="base_cover_link">
     <inertial>
       <origin rpy="0 0 0" xyz="0.22414000000 0.00002000000 0.04681000000"/>
@@ -184,9 +102,10 @@
     </visual>
   </link>
   <joint name="cover_joint" type="fixed">
-    <parent link="base_footprint"/>
+    <parent link="base_link"/>
     <child link="base_cover_link"/>
-    <origin rpy="0 0 0" xyz="0 0 0.13"/>
+    <origin rpy="0 0 0" xyz="0 0 0.0315"/>
+    <!--origin rpy="0 0 0" xyz="0 0 0.13"/-->
   </joint>
   <link name="base_antenna_left_link">
     <inertial>
@@ -303,7 +222,7 @@
     <child link="wheel_right_link"/>
     <origin rpy="-1.57079632679 0 0" xyz="0 -0.2022 0.0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="6.0" velocity="10.152284264"/>
+    <limit effort="1000.0" velocity="10000"/>
   </joint>
   <link name="wheel_left_link">
     <inertial>
@@ -350,8 +269,9 @@
     <child link="wheel_left_link"/>
     <origin rpy="-1.57079632679 0 0" xyz="0 0.2022 0.0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="6.0" velocity="10.152284264"/>
+    <limit effort="10000.0" velocity="10000"/>
   </joint>
+  <!--
   <link name="caster_front_right_1_link">
     <inertial>
       <origin rpy="0 0 0" xyz="-0.00634599 0.00005347 -0.02037519"/>
@@ -365,12 +285,6 @@
       </geometry>
       <material name="Grey"/>
     </visual>
-    <!--collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <cylinder radius="${radius}" length="${width}"/>
-        </geometry>
-      </collision-->
   </link>
   <link name="caster_front_right_2_link">
     <inertial>
@@ -418,12 +332,6 @@
       </geometry>
       <material name="Grey"/>
     </visual>
-    <!--collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <cylinder radius="${radius}" length="${width}"/>
-        </geometry>
-      </collision-->
   </link>
   <link name="caster_front_left_2_link">
     <inertial>
@@ -471,12 +379,6 @@
       </geometry>
       <material name="Grey"/>
     </visual>
-    <!--collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <cylinder radius="${radius}" length="${width}"/>
-        </geometry>
-      </collision-->
   </link>
   <link name="caster_back_right_2_link">
     <inertial>
@@ -524,12 +426,6 @@
       </geometry>
       <material name="Grey"/>
     </visual>
-    <!--collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <cylinder radius="${radius}" length="${width}"/>
-        </geometry>
-      </collision-->
   </link>
   <link name="caster_back_left_2_link">
     <inertial>
@@ -564,6 +460,7 @@
     <origin rpy="-1.57079632679 0 0" xyz="-0.016 0.0000 -0.040"/>
     <axis xyz="0 0 1"/>
   </joint>
+  -->
   <!-- Bottom fixed part of column -->
   <link name="torso_fixed_link">
     <inertial>
@@ -750,7 +647,6 @@
       <mass value="0.21970000000"/>
       <inertia ixx="0.00000429247" ixy="0.00000000000" ixz="0.00000002565" iyy="0.00000008027" iyz="0.00000000000" izz="0.00000427339"/>
     </inertial>
-    <!--
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
@@ -766,87 +662,6 @@
           <box size="0.04 0.185 0.03"/>
         </geometry>
       </collision>
-      -->
-  </link>
-  <joint name="xtion_optical_joint" type="fixed">
-    <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0 0 0"/>
-    <parent link="xtion_link"/>
-    <child link="xtion_optical_frame"/>
-  </joint>
-  <link name="xtion_optical_frame">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.001"/>
-      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
-    </inertial>
-  </link>
-  <!-- frame of camera origin provided by Orbbec, need this intermediate frame for backwards compatibility with xtion_pro_live
-         to reuse same camera origin -->
-  <joint name="xtion_orbbec_aux_joint" type="fixed">
-    <!-- This is the real origin as in the robot solidworks, it must match: 0.1015 0.095 0.008 -->
-    <!-- Assuming we have 0.0908 0.08 0.0 from default camera_position, and rotated -90 deg on x.-->
-    <!-- Pending confirmation from Orbbec about the position of the frames, going with old defaults-->
-    <!-- <origin xyz="0.0107 0.008 0.015" rpy="0 0 0" />-->
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <parent link="xtion_link"/>
-    <child link="xtion_orbbec_aux_joint_frame"/>
-  </joint>
-  <link name="xtion_orbbec_aux_joint_frame">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.001"/>
-      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
-    </inertial>
-  </link>
-  <!-- frames of the depth sensor -->
-  <joint name="xtion_depth_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.0 0.025 0.0"/>
-    <parent link="xtion_rgb_frame"/>
-    <child link="xtion_depth_frame"/>
-  </joint>
-  <link name="xtion_depth_frame">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.001"/>
-      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
-    </inertial>
-  </link>
-  <joint name="xtion_depth_optical_joint" type="fixed">
-    <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0 0 0"/>
-    <parent link="xtion_depth_frame"/>
-    <child link="xtion_depth_optical_frame"/>
-  </joint>
-  <link name="xtion_depth_optical_frame">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.001"/>
-      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
-    </inertial>
-  </link>
-  <!-- frames of the rgb sensor -->
-  <joint name="xtion_rgb_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.0 0.022 0.0"/>
-    <parent link="xtion_orbbec_aux_joint_frame"/>
-    <child link="xtion_rgb_frame"/>
-  </joint>
-  <link name="xtion_rgb_frame">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.001"/>
-      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
-    </inertial>
-  </link>
-  <joint name="xtion_rgb_optical_joint" type="fixed">
-    <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0 0 0"/>
-    <parent link="xtion_rgb_frame"/>
-    <child link="xtion_rgb_optical_frame"/>
-  </joint>
-  <link name="xtion_rgb_optical_frame">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.001"/>
-      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
-    </inertial>
   </link>
   <!--************************-->
   <!--        SHOULDER        -->
@@ -1728,103 +1543,6 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="0.0001"/>
       <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001"/>
-    </inertial>
-  </link>
-  <!-- Schunk WSG 
-  <xacro:if value="${type == 'schunk-wsg'}">
-    <xacro:include filename="$(find pal_wsg_gripper_description)/urdf/gripper.urdf.xacro" />
-    <xacro:include filename="$(find pal_wsg_gripper_description)/urdf/fingertip_sensor.urdf.xacro" />
-
-    <xacro:pal_wsg_gripper parent="${parent}" name="${name}">
-      <origin xyz="0.01 0 0" rpy="${90*deg_to_rad} ${90*deg_to_rad} ${-90*deg_to_rad}"/>
-    </xacro:pal_wsg_gripper>
-    <xacro:fingertip_sensor name="${name}_left" parent="${name}_left_finger">
-      <origin xyz="0.035 0 -0.1465" rpy="0 ${-90*deg_to_rad} 0"/>
-    </xacro:fingertip_sensor>
-    <xacro:fingertip_sensor name="${name}_right" parent="${name}_right_finger">
-      <origin xyz="-0.035 0 -0.1465" rpy="0 ${90*deg_to_rad} 0"/>
-    </xacro:fingertip_sensor>
-  </xacro:if>
--->
-  <!-- Hand 
-  <xacro:if value="${type == 'pal-hey5'}">
-    <xacro:hey5_hand parent="${parent}" name="${name}" reflect="${reflect}">
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-    </xacro:hey5_hand>
-
-    <joint name="${name}_safety_box_joint" type="fixed">
-      <parent link="${parent}"/>
-      <child link="${name}_safety_box"/>
-      <origin xyz="0.1 0.02 ${reflect * 0.02}" rpy="0 0 0"/>
-    </joint>
-
-    <link name="${name}_safety_box">
-      <inertial>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <mass value="0.0001" />
-        <inertia ixx="0.0001"  ixy="0"  ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
-      </inertial>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0" />
-        <geometry>
-          <box size="0.2 0.115 0.18" />
-        </geometry>
-      </collision>
-    </link>
-  </xacro:if>
--->
-  <!-- Robotiq 2F-85 Gripper 
-  <xacro:if value="${type == 'robotiq-2f-85'}">
-    <xacro:include filename="$(find pal_robotiq_85_description)/urdf/robotiq_85_gripper.urdf.xacro" />
-    <xacro:robotiq_85_gripper prefix="${name}_" parent="${parent}" >
-      <origin xyz="0.01 0 0" rpy="${90*deg_to_rad} ${0*deg_to_rad} ${90*deg_to_rad}"/>
-    </xacro:robotiq_85_gripper>
-  </xacro:if>
--->
-  <!-- Robotiq 2F-140 Gripper 
-  <xacro:if value="${type == 'robotiq-2f-140'}">
-    <xacro:include filename="$(find pal_robotiq_140_description)/urdf/robotiq_140_gripper.urdf.xacro" />
-    <xacro:robotiq_140_gripper prefix="${name}_" parent="${parent}" >
-      <origin xyz="0.01 0 0" rpy="${90*deg_to_rad} ${0*deg_to_rad} ${90*deg_to_rad}"/>
-    </xacro:robotiq_140_gripper>
-  </xacro:if>
--->
-  <!-- Custom 
-  <xacro:if value="${type == 'custom' and not is_dual}">
-    <xacro:include filename="$(find custom_ee_description)/urdf/end-effector.urdf.xacro" />
-    <xacro:end_effector parent="${parent}">
-      <origin xyz="0.01 0 0" rpy="${90*deg_to_rad} ${90*deg_to_rad} ${-90*deg_to_rad}"/>
-    </xacro:end_effector>
-  </xacro:if>
--->
-  <!-- Custom dual
-  <xacro:if value="${type == 'custom' and is_dual}">
-    <xacro:if value="${reflect == 1}"> 
- If right 
-    <xacro:include filename="$(find custom_dual_ee_description)/urdf/end-effector-right.urdf.xacro" />
-    <xacro:end_effector_right parent="${parent}">
-      <origin xyz="0.01 0 0" rpy="${90*deg_to_rad} ${90*deg_to_rad} ${-90*deg_to_rad}"/>
-    </xacro:end_effector_right>
-    </xacro:if>
-    <xacro:if value="${reflect == -1}">  If left 
-    <xacro:include filename="$(find custom_dual_ee_description)/urdf/end-effector-left.urdf.xacro" />
-    <xacro:end_effector_left parent="${parent}">
-      <origin xyz="0.01 0 0" rpy="${90*deg_to_rad} ${90*deg_to_rad} ${-90*deg_to_rad}"/>
-    </xacro:end_effector_left>
-    </xacro:if>
-  </xacro:if>
--->
-  <!-- RGBD Laser Link -->
-  <joint name="rgbd_laser_joint" type="fixed">
-    <parent link="base_footprint"/>
-    <child link="rgbd_laser_link"/>
-    <origin rpy="0 0 0" xyz="-0.9 0 0"/>
-  </joint>
-  <link name="rgbd_laser_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.0001"/>
-      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
     </inertial>
   </link>
 </robot>
