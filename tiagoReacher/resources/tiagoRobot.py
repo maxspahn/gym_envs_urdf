@@ -137,6 +137,11 @@ class TiagoRobot:
         tau = p.calculateInverseDynamics(self.robot, q, qdot, qddot)
         self.apply_torque_action(tau)
 
+    def apply_base_velocity(self, vels):
+        r = 0.1
+        wheelVels = vels/r
+        self.apply_vel_action_wheels(wheelVels)
+
     def apply_vel_action_wheels(self, vels):
         for i in range(2):
             p.setJointMotorControl2(self.robot, self.robot_joints_control[i],
@@ -150,18 +155,22 @@ class TiagoRobot:
                                         targetVelocity=vels[i])
 
     def get_observation(self):
+        # Get Base State
+        linkState = p.getLinkState(self.robot, 0, computeLinkVelocity=1)
+        pos = np.array([linkState[0][0], linkState[0][1], p.getEulerFromQuaternion(linkState[1])[2]])
+        vel = np.array([linkState[6][0], linkState[6][1], linkState[7][2]])
         # Get Joint Configurations
         joint_pos_list = []
         joint_vel_list = []
-        for i in range(self._n):
+        for i in range(2, self._n):
             pos, vel, _, _= p.getJointState(self.robot, self.robot_joints_control[i])
             joint_pos_list.append(pos)
             joint_vel_list.append(vel)
-        joint_pos = tuple(joint_pos_list)
-        joint_vel = tuple(joint_vel_list)
+        joint_pos = np.array(joint_pos_list)
+        joint_vel = np.array(joint_vel_list)
 
         # Concatenate position, orientation, velocity
-        self.observation = (joint_pos+ joint_vel)
+        self.observation = np.concatenate((pos, joint_pos, vel, joint_vel))
         return self.observation
 
 if __name__ == "__main__":

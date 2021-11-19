@@ -19,7 +19,7 @@ class TiagoReacherEnv(gym.Env):
         (self.observation_space, self.action_space) = self.robot.getVelSpaces()
         self._render = render
         self.done = False
-        self._numSubSteps= 20
+        self._numSubSteps= 2
         self._nSteps = 0
         self._maxSteps = 10000000
         if self._render:
