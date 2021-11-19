@@ -180,12 +180,13 @@
   <link name="wheel_right_link">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 -0.00207"/>
-      <mass value="1.82362"/>
+      <mass value="100"/>
       <inertia ixx="0.00499743171" ixy="4.464e-08" ixz="-0.00000002245" iyy="0.00499741733" iyz="-1.64e-09" izz="0.00839239692"/>
     </inertial>
     <visual>
       <origin rpy="-0.0 0 0" xyz="0 0 0"/>
       <geometry>
+        <!--cylinder length="0.05" radius="0.1"/-->
         <mesh filename="pmb2_description/meshes/wheels/wheel.stl"/>
       </geometry>
       <material name="DarkGrey"/>
@@ -193,8 +194,8 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <sphere radius="0.0985"/>
-        <!-- length="${width}"/> -->
+        <cylinder length="0.05" radius="0.1"/>
+        <!--sphere radius="0.0985"/-->
       </geometry>
     </collision>
   </link>
@@ -227,20 +228,22 @@
   <link name="wheel_left_link">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0.00207"/>
-      <mass value="1.82362"/>
+      <mass value="100"/>
       <inertia ixx="0.00499743171" ixy="-4.464e-08" ixz="-0.00000002245" iyy="0.00499741733" iyz="1.64e-09" izz="0.00839239692"/>
     </inertial>
     <visual>
       <origin rpy="-3.14159265359 0 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="pmb2_description/meshes/wheels/wheel.stl"/>
+        <!--cylinder length="0.05" radius="0.1"/-->
       </geometry>
       <material name="DarkGrey"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <sphere radius="0.0985"/>
+        <cylinder length="0.05" radius="0.1"/>
+        <!--sphere radius="0.0985"/-->
         <!-- length="${width}"/> -->
       </geometry>
     </collision>
@@ -271,7 +274,6 @@
     <axis xyz="0 0 1"/>
     <limit effort="10000.0" velocity="10000"/>
   </joint>
-  <!--
   <link name="caster_front_right_1_link">
     <inertial>
       <origin rpy="0 0 0" xyz="-0.00634599 0.00005347 -0.02037519"/>
@@ -302,11 +304,12 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <sphere radius="0.025"/>
+        <!--sphere radius="0.025"/-->
+        <cylinder length="0.001" radius="0.025"/>
       </geometry>
     </collision>
   </link>
-  <joint name="caster_front_right_1_joint" type="continuous">
+  <joint name="caster_front_right_1_joint" type="fixed">
     <parent link="base_link"/>
     <child link="caster_front_right_1_link"/>
     <origin rpy="0 0 0" xyz="0.1695 -0.102 -0.0335"/>
@@ -349,11 +352,12 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <sphere radius="0.025"/>
+        <!--sphere radius="0.025"/-->
+        <cylinder length="0.001" radius="0.025"/>
       </geometry>
     </collision>
   </link>
-  <joint name="caster_front_left_1_joint" type="continuous">
+  <joint name="caster_front_left_1_joint" type="fixed">
     <parent link="base_link"/>
     <child link="caster_front_left_1_link"/>
     <origin rpy="0 0 0" xyz="0.1695 0.102 -0.0335"/>
@@ -396,11 +400,12 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <sphere radius="0.025"/>
+        <!--sphere radius="0.025"/-->
+        <cylinder length="0.001" radius="0.025"/>
       </geometry>
     </collision>
   </link>
-  <joint name="caster_back_right_1_joint" type="continuous">
+  <joint name="caster_back_right_1_joint" type="fixed">
     <parent link="base_link"/>
     <child link="caster_back_right_1_link"/>
     <origin rpy="0 0 0" xyz="-0.1735 -0.102 -0.0335"/>
@@ -443,11 +448,12 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <sphere radius="0.025"/>
+        <!--sphere radius="0.025"/-->
+        <cylinder length="0.001" radius="0.025"/>
       </geometry>
     </collision>
   </link>
-  <joint name="caster_back_left_1_joint" type="continuous">
+  <joint name="caster_back_left_1_joint" type="fixed">
     <parent link="base_link"/>
     <child link="caster_back_left_1_link"/>
     <origin rpy="0 0 0" xyz="-0.1735 0.102 -0.0335"/>
@@ -460,7 +466,6 @@
     <origin rpy="-1.57079632679 0 0" xyz="-0.016 0.0000 -0.040"/>
     <axis xyz="0 0 1"/>
   </joint>
-  -->
   <!-- Bottom fixed part of column -->
   <link name="torso_fixed_link">
     <inertial>
@@ -802,9 +807,10 @@
       <inertia ixx="0.00613800000" ixy="-0.00000400000" ixz="0.00015600000" iyy="0.00564000000" iyz="0.00002200000" izz="0.00179700000"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 3.14 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="tiago_description/meshes/arm/arm_5-wrist-2010.stl" scale="-1 -1 -1"/>
+        <!--mesh filename="tiago_description/meshes/arm/arm_5-wrist-2010.stl" scale="-1 -1 -1"/-->
+        <mesh filename="tiago_description/meshes/arm/arm_5-wrist-2010.stl" scale="1 1 1"/>
       </geometry>
       <material name="LightGrey"/>
     </visual>

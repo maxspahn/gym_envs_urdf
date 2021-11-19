@@ -6,10 +6,8 @@ import numpy as np
 
 def main():
     env = gym.make('tiago-reacher-vel-v0', dt=0.01, render=True)
-    defaultAction = np.random.rand(env.n()) * 0.0
-    defaultAction[1] = 1.0
-    defaultAction[0] = 0.5
-    defaultAction[8] = 0.0
+    defaultAction = np.zeros(env.n())
+    defaultAction[0:2] = np.ones(2) * 0.0
     n_episodes = 1
     n_steps = 10000
     cumReward = 0.0
@@ -17,9 +15,7 @@ def main():
         ob = env.reset()
         print("Starting episode")
         for i in range(n_steps):
-            action = defaultAction
-            ob, reward, done, info = env.step(action)
-            print(ob)
+            ob, reward, done, info = env.step(defaultAction)
             cumReward += reward
 
 

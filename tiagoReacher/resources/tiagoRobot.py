@@ -26,7 +26,6 @@ class TiagoRobot:
         for i, joint in enumerate(robot.joints):
             if joint.name in self._joint_names:
                 self.robot_joints_urdf.append(i)
-            print(joint.name)
         return
 
     def setJointIdsControl(self):
@@ -41,12 +40,13 @@ class TiagoRobot:
         self.robot_joints_gripper = []
 
     def reset(self):
-        self.robot = p.loadURDF(fileName=self.f_name,
-                              basePosition=[0, 0, 0.15], flags=p.URDF_USE_SELF_COLLISION)
+        self.robot = p.loadURDF(
+                        fileName=self.f_name,
+                        basePosition=[0, 0, 0.15], 
+                        flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT)
         self.setJointIdsControl()
         # Joint indices as found by p.getJointInfo()
         # set castor wheel friction to zero
-        print(self.caster_joints)
         for i in self.caster_joints:
             p.setJointMotorControl2(
                 self.robot,
@@ -104,14 +104,13 @@ class TiagoRobot:
         aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
         return(ospace, aspace)
 
-    def disableVelocityControl(self):
-        self._friction = 0
-        for i in range(self._n):
+    def disableVelocityControl(self, friction):
+        for i in range(2, self._n):
             p.setJointMotorControl2(
                 self.robot,
                 jointIndex=self.robot_joints_control[i],
                 controlMode=p.VELOCITY_CONTROL,
-                force=self._friction
+                force=friction
             )
 
     def get_ids(self):
@@ -157,20 +156,20 @@ class TiagoRobot:
     def get_observation(self):
         # Get Base State
         linkState = p.getLinkState(self.robot, 0, computeLinkVelocity=1)
-        pos = np.array([linkState[0][0], linkState[0][1], p.getEulerFromQuaternion(linkState[1])[2]])
-        vel = np.array([linkState[6][0], linkState[6][1], linkState[7][2]])
+        posBase = np.array([linkState[0][0], linkState[0][1], p.getEulerFromQuaternion(linkState[1])[2]])
+        velBase = np.array([linkState[6][0], linkState[6][1], linkState[7][2]])
         # Get Joint Configurations
         joint_pos_list = []
         joint_vel_list = []
         for i in range(2, self._n):
-            pos, vel, _, _= p.getJointState(self.robot, self.robot_joints_control[i])
+            pos, vel, _, _ = p.getJointState(self.robot, self.robot_joints_control[i])
             joint_pos_list.append(pos)
             joint_vel_list.append(vel)
         joint_pos = np.array(joint_pos_list)
         joint_vel = np.array(joint_vel_list)
 
         # Concatenate position, orientation, velocity
-        self.observation = np.concatenate((pos, joint_pos, vel, joint_vel))
+        self.observation = np.concatenate((posBase, joint_pos, velBase, joint_vel))
         return self.observation
 
 if __name__ == "__main__":
