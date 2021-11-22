@@ -5,8 +5,8 @@ from tiagoReacher.envs.tiagoReacherEnv import TiagoReacherEnv
 class TiagoReacherTorEnv(TiagoReacherEnv):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, render=False, dt=0.01, friction=0.3):
-        super().__init__(render=render, dt=dt)
+    def __init__(self, render=False, dt=0.01, n=19, friction=0.3):
+        super().__init__(render=render, n=n, dt=dt)
         self._friction = friction
 
     def reset(self, pos=np.zeros(20), vel=np.zeros(19)):

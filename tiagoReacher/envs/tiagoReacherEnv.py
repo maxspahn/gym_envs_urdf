@@ -11,8 +11,8 @@ from albertReacher.resources.plane import Plane
 class TiagoReacherEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, render=False, dt=0.01):
-        self._n = 19
+    def __init__(self, render=False, n=19, dt=0.01):
+        self._n = n
         self._dt = dt
         self.np_random, _ = gym.utils.seeding.np_random()
         self.robot = TiagoRobot()
