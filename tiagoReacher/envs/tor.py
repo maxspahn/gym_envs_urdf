@@ -1,3 +1,4 @@
+import numpy as np
 from tiagoReacher.envs.tiagoReacherEnv import TiagoReacherEnv
 
 
@@ -8,9 +9,10 @@ class TiagoReacherTorEnv(TiagoReacherEnv):
         super().__init__(render=render, dt=dt)
         self._friction = friction
 
-    def reset(self, initialSet=False):
-        super().reset(initialSet=initialSet)
+    def reset(self, pos=np.zeros(20), vel=np.zeros(19)):
+        ob = super().reset(pos=pos, vel=vel)
         self.robot.disableVelocityControl(self._friction)
+        return ob
 
     def applyAction(self, action):
         self.robot.apply_base_velocity(action)

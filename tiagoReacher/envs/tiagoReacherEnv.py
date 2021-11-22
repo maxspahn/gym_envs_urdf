@@ -19,12 +19,12 @@ class TiagoReacherEnv(gym.Env):
         (self.observation_space, self.action_space) = self.robot.getVelSpaces()
         self._render = render
         self.done = False
-        self._numSubSteps= 2
+        self._numSubSteps = 2
         self._nSteps = 0
         self._maxSteps = 10000000
         if self._render:
             cid = p.connect(p.SHARED_MEMORY)
-            if (cid < 0):
+            if cid < 0:
                 cid = p.connect(p.GUI)
         else:
             p.connect(p.DIRECT)
@@ -40,6 +40,7 @@ class TiagoReacherEnv(gym.Env):
         self._nSteps += 1
         self.applyAction(action)
         p.stepSimulation()
+        self.robot.updateState()
         ob = self.robot.get_observation()
 
         # Done by running off boundaries
@@ -59,18 +60,15 @@ class TiagoReacherEnv(gym.Env):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
         return [seed]
 
-    def reset(self, initialSet=False):
-        if not initialSet:
-            print("Run " + str(self._nSteps) + " steps in this run")
-            self._nSteps = 0
-            p.resetSimulation()
+    def reset(self, pos=np.zeros(20), vel=np.zeros(19)):
+        self.robot.reset(pos=pos, vel=vel)
         p.setPhysicsEngineParameter(
             fixedTimeStep=self._dt, numSubSteps=self._numSubSteps
         )
         self.plane = Plane()
-        self.robot.reset()
         p.setGravity(0, 0, -10)
         p.stepSimulation()
+        self.robot.updateState()
         return self.robot.get_observation()
 
     def render(self, mode="none"):

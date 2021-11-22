@@ -7,3 +7,7 @@ register(
     id='tiago-reacher-tor-v0',
     entry_point='tiagoReacher.envs:TiagoReacherTorEnv'
 )
+register(
+    id='tiago-reacher-acc-v0',
+    entry_point='tiagoReacher.envs:TiagoReacherAccEnv'
+)
