@@ -13,7 +13,7 @@ class NLinkRobot:
         self.f_name = os.path.join(os.path.dirname(__file__), 'nlink_' + str(n) + '.urdf')
         self.readLimits()
 
-    def reset(self):
+    def reset(self, pos=None, vel=None):
         self.robot = p.loadURDF(fileName=self.f_name,
                               basePosition=[0, 0, 0.1])
         # Joint indices as found by p.getJointInfo()

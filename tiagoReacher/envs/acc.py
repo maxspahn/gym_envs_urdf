@@ -3,7 +3,9 @@ from tiagoReacher.envs.tiagoReacherEnv import TiagoReacherEnv
 
 
 class TiagoReacherAccEnv(TiagoReacherEnv):
-    metadata = {"render.modes": ["human"]}
 
     def applyAction(self, action):
         self.robot.apply_acc_action(action, self.dt())
+
+    def setSpaces(self):
+        (self.observation_space, self.action_space) = self.robot.getAccSpaces()
