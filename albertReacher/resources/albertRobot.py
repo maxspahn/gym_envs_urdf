@@ -14,7 +14,10 @@ class AlbertRobot:
         self.robot_joints_control = [23, 24, 7, 8, 9, 10, 11, 12, 13]
         self.readLimits()
 
-    def reset(self):
+    def n(self):
+        return self._n
+
+    def reset(self, pos=None, vel=None):
         self.robot = p.loadURDF(fileName=self.f_name,
                               basePosition=[0, 0, 0.05])
         # Joint indices as found by p.getJointInfo()

@@ -2,20 +2,17 @@ import numpy as np
 import pybullet as p
 from abc import abstractmethod
 
-from tiagoReacher.resources.tiagoRobot import TiagoRobot
+from albertReacher.resources.albertRobot import AlbertRobot
 from albertReacher.resources.plane import Plane
 from urdfCommon.urdfEnv import UrdfEnv
 
 
-class TiagoReacherEnv(UrdfEnv):
+class AlbertReacherEnv(UrdfEnv):
 
-    def __init__(self, render=False, dt=0.01, n=19):
-        super().__init__(TiagoRobot(), render=render, dt=dt)
+    def __init__(self, render=False, dt=0.01):
+        super().__init__(AlbertRobot(), render=render, dt=dt)
         self._n = self.robot.n()
         self.setSpaces()
-
-    def n(self):
-        return self._n
 
     @abstractmethod
     def setSpaces(self):
@@ -26,8 +23,8 @@ class TiagoReacherEnv(UrdfEnv):
         pass
 
     def reset(self, initialSet=False, pos=None, vel=None):
-        if not isinstance(pos, np.ndarray) or not pos.size == self._n + 1:
-            pos = np.zeros(self._n+1)
+        if not isinstance(pos, np.ndarray) or not pos.size == self._n:
+            pos = np.zeros(self._n)
         if not isinstance(vel, np.ndarray) or not vel.size == self._n:
             vel = np.zeros(self._n)
         if not initialSet:

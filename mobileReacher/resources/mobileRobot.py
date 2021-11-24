@@ -30,14 +30,17 @@ class MobileRobot:
             basePosition=pos
         )
 
-    def reset(self, poss=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.501, 0.0, 1.8675, 0.0])):
+    def n(self):
+        return self._n
+
+    def reset(self, pos=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.501, 0.0, 1.8675, 0.0]), vel=None):
         self.robot = p.loadURDF(fileName=self.f_name,
                               basePosition=[0, 0, 0.0])
         # Joint indices as found by p.getJointInfo()
         for i in range(self._n):
             p.setJointMotorControl2(self.robot, self.control_joints[i],
                                         controlMode=p.POSITION_CONTROL,
-                                        targetPosition=poss[i])
+                                        targetPosition=pos[i])
         print("Bringing to initial position..")
         pre_steps = 100
         for i in range(pre_steps):
