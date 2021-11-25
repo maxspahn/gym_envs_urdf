@@ -24,13 +24,14 @@ class PandaRobot:
             self.control_joints = [1, 2, 3, 4, 5, 6, 7]
         self.readLimits()
 
+    def n(self):
+        return self._n
+
     def addObstacle(self, pos, filename):
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         p.loadURDF(filename, basePosition=pos)
 
-    def reset(
-        self, poss=np.array([0.0, 0.0, 0.0, -1.501, 0.0, 1.8675, 0.0, 0.02, 0.02])
-    ):
+    def reset(self, pos=None, vel=None):
         self.robot = p.loadURDF(
             fileName=self.f_name,
             useFixedBase=True,
@@ -42,7 +43,7 @@ class PandaRobot:
                 self.robot,
                 self.control_joints[i],
                 controlMode=p.POSITION_CONTROL,
-                targetPosition=poss[i],
+                targetPosition=pos[i],
             )
         print("Bringing to initial position..")
         pre_steps = 1000

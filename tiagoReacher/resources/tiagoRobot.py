@@ -14,6 +14,9 @@ class TiagoRobot:
         self.readLimits()
         self._r = 0.1
 
+    def n(self):
+        return self._n
+
     def setJointIdsUrdf(self):
         # Finding out the joint names
         wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"]

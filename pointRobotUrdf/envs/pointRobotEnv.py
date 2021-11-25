@@ -2,20 +2,18 @@ import numpy as np
 import pybullet as p
 from abc import abstractmethod
 
-from tiagoReacher.resources.tiagoRobot import TiagoRobot
-from albertReacher.resources.plane import Plane
+from pointRobotUrdf.resources.pointRobot import PointRobot
+from pointRobotUrdf.resources.plane import Plane
 from urdfCommon.urdfEnv import UrdfEnv
 
 
-class TiagoReacherEnv(UrdfEnv):
+class PointRobotEnv(UrdfEnv):
+    metadata = {"render.modes": ["human"]}
 
-    def __init__(self, render=False, dt=0.01, n=19):
-        super().__init__(TiagoRobot(), render=render, dt=dt)
-        self._n = self.robot.n()
+    def __init__(self, render=False, dt=0.01):
+        super().__init__(PointRobot(), render=render, dt=dt)
         self.setSpaces()
-
-    def n(self):
-        return self._n
+        self.reset(initialSet=True)
 
     @abstractmethod
     def setSpaces(self):
@@ -25,11 +23,7 @@ class TiagoReacherEnv(UrdfEnv):
     def applyAction(self, action):
         pass
 
-    def reset(self, initialSet=False, pos=None, vel=None):
-        if not isinstance(pos, np.ndarray) or not pos.size == self._n + 1:
-            pos = np.zeros(self._n+1)
-        if not isinstance(vel, np.ndarray) or not vel.size == self._n:
-            vel = np.zeros(self._n)
+    def reset(self, initialSet=False, pos=np.zeros(2), vel=np.zeros(2)):
         if not initialSet:
             print("Run " + str(self._nSteps) + " steps in this run")
             self._nSteps = 0

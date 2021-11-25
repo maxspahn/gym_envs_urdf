@@ -1,33 +1,23 @@
 import numpy as np
 import pybullet as p
-from abc import abstractmethod
-
-from tiagoReacher.resources.tiagoRobot import TiagoRobot
-from albertReacher.resources.plane import Plane
+from nLinkUrdfReacher.resources.nLinkRobot import NLinkRobot
+from nLinkUrdfReacher.resources.plane import Plane
 from urdfCommon.urdfEnv import UrdfEnv
 
 
-class TiagoReacherEnv(UrdfEnv):
+class NLinkUrdfReacherEnv(UrdfEnv):
 
-    def __init__(self, render=False, dt=0.01, n=19):
-        super().__init__(TiagoRobot(), render=render, dt=dt)
-        self._n = self.robot.n()
+    def __init__(self, render=False, dt=0.01, n=3):
+        super().__init__(NLinkRobot(n), render=render, dt=dt)
+        self._n = n
         self.setSpaces()
 
     def n(self):
         return self._n
 
-    @abstractmethod
-    def setSpaces(self):
-        pass
-
-    @abstractmethod
-    def applyAction(self, action):
-        pass
-
     def reset(self, initialSet=False, pos=None, vel=None):
-        if not isinstance(pos, np.ndarray) or not pos.size == self._n + 1:
-            pos = np.zeros(self._n+1)
+        if not isinstance(pos, np.ndarray) or not pos.size == self._n:
+            pos = np.zeros(self._n)
         if not isinstance(vel, np.ndarray) or not vel.size == self._n:
             vel = np.zeros(self._n)
         if not initialSet:
