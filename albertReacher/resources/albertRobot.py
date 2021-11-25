@@ -131,12 +131,8 @@ class AlbertRobot:
             pos, vel, _, _= p.getJointState(self.robot, self.robot_joints_control[i])
             joint_pos_list.append(pos)
             joint_vel_list.append(vel)
-        joint_pos = tuple(joint_pos_list)
-        joint_vel = tuple(joint_vel_list)
+        joint_pos = np.array(joint_pos_list)
+        joint_vel = np.array(joint_vel_list)
 
         # Concatenate position, orientation, velocity
-        self.observation = (joint_pos+ joint_vel)
-        return self.observation
-
-if __name__ == "__main__":
-    mr = AlbertRobot()
+        return np.concatenate((joint_pos, joint_vel))
