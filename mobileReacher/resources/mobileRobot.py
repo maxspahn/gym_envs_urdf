@@ -30,14 +30,17 @@ class MobileRobot:
             basePosition=pos
         )
 
-    def reset(self, poss=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.501, 0.0, 1.8675, 0.0])):
+    def n(self):
+        return self._n
+
+    def reset(self, pos=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.501, 0.0, 1.8675, 0.0]), vel=None):
         self.robot = p.loadURDF(fileName=self.f_name,
                               basePosition=[0, 0, 0.0])
         # Joint indices as found by p.getJointInfo()
         for i in range(self._n):
             p.setJointMotorControl2(self.robot, self.control_joints[i],
                                         controlMode=p.POSITION_CONTROL,
-                                        targetPosition=poss[i])
+                                        targetPosition=pos[i])
         print("Bringing to initial position..")
         pre_steps = 100
         for i in range(pre_steps):
@@ -147,12 +150,11 @@ class MobileRobot:
             pos, vel, _, _= p.getJointState(self.robot, self.robot_joints[i])
             joint_pos_list.append(pos)
             joint_vel_list.append(vel)
-        joint_pos = tuple(joint_pos_list)
-        joint_vel = tuple(joint_vel_list)
+        joint_pos = np.array(joint_pos_list)
+        joint_vel = np.array(joint_vel_list)
 
         # Concatenate position, orientation, velocity
-        self.observation = (joint_pos+ joint_vel)
-        return self.observation
+        return np.concatenate((joint_pos, joint_vel))
 
 if __name__ == "__main__":
     mr = MobileRobot()

@@ -3,10 +3,9 @@ from tiagoReacher.envs.tiagoReacherEnv import TiagoReacherEnv
 
 
 class TiagoReacherTorEnv(TiagoReacherEnv):
-    metadata = {"render.modes": ["human"]}
 
     def __init__(self, render=False, dt=0.01, n=19, friction=0.3):
-        super().__init__(render=render, n=n, dt=dt)
+        super().__init__(render=render, dt=dt)
         self._friction = friction
 
     def reset(self, pos=np.zeros(20), vel=np.zeros(19)):
@@ -17,3 +16,6 @@ class TiagoReacherTorEnv(TiagoReacherEnv):
     def applyAction(self, action):
         self.robot.apply_base_velocity(action)
         self.robot.apply_torque_action(action)
+
+    def setSpaces(self):
+        (self.observation_space, self.action_space) = self.robot.getTorqueSpaces()

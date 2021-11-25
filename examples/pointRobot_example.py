@@ -1,8 +1,6 @@
 import gym
-from gym import envs
 import pointRobotUrdf
 from sensors.lidar import Lidar
-import time
 import numpy as np
 
 
