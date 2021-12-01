@@ -26,9 +26,6 @@ class PandaRobot(AbstractRobot):
             self.robot_joints = [1, 2, 3, 4, 5, 6, 7]
             self.urdf_joints = [1, 2, 3, 4, 5, 6, 7]
 
-    def getLimits(self):
-        return (self._limitPos_j, self._limitVel_j, self._limitTor_j, self._limitAcc_j)
-
     def setAccLimits(self):
         accLimit = np.array([15.0, 7.5, 10.0, 12.5, 15.0, 20.0, 20.0, 1.0, 1.0])
         self._limitAcc_j[0, :] = -accLimit[0: self.n()]
