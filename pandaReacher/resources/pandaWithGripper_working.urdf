@@ -4,14 +4,12 @@
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <robot name="panda">
-  <!--
   <link name="world"/>
   <joint name="panda_joint_world" type="fixed">
     <parent link="world"/>
     <child link="panda_link0"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
   </joint>
-  -->
   <link name="panda_link0">
     <inertial>
       <mass value="2.92"/>
