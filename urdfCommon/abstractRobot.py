@@ -1,4 +1,5 @@
 import pybullet as p
+import pybullet_data
 from abc import ABC, abstractmethod
 import gym
 from urdfpy import URDF
@@ -11,6 +12,7 @@ class AbstractRobot(ABC):
         self.fileName = fileName
         self.setJointIndices()
         self.readLimits()
+        self._sensors = []
 
     def n(self):
         return self._n
@@ -130,6 +132,30 @@ class AbstractRobot(ABC):
         # Concatenate position, orientation, velocity
         self.state = np.concatenate((joint_pos, joint_vel))
 
+    def updateSensing(self):
+        self.sensor_observation = np.array([])
+        for sensor in self._sensors:
+            self.sensor_observation = np.append(self.sensor_observation, sensor.sense(self.robot))
+
     def get_observation(self):
         self.updateState()
-        return self.state
+        self.updateSensing()
+        return np.concatenate((self.state, self.sensor_observation))
+
+    def addSensor(self, sensor):
+        self._sensors.append(sensor)
+        return sensor.getOSpaceSize()
+
+    def setWalls(self, limits=[[-2, -2], [2, 2]]):
+        colwallId = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0.05, 10.0, 0.5])
+        wall = [p.createMultiBody(0, colwallId, 10, [limits[0][0], 0, 0.0], p.getQuaternionFromEuler([0, 0, 0]))]
+        wall = [p.createMultiBody(0, colwallId, 10, [limits[1][0], 0, 0.0], p.getQuaternionFromEuler([0, 0, 0]))]
+        wall = [p.createMultiBody(0, colwallId, 10, [0, limits[0][1], 0.0], p.getQuaternionFromEuler([0, 0, np.pi/2]))]
+        wall = [p.createMultiBody(0, colwallId, 10, [0, limits[1][1], 0.0], p.getQuaternionFromEuler([0, 0, np.pi/2]))]
+
+    def addObstacle(self, pos, filename):
+        p.setAdditionalSearchPath(pybullet_data.getDataPath())
+        p.loadURDF(
+            fileName=filename,
+            basePosition=pos
+        )
