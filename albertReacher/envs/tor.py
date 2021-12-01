@@ -10,6 +10,7 @@ class AlbertReacherTorEnv(AlbertReacherEnv):
         return ob
 
     def applyAction(self, action):
+        self.robot.apply_base_velocity(action)
         self.robot.apply_torque_action(action)
 
     def setSpaces(self):
