@@ -5,21 +5,23 @@ import math
 from urdfpy import URDF
 import numpy as np
 
+from urdfCommon.abstractRobot import AbstractRobot
 
-class TiagoRobot:
+
+class TiagoRobot(AbstractRobot):
     def __init__(self):
-        self._n = 19
-        self.f_name = os.path.join(os.path.dirname(__file__), "tiago_dual.urdf")
-        self.setJointIdsUrdf()
-        self.readLimits()
+        n = 19
         self._r = 0.1
         self._l = 0.4044
+        fileName = os.path.join(os.path.dirname(__file__), "tiago_dual.urdf")
+        super().__init__(n, fileName)
 
-    def n(self):
-        return self._n
-
-    def setJointIdsUrdf(self):
-        # Finding out the joint names
+    def setJointIndices(self):
+        self.robot_joints = [6, 8, 18, 19, 20, 22, 23, 24, 25, 26, 27, 28, 37, 38, 39, 40, 41, 42, 43]
+        self.urdf_joints = [6, 8, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29, 38, 39, 40, 41, 42, 43, 44]
+        self.caster_joints = [9, 10, 11, 12, 13, 14, 15, 16]
+        # TODO: This could be used as a starting point to get joint indices from urdf <01-12-21, mspahn> #
+        """
         wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"]
         torso_joint_name = ["torso_lift_joint"]
         head_joint_names = ["head_" + str(i) + "_joint" for i in range(3)]
@@ -32,35 +34,34 @@ class TiagoRobot:
             + arm_right_joint_names
             + arm_left_joint_names
         )
-        robot = URDF.load(self.f_name)
-        self.robot_joints_urdf = []
+        robot = URDF.load(self.fileName)
+        self.urdf_joints = []
         for i, joint in enumerate(robot.joints):
             if joint.name in self._joint_names:
-                self.robot_joints_urdf.append(i)
-        return
+                self.urdf_joints.append(i)
 
-    def setJointIdsControl(self):
-        self.robot_joints_control = []
+        self.robot_joints = []
         self.caster_joints = []
         for _id in range(p.getNumJoints(self.robot)):
             joint_name = p.getJointInfo(self.robot, _id)[1].decode("UTF-8")
             if joint_name in self._joint_names:
-                self.robot_joints_control.append(_id)
+                self.robot_joints.append(_id)
             if "caster" in joint_name:
                 self.caster_joints.append(_id)
+        __import__('pdb').set_trace()
         self.robot_joints_gripper = []
+        """
 
     def reset(self, pos=np.zeros(20), vel=np.zeros(19)):
         if hasattr(self, "robot"):
             p.resetSimulation()
         baseOrientation = p.getQuaternionFromEuler([0, 0, pos[2]])
         self.robot = p.loadURDF(
-            fileName=self.f_name,
+            fileName=self.fileName,
             basePosition=[pos[0], pos[1], 0.15],
             baseOrientation=baseOrientation,
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
-        self.setJointIdsControl()
         # set castor wheel friction to zero
         for i in self.caster_joints:
             p.setJointMotorControl2(
@@ -73,7 +74,7 @@ class TiagoRobot:
         for i in range(2, self._n):
             p.resetJointState(
                 self.robot,
-                self.robot_joints_control[i],
+                self.robot_joints[i],
                 pos[i + 1],
                 targetVelocity=vel[i],
             )
@@ -83,60 +84,16 @@ class TiagoRobot:
         self.state[-2:] = v
         self._vels_int = np.concatenate((self.state[40:42], self.state[23:40]))
 
-    def getLimits(self):
-        return (self._limitPos_j, self._limitVel_j, self._limitTor_j, self._limitAcc_j)
-
-    def readLimits(self):
-        robot = URDF.load(self.f_name)
-        self._limitPos_j = np.zeros((2, self._n))
-        self._limitVel_j = np.zeros((2, self._n))
-        self._limitAcc_j = np.zeros((2, self._n))
-        self._limitTor_j = np.zeros((2, self._n))
-        for i, j in enumerate(self.robot_joints_urdf):
-            joint = robot.joints[j]
-            self._limitPos_j[0, i] = joint.limit.lower
-            self._limitPos_j[1, i] = joint.limit.upper
-            self._limitVel_j[0, i] = -joint.limit.velocity
-            self._limitVel_j[1, i] = joint.limit.velocity
-            self._limitTor_j[0, i] = -joint.limit.effort
-            self._limitTor_j[1, i] = joint.limit.effort
-        # manually done
+    def setAccLimits(self):
         accLimit = np.ones(self._n)
         self._limitAcc_j[0, :] = -accLimit
         self._limitAcc_j[1, :] = accLimit
-
-    def getTorqueSpaces(self):
-        xu = np.concatenate((self._limitPos_j[1, :], self._limitVel_j[1, :]))
-        xl = np.concatenate((self._limitPos_j[0, :], self._limitVel_j[0, :]))
-        uu = self._limitTor_j[1, :]
-        ul = self._limitTor_j[0, :]
-        ospace = gym.spaces.Box(low=xl, high=xu, dtype=np.float64)
-        aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
-        return (ospace, aspace)
-
-    def getAccSpaces(self):
-        xu = np.concatenate((self._limitPos_j[1, :], self._limitVel_j[1, :]))
-        xl = np.concatenate((self._limitPos_j[0, :], self._limitVel_j[0, :]))
-        uu = self._limitAcc_j[1, :]
-        ul = self._limitAcc_j[0, :]
-        ospace = gym.spaces.Box(low=xl, high=xu, dtype=np.float64)
-        aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
-        return (ospace, aspace)
-
-    def getVelSpaces(self):
-        xu = self._limitPos_j[1, :]
-        xl = self._limitPos_j[0, :]
-        uu = self._limitVel_j[1, :]
-        ul = self._limitVel_j[0, :]
-        ospace = gym.spaces.Box(low=xl, high=xu, dtype=np.float64)
-        aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
-        return (ospace, aspace)
 
     def disableVelocityControl(self, friction):
         for i in range(2, self._n):
             p.setJointMotorControl2(
                 self.robot,
-                jointIndex=self.robot_joints_control[i],
+                jointIndex=self.robot_joints[i],
                 controlMode=p.VELOCITY_CONTROL,
                 force=friction,
             )
@@ -145,17 +102,15 @@ class TiagoRobot:
         for i in range(2, self._n):
             p.setJointMotorControl2(
                 self.robot,
-                self.robot_joints_control[i],
+                self.robot_joints[i],
                 controlMode=p.TORQUE_CONTROL,
                 force=torques[i],
             )
-        self.updateState()
 
     def apply_acc_action(self, accs, dt):
         self._vels_int += dt * accs
         self.apply_base_velocity(self._vels_int)
         self.apply_vel_action(self._vels_int)
-        self.updateState()
 
     def apply_base_velocity(self, vels):
         vel_left = (vels[0] - 0.5 * self._l * vels[1]) / self._r
@@ -167,7 +122,7 @@ class TiagoRobot:
         for i in range(2):
             p.setJointMotorControl2(
                 self.robot,
-                self.robot_joints_control[i],
+                self.robot_joints[i],
                 controlMode=p.VELOCITY_CONTROL,
                 targetVelocity=vels[i],
             )
@@ -176,11 +131,10 @@ class TiagoRobot:
         for i in range(2, self._n):
             p.setJointMotorControl2(
                 self.robot,
-                self.robot_joints_control[i],
+                self.robot_joints[i],
                 controlMode=p.VELOCITY_CONTROL,
                 targetVelocity=vels[i],
             )
-        self.updateState()
 
     def updateState(self):
         # Get Base State
@@ -197,7 +151,7 @@ class TiagoRobot:
         joint_pos_list = []
         joint_vel_list = []
         for i in range(2, self._n):
-            pos, vel, _, _ = p.getJointState(self.robot, self.robot_joints_control[i])
+            pos, vel, _, _ = p.getJointState(self.robot, self.robot_joints[i])
             joint_pos_list.append(pos)
             joint_vel_list.append(vel)
         joint_pos = np.array(joint_pos_list)
@@ -208,10 +162,3 @@ class TiagoRobot:
 
         # Concatenate position[0:20], velocity[0:20], vf[0:2]
         self.state = np.concatenate((posBase, joint_pos, velBase, joint_vel, vf))
-
-    def get_observation(self):
-        return self.state
-
-
-if __name__ == "__main__":
-    mr = TiagoRobot()
