@@ -46,6 +46,7 @@ class MobileRobot:
         for i in range(pre_steps):
             p.stepSimulation()
         print("Reached initial position")
+        self._vels_int = vel
 
     def getLimits(self):
         return (self._limitPos_j, self._limitVel_j, self._limitTor_j, self._limitAcc_j)
@@ -115,19 +116,9 @@ class MobileRobot:
                                         controlMode=p.TORQUE_CONTROL,
                                         force=torques[i])
 
-    def apply_acc_action(self, accs):
-        q = []
-        qdot = []
-        qddot = []
-        for i in range(self._n):
-            pos, vel, _, _= p.getJointState(self.robot, self.control_joints[i])
-            q.append(pos)
-            qdot.append(vel)
-        qddot = list(accs)
-        q = list(q)
-        qdot = list(qdot)
-        tau = p.calculateInverseDynamics(self.robot, q, qdot, qddot)
-        self.apply_torque_action(tau)
+    def apply_acc_action(self, accs, dt):
+        self._vels_int += dt * accs
+        self.apply_vel_action(self._vels_int)
 
     def apply_vel_action(self, vels):
         for i in range(self._n):

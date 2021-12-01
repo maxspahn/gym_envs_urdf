@@ -8,7 +8,7 @@ def main():
     #env = gym.make('mobile-reacher-vel-v0', dt=0.01, render=True)
     env = gym.make('mobile-reacher-acc-v0', dt=0.01, render=True, gripper=False)
     defaultAction = np.zeros(10)
-    defaultAction[2] = 0.0
+    defaultAction[0] = 0.1
     defaultAction[5] = -0.0
     defaultAction[-1] = 3.5
     n_episodes = 1

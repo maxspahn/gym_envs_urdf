@@ -23,8 +23,8 @@ class AlbertReacherEnv(UrdfEnv):
         pass
 
     def reset(self, initialSet=False, pos=None, vel=None):
-        if not isinstance(pos, np.ndarray) or not pos.size == self._n:
-            pos = np.zeros(self._n)
+        if not isinstance(pos, np.ndarray) or not pos.size == self._n+1:
+            pos = np.zeros(self._n+1)
         if not isinstance(vel, np.ndarray) or not vel.size == self._n:
             vel = np.zeros(self._n)
         if not initialSet:
