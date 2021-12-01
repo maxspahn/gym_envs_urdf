@@ -13,8 +13,9 @@ def main():
     n_episodes = 1
     n_steps = 100000
     cumReward = 0.0
+    pos0 = np.zeros(10)
     for e in range(n_episodes):
-        ob = env.reset()
+        ob = env.reset(pos=pos0)
         print("Starting episode")
         for i in range(n_steps):
             action = env.action_space.sample()

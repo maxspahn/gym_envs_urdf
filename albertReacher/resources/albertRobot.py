@@ -13,13 +13,22 @@ class AlbertRobot:
         self.robot_joints_urdf = [10, 11, 22, 23, 24, 25, 26, 27, 28]
         self.robot_joints_control = [23, 24, 7, 8, 9, 10, 11, 12, 13]
         self.readLimits()
+        self._r = 0.08
+        self._l = 0.494
 
     def n(self):
         return self._n
 
     def reset(self, pos=None, vel=None):
-        self.robot = p.loadURDF(fileName=self.f_name,
-                              basePosition=[0, 0, 0.05])
+        if hasattr(self, "robot"):
+            p.resetSimulation()
+        baseOrientation = p.getQuaternionFromEuler([0, 0, pos[2]])
+        self.robot = p.loadURDF(
+            fileName=self.f_name,
+            basePosition=[pos[0], pos[1], 0.05],
+            baseOrientation=baseOrientation,
+            flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
+        )
         # Joint indices as found by p.getJointInfo()
         # set castor wheel friction to zero
         for i in [21, 22]:
@@ -29,6 +38,22 @@ class AlbertRobot:
                 controlMode=p.VELOCITY_CONTROL,
                 force=0.0
             )
+        # set base velocity
+        v = np.zeros(2)
+        v[0] = vel[0] + vel[1]
+        v[1] = vel[0] - vel[0]
+        for i in range(2, self._n):
+            p.resetJointState(
+                self.robot,
+                self.robot_joints_control[i],
+                pos[i + 1],
+                targetVelocity=vel[i],
+            )
+        self.updateState()
+        self.apply_vel_action_wheels(v)
+        self.apply_vel_action(vel)
+        self.state[-2:] = v
+        self._vels_int = np.concatenate((self.state[-2:], self.state[13:20]))
 
     def getLimits(self):
         return (self._limitPos_j, self._limitVel_j, self._limitTor_j, self._limitAcc_j)
@@ -96,20 +121,13 @@ class AlbertRobot:
             p.setJointMotorControl2(self.robot, self.robot_joints_control[i],
                                         controlMode=p.TORQUE_CONTROL,
                                         force=torques[i])
+        self.updateState()
 
-    def apply_acc_action(self, accs):
-        q = []
-        qdot = []
-        for i in range(2, self._n):
-            pos, vel, _, _= p.getJointState(self.robot, self.robot_joints_control[i])
-            q.append(pos)
-            qdot.append(vel)
-        qddot = list(accs)
-        q = list(q)
-        qdot = list(qdot)
-        # TODO: Fails probable due to mismatch in dimension <29-09-21, mspahn> #
-        tau = p.calculateInverseDynamics(self.robot, q, qdot, qddot)
-        self.apply_torque_action(tau)
+    def apply_acc_action(self, accs, dt):
+        self._vels_int += dt * accs
+        self.apply_base_velocity(self._vels_int)
+        self.apply_vel_action(self._vels_int)
+        self.updateState()
 
     def apply_vel_action_wheels(self, vels):
         for i in range(2):
@@ -117,22 +135,45 @@ class AlbertRobot:
                                         controlMode=p.VELOCITY_CONTROL,
                                         targetVelocity=vels[i])
 
+    def apply_base_velocity(self, vels):
+        vel_left = (vels[0] - 0.5 * self._l * vels[1]) / self._r
+        vel_right = (vels[0] + 0.5 * self._l * vels[1]) / self._r
+        wheelVels = np.array([vel_right, vel_left])
+        self.apply_vel_action_wheels(wheelVels)
+
     def apply_vel_action(self, vels):
-        for i in range(self._n):
+        for i in range(2, self._n):
             p.setJointMotorControl2(self.robot, self.robot_joints_control[i],
                                         controlMode=p.VELOCITY_CONTROL,
                                         targetVelocity=vels[i])
+        self.updateState()
 
-    def get_observation(self):
+    def updateState(self):
+        # Get Base State
+        linkState = p.getLinkState(self.robot, 0, computeLinkVelocity=1)
+        posBase = np.array(
+            [
+                linkState[0][0],
+                linkState[0][1],
+                p.getEulerFromQuaternion(linkState[1])[2],
+            ]
+        )
+        velBase = np.array([linkState[6][0], linkState[6][1], linkState[7][2]])
         # Get Joint Configurations
         joint_pos_list = []
         joint_vel_list = []
-        for i in range(self._n):
-            pos, vel, _, _= p.getJointState(self.robot, self.robot_joints_control[i])
+        for i in range(2, self._n):
+            pos, vel, _, _ = p.getJointState(self.robot, self.robot_joints_control[i])
             joint_pos_list.append(pos)
             joint_vel_list.append(vel)
         joint_pos = np.array(joint_pos_list)
         joint_vel = np.array(joint_vel_list)
 
-        # Concatenate position, orientation, velocity
-        return np.concatenate((joint_pos, joint_vel))
+        # forward and rotational velocity
+        vf = np.array([np.sqrt(velBase[0] ** 2 + velBase[1] ** 2), velBase[2]])
+
+        # Concatenate position[0:10], velocity[0:10], vf[0:3]
+        self.state = np.concatenate((posBase, joint_pos, velBase, joint_vel, vf))
+
+    def get_observation(self):
+        return self.state

@@ -13,6 +13,7 @@ class TiagoRobot:
         self.setJointIdsUrdf()
         self.readLimits()
         self._r = 0.1
+        self._l = 0.4044
 
     def n(self):
         return self._n
@@ -148,15 +149,18 @@ class TiagoRobot:
                 controlMode=p.TORQUE_CONTROL,
                 force=torques[i],
             )
+        self.updateState()
 
     def apply_acc_action(self, accs, dt):
         self._vels_int += dt * accs
         self.apply_base_velocity(self._vels_int)
         self.apply_vel_action(self._vels_int)
+        self.updateState()
 
     def apply_base_velocity(self, vels):
-        vels = np.array([vels[0] + vels[1], vels[0] - vels[1]])
-        wheelVels = vels / self._r
+        vel_left = (vels[0] - 0.5 * self._l * vels[1]) / self._r
+        vel_right = (vels[0] + 0.5 * self._l * vels[1]) / self._r
+        wheelVels = np.array([vel_right, vel_left])
         self.apply_vel_action_wheels(wheelVels)
 
     def apply_vel_action_wheels(self, vels):
@@ -176,6 +180,7 @@ class TiagoRobot:
                 controlMode=p.VELOCITY_CONTROL,
                 targetVelocity=vels[i],
             )
+        self.updateState()
 
     def updateState(self):
         # Get Base State
