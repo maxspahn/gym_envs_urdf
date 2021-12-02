@@ -18,7 +18,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-	 	<mesh filename="duck_vhacd.obj" scale=".05 .05 .05"/>
+        <mesh filename="duck_vhacd.obj" scale=".05 .05 .05"/>
       </geometry>
     </collision>
   </link>

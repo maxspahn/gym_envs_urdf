@@ -6,6 +6,14 @@ In this package, generic urdf robots and a panda gym environment are available.
 
 This package depends on casadi for dynamics generation and gym.
 Dependencies should be installed through pip installation, see below.
+When using obstacles and goals, this package also depends on MotionPlanningScenes,
+see https://github.com/maxspahn/motion_planning_scenes
+
+You can either install that manually as explained in the corresponding readme or 
+you install it through
+```bash
+pip3 install -r requirements_scenes.py
+```
 
 ## Installation
 ```bash

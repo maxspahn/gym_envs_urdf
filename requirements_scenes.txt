@@ -1,4 +1,4 @@
-gym,
+gym
 numpy
 casadi 
 pybullet 
