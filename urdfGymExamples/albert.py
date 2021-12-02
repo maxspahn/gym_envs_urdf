@@ -16,6 +16,7 @@ def main():
     pos0 = np.zeros(10)
     for e in range(n_episodes):
         ob = env.reset(pos=pos0)
+        env.setWalls(limits=[[-4, -4], [4, 4]])
         print("Starting episode")
         for i in range(n_steps):
             action = env.action_space.sample()

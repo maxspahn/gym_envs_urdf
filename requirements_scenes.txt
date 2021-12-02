@@ -1,0 +1,7 @@
+gym,
+numpy
+casadi 
+pybullet 
+urdfpy
+-e git+https://github.com/maxspahn/motion_planning_scenes.git@main#egg=MotionPlanningScenes
+

@@ -160,16 +160,3 @@ class AbstractRobot(ABC):
         self._sensors.append(sensor)
         return sensor.getOSpaceSize()
 
-    def setWalls(self, limits=[[-2, -2], [2, 2]]):
-        colwallId = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0.05, 10.0, 0.5])
-        wall = [p.createMultiBody(0, colwallId, 10, [limits[0][0], 0, 0.0], p.getQuaternionFromEuler([0, 0, 0]))]
-        wall = [p.createMultiBody(0, colwallId, 10, [limits[1][0], 0, 0.0], p.getQuaternionFromEuler([0, 0, 0]))]
-        wall = [p.createMultiBody(0, colwallId, 10, [0, limits[0][1], 0.0], p.getQuaternionFromEuler([0, 0, np.pi/2]))]
-        wall = [p.createMultiBody(0, colwallId, 10, [0, limits[1][1], 0.0], p.getQuaternionFromEuler([0, 0, np.pi/2]))]
-
-    def addObstacle(self, pos, filename):
-        p.setAdditionalSearchPath(pybullet_data.getDataPath())
-        p.loadURDF(
-            fileName=filename,
-            basePosition=pos
-        )

@@ -20,6 +20,7 @@ class UrdfEnv(gym.Env):
         self._numSubSteps = 20
         self._nSteps = 0
         self._maxSteps = 10000000
+        self._obsts = []
         if self._render:
             cid = p.connect(p.SHARED_MEMORY)
             if (cid < 0):
@@ -58,8 +59,16 @@ class UrdfEnv(gym.Env):
             self.render()
         return ob, reward, self.done, {}
 
-    def addObstacle(self, pos, filename):
-        self.robot.addObstacle(pos, filename)
+    def addObstacle(self, obst):
+        self._obsts.append(obst)
+        obst.add2Bullet(p)
+
+    def setWalls(self, limits=[[-2, -2], [2, 2]]):
+        colwallId = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0.05, 10.0, 0.5])
+        p.createMultiBody(0, colwallId, 10, [limits[0][0], 0, 0.0], p.getQuaternionFromEuler([0, 0, 0]))
+        p.createMultiBody(0, colwallId, 10, [limits[1][0], 0, 0.0], p.getQuaternionFromEuler([0, 0, 0]))
+        p.createMultiBody(0, colwallId, 10, [0, limits[0][1], 0.0], p.getQuaternionFromEuler([0, 0, np.pi/2]))
+        p.createMultiBody(0, colwallId, 10, [0, limits[1][1], 0.0], p.getQuaternionFromEuler([0, 0, np.pi/2]))
 
     def addSensor(self, sensor):
         self.robot.addSensor(sensor)
@@ -67,9 +76,6 @@ class UrdfEnv(gym.Env):
             "jointStates": self.observation_space,
             "sensor1": gym.spaces.Box(-10, 10, shape=(sensor.getOSpaceSize(), )),
         })
-
-    def setWalls(self, limits=[[-2, -2], [2, 2]]):
-        self.robot.setWalls(limits)
 
     def seed(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
