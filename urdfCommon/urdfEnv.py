@@ -21,6 +21,7 @@ class UrdfEnv(gym.Env):
         self._nSteps = 0
         self._maxSteps = 10000000
         self._obsts = []
+        self._goals = []
         if self._render:
             cid = p.connect(p.SHARED_MEMORY)
             if (cid < 0):
@@ -62,6 +63,10 @@ class UrdfEnv(gym.Env):
     def addObstacle(self, obst):
         self._obsts.append(obst)
         obst.add2Bullet(p)
+
+    def addGoal(self, goal):
+        self._goals.append(goal)
+        goal.add2Bullet(p)
 
     def setWalls(self, limits=[[-2, -2], [2, 2]]):
         colwallId = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0.05, 10.0, 0.5])
