@@ -4,6 +4,7 @@ from sensors.lidar import Lidar
 import numpy as np
 
 obstacles = False
+goal = False
 
 def main():
     env = gym.make('pointRobotUrdf-acc-v0', dt=0.05, render=True)
@@ -24,6 +25,10 @@ def main():
             env.addObstacle(sphereObst1)
             env.addObstacle(sphereObst2)
             env.addObstacle(urdfObst1)
+        if goal:
+            from urdfGymExamples.goal import goal1
+
+            env.addGoal(goal1)
         print("Starting episode")
         t = 0
         for i in range(n_steps):
