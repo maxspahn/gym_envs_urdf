@@ -17,8 +17,22 @@ class AbstractRobot(ABC):
     def n(self):
         return self._n
 
-    def reset(self, pos=None, vel=None):
-        self.robot = p.loadURDF(fileName=self.fileName, basePosition=[0, 0, 0.1])
+    def reset(self, pos, vel):
+        if hasattr(self, "robot"):
+            p.resetSimulation()
+        self.robot = p.loadURDF(
+            fileName=self.fileName,
+            basePosition=[0.0, 0.0, 0.0],
+            flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
+        )
+        for i in range(self._n):
+            p.resetJointState(
+                self.robot,
+                self.robot_joints[i],
+                pos[i],
+                targetVelocity=vel[i],
+            )
+        self.updateState()
 
     @abstractmethod
     def setJointIndices(self):
