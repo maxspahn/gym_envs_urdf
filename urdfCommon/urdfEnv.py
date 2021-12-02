@@ -1,9 +1,10 @@
 import gym
-import numpy as np
 import time
+import numpy as np
 import pybullet as p
 
 from abc import abstractmethod
+from urdfCommon.plane import Plane
 
 
 class UrdfEnv(gym.Env):
@@ -25,6 +26,9 @@ class UrdfEnv(gym.Env):
                 cid = p.connect(p.GUI)
         else:
             p.connect(p.DIRECT)
+
+    def n(self):
+        return self.robot.n()
 
     @abstractmethod
     def setSpaces(self):
@@ -71,9 +75,23 @@ class UrdfEnv(gym.Env):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
         return [seed]
 
-    @abstractmethod
-    def reset(self, initialSet=False, pos=np.zeros(2), vel=np.zeros(2)):
-        pass
+    def checkInitialState(self, pos, vel):
+        if not isinstance(pos, np.ndarray) or not pos.size == self.robot.n():
+            pos = np.zeros(self.robot.n())
+        if not isinstance(vel, np.ndarray) or not vel.size == self.robot.n():
+            vel = np.zeros(self.robot.n())
+        return pos, vel
+
+    def reset(self, initialSet=False, pos=None, vel=None):
+        pos, vel = self.checkInitialState(pos, vel)
+        p.setPhysicsEngineParameter(
+            fixedTimeStep=self._dt, numSubSteps=self._numSubSteps
+        )
+        self.robot.reset(pos=pos, vel=vel)
+        self.plane = Plane()
+        p.setGravity(0, 0, -10.0)
+        p.stepSimulation()
+        return self.robot.get_observation()
 
     def render(self, mode="none"):
         time.sleep(self.dt())
