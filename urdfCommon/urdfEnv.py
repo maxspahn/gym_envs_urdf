@@ -54,6 +54,8 @@ class UrdfEnv(gym.Env):
         self.applyAction(action)
         for obst in self._obsts:
             obst.updateBulletPosition(p, t=self.t())
+        for goal in self._goals:
+            goal.updateBulletPosition(p, t=self.t())
         p.stepSimulation()
         ob = self.robot.get_observation()
 
