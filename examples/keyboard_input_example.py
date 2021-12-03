@@ -56,7 +56,6 @@ def main(conn):
     conn.send({"request_action": False,
                "kill_child": True})
 
-
 if __name__ == "__main__":
     # setup multi threading with a pipe connection
     parent_conn, child_conn = Pipe()

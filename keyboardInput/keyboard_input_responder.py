@@ -6,7 +6,6 @@ import warnings
 # there are much more reserved keys, reserved for the gym environment
 reserved_keys = ["s", "w", "g", "v", "p", Key.esc]
 
-
 class Responder:
     """
     The Responder class listens to keyboard input from the user and updates the class variable action.
