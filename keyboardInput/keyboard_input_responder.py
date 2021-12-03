@@ -6,6 +6,7 @@ import warnings
 # there are much more reserved keys, reserved for the gym environment
 reserved_keys = ["s", "w", "g", "v", "p", Key.esc]
 
+
 class Responder:
     """
     The Responder class listens to keyboard input from the user and updates the class variable action.
@@ -34,13 +35,13 @@ class Responder:
         self._action = None
 
     def _on_press_outer(self, custom_on_press=None):
-        """ Updating the class variable action on key press"""
-
+        """
+        Updating the class variable action on key press
+        :param custom_on_press: Dictionary with key action bindings
+        """
         if custom_on_press is None:
+            # default action keybindings
             def on_press(key):
-                # print("key pressed: {}".format(key))
-
-                # default action keybindings
                 if key == Key.up:
                     self.action = np.array([1.0, 0.0])
                 if key == Key.down:
@@ -50,7 +51,7 @@ class Responder:
                 if key == Key.right:
                     self.action = np.array([0.0, -1.0])
         else:
-            # add custom action keybindings
+            # custom action keybindings
             def on_press(key):
                 for custom_key in custom_on_press:
                     if key == custom_key:
@@ -58,13 +59,13 @@ class Responder:
         return on_press
 
     def _on_release_outer(self, custom_on_release=None):
-        """ Updating the class variable action to default action on key release"""
-
+        """
+        Updating the class variable action to default action on key release
+        :param custom_on_release: Dictionary with key action bindings
+        """
         if custom_on_release is None:
             # default action keybindings
             def on_press(key):
-                # print("key released: {}".format(key))
-
                 self.action = self.defaultAction
         else:
             # custom action keybindings
@@ -107,7 +108,7 @@ class Responder:
         # warn if a reserved key is in the custom_on_release keys
         if custom_on_release is not None:
             if len([key for key in reserved_keys if key in custom_on_release.keys()]) > 0:
-                    warnings.warn("reserved key used for control")
+                warnings.warn("reserved key used for control")
 
         # setup keyboard listener
         listener = keyboard.Listener(

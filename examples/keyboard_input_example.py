@@ -8,7 +8,8 @@ from pynput.keyboard import Key
 
 
 def main(conn):
-    env = gym.make('tiago-reacher-vel-v0', dt=0.01, render=True)
+    # copy of examples/tiago.py
+    env = gym.make("tiago-reacher-vel-v0", dt=0.01, render=True)
     defaultAction = np.zeros(env.n())
     defaultAction[0:2] = np.array([1.0, 0.0])
     defaultAction[10] = 0.0
@@ -42,7 +43,6 @@ def main(conn):
 
         action = defaultAction
         for i in range(n_steps):
-
             # request and receive action
             conn.send({"request_action": True, "kill_child": False})
             keyboard_data = conn.recv()
@@ -57,7 +57,7 @@ def main(conn):
                "kill_child": True})
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # setup multi threading with a pipe connection
     parent_conn, child_conn = Pipe()
 
@@ -74,7 +74,9 @@ if __name__ == '__main__':
                        Key.left: np.array([1.0, 1.0]),
                        Key.right: np.array([-1.0, -1.0])}
 
-    responder.setup(custom_on_press=custom_on_press)
+    responder.setup()
+    # responder.setup(custom_on_press=custom_on_press)
+
     # start child process which keeps responding/looping
     responder.start(p)
 
