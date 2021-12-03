@@ -12,6 +12,7 @@ class UrdfEnv(gym.Env):
 
     def __init__(self, robot, render=False, dt=0.01):
         self._dt = dt
+        self._t = 0.0
         self.np_random, _ = gym.utils.seeding.np_random()
         self.robot = robot
         self._render = render
@@ -43,10 +44,16 @@ class UrdfEnv(gym.Env):
     def dt(self):
         return self._dt
 
+    def t(self):
+        return self._t
+
     def step(self, action):
+        self._t += self.dt()
         # Feed action to the robot and get observation of robot's state
         self._nSteps += 1
         self.applyAction(action)
+        for obst in self._obsts:
+            obst.updateBulletPosition(p, t=self.t())
         p.stepSimulation()
         ob = self.robot.get_observation()
 
@@ -94,6 +101,7 @@ class UrdfEnv(gym.Env):
         return pos, vel
 
     def reset(self, initialSet=False, pos=None, vel=None):
+        self._t = 0.0
         pos, vel = self.checkInitialState(pos, vel)
         p.setPhysicsEngineParameter(
             fixedTimeStep=self._dt, numSubSteps=self._numSubSteps

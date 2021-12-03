@@ -1,5 +1,6 @@
 from MotionPlanningEnv.sphereObstacle import SphereObstacle
 from MotionPlanningEnv.urdfObstacle import UrdfObstacle
+from MotionPlanningEnv.dynamicSphereObstacle import DynamicSphereObstacle
 
 import os
 
@@ -23,3 +24,9 @@ urdfObst1Dict = {
     'urdf': os.path.join(os.path.dirname(__file__), 'obstacleData/duck.urdf'),
 }
 urdfObst1 = UrdfObstacle(name='duckUrdf', contentDict=urdfObst1Dict)
+dynamicObst1Dict = {
+    "dim": 3,
+    "type": "sphere",
+    "geometry": {"trajectory": ['2.0 - 0.1 * t', '-0.0', '0.1'], "radius": 0.2},
+}
+dynamicSphereObst1 = DynamicSphereObstacle(name="simpleSphere", contentDict=dynamicObst1Dict)
