@@ -49,8 +49,6 @@ def main(conn):
 
             action[0:2] = keyboard_data["action"]
 
-            # print("from main loop: {}".format(i))
-
             ob, reward, done, info = env.step(action)
             cumReward += reward
 
@@ -70,12 +68,13 @@ if __name__ == '__main__':
     # create Responder object
     responder = Responder(child_conn)
 
+    # unlogical key bindings
     custom_on_press = {Key.up: np.array([-1.0, 0.0]),
                        Key.down: np.array([1.0, 0.0]),
-                       Key.left: np.array([0.0, 1.0]),
-                       Key.right: np.array([0.0, -1.0])}
+                       Key.left: np.array([1.0, 1.0]),
+                       Key.right: np.array([-1.0, -1.0])}
 
-    responder.setup()
+    responder.setup(custom_on_press=custom_on_press)
     # start child process which keeps responding/looping
     responder.start(p)
 

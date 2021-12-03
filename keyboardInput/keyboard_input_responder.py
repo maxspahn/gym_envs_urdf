@@ -1,7 +1,10 @@
 from pynput import keyboard
 from pynput.keyboard import Key
 import numpy as np
+import warnings
 
+# there are much more reserved keys, reserved for the gym environment
+reserved_keys = ["s", "w", "g", "v", "p", Key.esc]
 
 class Responder:
     """
@@ -26,12 +29,11 @@ class Responder:
         """
         :param child_conn: Pipe connection to the parent process
         """
+        self._conn = child_conn
+        self._defaultAction = None
+        self._action = None
 
-        self.__conn = child_conn
-        self.__defaultAction = None
-        self.__action = None
-
-    def __on_press_outer(self, custom_on_press=None):
+    def _on_press_outer(self, custom_on_press=None):
         """ Updating the class variable action on key press"""
 
         if custom_on_press is None:
@@ -39,68 +41,78 @@ class Responder:
                 # print("key pressed: {}".format(key))
 
                 # default action keybindings
-                if key == 'w' or key == Key.up:
-                    self.__action = np.array([1.0, 0.0])
-                if key == 's' or key == Key.down:
-                    self.__action = np.array([-1.0, 0.0])
-                if key == 'a' or key == Key.left:
-                    self.__action = np.array([0.0, 1.0])
-                if key == 'd' or key == Key.right:
-                    self.__action = np.array([0.0, -1.0])
+                if key == Key.up:
+                    self.action = np.array([1.0, 0.0])
+                if key == Key.down:
+                    self.action = np.array([-1.0, 0.0])
+                if key == Key.left:
+                    self.action = np.array([0.0, 1.0])
+                if key == Key.right:
+                    self.action = np.array([0.0, -1.0])
         else:
             # add custom action keybindings
             def on_press(key):
                 for custom_key in custom_on_press:
                     if key == custom_key:
-                        self.__action = custom_on_press[custom_key]
+                        self.action = custom_on_press[custom_key]
         return on_press
 
-    def __on_release_outer(self, custom_on_release=None):
+    def _on_release_outer(self, custom_on_release=None):
         """ Updating the class variable action to default action on key release"""
 
         if custom_on_release is None:
             # default action keybindings
             def on_press(key):
                 # print("key released: {}".format(key))
-                self.__action = self.__defaultAction
+
+                self.action = self.defaultAction
         else:
             # custom action keybindings
             def on_press(key):
                 for custom_key in custom_on_release:
                     if key == custom_key:
-                        self.__action = custom_on_release[custom_key]
+                        self.action = custom_on_release[custom_key]
         return on_press
 
     def respond(self):
         """ Respond to request with the latest action """
 
         # receive request
-        request = self.__conn.recv()
+        request = self.conn.recv()
         if request["request_action"]:
             # send action
-            self.__conn.send({"action": self.__action})
+            self.conn.send({"action": self._action})
         elif request["kill_child"]:
             raise Exception
         else:
-            # TODO: could request different kinds of actions
             raise Exception("Cannot handle action request")
 
     def setup(self, defaultAction=np.array([0.0, 0.0]), custom_on_press=None, custom_on_release=None):
         """
         Setup responder, optionally set defaultaction and custom action keybindings
 
-        :param defaultAction:   Default action when no action is specified
-        :param custom_on_press:     custom on press callback function for key bindings
-        :param custom_on_release:   custom on release callback function for key bindings
+        :param defaultAction:       Default action when no action is specified
+        :param custom_on_press:     Custom on press callback function for key bindings
+        :param custom_on_release:   Custom on release callback function for key bindings
         :return:
         """
-        self.__defaultAction = defaultAction
-        self.__action = defaultAction
+        self.defaultAction = defaultAction
+        self.action = defaultAction
+
+        # warn if a reserved key is in the custom_on_press keys
+        if custom_on_press is not None:
+            if len([key for key in reserved_keys if key in custom_on_press.keys()]) > 0:
+                warnings.warn("reserved key used for control")
+
+        # warn if a reserved key is in the custom_on_release keys
+        if custom_on_release is not None:
+            if len([key for key in reserved_keys if key in custom_on_release.keys()]) > 0:
+                    warnings.warn("reserved key used for control")
 
         # setup keyboard listener
         listener = keyboard.Listener(
-            on_press=self.__on_press_outer(custom_on_press),
-            on_release=self.__on_release_outer(custom_on_release)
+            on_press=self._on_press_outer(custom_on_press),
+            on_release=self._on_release_outer(custom_on_release)
         )
         # start listening to keyboard input
         listener.start()
@@ -110,21 +122,32 @@ class Responder:
         start with responding to keyboard input
 
         :param p: Parent process
-        :return:
         """
 
-        # while parent process is alive
+        # while parent process is alive, keep on responding
         while p.is_alive():
             try:
                 self.respond()
             except Exception:
                 return
 
-    # TODO: proper way of getters and setter for private class variables
-    # @property
-    # def action(self):
-    #     return self.__action
-    #
-    # @action.setter
-    # def action(self, value):
-    #     self.__action = value
+    # getters and setters
+    @property
+    def conn(self):
+        return self._conn
+
+    @property
+    def defaultAction(self):
+        return self._defaultAction
+
+    @defaultAction.setter
+    def defaultAction(self, value):
+        self._defaultAction = value
+
+    @property
+    def action(self):
+        return self._action
+
+    @action.setter
+    def action(self, value):
+        self._action = value
