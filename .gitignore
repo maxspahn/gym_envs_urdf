@@ -1,7 +1,2 @@
 urdfEnvs.egg-info/
 *.swp
-
-# ignore intellij config files
-.idea
-idea/
-
