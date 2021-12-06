@@ -16,10 +16,10 @@ def main():
     for e in range(n_episodes):
         ob = env.reset()
         if goal:
-            from urdfGymExamples.goal import dynamicGoal
+            from urdfGymExamples.sceneObjects.goal import dynamicGoal
             env.addGoal(dynamicGoal)
         if obstacles:
-            from urdfGymExamples.obstacles import dynamicSphereObst2
+            from urdfGymExamples.sceneObjects.obstacles import dynamicSphereObst2
             env.addObstacle(dynamicSphereObst2)
         print("Starting episode")
         for i in range(n_steps):
