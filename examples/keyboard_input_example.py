@@ -9,18 +9,20 @@ from pynput.keyboard import Key
 
 def main(conn):
     # copy of examples/tiago.py
-    env = gym.make("tiago-reacher-vel-v0", dt=0.01, render=True)
+    env = gym.make("tiago-reacher-vel-v0", dt=0.05, render=True)
     n_steps = 1000
     pos0 = np.zeros(20)
     vel0 = np.zeros(19)
     ob = env.reset(pos=pos0, vel=vel0)
 
+    # create zero input action
     action = np.zeros(env.n())
     for i in range(n_steps):
         # request and receive action
         conn.send({"request_action": True, "kill_child": False})
         keyboard_data = conn.recv()
 
+        # update action matrix
         action[0:2] = keyboard_data["action"]
 
         ob, reward, done, info = env.step(action)
@@ -33,21 +35,24 @@ if __name__ == "__main__":
     # setup multi threading with a pipe connection
     parent_conn, child_conn = Pipe()
 
-    # create and start parent process
+    # create parent process
     p = Process(target=main, args=(parent_conn,))
-    p.start()
+
 
     # create Responder object
     responder = Responder(child_conn)
 
     # unlogical key bindings
-    custom_on_press = {Key.up: np.array([-1.0, 0.0]),
-                       Key.down: np.array([1.0, 0.0]),
-                       Key.left: np.array([1.0, 1.0]),
-                       Key.right: np.array([-1.0, -1.0])}
+    custom_on_press = {Key.left: np.array([-1.0, 0.0]),
+                       Key.space: np.array([1.0, 0.0]),
+                       Key.page_down: np.array([1.0, 1.0]),
+                       Key.page_up: np.array([-1.0, -1.0])}
 
     responder.setup(defaultAction=np.array([1.0, 0.0]))
     # responder.setup(custom_on_press=custom_on_press)
+
+    # start parent process
+    p.start()
 
     # start child process which keeps responding/looping
     responder.start(p)

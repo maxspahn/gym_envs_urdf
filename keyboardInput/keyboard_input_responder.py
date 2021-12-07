@@ -3,8 +3,11 @@ from pynput.keyboard import Key
 import numpy as np
 import warnings
 
-# there are much more reserved keys, reserved for the gym environment
-reserved_keys = ["s", "w", "g", "v", "p", Key.esc]
+# reserved keys are detected, but not executed by the gym environment 
+reserved_keys = [Key.esc,"q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "a", "s", "d", "f", "g", "h", "j", "k", "l",
+                 "z", "x", "c", "v", "b", "n", "m", "<", ",", ">", ".", "/", "?", ":", ";", "'", "[", "]", "{", "}", "\", "
+                 "|", "`", "~", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "_", "-", "=", "+", "!", "@", "#", "$",
+                 "%", "^", "&", "*", "(", ")"]
 
 class Responder:
     """
@@ -52,6 +55,7 @@ class Responder:
         else:
             # custom action keybindings
             def on_press(key):
+                # print("key pressed: {}".format(key))
                 for custom_key in custom_on_press:
                     if key == custom_key:
                         self.action = custom_on_press[custom_key]
