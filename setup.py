@@ -10,6 +10,7 @@ setup(
                       'urdfpy'],
     extras_require={
         'keyboard_input': ['pynput',
-                           'multiprocess']
+                           'multiprocess'],
+	'scenes': ['MotionPlanningScenes']
     }
 )
