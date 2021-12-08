@@ -2,17 +2,25 @@ import gym
 import pandaReacher
 import numpy as np
 
+goal = False
+obstacles = False
+
 
 def main():
     gripper = True
     env = gym.make('panda-reacher-acc-v0', dt=0.01, render=True, gripper=gripper)
-    #env = gym.make('panda-reacher-vel-v0', dt=0.01, render=True, gripper=gripper)
     defaultAction = np.ones(9) * 0.0
     n_episodes = 1
-    n_steps = 1000
+    n_steps = 100000
     cumReward = 0.0
     for e in range(n_episodes):
         ob = env.reset()
+        if goal:
+            from urdfGymExamples.sceneObjects.goal import dynamicGoal
+            env.addGoal(dynamicGoal)
+        if obstacles:
+            from urdfGymExamples.sceneObjects.obstacles import dynamicSphereObst2
+            env.addObstacle(dynamicSphereObst2)
         print("Starting episode")
         for i in range(n_steps):
             if (int(i/100))%2 == 0:
