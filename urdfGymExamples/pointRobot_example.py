@@ -6,6 +6,7 @@ import numpy as np
 obstacles = False
 goal = False
 
+
 def main():
     env = gym.make('pointRobotUrdf-acc-v0', dt=0.05, render=True)
     lidar = Lidar(4, nbRays=4)
@@ -20,16 +21,16 @@ def main():
         ob = env.reset(pos=pos0, vel=vel0)
         env.setWalls(limits=[[-3, -2], [3, 2]])
         if obstacles:
-            from urdfGymExamples.sceneObjects.obstacles import sphereObst1, sphereObst2, urdfObst1, dynamicSphereObst1
+            from urdfGymExamples.sceneObjects.obstacles import sphereObst1, sphereObst2, urdfObst1, dynamicSphereObst3
 
             env.addObstacle(sphereObst1)
             env.addObstacle(sphereObst2)
             env.addObstacle(urdfObst1)
-            env.addObstacle(dynamicSphereObst1)
+            env.addObstacle(dynamicSphereObst3)
         if goal:
-            from urdfGymExamples.sceneObjects.goal import goal1
+            from urdfGymExamples.sceneObjects.goal import splineGoal
 
-            env.addGoal(goal1)
+            env.addGoal(splineGoal)
         print("Starting episode")
         t = 0
         for i in range(n_steps):
