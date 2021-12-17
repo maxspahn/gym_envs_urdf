@@ -516,6 +516,20 @@ in the right frame w.r.t the ground. -->
     <child link="imu_link"/>
     <origin rpy="0 0 -0.78539816339744828" xyz="0.191959 -0.086412 0.18455965360"/>
   </joint>
+  <link name="ee_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.0625"/>
+      </geometry>
+      <material name="Boxer_Red"/>
+    </visual>
+  </link>
+  <joint name="ee_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.6 0 0"/>
+    <parent link="base_link"/>
+    <child link="ee_link"/>
+  </joint>
   <!-- end for simulation -->
 </robot>
 
