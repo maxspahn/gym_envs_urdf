@@ -42,8 +42,8 @@
   </material>
   <link name="chassis_link">
     <inertial>
-      <origin rpy="1.5708 0 0" xyz="0 0 0.07"/>
-      <mass value="51"/>
+      <origin rpy="0 0 0" xyz="0 0 0.07"/>
+      <mass value="250"/>
       <inertia ixx="2.3" ixy="0" ixz="0" iyy="3.35" iyz="0.00" izz="1.22"/>
     </inertial>
     <visual>
@@ -62,220 +62,11 @@
       </geometry>
     </collision>
   </link>
-  <link name="internal_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0.19 -0.031"/>
-      <mass value="31"/>
-      <inertia ixx="1.19" ixy="0" ixz="0" iyy="1.82" iyz="0.0" izz="0.68"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/visual/internal_link.dae"/>
-      </geometry>
-      <material name="Boxer_DarkGrey"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <!-- Mesh is scaled down slightly in length, to mitigate collision with laser rays due to slow physics updates  -->
-        <!-- (The z axis is scaled since the whole model is rotated at the joint, and collision model resolution isn't
-      very smart.) -->
-        <mesh filename="meshes/collision/internal_link.STL"/>
-      </geometry>
-    </collision>
-  </link>
-  <joint name="internal_joint" type="fixed">
-    <origin rpy="1.5708 0 0" xyz="0 0 0"/>
-    <parent link="chassis_link"/>
-    <child link="internal_link"/>
-    <axis xyz="0 0 0"/>
-  </joint>
-  <link name="lift_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0.076 0"/>
-      <mass value="10"/>
-      <inertia ixx="0.47" ixy="0" ixz="0" iyy="0.74" iyz="0" izz="0.29"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/visual/lift_link.dae"/>
-      </geometry>
-      <material name="">
-        <color rgba="0.8 0.8 0.9 1"/>
-      </material>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/collision/lift_link.STL"/>
-      </geometry>
-    </collision>
-  </link>
-  <joint name="lift_joint" type="prismatic">
-    <origin rpy="1.5708 0 0" xyz="0 0 0.177"/>
-    <parent link="chassis_link"/>
-    <child link="lift_link"/>
-    <axis xyz="0 1 0"/>
-    <limit effort="10000.0" lower="0" upper="0.078" velocity="0.02"/>
-    <dynamics damping="100.0" friction="100"/>
-  </joint>
-  <link name="top_mount_bottom">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="10"/>
-      <inertia ixx="0.50" ixy="0" ixz="0" iyy="0.50" iyz="0" izz="1.00"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/collision/top_plate.stl"/>
-      </geometry>
-      <material name="Boxer_DarkGrey"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/collision/top_plate_collision.stl"/>
-      </geometry>
-    </collision>
-  </link>
-  <joint name="top_mount_bottom_joint" type="fixed">
-    <origin rpy="0 -1.5707 -1.5707" xyz="0 0.1125 0"/>
-    <parent link="lift_link"/>
-    <child link="top_mount_bottom"/>
-  </joint>
-  <link name="extrusion1">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.50" ixy="0" ixz="0" iyy="0.50" iyz="0" izz="0.20"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/collision/extrusion.stl"/>
-      </geometry>
-      <material name="Boxer_DarkGrey"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/collision/extrusion.stl"/>
-      </geometry>
-    </collision>
-  </link>
-  <joint name="extrusion1_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="-0.2785 0.1835 0"/>
-    <parent link="top_mount_bottom"/>
-    <child link="extrusion1"/>
-  </joint>
-  <link name="extrusion2">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.50" ixy="0" ixz="0" iyy="0.50" iyz="0" izz="0.20"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/collision/extrusion.stl"/>
-      </geometry>
-      <material name="Boxer_DarkGrey"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/collision/extrusion.stl"/>
-      </geometry>
-    </collision>
-  </link>
-  <joint name="extrusion2_joint" type="fixed">
-    <origin rpy="0 0 -1.5707" xyz="0.2785 0.1835 0"/>
-    <parent link="top_mount_bottom"/>
-    <child link="extrusion2"/>
-  </joint>
-  <link name="extrusion3">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.50" ixy="0" ixz="0" iyy="0.50" iyz="0" izz="0.20"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/collision/extrusion.stl"/>
-      </geometry>
-      <material name="Boxer_DarkGrey"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/collision/extrusion.stl"/>
-      </geometry>
-    </collision>
-  </link>
-  <joint name="extrusion3_joint" type="fixed">
-    <origin rpy="0 0 3.1414" xyz="0.2785 -0.1835 0"/>
-    <parent link="top_mount_bottom"/>
-    <child link="extrusion3"/>
-  </joint>
-  <link name="extrusion4">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.50" ixy="0" ixz="0" iyy="0.50" iyz="0" izz="0.20"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/collision/extrusion.stl"/>
-      </geometry>
-      <material name="Boxer_DarkGrey"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/collision/extrusion.stl"/>
-      </geometry>
-    </collision>
-  </link>
-  <joint name="extrusion4_joint" type="fixed">
-    <origin rpy="0 0 1.5707" xyz="-0.2785 -0.1835 0"/>
-    <parent link="top_mount_bottom"/>
-    <child link="extrusion4"/>
-  </joint>
-  <link name="top_mount">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="10"/>
-      <inertia ixx="0.50" ixy="0" ixz="0" iyy="0.50" iyz="0" izz="1.00"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/collision/top_plate.stl"/>
-      </geometry>
-      <material name="Boxer_DarkGrey"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/collision/top_plate_collision.stl"/>
-      </geometry>
-    </collision>
-  </link>
   <!-- 0.27 in z direction because extrusion is 0.30, and plate is 0.1 -->
-  <joint name="top_mount_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.2785 -0.1835 0.31"/>
-    <parent link="extrusion1"/>
-    <child link="top_mount"/>
-  </joint>
   <link name="rotacastor_right_link">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="100"/>
+      <mass value="1"/>
       <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
     </inertial>
     <visual>
@@ -302,7 +93,7 @@
   <link name="rotacastor_left_link">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="100"/>
+      <mass value="1"/>
       <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
     </inertial>
     <visual>
@@ -329,7 +120,7 @@
   <link name="wheel_right_link">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="100"/>
+      <mass value="10"/>
       <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
     </inertial>
     <visual>
@@ -357,7 +148,7 @@
   <link name="wheel_left_link">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="100"/>
+      <mass value="10"/>
       <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
     </inertial>
     <visual>
@@ -392,129 +183,9 @@ to be that way. -->
     </inertial>
   </link>
   <joint name="base_chassis_joint" type="fixed">
-    <origin rpy="0 0 1.5708" xyz="0.15 0 0"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
     <parent link="base_link"/>
     <child link="chassis_link"/>
-  </joint>
-  <!-- Projection of base_link on the ground to get the 3D data
-in the right frame w.r.t the ground. -->
-  <link name="base_footprint">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <joint name="base_footprint_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 -0.08"/>
-    <parent link="base_link"/>
-    <child link="base_footprint"/>
-  </joint>
-  <!-- Link for the position of the laser. -->
-  <link name="front_laser">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <joint name="base_laser_joint" type="fixed">
-    <!-- LIDAR is moved forward slightly, from 0.407, to mitigate collision with internal_link due to slow physics updates  -->
-    <origin rpy="3.14159 0 0" xyz="0.44 0 0.172"/>
-    <parent link="base_link"/>
-    <child link="front_laser"/>
-  </joint>
-  <!-- Stereo camera link to base_link. -->
-  <link name="stereo">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <joint name="stereo_camera_joint" type="fixed">
-    <origin rpy="3.14159 0 0" xyz="0.4884 0 0.05465"/>
-    <parent link="base_link"/>
-    <child link="stereo"/>
-  </joint>
-  <link name="stereo_left">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <joint name="stereo_left_joint" type="fixed">
-    <origin rpy="-1.570796327 0 -1.570796327" xyz="0 0.060 0"/>
-    <parent link="stereo"/>
-    <child link="stereo_left"/>
-  </joint>
-  <link name="stereo_right">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <joint name="stereo_right_joint" type="fixed">
-    <origin rpy="-1.570796327 0 -1.570796327" xyz="0 -0.060 0"/>
-    <parent link="stereo"/>
-    <child link="stereo_right"/>
-  </joint>
-  <!-- Sonar links to base link joints -->
-  <link name="rear_left_sonar_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <joint name="rear_left_sonar_joint" type="fixed">
-    <origin rpy="0 0 3.14159" xyz="-0.2043 0.150 0.157"/>
-    <parent link="base_link"/>
-    <child link="rear_left_sonar_link"/>
-  </joint>
-  <link name="rear_right_sonar_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <transmission name="wheel_left_transmission">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="wheel_left_joint">
-      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="wheel_left_actuator">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-  <transmission name="wheel_right_transmission">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="wheel_right_joint">
-      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="wheel_right_actuator">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-  <joint name="rear_right_sonar_joint" type="fixed">
-    <origin rpy="0 0 3.141597" xyz="-0.2043 -0.150 0.157"/>
-    <parent link="base_link"/>
-    <child link="rear_right_sonar_link"/>
-  </joint>
-  <link name="imu_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="10"/>
-      <inertia ixx="0.50" ixy="0" ixz="0" iyy="0.50" iyz="0" izz="1.00"/>
-    </inertial>
-  </link>
-  <joint name="imu_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="imu_link"/>
-    <origin rpy="0 0 -0.78539816339744828" xyz="0.191959 -0.086412 0.18455965360"/>
   </joint>
   <link name="ee_link">
     <visual>
@@ -526,7 +197,7 @@ in the right frame w.r.t the ground. -->
     </visual>
   </link>
   <joint name="ee_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.6 0 0"/>
+    <origin rpy="0 0 0" xyz="0 -0.4 0"/>
     <parent link="base_link"/>
     <child link="ee_link"/>
   </joint>
