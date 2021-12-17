@@ -59,6 +59,13 @@ class AbstractRobot(ABC):
     def setAccLimits(self):
         pass
 
+    def getIndexedJointInfo(self):
+        indexedJointInfo = {}
+        for i in range(p.getNumJoints(self.robot)):
+            jointInfo = p.getJointInfo(self.robot, i)
+            indexedJointInfo[jointInfo[0]] = jointInfo[1]
+        return indexedJointInfo
+
     def getLimits(self):
         return (self._limitPos_j, self._limitVel_j, self._limitTor_j)
 
