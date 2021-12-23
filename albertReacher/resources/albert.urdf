@@ -40,18 +40,10 @@
   <material name="Boxer_GreyTransparent">
     <color rgba="0.5 0.5 0.5 0.5"/>
   </material>
-  <!-- end for simulation -->
-  <!--xacro:panda_arm /-->
-  <!--xacro:hand ns="panda" rpy="0 0 ${-pi/4}" connected_to="panda_link8"/-->
-  <!-- for simulation -->
-  <!--xacro:arg name="robot_name" default="panda"/-->
-  <!--xacro:panda_gazebo robot_name="$(arg robot_name)" /-->
-  <!--xacro:panda_transmission robot_name="$(arg robot_name)" load_hand="true" /-->
-  <!-- end for simulation -->
   <link name="chassis_link">
     <inertial>
-      <origin rpy="1.5708 0 0" xyz="0 0 0.07"/>
-      <mass value="51"/>
+      <origin rpy="0 0 0" xyz="0 0 0.07"/>
+      <mass value="250"/>
       <inertia ixx="2.3" ixy="0" ixz="0" iyy="3.35" iyz="0.00" izz="1.22"/>
     </inertial>
     <visual>
@@ -121,7 +113,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="lift_joint" type="prismatic">
+  <joint name="lift_joint" type="fixed">
     <origin rpy="1.5708 0 0" xyz="0 0 0.177"/>
     <parent link="chassis_link"/>
     <child link="lift_link"/>
@@ -283,7 +275,7 @@
   <link name="rotacastor_right_link">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="100"/>
+      <mass value="1"/>
       <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
     </inertial>
     <visual>
@@ -310,7 +302,7 @@
   <link name="rotacastor_left_link">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="100"/>
+      <mass value="1"/>
       <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
     </inertial>
     <visual>
@@ -400,136 +392,15 @@ to be that way. -->
     </inertial>
   </link>
   <joint name="base_chassis_joint" type="fixed">
-    <origin rpy="0 0 1.5708" xyz="0.15 0 0"/>
+    <origin rpy="0 0 0" xyz="0.0 0 0"/>
     <parent link="base_link"/>
     <child link="chassis_link"/>
-  </joint>
-  <!-- Projection of base_link on the ground to get the 3D data
-in the right frame w.r.t the ground. -->
-  <link name="base_footprint">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <joint name="base_footprint_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 -0.08"/>
-    <parent link="base_link"/>
-    <child link="base_footprint"/>
-  </joint>
-  <!-- Link for the position of the laser. -->
-  <link name="front_laser">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <joint name="base_laser_joint" type="fixed">
-    <!-- LIDAR is moved forward slightly, from 0.407, to mitigate collision with internal_link due to slow physics updates  -->
-    <origin rpy="3.14159 0 0" xyz="0.44 0 0.172"/>
-    <parent link="base_link"/>
-    <child link="front_laser"/>
-  </joint>
-  <!-- Stereo camera link to base_link. -->
-  <link name="stereo">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <joint name="stereo_camera_joint" type="fixed">
-    <origin rpy="3.14159 0 0" xyz="0.4884 0 0.05465"/>
-    <parent link="base_link"/>
-    <child link="stereo"/>
-  </joint>
-  <link name="stereo_left">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <joint name="stereo_left_joint" type="fixed">
-    <origin rpy="-1.570796327 0 -1.570796327" xyz="0 0.060 0"/>
-    <parent link="stereo"/>
-    <child link="stereo_left"/>
-  </joint>
-  <link name="stereo_right">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <joint name="stereo_right_joint" type="fixed">
-    <origin rpy="-1.570796327 0 -1.570796327" xyz="0 -0.060 0"/>
-    <parent link="stereo"/>
-    <child link="stereo_right"/>
-  </joint>
-  <!-- Sonar links to base link joints -->
-  <link name="rear_left_sonar_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <joint name="rear_left_sonar_joint" type="fixed">
-    <origin rpy="0 0 3.14159" xyz="-0.2043 0.150 0.157"/>
-    <parent link="base_link"/>
-    <child link="rear_left_sonar_link"/>
-  </joint>
-  <link name="rear_right_sonar_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
-  <transmission name="wheel_left_transmission">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="wheel_left_joint">
-      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="wheel_left_actuator">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-  <transmission name="wheel_right_transmission">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="wheel_right_joint">
-      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="wheel_right_actuator">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-  <joint name="rear_right_sonar_joint" type="fixed">
-    <origin rpy="0 0 3.141597" xyz="-0.2043 -0.150 0.157"/>
-    <parent link="base_link"/>
-    <child link="rear_right_sonar_link"/>
-  </joint>
-  <link name="imu_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="10"/>
-      <inertia ixx="0.50" ixy="0" ixz="0" iyy="0.50" iyz="0" izz="1.00"/>
-    </inertial>
-  </link>
-  <joint name="imu_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="imu_link"/>
-    <origin rpy="0 0 -0.78539816339744828" xyz="0.191959 -0.086412 0.18455965360"/>
   </joint>
   <joint name="mmrobot_joint_top_mount" type="fixed">
     <parent link="top_mount"/>
     <child link="mmrobot_link0"/>
     <origin rpy="0 0 0" xyz="-0.15 0 0"/>
   </joint>
-  <!-- end for simulation -->
   <link name="mmrobot_link0">
     <visual>
       <geometry>
@@ -541,13 +412,11 @@ in the right frame w.r.t the ground. -->
         <mesh filename="meshes/collision/link0.stl"/>
       </geometry>
     </collision>
-    <!-- for simulation -->
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="3.06"/>
       <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
     </inertial>
-    <!-- end for simulation -->
   </link>
   <link name="mmrobot_link1">
     <visual>
@@ -560,13 +429,11 @@ in the right frame w.r.t the ground. -->
         <mesh filename="meshes/collision/link1.stl"/>
       </geometry>
     </collision>
-    <!-- for simulation -->
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="2.34"/>
       <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
     </inertial>
-    <!-- end for simulation -->
   </link>
   <joint name="mmrobot_joint1" type="revolute">
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
@@ -575,9 +442,7 @@ in the right frame w.r.t the ground. -->
     <child link="mmrobot_link1"/>
     <axis xyz="0 0 1"/>
     <limit effort="87" lower="-2.8973" upper="2.8973" velocity="2.1750"/>
-    <!-- for simulation -->
     <dynamics damping="1.0"/>
-    <!-- end for simulation -->
   </joint>
   <link name="mmrobot_link2">
     <visual>
@@ -590,13 +455,11 @@ in the right frame w.r.t the ground. -->
         <mesh filename="meshes/collision/link2.stl"/>
       </geometry>
     </collision>
-    <!-- for simulation -->
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="2.36"/>
       <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
     </inertial>
-    <!-- end for simulation -->
   </link>
   <joint name="mmrobot_joint2" type="revolute">
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-1.7628" soft_upper_limit="1.7628"/>
@@ -605,9 +468,7 @@ in the right frame w.r.t the ground. -->
     <child link="mmrobot_link2"/>
     <axis xyz="0 0 1"/>
     <limit effort="87" lower="-1.7628" upper="1.7628" velocity="2.1750"/>
-    <!-- for simulation -->
     <dynamics damping="1.0"/>
-    <!-- end for simulation -->
   </joint>
   <link name="mmrobot_link3">
     <visual>
@@ -620,13 +481,11 @@ in the right frame w.r.t the ground. -->
         <mesh filename="meshes/collision/link3.stl"/>
       </geometry>
     </collision>
-    <!-- for simulation -->
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="2.38"/>
       <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
     </inertial>
-    <!-- end for simulation -->
   </link>
   <joint name="mmrobot_joint3" type="revolute">
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
@@ -635,9 +494,7 @@ in the right frame w.r.t the ground. -->
     <child link="mmrobot_link3"/>
     <axis xyz="0 0 1"/>
     <limit effort="87" lower="-2.8973" upper="2.8973" velocity="2.1750"/>
-    <!-- for simulation -->
     <dynamics damping="1.0"/>
-    <!-- end for simulation -->
   </joint>
   <link name="mmrobot_link4">
     <visual>
@@ -650,13 +507,11 @@ in the right frame w.r.t the ground. -->
         <mesh filename="meshes/collision/link4.stl"/>
       </geometry>
     </collision>
-    <!-- for simulation -->
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="2.43"/>
       <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
     </inertial>
-    <!-- end for simulation -->
   </link>
   <joint name="mmrobot_joint4" type="revolute">
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-1.50100" soft_upper_limit="1.500996"/>
@@ -665,9 +520,7 @@ in the right frame w.r.t the ground. -->
     <child link="mmrobot_link4"/>
     <axis xyz="0 0 1"/>
     <limit effort="87" lower="-3.0718" upper="0.0698" velocity="2.1750"/>
-    <!-- for simulation -->
     <dynamics damping="1.0"/>
-    <!-- end for simulation -->
   </joint>
   <link name="mmrobot_link5">
     <visual>
@@ -680,13 +533,11 @@ in the right frame w.r.t the ground. -->
         <mesh filename="meshes/collision/link5.stl"/>
       </geometry>
     </collision>
-    <!-- for simulation -->
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="3.5"/>
       <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
     </inertial>
-    <!-- end for simulation -->
   </link>
   <joint name="mmrobot_joint5" type="revolute">
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
@@ -695,9 +546,7 @@ in the right frame w.r.t the ground. -->
     <child link="mmrobot_link5"/>
     <axis xyz="0 0 1"/>
     <limit effort="12" lower="-2.8973" upper="2.8973" velocity="2.6100"/>
-    <!-- for simulation -->
     <dynamics damping="1.0"/>
-    <!-- end for simulation -->
   </joint>
   <link name="mmrobot_link6">
     <visual>
@@ -710,13 +559,11 @@ in the right frame w.r.t the ground. -->
         <mesh filename="meshes/collision/link6.stl"/>
       </geometry>
     </collision>
-    <!-- for simulation -->
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="1.47"/>
       <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
     </inertial>
-    <!-- end for simulation -->
   </link>
   <joint name="mmrobot_joint6" type="revolute">
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-1.58830" soft_upper_limit="2.1817"/>
@@ -725,9 +572,7 @@ in the right frame w.r.t the ground. -->
     <child link="mmrobot_link6"/>
     <axis xyz="0 0 1"/>
     <limit effort="12" lower="-0.0175" upper="3.7525" velocity="2.6100"/>
-    <!-- for simulation -->
     <dynamics damping="1.0"/>
-    <!-- end for simulation -->
   </joint>
   <link name="mmrobot_link7">
     <visual>
@@ -740,13 +585,11 @@ in the right frame w.r.t the ground. -->
         <mesh filename="meshes/collision/link7.stl"/>
       </geometry>
     </collision>
-    <!-- for simulation -->
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="0.45"/>
       <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
     </inertial>
-    <!-- end for simulation -->
   </link>
   <joint name="mmrobot_joint7" type="revolute">
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
@@ -755,18 +598,14 @@ in the right frame w.r.t the ground. -->
     <child link="mmrobot_link7"/>
     <axis xyz="0 0 1"/>
     <limit effort="12" lower="-2.8973" upper="2.8973" velocity="2.6100"/>
-    <!-- for simulation -->
     <dynamics damping="1.0"/>
-    <!-- end for simulation -->
   </joint>
   <link name="mmrobot_link8">
-    <!-- for simulation -->
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="0.0"/>
       <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3"/>
     </inertial>
-    <!-- end for simulation -->
   </link>
   <joint name="mmrobot_joint8" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0.107"/>
@@ -790,13 +629,11 @@ in the right frame w.r.t the ground. -->
         <mesh filename="meshes/collision/hand.stl"/>
       </geometry>
     </collision>
-    <!-- for simulation -->
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="0.68"/>
       <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
     </inertial>
-    <!-- end for simulation -->
   </link>
   <link name="mmrobot_leftfinger">
     <visual>
@@ -809,13 +646,11 @@ in the right frame w.r.t the ground. -->
         <mesh filename="meshes/collision/finger.stl"/>
       </geometry>
     </collision>
-    <!-- for simulation -->
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="0.01"/>
       <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
     </inertial>
-    <!-- end for simulation -->
   </link>
   <link name="mmrobot_rightfinger">
     <visual>
@@ -830,13 +665,11 @@ in the right frame w.r.t the ground. -->
         <mesh filename="meshes/collision/finger.stl"/>
       </geometry>
     </collision>
-    <!-- for simulation -->
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="0.01"/>
       <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
     </inertial>
-    <!-- end for simulation -->
   </link>
   <joint name="mmrobot_finger_joint1" type="prismatic">
     <parent link="mmrobot_hand"/>
