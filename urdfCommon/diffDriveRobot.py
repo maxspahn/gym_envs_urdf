@@ -135,7 +135,7 @@ class DiffDriveRobot(AbstractRobot):
         joint_vel = np.array(joint_vel_list)
 
         # Concatenate position[0:10], velocity[0:10], vf[0:3]
-        self.state = {'x': np.concatenate((posBase, joint_pos)), 'vel': vf, 'xdot': np.concatenate((joint_vel, velBase))}
+        self.state = {'x': np.concatenate((posBase, joint_pos)), 'vel': vf, 'xdot': np.concatenate((velBase, joint_vel))}
 
     def updateSensing(self):
         self.sensor_observation = {}
