@@ -70,29 +70,29 @@ class AbstractRobot(ABC):
         return (self._limitPos_j, self._limitVel_j, self._limitTor_j)
 
     def getTorqueSpaces(self):
-        xu = np.concatenate((self._limitPos_j[1, :], self._limitVel_j[1, :]))
-        xl = np.concatenate((self._limitPos_j[0, :], self._limitVel_j[0, :]))
+        ospace = self.getObservationSpace()
         uu = self._limitTor_j[1, :]
         ul = self._limitTor_j[0, :]
-        ospace = gym.spaces.Box(low=xl, high=xu, dtype=np.float64)
         aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
         return (ospace, aspace)
 
+    def getObservationSpace(self):
+        return gym.spaces.Dict({
+            'x': gym.spaces.Box(low=self._limitPos_j[0, :], high=self._limitPos_j[1, :], dtype=np.float64), 
+            'xdot': gym.spaces.Box(low=self._limitVel_j[0, :], high=self._limitVel_j[1, :], dtype=np.float64), 
+        })
+
     def getVelSpaces(self):
-        xu = self._limitPos_j[1, :]
-        xl = self._limitPos_j[0, :]
+        ospace = self.getObservationSpace()
         uu = self._limitVel_j[1, :]
         ul = self._limitVel_j[0, :]
-        ospace = gym.spaces.Box(low=xl, high=xu, dtype=np.float64)
         aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
         return (ospace, aspace)
 
     def getAccSpaces(self):
-        xu = np.concatenate((self._limitPos_j[1, :], self._limitVel_j[1, :]))
-        xl = np.concatenate((self._limitPos_j[0, :], self._limitVel_j[0, :]))
+        ospace = self.getObservationSpace()
         uu = self._limitAcc_j[1, :]
         ul = self._limitAcc_j[0, :]
-        ospace = gym.spaces.Box(low=xl, high=xu, dtype=np.float64)
         aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
         return (ospace, aspace)
 
@@ -151,17 +151,17 @@ class AbstractRobot(ABC):
         joint_vel = np.array(joint_vel_list)
 
         # Concatenate position, orientation, velocity
-        self.state = np.concatenate((joint_pos, joint_vel))
+        self.state = {'x': joint_pos, 'xdot': joint_vel}
 
     def updateSensing(self):
-        self.sensor_observation = np.array([])
+        self.sensor_observation = {}
         for sensor in self._sensors:
-            self.sensor_observation = np.append(self.sensor_observation, sensor.sense(self.robot))
+            self.sensor_observation[sensor.name()] = sensor.sense(self.robot)
 
     def get_observation(self):
         self.updateState()
         self.updateSensing()
-        return np.concatenate((self.state, self.sensor_observation))
+        return {**self.state, **self.sensor_observation}
 
     def addSensor(self, sensor):
         self._sensors.append(sensor)
