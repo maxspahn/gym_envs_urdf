@@ -8,7 +8,7 @@ obstacles = False
 
 def main():
     gripper = True
-    env = gym.make('panda-reacher-acc-v0', dt=0.01, render=True, gripper=gripper)
+    env = gym.make('panda-reacher-vel-v0', dt=0.01, render=True, gripper=gripper)
     defaultAction = np.ones(9) * 0.0
     n_episodes = 1
     n_steps = 100000
@@ -23,19 +23,18 @@ def main():
             env.addObstacle(dynamicSphereObst2)
         print("Starting episode")
         for i in range(n_steps):
-            if (int(i/100))%2 == 0:
-                defaultAction[7] = -1.0
-                defaultAction[8] = -1.0
+            if (int(i/70))%2 == 0:
+                defaultAction[7] = -0.02
+                defaultAction[8] = -0.02
             else:
-                defaultAction[7] = 1.0
-                defaultAction[8] = 1.0
+                defaultAction[7] = 0.02
+                defaultAction[8] = 0.02
             action = env.action_space.sample()
             if gripper:
                 action = defaultAction[0:9]
             else:
                 action = defaultAction[0:7]
             ob, reward, done, info = env.step(action)
-            #print(ob[8])
             cumReward += reward
 
 

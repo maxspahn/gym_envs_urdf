@@ -15,6 +15,9 @@ class PandaReacherEnv(UrdfEnv):
             pos[3] = -1.501
             pos[5] = 1.8675
             pos[6] = np.pi/4
+            if self.robot.n() > 7:
+                pos[7] = 0.02
+                pos[8] = 0.02
         if not isinstance(vel, np.ndarray) or not vel.size == self.robot.n():
             vel = np.zeros(self.robot.n())
         return pos, vel
