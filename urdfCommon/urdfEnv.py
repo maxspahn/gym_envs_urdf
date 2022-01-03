@@ -75,7 +75,6 @@ class UrdfEnv(gym.Env):
 
     def _get_ob(self):
         observation = self.robot.get_observation()
-        __import__('pdb').set_trace()
         if not self.observation_space.contains(observation):
             __import__('pdb').set_trace()
             raise WrongObservationError("The observation does not fit the defined observation space")
@@ -98,10 +97,9 @@ class UrdfEnv(gym.Env):
 
     def addSensor(self, sensor):
         self.robot.addSensor(sensor)
-        self.observation_space = gym.spaces.Dict({
-            "jointStates": self.observation_space,
-            "sensor1": gym.spaces.Box(-10, 10, shape=(sensor.getOSpaceSize(), )),
-        })
+        curDict = dict(self.observation_space.spaces)
+        curDict[sensor.name()] = sensor.getObservationSpace()
+        self.observation_space = gym.spaces.Dict(curDict)
 
     def seed(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
