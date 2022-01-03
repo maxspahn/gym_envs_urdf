@@ -1,6 +1,4 @@
 import pybullet as p
-import pybullet_data
-from abc import ABC, abstractmethod
 import gym
 from urdfpy import URDF
 import numpy as np
@@ -21,7 +19,7 @@ class DiffDriveRobot(AbstractRobot):
         baseOrientation = p.getQuaternionFromEuler([0, 0, pos[2]])
         self.robot = p.loadURDF(
             fileName=self.fileName,
-            basePosition=[pos[0], pos[1], 0.05],
+            basePosition=[pos[0], pos[1], 0.15],
             baseOrientation=baseOrientation,
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
@@ -34,6 +32,13 @@ class DiffDriveRobot(AbstractRobot):
                 jointIndex=i,
                 controlMode=p.VELOCITY_CONTROL,
                 force=0.0
+            )
+        for i in range(2, self._n):
+            p.resetJointState(
+                self.robot, 
+                self.robot_joints[i],
+                pos[i + 1],
+                targetVelocity=vel[i],
             )
         # set base velocity
         self.updateState()
