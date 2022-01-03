@@ -14,9 +14,9 @@ class BoxerRobot(AbstractRobot):
         super().__init__(n, fileName)
 
     def setJointIndices(self):
-        self.urdf_joints = [10, 11]
-        self.robot_joints = [11, 12]
-        self.castor_joints = [9, 10]
+        self.urdf_joints = [2, 3]
+        self.robot_joints = [3, 4]
+        self.castor_joints = [1, 2]
 
     def n(self):
         return self._n
@@ -33,6 +33,7 @@ class BoxerRobot(AbstractRobot):
         )
         # Joint indices as found by p.getJointInfo()
         # set castor wheel friction to zero
+        # print(self.getIndexedJointInfo())
         for i in self.castor_joints:
             p.setJointMotorControl2(
                 self.robot,
@@ -41,13 +42,8 @@ class BoxerRobot(AbstractRobot):
                 force=0.0
             )
         # set base velocity
-        v = np.zeros(2)
-        v[0] = vel[0] + vel[1]
-        v[1] = vel[0] - vel[0]
         self.updateState()
-        self.apply_vel_action_wheels(v)
-        self.state[-2:] = v
-        self._vels_int = np.concatenate((self.state[-2:], self.state[13:20]))
+        self._vels_int = vel
 
     def setAccLimits(self):
         accLimit = np.array([1.0, 1.0])
@@ -56,6 +52,8 @@ class BoxerRobot(AbstractRobot):
 
     def apply_acc_action(self, accs, dt):
         self._vels_int += dt * accs
+        self._vels_int = np.clip(self._vels_int, -np.ones(2), np.ones(2))
+        #self._vels_int = self.state[3:5]
         self.apply_base_velocity(self._vels_int)
 
     def apply_vel_action_wheels(self, vels):
@@ -72,7 +70,7 @@ class BoxerRobot(AbstractRobot):
 
     def updateState(self):
         # Get Base State
-        linkState = p.getLinkState(self.robot, 0, computeLinkVelocity=1)
+        linkState = p.getLinkState(self.robot, 0, computeLinkVelocity=0)
         posBase = np.array(
             [
                 linkState[0][0],
@@ -80,8 +78,12 @@ class BoxerRobot(AbstractRobot):
                 p.getEulerFromQuaternion(linkState[1])[2],
             ]
         )
-        velBase = np.array([linkState[6][0], linkState[6][1], linkState[7][2]])
-        vf = np.array([np.sqrt(velBase[0] ** 2 + velBase[1] ** 2), velBase[2]])
+        velWheels = p.getJointStates(self.robot, self.robot_joints)
+        v_right = velWheels[0][1]
+        v_left = velWheels[1][1]
+        vf = np.array([0.5 * (v_right + v_left) * self._r, (v_right - v_left) * self._r / self._l])
+        Jnh = np.array([[np.cos(posBase[2]), 0], [np.sin(posBase[2]), 0], [0, 1]])
+        velBase = np.dot(Jnh, vf)
 
-        self.state = np.concatenate((posBase, velBase, vf))
+        self.state = np.concatenate((posBase, vf, velBase))
 
