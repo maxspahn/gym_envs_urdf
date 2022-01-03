@@ -13,6 +13,7 @@ class TiagoReacherEnv(UrdfEnv):
     def checkInitialState(self, pos, vel):
         if not isinstance(pos, np.ndarray) or not pos.size == self.robot.n() + 1:
             pos = np.zeros(self.robot.n()+1)
+            pos[3] = 0.1
         if not isinstance(vel, np.ndarray) or not vel.size == self.robot.n():
             vel = np.zeros(self.robot.n())
         return pos, vel
