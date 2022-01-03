@@ -7,6 +7,10 @@ from abc import abstractmethod
 from urdfCommon.plane import Plane
 
 
+class WrongObservationError(Exception):
+    pass
+
+
 class UrdfEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
@@ -57,7 +61,7 @@ class UrdfEnv(gym.Env):
         for goal in self._goals:
             goal.updateBulletPosition(p, t=self.t())
         p.stepSimulation()
-        ob = self.robot.get_observation()
+        ob = self._get_ob()
 
         # Done by running off boundaries
         reward = 1.0
@@ -68,6 +72,14 @@ class UrdfEnv(gym.Env):
         if self._render:
             self.render()
         return ob, reward, self.done, {}
+
+    def _get_ob(self):
+        observation = self.robot.get_observation()
+        __import__('pdb').set_trace()
+        if not self.observation_space.contains(observation):
+            __import__('pdb').set_trace()
+            raise WrongObservationError("The observation does not fit the defined observation space")
+        return observation
 
     def addObstacle(self, obst):
         self._obsts.append(obst)
