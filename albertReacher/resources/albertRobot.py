@@ -17,7 +17,7 @@ class AlbertRobot(AbstractRobot):
         super().__init__(n, fileName)
 
     def setJointIndices(self):
-        self.urdf_joints = [10, 11, 22, 23, 24, 25, 26, 27, 28]
+        self.urdf_joints = [10, 11, 14, 15, 16, 17, 18, 19, 20]
         self.robot_joints = [23, 24, 7, 8, 9, 10, 11, 12, 13]
 
     def n(self):
@@ -33,7 +33,7 @@ class AlbertRobot(AbstractRobot):
             baseOrientation=baseOrientation,
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
-        # Joint indices as found by p.getJointInfo()
+        # print(self.getIndexedJointInfo())
         # set castor wheel friction to zero
         for i in [21, 22]:
             p.setJointMotorControl2(
@@ -95,7 +95,7 @@ class AlbertRobot(AbstractRobot):
 
     def updateState(self):
         # Get Base State
-        linkState = p.getLinkState(self.robot, 0, computeLinkVelocity=1)
+        linkState = p.getLinkState(self.robot, 0, computeLinkVelocity=0)
         posBase = np.array(
             [
                 linkState[0][0],
@@ -103,7 +103,12 @@ class AlbertRobot(AbstractRobot):
                 p.getEulerFromQuaternion(linkState[1])[2],
             ]
         )
-        velBase = np.array([linkState[6][0], linkState[6][1], linkState[7][2]])
+        velWheels = p.getJointStates(self.robot, self.robot_joints)
+        v_right = velWheels[0][1]
+        v_left = velWheels[1][1]
+        vf = np.array([0.5 * (v_right + v_left) * self._r, (v_right - v_left) * self._r / self._l])
+        Jnh = np.array([[np.cos(posBase[2]), 0], [np.sin(posBase[2]), 0], [0, 1]])
+        velBase = np.dot(Jnh, vf)
         # Get Joint Configurations
         joint_pos_list = []
         joint_vel_list = []
@@ -118,5 +123,5 @@ class AlbertRobot(AbstractRobot):
         vf = np.array([np.sqrt(velBase[0] ** 2 + velBase[1] ** 2), velBase[2]])
 
         # Concatenate position[0:10], velocity[0:10], vf[0:3]
-        self.state = np.concatenate((posBase, joint_pos, velBase, joint_vel, vf))
+        self.state = np.concatenate((posBase, joint_pos, vf, joint_vel, velBase))
 
