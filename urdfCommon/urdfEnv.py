@@ -8,7 +8,21 @@ from urdfCommon.plane import Plane
 
 
 class WrongObservationError(Exception):
-    pass
+    def __init__(self, msg, observation, observationSpace):
+        msgExt = self.getWrongObservation(observation, observationSpace)
+        super().__init__(msg + msgExt)
+
+    def getWrongObservation(self, o, os):
+        msgExt = ": "
+        for key in o.keys():
+            if not os[key].contains(o[key]):
+                msgExt += "Error in " + key
+                for i, val in enumerate(o[key]):
+                    if val < os[key].low[i]:
+                        msgExt += f"[{i}]: {val} < {os[key].low[i]}"
+                    elif val > os[key].high[i]:
+                        msgExt += f"[{i}]: {val} > {os[key].high[i]}"
+        return msgExt
 
 
 class UrdfEnv(gym.Env):
@@ -76,8 +90,7 @@ class UrdfEnv(gym.Env):
     def _get_ob(self):
         observation = self.robot.get_observation()
         if not self.observation_space.contains(observation):
-            __import__('pdb').set_trace()
-            raise WrongObservationError("The observation does not fit the defined observation space")
+            raise WrongObservationError("The observation does not fit the defined observation space", observation, self.observation_space)
         return observation
 
     def addObstacle(self, obst):
