@@ -2,6 +2,7 @@ import gym
 import time
 import numpy as np
 import pybullet as p
+import warnings
 
 from abc import abstractmethod
 from urdfCommon.plane import Plane
@@ -90,7 +91,8 @@ class UrdfEnv(gym.Env):
     def _get_ob(self):
         observation = self.robot.get_observation()
         if not self.observation_space.contains(observation):
-            raise WrongObservationError("The observation does not fit the defined observation space", observation, self.observation_space)
+            err = WrongObservationError("The observation does not fit the defined observation space", observation, self.observation_space)
+            warnings.warn(str(err))
         return observation
 
     def addObstacle(self, obst):
