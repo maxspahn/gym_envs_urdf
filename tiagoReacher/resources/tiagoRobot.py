@@ -5,10 +5,10 @@ import math
 from urdfpy import URDF
 import numpy as np
 
-from urdfCommon.diffDriveRobot import DiffDriveRobot
+from urdfCommon.differentialDriveRobot import DifferentialDriveRobot
 
 
-class TiagoRobot(DiffDriveRobot):
+class TiagoRobot(DifferentialDriveRobot):
     def __init__(self):
         n = 19
         self._r = 0.1

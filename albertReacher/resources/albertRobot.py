@@ -5,10 +5,10 @@ import math
 from urdfpy import URDF
 import numpy as np
 
-from urdfCommon.diffDriveRobot import DiffDriveRobot
+from urdfCommon.differentialDriveRobot import DifferentialDriveRobot
 
 
-class AlbertRobot(DiffDriveRobot):
+class AlbertRobot(DifferentialDriveRobot):
     def __init__(self):
         n = 9
         fileName = os.path.join(os.path.dirname(__file__), 'albert.urdf')

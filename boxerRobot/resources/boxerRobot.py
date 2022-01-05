@@ -2,10 +2,10 @@ import pybullet as p
 import os
 import numpy as np
 
-from urdfCommon.diffDriveRobot import DiffDriveRobot
+from urdfCommon.differentialDriveRobot import DifferentialDriveRobot
 
 
-class BoxerRobot(DiffDriveRobot):
+class BoxerRobot(DifferentialDriveRobot):
     def __init__(self):
         n = 2
         fileName = os.path.join(os.path.dirname(__file__), 'boxer.urdf')

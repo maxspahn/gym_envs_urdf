@@ -3,10 +3,10 @@ import gym
 from urdfpy import URDF
 import numpy as np
 
-from urdfCommon.abstractRobot import AbstractRobot
+from urdfCommon.genericRobot import GenericRobot
 
 
-class DiffDriveRobot(AbstractRobot):
+class DifferentialDriveRobot(GenericRobot):
     def __init__(self, n, fileName):
         super().__init__(n, fileName)
 
@@ -66,9 +66,6 @@ class DiffDriveRobot(AbstractRobot):
         self._limitVel_j[0, 0:3] = np.array([-4, -4, -10])
         self._limitVel_j[1, 0:3] = np.array([4, 4, 10])
         self.setAccLimits()
-
-    def getLimits(self):
-        return (self._limitPos_j, self._limitVel_j, self._limitTor_j)
 
     def getObservationSpace(self):
         return gym.spaces.Dict({
@@ -136,18 +133,4 @@ class DiffDriveRobot(AbstractRobot):
 
         # Concatenate position[0:10], velocity[0:10], vf[0:3]
         self.state = {'x': np.concatenate((posBase, joint_pos)), 'vel': vf, 'xdot': np.concatenate((velBase, joint_vel))}
-
-    def updateSensing(self):
-        self.sensor_observation = {}
-        for sensor in self._sensors:
-            self.sensor_observation[sensor.name()] = sensor.sense(self.robot)
-
-    def get_observation(self):
-        self.updateState()
-        self.updateSensing()
-        return {**self.state, **self.sensor_observation}
-
-    def addSensor(self, sensor):
-        self._sensors.append(sensor)
-        return sensor.getOSpaceSize()
 
