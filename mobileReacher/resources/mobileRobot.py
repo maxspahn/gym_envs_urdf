@@ -2,10 +2,10 @@ import pybullet as p
 import os
 import numpy as np
 
-from urdfCommon.abstractRobot import AbstractRobot
+from urdfCommon.holonomicRobot import HolonomicRobot
 
 
-class MobileRobot(AbstractRobot):
+class MobileRobot(HolonomicRobot):
     def __init__(self, gripper=False):
         self._gripper = gripper
         if gripper:
