@@ -1,10 +1,10 @@
 import os
 import numpy as np
 
-from urdfCommon.abstractRobot import AbstractRobot
+from urdfCommon.holonomicRobot import HolonomicRobot
 
 
-class NLinkRobot(AbstractRobot):
+class NLinkRobot(HolonomicRobot):
     def __init__(self, n):
         fileName = os.path.join(os.path.dirname(__file__), 'nlink_' + str(n) + '.urdf')
         super().__init__(n, fileName)

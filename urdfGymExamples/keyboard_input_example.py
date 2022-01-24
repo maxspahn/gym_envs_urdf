@@ -11,9 +11,7 @@ def main(conn):
     # copy of examples/tiago.py
     env = gym.make("tiago-reacher-vel-v0", dt=0.05, render=True)
     n_steps = 1000
-    pos0 = np.zeros(20)
-    vel0 = np.zeros(19)
-    ob = env.reset(pos=pos0, vel=vel0)
+    ob = env.reset()
 
     # create zero input action
     action = np.zeros(env.n())

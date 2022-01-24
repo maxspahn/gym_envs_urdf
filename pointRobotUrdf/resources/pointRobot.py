@@ -1,10 +1,10 @@
 import os
 import numpy as np
 
-from urdfCommon.abstractRobot import AbstractRobot
+from urdfCommon.holonomicRobot import HolonomicRobot
 
 
-class PointRobot(AbstractRobot):
+class PointRobot(HolonomicRobot):
     def __init__(self):
         fileName = os.path.join(os.path.dirname(__file__), 'pointRobot.urdf')
         n = 2

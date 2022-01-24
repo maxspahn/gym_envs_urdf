@@ -1,10 +1,10 @@
 import os
 import numpy as np
 
-from urdfCommon.abstractRobot import AbstractRobot
+from urdfCommon.holonomicRobot import HolonomicRobot
 
 
-class PandaRobot(AbstractRobot):
+class PandaRobot(HolonomicRobot):
     def __init__(self, gripper=False, friction=0.0):
         self._gripper = gripper
         self._friction = friction

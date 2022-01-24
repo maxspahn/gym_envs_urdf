@@ -2,9 +2,28 @@ import gym
 import time
 import numpy as np
 import pybullet as p
+import warnings
 
 from abc import abstractmethod
 from urdfCommon.plane import Plane
+
+
+class WrongObservationError(Exception):
+    def __init__(self, msg, observation, observationSpace):
+        msgExt = self.getWrongObservation(observation, observationSpace)
+        super().__init__(msg + msgExt)
+
+    def getWrongObservation(self, o, os):
+        msgExt = ": "
+        for key in o.keys():
+            if not os[key].contains(o[key]):
+                msgExt += "Error in " + key
+                for i, val in enumerate(o[key]):
+                    if val < os[key].low[i]:
+                        msgExt += f"[{i}]: {val} < {os[key].low[i]}"
+                    elif val > os[key].high[i]:
+                        msgExt += f"[{i}]: {val} > {os[key].high[i]}"
+        return msgExt
 
 
 class UrdfEnv(gym.Env):
@@ -57,7 +76,7 @@ class UrdfEnv(gym.Env):
         for goal in self._goals:
             goal.updateBulletPosition(p, t=self.t())
         p.stepSimulation()
-        ob = self.robot.get_observation()
+        ob = self._get_ob()
 
         # Done by running off boundaries
         reward = 1.0
@@ -68,6 +87,13 @@ class UrdfEnv(gym.Env):
         if self._render:
             self.render()
         return ob, reward, self.done, {}
+
+    def _get_ob(self):
+        observation = self.robot.get_observation()
+        if not self.observation_space.contains(observation):
+            err = WrongObservationError("The observation does not fit the defined observation space", observation, self.observation_space)
+            warnings.warn(str(err))
+        return observation
 
     def addObstacle(self, obst):
         self._obsts.append(obst)
@@ -86,10 +112,9 @@ class UrdfEnv(gym.Env):
 
     def addSensor(self, sensor):
         self.robot.addSensor(sensor)
-        self.observation_space = gym.spaces.Dict({
-            "jointStates": self.observation_space,
-            "sensor1": gym.spaces.Box(-10, 10, shape=(sensor.getOSpaceSize(), )),
-        })
+        curDict = dict(self.observation_space.spaces)
+        curDict[sensor.name()] = sensor.getObservationSpace()
+        self.observation_space = gym.spaces.Dict(curDict)
 
     def seed(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
