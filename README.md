@@ -1,6 +1,34 @@
-### Generic Planar Robots
+### Generic URDF robots
 
 In this package, generic urdf robots and a panda gym environment are available.
+The goal is to make this environment as easy as possible to deploy. Although, we used the
+OpenAI-Gym framing, these environments are not necessarly restricted to
+Reinforcement-Learning but rather to local motion planning in general.
+
+<table>
+ <tr>
+  <td> Point Robot </td>
+  <td> Non-Holonomic Robot </td>
+ </tr>
+ <tr>
+  <td> <img src="/assets/pointRobot.gif" width="250" height="250"/> </td>
+  <td> <img src="/assets/boxerRobot.gif" width="250" height="250"/> </td>
+ </tr>
+</table>
+
+<table>
+ <tr>
+  <td> Panda Robot </td>
+  <td> Albert Robot </td>
+  <td> Tiago Robot </td>
+ </tr>
+ <tr>
+  <td> <img src="/assets/panda.gif" width="250" height="250"/> </td>
+  <td> <img src="/assets/albert.gif" width="250" height="250"/> </td>
+  <td> <img src="/assets/tiago.gif" width="250" height="250"/> </td>
+ </tr>
+</table>
+
 
 ## Dependencies
 
