@@ -15,8 +15,8 @@ class BoxerRobot(DifferentialDriveRobot):
 
     def setJointIndices(self):
         self.urdf_joints = [2, 3]
-        self.robot_joints = [3, 4]
-        self.castor_joints = [1, 2]
+        self.robot_joints = [4, 5]
+        self.castor_joints = [2, 3]
 
     def setAccLimits(self):
         accLimit = np.array([1.0, 1.0])
