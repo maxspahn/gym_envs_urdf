@@ -1,4 +1,4 @@
-from boxerRobot.envs.boxerRobotEnv import BoxerRobotEnv
+from urdfenvs.boxerRobot.envs.boxerRobotEnv import BoxerRobotEnv
 
 
 class BoxerRobotAccEnv(BoxerRobotEnv):

@@ -1,7 +1,7 @@
 import numpy as np
 
-from boxerRobot.resources.boxerRobot import BoxerRobot
-from urdfCommon.urdfEnv import UrdfEnv
+from urdfenvs.boxerRobot.resources.boxerRobot import BoxerRobot
+from urdfenvs.urdfCommon.urdfEnv import UrdfEnv
 
 
 class BoxerRobotEnv(UrdfEnv):

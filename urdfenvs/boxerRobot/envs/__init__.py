@@ -1,2 +1,2 @@
-from boxerRobot.envs.vel import BoxerRobotVelEnv
-from boxerRobot.envs.acc import BoxerRobotAccEnv
+from urdfenvs.boxerRobot.envs.vel import BoxerRobotVelEnv
+from urdfenvs.boxerRobot.envs.acc import BoxerRobotAccEnv

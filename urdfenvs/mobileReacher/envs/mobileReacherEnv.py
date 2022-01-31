@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
-from mobileReacher.resources.mobileRobot import MobileRobot
-from urdfCommon.urdfEnv import UrdfEnv
+from urdfenvs.mobileReacher.resources.mobileRobot import MobileRobot
+from urdfenvs.urdfCommon.urdfEnv import UrdfEnv
 
 
 class MobileReacherEnv(UrdfEnv):

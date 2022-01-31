@@ -1,4 +1,4 @@
-from mobileReacher.envs.mobileReacherEnv import MobileReacherEnv
+from urdfenvs.mobileReacher.envs.mobileReacherEnv import MobileReacherEnv
 
 
 class MobileReacherTorEnv(MobileReacherEnv):

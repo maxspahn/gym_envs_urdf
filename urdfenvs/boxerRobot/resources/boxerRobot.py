@@ -2,7 +2,7 @@ import pybullet as p
 import os
 import numpy as np
 
-from urdfCommon.differentialDriveRobot import DifferentialDriveRobot
+from urdfenvs.urdfCommon.differentialDriveRobot import DifferentialDriveRobot
 
 
 class BoxerRobot(DifferentialDriveRobot):
