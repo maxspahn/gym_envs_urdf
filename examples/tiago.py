@@ -1,5 +1,5 @@
 import gym
-import tiagoReacher
+import urdfenvs.tiagoReacher
 import time
 import numpy as np
 

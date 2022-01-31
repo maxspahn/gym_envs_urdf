@@ -1,5 +1,5 @@
 import gym
-import pandaReacher
+import urdfenvs.pandaReacher
 import numpy as np
 
 goal = False

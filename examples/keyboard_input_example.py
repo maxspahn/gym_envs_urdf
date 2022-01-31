@@ -1,9 +1,9 @@
 import gym
-import tiagoReacher
+import urdfenvs.tiagoReacher
 
 from multiprocessing import Process, Pipe
 import numpy as np
-from keyboardInput.keyboard_input_responder import Responder
+from urdfenvs.keyboardInput.keyboard_input_responder import Responder
 from pynput.keyboard import Key
 
 

@@ -1,6 +1,6 @@
 import gym
-import pointRobotUrdf
-from sensors.lidar import Lidar
+import urdfenvs.pointRobotUrdf
+from urdfenvs.sensors.lidar import Lidar
 import numpy as np
 
 obstacles = False

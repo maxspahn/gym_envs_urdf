@@ -1,5 +1,5 @@
 import gym
-import boxerRobot
+import urdfenvs.boxerRobot
 import numpy as np
 
 

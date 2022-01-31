@@ -1,5 +1,5 @@
 import gym
-import mobileReacher
+import urdfenvs.mobileReacher
 import numpy as np
 
 

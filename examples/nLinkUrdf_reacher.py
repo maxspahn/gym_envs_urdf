@@ -1,5 +1,5 @@
 import gym
-import nLinkUrdfReacher
+import urdfenvs.nLinkUrdfReacher
 import numpy as np
 
 
