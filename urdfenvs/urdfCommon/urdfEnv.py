@@ -5,7 +5,7 @@ import pybullet as p
 import warnings
 
 from abc import abstractmethod
-from urdfCommon.plane import Plane
+from urdfenvs.urdfCommon.plane import Plane
 
 
 class WrongObservationError(Exception):

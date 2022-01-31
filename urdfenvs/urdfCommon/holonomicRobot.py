@@ -5,7 +5,7 @@ import gym
 from urdfpy import URDF
 import numpy as np
 
-from urdfCommon.genericRobot import GenericRobot
+from urdfenvs.urdfCommon.genericRobot import GenericRobot
 
 
 class HolonomicRobot(GenericRobot):

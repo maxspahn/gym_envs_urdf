@@ -5,7 +5,7 @@ import math
 from urdfpy import URDF
 import numpy as np
 
-from urdfCommon.differentialDriveRobot import DifferentialDriveRobot
+from urdfenvs.urdfCommon.differentialDriveRobot import DifferentialDriveRobot
 
 
 class AlbertRobot(DifferentialDriveRobot):
