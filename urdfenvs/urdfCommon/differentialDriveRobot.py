@@ -115,6 +115,9 @@ class DifferentialDriveRobot(GenericRobot):
                 p.getEulerFromQuaternion(linkState[1])[2],
             ]
         )
+        posBase[2] -= np.pi / 2.0
+        if posBase[2] < -np.pi :
+            posBase[2] += 2 * np.pi
         velWheels = p.getJointStates(self.robot, self.robot_joints)
         v_right = velWheels[0][1]
         v_left = velWheels[1][1]
