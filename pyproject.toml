@@ -10,10 +10,15 @@ pybullet = "^3.2.1"
 gym = "^0.21.0"
 numpy = "^1.10.0"
 casadi = "^3.5.5"
-motion-planning-scenes = "^0.1.1"
-pynput = "^1.7.6"
-multiprocess = "^0.70.12"
+motion-planning-scenes = {version = "^0.1.1", optional = true}
+pynput = {version = "^1.7.6", optional = true}
+multiprocess = {version = "^0.70.12", optional = true}
 urdfpy = {git = "https://git@github.com/maxspahn/urdfpy.git", rev = "fix-networkx-dependency"}
+
+[tool.poetry.extras]
+scenes = ["motion-planning-scenes"]
+keyboard = ["pynput", "multiprocess"]
+
 
 
 
