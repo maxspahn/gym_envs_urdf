@@ -30,23 +30,22 @@ Reinforcement-Learning but rather to local motion planning in general.
 </table>
 
 
-## Dependencies
+## Installation
 
 This package depends on casadi for dynamics generation and gym.
-Dependencies should be installed through pip installation, see below.
-When using obstacles and goals, this package also depends on MotionPlanningScenes,
-see https://github.com/maxspahn/motion_planning_scenes
+Dependencies should be installed through pip or poetry, see below.
 
-You can either install that manually as explained in the corresponding readme or 
-you install it through
+Using pip, you can use
 ```bash
-pip3 install -r requirements_scenes.txt
+pip3 install '.[options]'
 ```
 
-## Installation
+Using poetry 
 ```bash
-pip3 install -e .
+poetry install -E <options>
 ```
+
+Options are `keyboard` and `scenes`.
 
 ## Switching
 
