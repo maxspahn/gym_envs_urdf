@@ -1,5 +1,5 @@
-from pointRobotUrdf.resources.pointRobot import PointRobot
-from urdfCommon.urdfEnv import UrdfEnv
+from urdfenvs.pointRobotUrdf.resources.pointRobot import PointRobot
+from urdfenvs.urdfCommon.urdfEnv import UrdfEnv
 
 
 class PointRobotEnv(UrdfEnv):

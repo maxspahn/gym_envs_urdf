@@ -1,4 +1,4 @@
-from nLinkUrdfReacher.envs.nLinkUrdfReacherEnv import NLinkUrdfReacherEnv
+from urdfenvs.nLinkUrdfReacher.envs.nLinkUrdfReacherEnv import NLinkUrdfReacherEnv
 
 
 class NLinkUrdfVelReacherEnv(NLinkUrdfReacherEnv):

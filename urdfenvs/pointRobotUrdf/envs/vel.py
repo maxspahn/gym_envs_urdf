@@ -1,4 +1,4 @@
-from pointRobotUrdf.envs.pointRobotEnv import PointRobotEnv
+from urdfenvs.pointRobotUrdf.envs.pointRobotEnv import PointRobotEnv
 
 
 class PointRobotVelEnv(PointRobotEnv):

@@ -1,5 +1,5 @@
 import numpy as np
-from tiagoReacher.envs.tiagoReacherEnv import TiagoReacherEnv
+from urdfenvs.tiagoReacher.envs.tiagoReacherEnv import TiagoReacherEnv
 
 
 class TiagoReacherAccEnv(TiagoReacherEnv):

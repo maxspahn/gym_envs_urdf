@@ -1,2 +1,2 @@
-from pointRobotUrdf.envs.vel import PointRobotVelEnv
-from pointRobotUrdf.envs.acc import PointRobotAccEnv
+from urdfenvs.pointRobotUrdf.envs.vel import PointRobotVelEnv
+from urdfenvs.pointRobotUrdf.envs.acc import PointRobotAccEnv

@@ -1,7 +1,7 @@
 import numpy as np
 
-from tiagoReacher.resources.tiagoRobot import TiagoRobot
-from urdfCommon.urdfEnv import UrdfEnv
+from urdfenvs.tiagoReacher.resources.tiagoRobot import TiagoRobot
+from urdfenvs.urdfCommon.urdfEnv import UrdfEnv
 
 
 class TiagoReacherEnv(UrdfEnv):

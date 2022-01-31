@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-from urdfCommon.holonomicRobot import HolonomicRobot
+from urdfenvs.urdfCommon.holonomicRobot import HolonomicRobot
 
 
 class NLinkRobot(HolonomicRobot):

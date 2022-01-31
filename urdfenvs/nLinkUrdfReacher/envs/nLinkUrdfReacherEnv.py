@@ -1,5 +1,5 @@
-from nLinkUrdfReacher.resources.nLinkRobot import NLinkRobot
-from urdfCommon.urdfEnv import UrdfEnv
+from urdfenvs.nLinkUrdfReacher.resources.nLinkRobot import NLinkRobot
+from urdfenvs.urdfCommon.urdfEnv import UrdfEnv
 
 
 class NLinkUrdfReacherEnv(UrdfEnv):

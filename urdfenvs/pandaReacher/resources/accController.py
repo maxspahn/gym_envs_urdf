@@ -1,7 +1,7 @@
 import numpy as np
 from urdfpy import URDF
 import os
-import pandaReacher
+import urdfenvs.pandaReacher
 
 from nLinkUrdfReacher.resources.accController import AccController
 

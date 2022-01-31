@@ -1,6 +1,6 @@
 import numpy as np
-from pandaReacher.resources.pandaRobot import PandaRobot
-from urdfCommon.urdfEnv import UrdfEnv
+from urdfenvs.pandaReacher.resources.pandaRobot import PandaRobot
+from urdfenvs.urdfCommon.urdfEnv import UrdfEnv
 
 
 class PandaReacherEnv(UrdfEnv):

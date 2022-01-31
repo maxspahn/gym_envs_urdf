@@ -1,4 +1,4 @@
-from tiagoReacher.envs.tiagoReacherEnv import TiagoReacherEnv
+from urdfenvs.tiagoReacher.envs.tiagoReacherEnv import TiagoReacherEnv
 
 
 class TiagoReacherVelEnv(TiagoReacherEnv):

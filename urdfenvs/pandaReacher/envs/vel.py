@@ -1,4 +1,4 @@
-from pandaReacher.envs.pandaReacherEnv import PandaReacherEnv
+from urdfenvs.pandaReacher.envs.pandaReacherEnv import PandaReacherEnv
 
 
 class PandaReacherVelEnv(PandaReacherEnv):
