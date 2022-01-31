@@ -5,7 +5,7 @@ description = "Simple simulation environment for robots, based on the urdf files
 authors = ["Max Spahn <m.spahn@tudelft.nl>"]
 
 [tool.poetry.dependencies]
-python = ">=3.6, <3.10"
+python = ">=3.6, <3.11"
 pybullet = "^3.2.1"
 gym = "^0.21.0"
 numpy = "^1.10.0"
