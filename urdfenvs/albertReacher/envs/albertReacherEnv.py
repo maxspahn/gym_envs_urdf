@@ -1,7 +1,7 @@
 import numpy as np
 
-from albertReacher.resources.albertRobot import AlbertRobot
-from urdfCommon.urdfEnv import UrdfEnv
+from urdfenvs.albertReacher.resources.albertRobot import AlbertRobot
+from urdfenvs.urdfCommon.urdfEnv import UrdfEnv
 
 
 class AlbertReacherEnv(UrdfEnv):

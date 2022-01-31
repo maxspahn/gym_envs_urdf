@@ -1,5 +1,5 @@
 import gym
-import albertReacher
+import urdfenvs.albertReacher
 import numpy as np
 import warnings
 

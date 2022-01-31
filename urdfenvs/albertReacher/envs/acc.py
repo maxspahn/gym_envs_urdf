@@ -1,4 +1,4 @@
-from albertReacher.envs.albertReacherEnv import AlbertReacherEnv
+from urdfenvs.albertReacher.envs.albertReacherEnv import AlbertReacherEnv
 
 
 class AlbertReacherAccEnv(AlbertReacherEnv):
