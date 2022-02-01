@@ -8,7 +8,7 @@ def main():
     env = gym.make('albert-reacher-vel-v0', dt=0.01, render=True)
     #env = gym.make('albert-v0', dt=0.01, render=True)
     defaultAction = np.zeros(9)
-    defaultAction[0] = 2.0
+    defaultAction[0] = 0.2
     defaultAction[1] = 0.0
     defaultAction[5] = -0.0
     n_episodes = 1
