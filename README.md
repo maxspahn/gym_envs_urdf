@@ -8,9 +8,11 @@ Reinforcement-Learning but rather to local motion planning in general.
 <table>
  <tr>
   <td> Point Robot </td>
+  <td> Point Robot with Keyboard Input </td>
   <td> Non-Holonomic Robot </td>
  </tr>
  <tr>
+  <td> <img src="/assets/pointRobotKeyboardInput.gif" width="250" height="250"/> </td>
   <td> <img src="/assets/pointRobot.gif" width="250" height="250"/> </td>
   <td> <img src="/assets/boxerRobot.gif" width="250" height="250"/> </td>
  </tr>
@@ -27,6 +29,15 @@ Reinforcement-Learning but rather to local motion planning in general.
   <td> <img src="/assets/albert.gif" width="250" height="250"/> </td>
   <td> <img src="/assets/tiago.gif" width="250" height="250"/> </td>
  </tr>
+</table>
+
+<table>
+ <tr>
+  <td> Tiago Robot with Keyboard Input </td>
+  </tr>
+ <tr>
+  <td> <img src="/assets/tiagoKeyboardInput.gif" width="250" height="250"/> </td>
+  </tr>
 </table>
 
 
