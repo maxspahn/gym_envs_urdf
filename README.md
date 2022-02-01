@@ -12,9 +12,20 @@ Reinforcement-Learning but rather to local motion planning in general.
   <td> Non-Holonomic Robot </td>
  </tr>
  <tr>
-  <td> <img src="/assets/pointRobotKeyboardInput.gif" width="250" height="250"/> </td>
   <td> <img src="/assets/pointRobot.gif" width="250" height="250"/> </td>
+  <td> <img src="/assets/pointRobotKeyboardInput.gif" width="250" height="250"/> </td>  
   <td> <img src="/assets/boxerRobot.gif" width="250" height="250"/> </td>
+ </tr>
+</table>
+
+<table>
+ <tr>
+  <td> Tiago Robot </td>
+  <td> Tiago Robot with Keyboard Input </td>
+ </tr>
+ <tr>
+  <td> <img src="/assets/tiago.gif" width="250" height="250"/> </td>
+  <td> <img src="/assets/tiagoKeyboardInput.gif" width="250" height="250"/> </td>
  </tr>
 </table>
 
@@ -22,21 +33,10 @@ Reinforcement-Learning but rather to local motion planning in general.
  <tr>
   <td> Panda Robot </td>
   <td> Albert Robot </td>
-  <td> Tiago Robot </td>
- </tr>
+  </tr>
  <tr>
   <td> <img src="/assets/panda.gif" width="250" height="250"/> </td>
   <td> <img src="/assets/albert.gif" width="250" height="250"/> </td>
-  <td> <img src="/assets/tiago.gif" width="250" height="250"/> </td>
- </tr>
-</table>
-
-<table>
- <tr>
-  <td> Tiago Robot with Keyboard Input </td>
-  </tr>
- <tr>
-  <td> <img src="/assets/tiagoKeyboardInput.gif" width="250" height="250"/> </td>
   </tr>
 </table>
 
