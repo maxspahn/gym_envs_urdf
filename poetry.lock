@@ -560,8 +560,8 @@ scenes = ["motion-planning-scenes"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = ">=3.6, <3.10"
-content-hash = "9148c148bffacc92534f65cd3f3e3a8333b91926818b9b0111733f8f2a5b4672"
+python-versions = ">=3.6, <3.11"
+content-hash = "3f33eb50c8f323556b09cc54951190f4863a16c7ab364aafe97aa5a56ba02b38"
 
 [metadata.files]
 atomicwrites = [
