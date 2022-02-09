@@ -89,14 +89,9 @@ parent_conn.send({"request_action": True})
 keyboard_data = parent_conn.recv()
 action = keyboard_data["action"]
 ```
-this feature requires extra dependencies
-```bash
-pip3 install -e .[keyboard_input]
-```
 
-An example can be found in ./urdfGymExamples/keyboard_input_example.py
-
+An example can be found in examples/keyboard_input_example.py
 
 ## Examples
 
-Simple examples can be found in the corresponding folder.
+Examples can be found in the corresponding folder.
