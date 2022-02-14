@@ -8,8 +8,9 @@ obstacles = False
 
 def main():
     gripper = True
-    env = gym.make('panda-reacher-vel-v0', dt=0.01, render=True, gripper=gripper)
+    env = gym.make('panda-reacher-acc-v0', dt=0.01, render=True, gripper=gripper)
     defaultAction = np.ones(9) * 0.0
+    defaultAction[0] = 0.1
     n_episodes = 1
     n_steps = 100000
     cumReward = 0.0
