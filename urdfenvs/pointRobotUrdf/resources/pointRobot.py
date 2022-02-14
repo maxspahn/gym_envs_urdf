@@ -7,12 +7,12 @@ from urdfenvs.urdfCommon.holonomicRobot import HolonomicRobot
 class PointRobot(HolonomicRobot):
     def __init__(self):
         fileName = os.path.join(os.path.dirname(__file__), 'pointRobot.urdf')
-        n = 2
+        n = 3
         super().__init__(n, fileName)
 
     def setJointIndices(self):
-        self.robot_joints = [0, 1]
-        self.urdf_joints = [0, 1]
+        self.robot_joints = [0, 1, 2]
+        self.urdf_joints = [0, 1, 2]
 
     def setAccLimits(self):
         accLimit = np.ones(self._n)
