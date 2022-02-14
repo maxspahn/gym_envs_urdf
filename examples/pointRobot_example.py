@@ -37,7 +37,6 @@ def main():
             t += env.dt()
             action = defaultAction
             ob, reward, done, info = env.step(action)
-            print(ob)
             cumReward += reward
 
 
