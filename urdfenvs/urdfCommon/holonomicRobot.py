@@ -28,6 +28,7 @@ class HolonomicRobot(GenericRobot):
                 targetVelocity=vel[i],
             )
         self.updateState()
+        self._vels_int = vel
 
 
     def readLimits(self):
@@ -71,17 +72,9 @@ class HolonomicRobot(GenericRobot):
                 targetVelocity=vels[i],
             )
 
-    def apply_acc_action(self, accs):
-        accs = np.clip(accs, self._limitAcc_j[0, :], self._limitAcc_j[1, :])
-        q = []
-        qdot = []
-        for i in range(self._n):
-            pos, vel, _, _ = p.getJointState(self.robot, self.robot_joints[i])
-            q.append(pos)
-            qdot.append(vel)
-        qddot = list(accs)
-        tau = p.calculateInverseDynamics(self.robot, q, qdot, qddot)
-        self.apply_torque_action(tau)
+    def apply_acc_action(self, accs, dt):
+        self._vels_int += dt * accs
+        self.apply_vel_action(self._vels_int)
 
     def updateState(self):
         # Get Joint Configurations
