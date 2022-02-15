@@ -21,14 +21,14 @@ def main():
         ob = env.reset(pos=pos0, vel=vel0)
         env.setWalls(limits=[[-3, -2], [3, 2]])
         if obstacles:
-            from urdfGymExamples.sceneObjects.obstacles import sphereObst1, sphereObst2, urdfObst1, dynamicSphereObst3
+            from examples.sceneObjects.obstacles import sphereObst1, sphereObst2, urdfObst1, dynamicSphereObst3
 
             env.addObstacle(sphereObst1)
             env.addObstacle(sphereObst2)
             env.addObstacle(urdfObst1)
             env.addObstacle(dynamicSphereObst3)
         if goal:
-            from urdfGymExamples.sceneObjects.goal import splineGoal
+            from examples.sceneObjects.goal import splineGoal
 
             env.addGoal(splineGoal)
         print("Starting episode")
@@ -37,7 +37,6 @@ def main():
             t += env.dt()
             action = defaultAction
             ob, reward, done, info = env.step(action)
-            print(ob)
             cumReward += reward
 
 

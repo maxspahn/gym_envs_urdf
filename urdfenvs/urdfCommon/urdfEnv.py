@@ -6,11 +6,14 @@ import warnings
 
 from abc import abstractmethod
 from urdfenvs.urdfCommon.plane import Plane
+from urdfenvs.sensors.pseudo_sensor import PseudoSensor
 
 
 class WrongObservationError(Exception):
     def __init__(self, msg, observation, observationSpace):
-        msgExt = self.getWrongObservation(observation, observationSpace)
+        # msgExt = self.getWrongObservation(observation, observationSpace)
+        # temporarily disables this error
+        msgExt = 'hio'
         super().__init__(msg + msgExt)
 
     def getWrongObservation(self, o, os):
