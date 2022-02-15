@@ -1,7 +1,7 @@
 import numpy as np
 import pybullet as p
 import gym
-import time
+import sys
 from urdfenvs.sensors.sensor import Sensor
 
 
@@ -20,31 +20,29 @@ class PseudoSensor(Sensor):
 
     def getOSpaceSize(self):
         size = 0
-        for obst in self._obstacles:
+        for obj_id in range(2, p.getNumBodies()):
             size += 12  # add space for x, xdot, theta and thetadot
         return size
 
-    # def addObstacle(self, obst):
-    #     self._obstacles.append(obst)
-    #     self._observation = np.zeros(self.getOSpaceSize())
-
     def getObservationSpace(self):
-        # todo: this function
-        spacesDict = {}
-        for obst in self._obstacles:
-            # size = 3 * obst.m() + 1
-            spacesDict[obst.name()] = gym.spaces.Dict({
-                'pos': gym.spaces.Box(-10, 10, shape=(obst, ), dtype=np.float64),
-                'vel': gym.spaces.Box(-10, 10, shape=(obst.m(), ), dtype=np.float64),
-                'acc': gym.spaces.Box(-10, 10, shape=(obst.m(), ), dtype=np.float64),
-                'r': gym.spaces.Box(-10, 10, shape=(1, ), dtype=np.float64)
-            })
 
-        for goal in self._goals:
-            size = 3 * goal.dim() + 1
-            spacesDict[goal.name()] = gym.spaces.Box(-10, 10, shape=(size, ), dtype=np.float64)
-        space = gym.spaces.Dict(spacesDict)
-        return space
+        spacesDict = gym.spaces.Dict()
+        min = sys.float_info.min
+        max = sys.float_info.max
+
+        for obj_id in range(2, p.getNumBodies()):
+            spacesDict[str(obj_id)] = gym.spaces.Dict({
+                # "name": gym.spaces.Box(sys.float_info.min, sys.float_info.max, shape=(3, 1), dtype=str),
+                "x": gym.spaces.Box(low=min, high=max, shape=(3, 1), dtype=np.float64),
+                "xdot": gym.spaces.Box(low=min, high=max, shape=(3, 1), dtype=np.float64),
+                "theta": gym.spaces.Box(low=-2*np.pi, high=2*np.pi, shape=(3, 1), dtype=np.float64),
+                "thetadot": gym.spaces.Box(low=min, high=max, shape=(3, 1), dtype=np.float64)
+             })
+
+
+        # todo: what is a goal? Should i have a goal observation space? for a sensor?
+
+        return spacesDict
 
     def sense(self, robot):
         """

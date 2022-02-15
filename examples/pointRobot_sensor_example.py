@@ -18,6 +18,7 @@ def main():
     ob = env.reset(pos=pos0, vel=vel0)
     # env.setWalls(limits=[[-3, -2], [3, 2]])
 
+
     # add sensor
     sensor = PseudoSensor()
     env.addSensor(sensor)
@@ -40,7 +41,6 @@ def main():
             cumReward += reward
 
             print(ob['pseudoSensor'])
-
 
 if __name__ == '__main__':
     main()

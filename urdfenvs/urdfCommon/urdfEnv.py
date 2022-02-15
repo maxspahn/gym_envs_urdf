@@ -3,29 +3,25 @@ import time
 import numpy as np
 import pybullet as p
 import warnings
-
 from abc import abstractmethod
 from urdfenvs.urdfCommon.plane import Plane
-from urdfenvs.sensors.pseudo_sensor import PseudoSensor
-
 
 class WrongObservationError(Exception):
     def __init__(self, msg, observation, observationSpace):
-        # msgExt = self.getWrongObservation(observation, observationSpace)
-        # temporarily disables this error
-        msgExt = 'hio'
+        msgExt = self.getWrongObservation(observation, observationSpace)
         super().__init__(msg + msgExt)
 
     def getWrongObservation(self, o, os):
+        # todo: this checker crashes on nested dictionaries because it looks for dict().low() which does not exist
         msgExt = ": "
         for key in o.keys():
             if not os[key].contains(o[key]):
                 msgExt += "Error in " + key
-                for i, val in enumerate(o[key]):
-                    if val < os[key].low[i]:
-                        msgExt += f"[{i}]: {val} < {os[key].low[i]}"
-                    elif val > os[key].high[i]:
-                        msgExt += f"[{i}]: {val} > {os[key].high[i]}"
+                # for i, val in enumerate(o[key]):
+                #     if val < os[key].low[i]:
+                #         msgExt += f"[{i}]: {val} < {os[key].low[i]}"
+                #     elif val > os[key].high[i]:
+                #         msgExt += f"[{i}]: {val} > {os[key].high[i]}"
         return msgExt
 
 
@@ -45,6 +41,7 @@ class UrdfEnv(gym.Env):
         self._maxSteps = 10000000
         self._obsts = []
         self._goals = []
+        self.observation_space = gym.spaces.Dict()
         if self._render:
             cid = p.connect(p.SHARED_MEMORY)
             if (cid < 0):
@@ -99,6 +96,7 @@ class UrdfEnv(gym.Env):
         return observation
 
     def addObstacle(self, obst):
+        # todo: refresh the observation space
         self._obsts.append(obst)
         obst.add2Bullet(p)
 
@@ -115,9 +113,12 @@ class UrdfEnv(gym.Env):
 
     def addSensor(self, sensor):
         self.robot.addSensor(sensor)
-        curDict = dict(self.observation_space.spaces)
-        curDict[sensor.name()] = sensor.getObservationSpace()
-        self.observation_space = gym.spaces.Dict(curDict)
+
+        if sensor.name() in self.observation_space.keys():
+            warnings.warn("{} already exists, overwriting sensor in observation_space dictionary".format(sensor.name()))
+
+        self.observation_space[sensor.name()] = sensor.getObservationSpace()
+
 
     def seed(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
