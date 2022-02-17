@@ -111,3 +111,5 @@ class GenericRobot(ABC):
         self._sensors.append(sensor)
         return sensor.getOSpaceSize()
 
+    def getSensors(self):
+        return self._sensors

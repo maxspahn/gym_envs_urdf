@@ -109,9 +109,17 @@ class UrdfEnv(gym.Env):
         return observation
 
     def addObstacle(self, obst):
-        # todo: refresh the observation space
+        # add obstacle to environment
         self._obsts.append(obst)
         obst.add2Bullet(p)
+
+
+        # refresh observation space of robots sensors
+        sensors = self.robot.getSensors()
+        curDict = dict(self.observation_space.spaces)
+        for sensor in sensors:
+            curDict[sensor.name()] = sensor.getObservationSpace()
+        self.observation_space = gym.spaces.Dict(curDict)
 
     def getObstacles(self):
         return self._obsts
@@ -132,15 +140,6 @@ class UrdfEnv(gym.Env):
         curDict = dict(self.observation_space.spaces)
         curDict[sensor.name()] = sensor.getObservationSpace()
         self.observation_space = gym.spaces.Dict(curDict)
-
-        """
-
-        if sensor.name() in self.observation_space.keys():
-            warnings.warn("{} already exists, overwriting sensor in observation_space dictionary".format(sensor.name()))
-
-        self.observation_space[sensor.name()] = sensor.getObservationSpace()
-        """
-
 
     def seed(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
