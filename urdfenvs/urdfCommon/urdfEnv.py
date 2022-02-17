@@ -6,22 +6,36 @@ import warnings
 from abc import abstractmethod
 from urdfenvs.urdfCommon.plane import Plane
 
+
 class WrongObservationError(Exception):
     def __init__(self, msg, observation, observationSpace):
         msgExt = self.getWrongObservation(observation, observationSpace)
         super().__init__(msg + msgExt)
 
     def getWrongObservation(self, o, os):
-        # todo: this checker crashes on nested dictionaries because it looks for dict().low() which does not exist
-        msgExt = ": "
-        for key in o.keys():
-            if not os[key].contains(o[key]):
-                msgExt += "Error in " + key
-                # for i, val in enumerate(o[key]):
-                #     if val < os[key].low[i]:
-                #         msgExt += f"[{i}]: {val} < {os[key].low[i]}"
-                #     elif val > os[key].high[i]:
-                #         msgExt += f"[{i}]: {val} > {os[key].high[i]}"
+        msgExt = ":\n"
+        msgExt += self.checkDict(o, os)
+        return msgExt
+
+    def checkDict(self, o_dict, os_dict, depth=1, tabbing=''):
+        msgExt = ''
+
+        for key in o_dict.keys():
+            if not os_dict[key].contains(o_dict[key]):
+                if isinstance(o_dict[key], dict):
+                    msgExt += tabbing + key + '\n'
+                    msgExt += self.checkDict(o_dict[key], os_dict[key], depth=depth+1, tabbing=tabbing+'\t')
+                else:
+                    msgExt += self.checkBox(o_dict[key], os_dict[key], key, depth, tabbing)
+        return msgExt
+
+    def checkBox(self, o_box, os_box, key, depth, tabbing):
+        msgExt = tabbing + "Error in " + key + "\n"
+        for i, val in enumerate(o_box):
+            if val < os_box.low[i]:
+                msgExt += f"{tabbing}\t{key}[{i}]: {val} < {os_box.low[i]}\n"
+            elif val > os_box.high[i]:
+                msgExt += f"{tabbing}\t{key}[{i}]: {val} > {os_box.high[i]}\n"
         return msgExt
 
 
@@ -113,11 +127,17 @@ class UrdfEnv(gym.Env):
 
     def addSensor(self, sensor):
         self.robot.addSensor(sensor)
+        curDict = dict(self.observation_space.spaces)
+        curDict[sensor.name()] = sensor.getObservationSpace()
+        self.observation_space = gym.spaces.Dict(curDict)
+
+        """
 
         if sensor.name() in self.observation_space.keys():
             warnings.warn("{} already exists, overwriting sensor in observation_space dictionary".format(sensor.name()))
 
         self.observation_space[sensor.name()] = sensor.getObservationSpace()
+        """
 
 
     def seed(self, seed=None):
