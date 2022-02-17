@@ -1,7 +1,6 @@
 import numpy as np
 import pybullet as p
 import gym
-import sys
 from urdfenvs.sensors.sensor import Sensor
 
 
@@ -27,18 +26,16 @@ class PseudoSensor(Sensor):
     def getObservationSpace(self):
 
         spacesDict = gym.spaces.Dict()
-        min = sys.float_info.min
-        max = sys.float_info.max
+        min_os_value = -1000
+        max_os_value = 1000
 
         for obj_id in range(2, p.getNumBodies()):
             spacesDict[str(obj_id)] = gym.spaces.Dict({
-                "x": gym.spaces.Box(low=min, high=max, shape=(3, ), dtype=np.float64),
-                "xdot": gym.spaces.Box(low=min, high=max, shape=(3, ), dtype=np.float64),
+                "x": gym.spaces.Box(low=min_os_value, high=max_os_value, shape=(3, ), dtype=np.float64),
+                "xdot": gym.spaces.Box(low=min_os_value, high=max_os_value, shape=(3, ), dtype=np.float64),
                 "theta": gym.spaces.Box(low=-2*np.pi, high=2*np.pi, shape=(3, ), dtype=np.float64),
-                "thetadot": gym.spaces.Box(low=min, high=max, shape=(3, ), dtype=np.float64)
+                "thetadot": gym.spaces.Box(low=min_os_value, high=max_os_value, shape=(3, ), dtype=np.float64)
              })
-
-        # todo: what is a goal? Should i have a goal observation space? for a sensor?
 
         return spacesDict
 
@@ -60,4 +57,5 @@ class PseudoSensor(Sensor):
                 "theta": p.getEulerFromQuaternion(pos[1]),
                 "thetadot": vel[1]
                 }
+
         return observation
