@@ -1,7 +1,7 @@
 import gym
 import urdfenvs.pointRobotUrdf
 import urdfenvs.boxerRobot
-from urdfenvs.sensors.pseudo_sensor import PseudoSensor
+from urdfenvs.sensors.obstacle import ObstacleSensor
 from examples.sceneObjects.obstacles import sphereObst1, sphereObst2, urdfObst1, dynamicSphereObst3
 import numpy as np
 
@@ -17,19 +17,19 @@ def main():
     pos0 = np.array([1.0, 0.1, 0.0])
     vel0 = np.array([1.0, 0.0, 0.0])
     ob = env.reset(pos=pos0, vel=vel0)
-    # env.setWalls(limits=[[-3, -2], [3, 2]])
+    env.setWalls(limits=[[-3, -2], [3, 2]])
 
     # add obstacles
     env.addObstacle(sphereObst1)
-    # env.addObstacle(sphereObst2)
-    # env.addObstacle(urdfObst1)
-    # env.addObstacle(dynamicSphereObst3)
+    env.addObstacle(sphereObst2)
+    env.addObstacle(urdfObst1)
+    env.addObstacle(dynamicSphereObst3)
 
     env.addObstacle(urdfObst1)
     env.addObstacle(dynamicSphereObst3)
 
     # add sensor
-    sensor = PseudoSensor()
+    sensor = ObstacleSensor()
     env.addSensor(sensor)
 
     for e in range(n_episodes):
@@ -40,7 +40,7 @@ def main():
             t += env.dt()
             action = defaultAction
             ob, reward, done, info = env.step(action)
-            # print(ob)
+            print(ob)
             cumReward += reward
 
 if __name__ == '__main__':

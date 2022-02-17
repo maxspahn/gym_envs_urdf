@@ -19,13 +19,7 @@ class WrongObservationError(Exception):
 
     def checkDict(self, o_dict, os_dict, depth=1, tabbing=''):
         msgExt = ''
-
-
         for key in o_dict.keys():
-
-            # todo: warning if o_dict[key] or especially os_dict[key] is an Dict()
-            #  (and key is not in there which results in a error)
-
             if not os_dict[key].contains(o_dict[key]):
                 if isinstance(o_dict[key], dict):
                     msgExt += tabbing + key + '\n'

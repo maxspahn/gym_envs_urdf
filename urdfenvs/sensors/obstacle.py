@@ -4,28 +4,32 @@ import gym
 from urdfenvs.sensors.sensor import Sensor
 
 
-class PseudoSensor(Sensor):
+class ObstacleSensor(Sensor):
     """
-    the PseudoSensor class is a sensor sensing the exact position of every object. The PseudoSensor is thus
-    a full information sensor which in the real world can never exist. The PseudoSensor returns a dictionary
+    the ObstacleSensor class is a sensor sensing the exact position of every object. The ObstacleSensor is thus
+    a full information sensor which in the real world can never exist. The ObstacleSensor returns a dictionary
     with the position of every object when the sense function is called.
     """
 
-    def __init__(self, obstacles=[], goals=[]):
-        super().__init__("pseudoSensor")
-        self._obstacles = obstacles
+    def __init__(self):
+        super().__init__("obstacleSensor")
         self._observation = np.zeros(self.getOSpaceSize())
-        self._goals = goals
 
     def getOSpaceSize(self):
+        """
+        Getter for the dimension of the observation space.
+        """
         size = 0
         for obj_id in range(2, p.getNumBodies()):
-            size += 12  # add space for x, xdot, theta and thetadot
+            size += 12  # add space for x, xdot, theta and thetadot for every object
         return size
 
     def getObservationSpace(self):
-
+        """
+        Create observation space, all observed objects should be inside the observation space.
+        """
         spacesDict = gym.spaces.Dict()
+
         min_os_value = -1000
         max_os_value = 1000
 
