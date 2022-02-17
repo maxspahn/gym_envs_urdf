@@ -32,13 +32,11 @@ class PseudoSensor(Sensor):
 
         for obj_id in range(2, p.getNumBodies()):
             spacesDict[str(obj_id)] = gym.spaces.Dict({
-                # "name": gym.spaces.Box(sys.float_info.min, sys.float_info.max, shape=(3, 1), dtype=str),
-                "x": gym.spaces.Box(low=min, high=max, shape=(3, 1), dtype=np.float64),
-                "xdot": gym.spaces.Box(low=min, high=max, shape=(3, 1), dtype=np.float64),
-                "theta": gym.spaces.Box(low=-2*np.pi, high=2*np.pi, shape=(3, 1), dtype=np.float64),
-                "thetadot": gym.spaces.Box(low=min, high=max, shape=(3, 1), dtype=np.float64)
+                "x": gym.spaces.Box(low=min, high=max, shape=(3, ), dtype=np.float64),
+                "xdot": gym.spaces.Box(low=min, high=max, shape=(3, ), dtype=np.float64),
+                "theta": gym.spaces.Box(low=-2*np.pi, high=2*np.pi, shape=(3, ), dtype=np.float64),
+                "thetadot": gym.spaces.Box(low=min, high=max, shape=(3, ), dtype=np.float64)
              })
-
 
         # todo: what is a goal? Should i have a goal observation space? for a sensor?
 
@@ -56,10 +54,10 @@ class PseudoSensor(Sensor):
             pos = p.getBasePositionAndOrientation(obj_id)
             vel = p.getBaseVelocity(obj_id)
 
-            observation[obj_id] = {"name": p.getBodyInfo(obj_id)[1],
-                                    "x": pos[0],
-                                    "xdot": vel[0],
-                                    "theta": p.getEulerFromQuaternion(pos[1]),
-                                    "thetadot": vel[1]
-                                   }
+            observation[str(obj_id)] = {
+                "x": pos[0],
+                "xdot": vel[0],
+                "theta": p.getEulerFromQuaternion(pos[1]),
+                "thetadot": vel[1]
+                }
         return observation
