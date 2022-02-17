@@ -113,13 +113,15 @@ class UrdfEnv(gym.Env):
         self._obsts.append(obst)
         obst.add2Bullet(p)
 
-
         # refresh observation space of robots sensors
         sensors = self.robot.getSensors()
         curDict = dict(self.observation_space.spaces)
         for sensor in sensors:
             curDict[sensor.name()] = sensor.getObservationSpace()
         self.observation_space = gym.spaces.Dict(curDict)
+
+        if  self._t is not 0.0:
+            warnings.warn("Adding an object while the simulation already started")
 
     def getObstacles(self):
         return self._obsts
