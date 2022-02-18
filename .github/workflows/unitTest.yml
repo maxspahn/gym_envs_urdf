@@ -55,7 +55,7 @@ jobs:
       # install your root project, if required
       #----------------------------------------------
       - name: Install library
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction -E scenes
       #----------------------------------------------
       #              run test suite
       #----------------------------------------------

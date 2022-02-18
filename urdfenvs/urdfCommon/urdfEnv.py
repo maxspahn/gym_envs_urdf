@@ -3,7 +3,6 @@ import time
 import numpy as np
 import pybullet as p
 import warnings
-
 from abc import abstractmethod
 from urdfenvs.urdfCommon.plane import Plane
 
@@ -14,15 +13,28 @@ class WrongObservationError(Exception):
         super().__init__(msg + msgExt)
 
     def getWrongObservation(self, o, os):
-        msgExt = ": "
-        for key in o.keys():
-            if not os[key].contains(o[key]):
-                msgExt += "Error in " + key
-                for i, val in enumerate(o[key]):
-                    if val < os[key].low[i]:
-                        msgExt += f"[{i}]: {val} < {os[key].low[i]}"
-                    elif val > os[key].high[i]:
-                        msgExt += f"[{i}]: {val} > {os[key].high[i]}"
+        msgExt = ":\n"
+        msgExt += self.checkDict(o, os)
+        return msgExt
+
+    def checkDict(self, o_dict, os_dict, depth=1, tabbing=''):
+        msgExt = ''
+        for key in o_dict.keys():
+            if not os_dict[key].contains(o_dict[key]):
+                if isinstance(o_dict[key], dict):
+                    msgExt += tabbing + key + '\n'
+                    msgExt += self.checkDict(o_dict[key], os_dict[key], depth=depth+1, tabbing=tabbing+'\t')
+                else:
+                    msgExt += self.checkBox(o_dict[key], os_dict[key], key, depth, tabbing)
+        return msgExt
+
+    def checkBox(self, o_box, os_box, key, depth, tabbing):
+        msgExt = tabbing + "Error in " + key + "\n"
+        for i, val in enumerate(o_box):
+            if val < os_box.low[i]:
+                msgExt += f"{tabbing}\t{key}[{i}]: {val} < {os_box.low[i]}\n"
+            elif val > os_box.high[i]:
+                msgExt += f"{tabbing}\t{key}[{i}]: {val} > {os_box.high[i]}\n"
         return msgExt
 
 
@@ -42,6 +54,7 @@ class UrdfEnv(gym.Env):
         self._maxSteps = 10000000
         self._obsts = []
         self._goals = []
+        self.observation_space = gym.spaces.Dict()
         if self._render:
             cid = p.connect(p.SHARED_MEMORY)
             if (cid < 0):
@@ -96,8 +109,22 @@ class UrdfEnv(gym.Env):
         return observation
 
     def addObstacle(self, obst):
+        # add obstacle to environment
         self._obsts.append(obst)
         obst.add2Bullet(p)
+
+        # refresh observation space of robots sensors
+        sensors = self.robot.getSensors()
+        curDict = dict(self.observation_space.spaces)
+        for sensor in sensors:
+            curDict[sensor.name()] = sensor.getObservationSpace()
+        self.observation_space = gym.spaces.Dict(curDict)
+
+        if  self._t != 0.0:
+            warnings.warn("Adding an object while the simulation already started")
+
+    def getObstacles(self):
+        return self._obsts
 
     def addGoal(self, goal):
         self._goals.append(goal)
