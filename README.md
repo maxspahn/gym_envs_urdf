@@ -40,6 +40,8 @@ Reinforcement-Learning but rather to local motion planning in general.
   </tr>
 </table>
 
+Click here for the detailed [documentation](https://maxspahn.github.io/gym_envs_urdf/#).
+
 
 ## Installation
 
