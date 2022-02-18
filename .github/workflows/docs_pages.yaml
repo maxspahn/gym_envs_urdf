@@ -27,7 +27,7 @@ jobs:
         mkdir gh-pages
         touch gh-pages/.nojekyll
         cd docs/
-        poetry run sphinx-build -b html . _build
+        poetry run sphinx-build -b html ./source _build
         cp -r _build/* ../gh-pages/        
     - name: Deploy documentation
       if: ${{ github.event_name == 'push' }}
