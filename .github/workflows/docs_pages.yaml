@@ -2,10 +2,11 @@ name: Docs2Pages
 on:
   push:
     tags: '*'
+    branches:
+      - ft-sphinx-docs
   pull_request:
     branches:
       - master
-      - ft-sphinx-docs
 
 jobs:
   build-docs:
