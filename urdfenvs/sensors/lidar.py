@@ -2,19 +2,18 @@ import numpy as np
 import pybullet as p
 import gym
 
+from urdfenvs.sensors.sensor import Sensor
 
-class Lidar(object):
+
+class Lidar(Sensor):
 
     def __init__(self, linkId, nbRays=10, rayLength=10.0):
+        super().__init__("lidarSensor")
         self._nbRays = nbRays
         self._rayLength = rayLength
         self._linkId = linkId
         self._thetas = [i * 2*np.pi/self._nbRays for i in range(self._nbRays)]
         self._relPositions = np.zeros(2*nbRays)
-        self._name = "lidarSensor"
-
-    def name(self):
-        return self._name
 
     def getOSpaceSize(self):
         return self._nbRays * 2
