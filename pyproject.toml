@@ -15,10 +15,14 @@ pynput = {version = "^1.7.6", optional = true}
 multiprocess = {version = "^0.70.12", optional = true}
 urdfpy = {git = "https://git@github.com/maxspahn/urdfpy.git", rev = "fix-networkx-dependency"}
 pytest = "^6.2.5"
+Sphinx = { version = "4.2.0", optional = true }
+sphinx-rtd-theme = { version = "1.0.0", optional = true }
+sphinxcontrib-napoleon = { version = "0.7", optional = true }
 
 [tool.poetry.extras]
 scenes = ["motion-planning-scenes"]
 keyboard = ["pynput", "multiprocess"]
+docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-napoleon"]
 
 
 
