@@ -56,10 +56,10 @@ class ObstacleSensor(Sensor):
             vel = p.getBaseVelocity(obj_id)
 
             observation[str(obj_id)] = {
-                "x": pos[0],
-                "xdot": vel[0],
-                "theta": p.getEulerFromQuaternion(pos[1]),
-                "thetadot": vel[1]
+                "x": np.array(pos[0]),
+                "xdot": np.array(vel[0]),
+                "theta": np.array(p.getEulerFromQuaternion(pos[1])),
+                "thetadot": np.array(vel[1])
                 }
 
         return observation
