@@ -3,7 +3,7 @@ on:
   push:
     tags: '*'
     branches:
-      - ft-sphinx-docs
+      - master
   pull_request:
     branches:
       - master
