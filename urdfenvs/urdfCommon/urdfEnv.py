@@ -120,7 +120,7 @@ class UrdfEnv(gym.Env):
             curDict[sensor.name()] = sensor.getObservationSpace()
         self.observation_space = gym.spaces.Dict(curDict)
 
-        if  self._t is not 0.0:
+        if  self._t != 0.0:
             warnings.warn("Adding an object while the simulation already started")
 
     def getObstacles(self):
