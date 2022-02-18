@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Generic URDF robots &#8212; urdfEnvs  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing" href="contributing.html" />
+    <link rel="prev" title="Welcome to urdfEnvs’s documentation!" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="contributing.html" title="Contributing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to urdfEnvs’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">urdfEnvs  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Generic URDF robots</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="generic-urdf-robots">
+<h1>Generic URDF robots<a class="headerlink" href="#generic-urdf-robots" title="Permalink to this headline">¶</a></h1>
+<p>In this package, generic urdf robots and a panda gym environment are
+available. The goal is to make this environment as easy as possible to
+deploy. Although, we used the OpenAI-Gym framing, these environments are
+not necessarly restricted to Reinforcement-Learning but rather to local
+motion planning in general.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="img1" src="_images/pointRobot.gif" /></p></td>
+<td><p><img alt="img2" src="_images/pointRobotKeyboardInput.gif" /></p></td>
+<td><p><img alt="img3" src="_images/boxerRobot.gif" /></p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><img alt="img4" src="_images/tiagoKeyboardInput.gif" /></p></td>
+<td><p><img alt="img5" src="_images/panda.gif" /></p></td>
+<td><p><img alt="img6" src="_images/albert.gif" /></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>This package depends on casadi for dynamics generation and gym.
+Dependencies should be installed through pip or poetry, see below.</p>
+<p>Using pip, you can use</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install <span class="s1">&#39;.[options]&#39;</span>
+</pre></div>
+</div>
+<p>Using poetry</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry install -E &lt;options&gt;
+</pre></div>
+</div>
+<p>Options are <code class="docutils literal notranslate"><span class="pre">keyboard</span></code> and <code class="docutils literal notranslate"><span class="pre">scenes</span></code>.</p>
+</section>
+<section id="switching">
+<h1>Switching<a class="headerlink" href="#switching" title="Permalink to this headline">¶</a></h1>
+<p>Environments can be created using the normal gym syntax. For example the
+below code line creates a planar robot with 3 links and a constant k.
+Actions are torques to the individual joints.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;nLink-urdf-reacher-vel-v0&#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A holonomic and a differential drive mobile manipulator are implemented:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;albert-reacher-vel-v0&#39;</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;mobile-reacher-tor-v0&#39;</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For most robots, different control interfaces are available, velocity
+control, acceleration control and torque control.</p>
+</section>
+<section id="robot-control-with-the-keyboard">
+<h1>Robot control with the keyboard<a class="headerlink" href="#robot-control-with-the-keyboard" title="Permalink to this headline">¶</a></h1>
+<p>Control robot actuators with keyboard keys. This is done by: * setting
+up a parent en child process with a pipe connection inbetween * setup
+and start main process with parent_connection as arguement * setup
+Responder object with child_connection as arguement * start Responder
+with parent process as arguement</p>
+<p>In the main loop an request for action should be made followed by
+wainting for a response as such:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parent_conn</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;request_action&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<span class="n">keyboard_data</span> <span class="o">=</span> <span class="n">parent_conn</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+<span class="n">action</span> <span class="o">=</span> <span class="n">keyboard_data</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>An example can be found in examples/keyboard_input_example.py</p>
+</section>
+<section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>Examples can be found in the corresponding folder.</p>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Generic URDF robots</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#switching">Switching</a></li>
+<li><a class="reference internal" href="#robot-control-with-the-keyboard">Robot control with the keyboard</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to urdfEnvs’s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="contributing.html"
+                        title="next chapter">Contributing</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/introduction.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="contributing.html" title="Contributing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to urdfEnvs’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">urdfEnvs  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Generic URDF robots</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Max Spahn.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>
