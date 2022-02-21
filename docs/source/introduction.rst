@@ -66,14 +66,27 @@ A holonomic and a differential drive mobile manipulator are implemented:
 For most robots, different control interfaces are available, velocity
 control, acceleration control and torque control.
 
+Adding sensors to the robot
+===========================
+A robot can be given a lidar or obstacle sensor by creating a sensor
+object and passing it to the environment:
+
+.. code:: python
+    sensor = ObstacleSensor()
+    env.addSensor(sensor)
+
+The observations from the sensor are returned by the ``env.step(action)`` call.
+The structure of the observation varies depending on the sensor and its arguments
+for more info see the Sensor class and subclasses located at urdfenvs/sensors/
+
 Robot control with the keyboard
 ===============================
 
-Control robot actuators with keyboard keys. This is done by: \* setting
-up a parent en child process with a pipe connection inbetween \* setup
-and start main process with parent\_connection as arguement \* setup
-Responder object with child\_connection as arguement \* start Responder
-with parent process as arguement
+Control robot actuators with keyboard keys. This is done by:
+- setting up a parent en child process with a pipe connection inbetween
+- setup and start main process with parent\_connection as arguement
+- setup Responder object with child\_connection as arguement
+- start Responder with parent process as arguement
 
 In the main loop an request for action should be made followed by
 wainting for a response as such:
@@ -89,4 +102,4 @@ An example can be found in examples/keyboard\_input\_example.py
 Examples
 ========
 
-Examples can be found in the corresponding folder.
+Examples can be found in the urdfenvs/examples folder.
