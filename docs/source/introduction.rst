@@ -72,6 +72,7 @@ A robot can be given a lidar or obstacle sensor by creating a sensor
 object and passing it to the environment:
 
 .. code:: python
+
     sensor = ObstacleSensor()
     env.addSensor(sensor)
 
