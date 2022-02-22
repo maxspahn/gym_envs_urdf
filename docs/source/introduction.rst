@@ -83,13 +83,14 @@ Robot control with the keyboard
 ===============================
 
 Control robot actuators with keyboard keys. This is done by:
-- setting up a parent en child process with a pipe connection inbetween
-- setup and start main process with parent\_connection as arguement
-- setup Responder object with child\_connection as arguement
-- start Responder with parent process as arguement
+
+- Setting up a parent en child process with a pipe connection inbetween
+- Setup and start main process with parent\_connection as arguement
+- Setup Responder object with child\_connection as arguement
+- Start Responder with parent process as arguement
 
 In the main loop an request for action should be made followed by
-wainting for a response as such:
+waiting for a response as such:
 
 .. code:: python
 
@@ -97,9 +98,12 @@ wainting for a response as such:
     keyboard_data = parent_conn.recv()
     action = keyboard_data["action"]
 
-An example can be found in examples/keyboard\_input\_example.py
+Additionally custom key bindings and a default action can and passed as arguement
+to the responder. An example can be found in `urdfenvs/examples/keyboard_input.py
+<https://github.com/maxspahn/gym_envs_urdf/blob/master/examples/keyboard_input.py>`_.
 
 Examples
 ========
 
-Examples can be found in the urdfenvs/examples folder.
+Examples can be found in the `urdfenvs/examples
+<https://github.com/maxspahn/gym_envs_urdf/tree/master/examples>`_ folder.
