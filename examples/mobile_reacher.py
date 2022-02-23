@@ -15,7 +15,7 @@ def main():
     n_steps = 100000
     cumReward = 0.0
     for e in range(n_episodes):
-        ob = env.reset(pos=np.zeros(10), vel=np.zeros(10))
+        ob = env.reset()
         print("Starting episode")
         for i in range(n_steps):
             if (int(i/100))%2 == 0:
