@@ -756,7 +756,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "trimesh"
-version = "3.10.0"
+version = "3.10.1"
 description = "Import, export, process, analyze and view triangular meshes."
 category = "main"
 optional = false
@@ -766,9 +766,9 @@ python-versions = "*"
 numpy = "*"
 
 [package.extras]
-all = ["mapbox-earcut", "psutil", "msgpack", "networkx", "meshio", "colorlog", "shapely", "sympy", "scikit-image", "scipy", "svg.path", "glooey", "lxml", "rtree", "xatlas", "pycollada", "chardet", "python-fcl", "setuptools", "requests", "pyglet", "xxhash", "triangle", "pillow", "jsonschema"]
-easy = ["lxml", "rtree", "msgpack", "pycollada", "pillow", "chardet", "networkx", "setuptools", "shapely", "sympy", "colorlog", "requests", "pyglet", "xxhash", "scipy", "svg.path", "jsonschema"]
-test = ["pytest", "ezdxf", "pytest-cov", "coveralls", "pyinstrument"]
+all = ["scipy", "xxhash", "pyglet", "jsonschema", "rtree", "shapely", "chardet", "colorlog", "meshio", "triangle", "requests", "xatlas", "pycollada", "networkx", "pillow", "lxml", "glooey", "setuptools", "psutil", "sympy", "python-fcl", "msgpack", "mapbox-earcut", "scikit-image", "svg.path"]
+easy = ["scipy", "networkx", "pillow", "lxml", "xxhash", "setuptools", "pyglet", "jsonschema", "rtree", "shapely", "chardet", "colorlog", "sympy", "pycollada", "msgpack", "requests", "svg.path"]
+test = ["ezdxf", "coveralls", "pytest", "pyinstrument", "pytest-cov"]
 
 [[package]]
 name = "typing-extensions"
@@ -1425,8 +1425,8 @@ toml = [
     {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
 ]
 trimesh = [
-    {file = "trimesh-3.10.0-py3-none-any.whl", hash = "sha256:4f524af77ceb698c607bb2c3280423caa8e77735c861d59ddd9cc3a62eb80c11"},
-    {file = "trimesh-3.10.0.tar.gz", hash = "sha256:98fb15db9a03f0594f4833861ce5fe9cb08dfc8e914bcde5dde7d40a06af9876"},
+    {file = "trimesh-3.10.1-py3-none-any.whl", hash = "sha256:99b5502ae73b1b4c9854d9f25543bcd21415c6ef4edeca4120353073552a54b8"},
+    {file = "trimesh-3.10.1.tar.gz", hash = "sha256:e22d694a90b2754fd2ce8312916e4d379ace55df49d3dfdc04e2c4e96402504d"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.1.1-py3-none-any.whl", hash = "sha256:21c85e0fe4b9a155d0799430b0ad741cdce7e359660ccbd8b530613e8df88ce2"},
