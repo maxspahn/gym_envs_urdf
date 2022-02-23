@@ -29,7 +29,7 @@ class Lidar(Sensor):
         """
         Create observation space, all observations should be inside the observation space.
         """
-        return gym.spaces.Box(-self._rayLength, self._rayLength, shape=(self.getOSpaceSize(), ), dtype=np.float64)
+        return gym.spaces.Box(0.0, self._rayLength, shape=(self.getOSpaceSize(), ), dtype=np.float64)
 
     def sense(self, robot):
         """
