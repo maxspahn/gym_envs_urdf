@@ -41,7 +41,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/visual/link1.dae"/>
+        <mesh filename="meshes/visual/link1.obj"/>
       </geometry>
       <material name="">
         <color rgba="1 1 1 1"/>
@@ -71,7 +71,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/visual/link2.dae"/>
+        <mesh filename="meshes/visual/link2.obj"/>
       </geometry>
       <material name="">
         <color rgba="1 1 1 1"/>
@@ -101,7 +101,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/visual/link3.dae"/>
+        <mesh filename="meshes/visual/link3.obj"/>
       </geometry>
       <material name="">
         <color rgba="1 1 1 1"/>
@@ -131,7 +131,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/visual/link4.dae"/>
+        <mesh filename="meshes/visual/link4.obj"/>
       </geometry>
       <material name="">
         <color rgba="1 1 1 1"/>
@@ -163,7 +163,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/visual/link5.dae"/>
+        <mesh filename="meshes/visual/link5.obj"/>
       </geometry>
       <material name="">
         <color rgba="1 1 1 1"/>
@@ -193,7 +193,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/visual/link6.dae"/>
+        <mesh filename="meshes/visual/link6.obj"/>
       </geometry>
       <material name="">
         <color rgba="1 1 1 1"/>
@@ -267,7 +267,7 @@
   <link name="panda_hand">
     <visual>
       <geometry>
-        <mesh filename="meshes/visual/hand.dae"/>
+        <mesh filename="meshes/visual/hand.obj"/>
       </geometry>
     </visual>
     <collision>
@@ -286,7 +286,7 @@
   <link name="panda_leftfinger">
     <visual>
       <geometry>
-        <mesh filename="meshes/visual/finger.dae"/>
+        <mesh filename="meshes/visual/finger.obj"/>
       </geometry>
     </visual>
     <collision>
@@ -306,7 +306,7 @@
     <visual>
       <origin rpy="0 0 3.14159265359" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/visual/finger.dae"/>
+        <mesh filename="meshes/visual/finger.obj"/>
       </geometry>
     </visual>
     <collision>
