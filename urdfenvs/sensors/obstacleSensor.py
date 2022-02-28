@@ -9,8 +9,10 @@ class ObstacleSensor(Sensor):
     the ObstacleSensor class is a sensor sensing the exact position of every object. The ObstacleSensor is thus
     a full information sensor which in the real world can never exist. The ObstacleSensor returns a dictionary
     with the position of every object when the sense function is called.
-    """
 
+    Assumption: p.getBodyInfo(0), p.getBodyInfo(1) are the robot and ground plane respectively
+                p.getBodyInfo(2), ..., p.getBodyInfo(p.getNumBodies()-1) are obstacles
+    """
     def __init__(self):
         super().__init__("obstacleSensor")
         self._observation = np.zeros(self.getOSpaceSize())
@@ -20,7 +22,7 @@ class ObstacleSensor(Sensor):
         Getter for the dimension of the observation space.
         """
         size = 0
-        for obj_id in range(2, p.getNumBodies()):
+        for obj_id in range(0, p.getNumBodies()):
             size += 12  # add space for x, xdot, theta and thetadot for every object
         return size
 
@@ -32,8 +34,8 @@ class ObstacleSensor(Sensor):
 
         min_os_value = -1000
         max_os_value = 1000
+        for obj_id in range(0, p.getNumBodies()):
 
-        for obj_id in range(2, p.getNumBodies()):
             spacesDict[str(obj_id)] = gym.spaces.Dict({
                 "x": gym.spaces.Box(low=min_os_value, high=max_os_value, shape=(3, ), dtype=np.float64),
                 "xdot": gym.spaces.Box(low=min_os_value, high=max_os_value, shape=(3, ), dtype=np.float64),
@@ -49,8 +51,7 @@ class ObstacleSensor(Sensor):
         """
         observation = {}
 
-        # assumption: p.getBodyInfo(0), p.getBodyInfo(1) are the robot and ground plane respectively
-        for obj_id in range(2, p.getNumBodies()):
+        for obj_id in range(0, p.getNumBodies()):
 
             pos = p.getBasePositionAndOrientation(obj_id)
             vel = p.getBaseVelocity(obj_id)
