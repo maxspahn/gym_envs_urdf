@@ -6,6 +6,10 @@ from urdfenvs.sensors.sensor import Sensor
 
 
 class Lidar(Sensor):
+    """
+    The Lidar sensor senses the distance toward the next object. A maximum sensing distance and the number of rays can
+    be set. The Rays are evenly distributed in a circle.
+    """
 
     def __init__(self, linkId, nbRays=10, rayLength=10.0):
         super().__init__("lidarSensor")
@@ -16,12 +20,21 @@ class Lidar(Sensor):
         self._relPositions = np.zeros(2*nbRays)
 
     def getOSpaceSize(self):
+        """
+        Getter for the dimension of the observation space.
+        """
         return self._nbRays * 2
 
     def getObservationSpace(self):
-        return gym.spaces.Box(-10, 10, shape=(self.getOSpaceSize(), ), dtype=np.float64)
+        """
+        Create observation space, all observations should be inside the observation space.
+        """
+        return gym.spaces.Box(0.0, self._rayLength, shape=(self.getOSpaceSize(), ), dtype=np.float64)
 
     def sense(self, robot):
+        """
+        Sense the distance toward the next object with the Lidar.
+        """
         linkState = p.getLinkState(robot, self._linkId)
         lidarPosition = linkState[0]
         rayStart = lidarPosition
