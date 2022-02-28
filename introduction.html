@@ -101,25 +101,40 @@ Actions are torques to the individual joints.</p>
 <p>For most robots, different control interfaces are available, velocity
 control, acceleration control and torque control.</p>
 </section>
+<section id="adding-sensors-to-the-robot">
+<h1>Adding sensors to the robot<a class="headerlink" href="#adding-sensors-to-the-robot" title="Permalink to this headline">¶</a></h1>
+<p>A robot can be given a lidar or obstacle sensor by creating a sensor
+object and passing it to the environment:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sensor</span> <span class="o">=</span> <span class="n">ObstacleSensor</span><span class="p">()</span>
+<span class="n">env</span><span class="o">.</span><span class="n">addSensor</span><span class="p">(</span><span class="n">sensor</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The observations from the sensor are returned by the <code class="docutils literal notranslate"><span class="pre">env.step(action)</span></code> call.
+The structure of the observation varies depending on the sensor and its arguments
+for more info see the Sensor class and subclasses located at urdfenvs/sensors/</p>
+</section>
 <section id="robot-control-with-the-keyboard">
 <h1>Robot control with the keyboard<a class="headerlink" href="#robot-control-with-the-keyboard" title="Permalink to this headline">¶</a></h1>
-<p>Control robot actuators with keyboard keys. This is done by: * setting
-up a parent en child process with a pipe connection inbetween * setup
-and start main process with parent_connection as arguement * setup
-Responder object with child_connection as arguement * start Responder
-with parent process as arguement</p>
+<p>Control robot actuators with keyboard keys. This is done by:</p>
+<ul class="simple">
+<li><p>Setting up a parent en child process with a pipe connection inbetween</p></li>
+<li><p>Setup and start main process with parent_connection as arguement</p></li>
+<li><p>Setup Responder object with child_connection as arguement</p></li>
+<li><p>Start Responder with parent process as arguement</p></li>
+</ul>
 <p>In the main loop an request for action should be made followed by
-wainting for a response as such:</p>
+waiting for a response as such:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parent_conn</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;request_action&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
 <span class="n">keyboard_data</span> <span class="o">=</span> <span class="n">parent_conn</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
 <span class="n">action</span> <span class="o">=</span> <span class="n">keyboard_data</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>An example can be found in examples/keyboard_input_example.py</p>
+<p>Additionally custom key bindings and a default action can and passed as arguement
+to the responder. An example can be found in <a class="reference external" href="https://github.com/maxspahn/gym_envs_urdf/blob/master/examples/keyboard_input.py">urdfenvs/examples/keyboard_input.py</a>.</p>
 </section>
 <section id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
-<p>Examples can be found in the corresponding folder.</p>
+<p>Examples can be found in the <a class="reference external" href="https://github.com/maxspahn/gym_envs_urdf/tree/master/examples">urdfenvs/examples</a> folder.</p>
 </section>
 
 
@@ -134,6 +149,7 @@ wainting for a response as such:</p>
 <li><a class="reference internal" href="#">Generic URDF robots</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#switching">Switching</a></li>
+<li><a class="reference internal" href="#adding-sensors-to-the-robot">Adding sensors to the robot</a></li>
 <li><a class="reference internal" href="#robot-control-with-the-keyboard">Robot control with the keyboard</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
