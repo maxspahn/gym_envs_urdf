@@ -57,6 +57,7 @@ class UrdfEnv(gym.Env):
         self.observation_space = gym.spaces.Dict()
         if self._render:
             cid = p.connect(p.SHARED_MEMORY)
+            p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
             if (cid < 0):
                 cid = p.connect(p.GUI)
         else:
