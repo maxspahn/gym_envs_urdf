@@ -22,7 +22,7 @@ class ObstacleSensor(Sensor):
         Getter for the dimension of the observation space.
         """
         size = 0
-        for obj_id in range(0, p.getNumBodies()):
+        for obj_id in range(2, p.getNumBodies()):
             size += 12  # add space for x, xdot, theta and thetadot for every object
         return size
 
@@ -34,7 +34,7 @@ class ObstacleSensor(Sensor):
 
         min_os_value = -1000
         max_os_value = 1000
-        for obj_id in range(0, p.getNumBodies()):
+        for obj_id in range(2, p.getNumBodies()):
 
             spacesDict[str(obj_id)] = gym.spaces.Dict({
                 "x": gym.spaces.Box(low=min_os_value, high=max_os_value, shape=(3, ), dtype=np.float64),
@@ -51,7 +51,7 @@ class ObstacleSensor(Sensor):
         """
         observation = {}
 
-        for obj_id in range(0, p.getNumBodies()):
+        for obj_id in range(2, p.getNumBodies()):
 
             pos = p.getBasePositionAndOrientation(obj_id)
             vel = p.getBaseVelocity(obj_id)
