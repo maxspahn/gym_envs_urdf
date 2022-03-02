@@ -1,4 +1,3 @@
-import pybullet as p
 import os
 import numpy as np
 
@@ -9,9 +8,9 @@ class BoxerRobot(DifferentialDriveRobot):
     def __init__(self):
         n = 2
         fileName = os.path.join(os.path.dirname(__file__), 'boxer.urdf')
+        super().__init__(n, fileName)
         self._r = 0.08
         self._l = 0.494
-        super().__init__(n, fileName)
 
     def setJointIndices(self):
         self.urdf_joints = [2, 3]
