@@ -59,6 +59,7 @@ class UrdfEnv(gym.Env):
             cid = p.connect(p.SHARED_MEMORY)
             if (cid < 0):
                 cid = p.connect(p.GUI)
+            p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
         else:
             p.connect(p.DIRECT)
 
