@@ -56,37 +56,6 @@ class TiagoRobot(DifferentialDriveRobot):
             44,
         ]
         self.castor_joints = [9, 10, 11, 12, 13, 14, 15, 16]
-        # TODO: This could be used as a starting point to get joint indices from urdf <01-12-21, mspahn> #
-        """
-        wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"]
-        torso_joint_name = ["torso_lift_joint"]
-        head_joint_names = ["head_" + str(i) + "_joint" for i in range(3)]
-        arm_right_joint_names = ["arm_right_" + str(i) + "_joint" for i in range(8)]
-        arm_left_joint_names = ["arm_left_" + str(i) + "_joint" for i in range(8)]
-        self._joint_names = (
-            wheel_joint_names
-            + torso_joint_name
-            + head_joint_names
-            + arm_right_joint_names
-            + arm_left_joint_names
-        )
-        robot = URDF.load(self.fileName)
-        self.urdf_joints = []
-        for i, joint in enumerate(robot.joints):
-            if joint.name in self._joint_names:
-                self.urdf_joints.append(i)
-
-        self.robot_joints = []
-        self.caster_joints = []
-        for _id in range(p.getNumJoints(self.robot)):
-            joint_name = p.getJointInfo(self.robot, _id)[1].decode("UTF-8")
-            if joint_name in self._joint_names:
-                self.robot_joints.append(_id)
-            if "caster" in joint_name:
-                self.caster_joints.append(_id)
-        __import__('pdb').set_trace()
-        self.robot_joints_gripper = []
-        """
 
     def setAccLimits(self):
         accLimit = np.ones(self._n)
