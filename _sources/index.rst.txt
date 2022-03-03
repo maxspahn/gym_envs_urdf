@@ -11,6 +11,7 @@ Welcome to urdfEnvs's documentation!
    :caption: Contents:
 
    introduction
+   developpers
    contributing
 
 
