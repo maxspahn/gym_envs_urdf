@@ -396,7 +396,7 @@ validation = ["lxml"]
 
 [[package]]
 name = "pyglet"
-version = "1.5.21"
+version = "1.5.22"
 description = "Cross-platform windowing and multimedia library"
 category = "main"
 optional = false
@@ -1233,8 +1233,8 @@ pycollada = [
     {file = "pycollada-0.6.tar.gz", hash = "sha256:fcd6f38fd981e350f9ec754d9671834017accd600e967d6d299a6cfdae5ba4f4"},
 ]
 pyglet = [
-    {file = "pyglet-1.5.21-py3-none-any.whl", hash = "sha256:11f11ddda4ee456284f2ddd1fe5c62fe29ba8c42074d3d9ae52d094abc2e1b7c"},
-    {file = "pyglet-1.5.21.zip", hash = "sha256:5aaaddb06dc4b6f9ba08254d8d806a2bd2406925a9caf3a51fdffbd5d09728e2"},
+    {file = "pyglet-1.5.22-py3-none-any.whl", hash = "sha256:19d1e4a5fba4c31861fd38664e96f60e3f05aa64c55ac7cebc350f6793bd9548"},
+    {file = "pyglet-1.5.22.zip", hash = "sha256:5630dc36ea00fdc11ad3a8394c676417ec365b25fdd9af57a107e19adc411b0f"},
 ]
 pygments = [
     {file = "Pygments-2.11.2-py3-none-any.whl", hash = "sha256:44238f1b60a76d78fc8ca0528ee429702aae011c265fe6a8dd8b63049ae41c65"},
