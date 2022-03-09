@@ -7,8 +7,8 @@ from urdfenvs.urdfCommon.differentialDriveRobot import DifferentialDriveRobot
 class TiagoRobot(DifferentialDriveRobot):
     def __init__(self):
         n = 19
-        fileName = os.path.join(os.path.dirname(__file__), "tiago_dual.urdf")
-        super().__init__(n, fileName)
+        _urdfFile = os.path.join(os.path.dirname(__file__), "tiago_dual.urdf")
+        super().__init__(n, _urdfFile)
         self._r = 0.1
         self._l = 0.4044
 
@@ -57,7 +57,7 @@ class TiagoRobot(DifferentialDriveRobot):
         ]
         self.castor_joints = [9, 10, 11, 12, 13, 14, 15, 16]
 
-    def setAccLimits(self):
+    def setAccelerationLimits(self):
         accLimit = np.ones(self._n)
         self._limitAcc_j[0, :] = -accLimit
         self._limitAcc_j[1, :] = accLimit

@@ -9,7 +9,7 @@ class MobileReacherAccEnv(MobileReacherEnv):
         return ob
 
     def applyAction(self, action):
-        self.robot.apply_acc_action(action, self.dt())
+        self.robot.apply_acceleration_action(action, self.dt())
 
     def setSpaces(self):
-        (self.observation_space, self.action_space) = self.robot.getAccSpaces()
+        (self.observation_space, self.action_space) = self.robot.getAccelerationSpaces()

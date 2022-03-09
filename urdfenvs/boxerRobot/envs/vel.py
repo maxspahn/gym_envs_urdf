@@ -6,4 +6,4 @@ class BoxerRobotVelEnv(BoxerRobotEnv):
         self.robot.apply_base_velocity(action)
 
     def setSpaces(self):
-        (self.observation_space, self.action_space) = self.robot.getVelSpaces()
+        (self.observation_space, self.action_space) = self.robot.getVelocitySpaces()
