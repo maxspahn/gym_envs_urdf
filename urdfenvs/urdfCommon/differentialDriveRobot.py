@@ -11,6 +11,7 @@ class DifferentialDriveRobot(GenericRobot):
         super().__init__(n, urdfFile)
         self._wheelRadius = None
         self._wheelDistance = None
+        self._spawnOffset = np.array([0.0, 0.0, 0.15])
 
     def ns(self):
         return self.n() + 1
@@ -19,9 +20,10 @@ class DifferentialDriveRobot(GenericRobot):
         if hasattr(self, "robot"):
             p.resetSimulation()
         baseOrientation = p.getQuaternionFromEuler([0, 0, pos[2]])
+        spawnPos = self._spawnOffset + np.array([pos[0], pos[1], 0.0])
         self.robot = p.loadURDF(
             fileName=self._urdfFile,
-            basePosition=[pos[0], pos[1], 0.15],
+            basePosition=spawnPos,
             baseOrientation=baseOrientation,
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
@@ -66,7 +68,7 @@ class DifferentialDriveRobot(GenericRobot):
         self._limitPos_j[1, 0:3] = np.array([10, 10, 2 * np.pi])
         self._limitVel_j[0, 0:3] = np.array([-4, -4, -10])
         self._limitVel_j[1, 0:3] = np.array([4, 4, 10])
-        self.setAccelerationsLimits()
+        self.setAccelerationLimits()
 
     def getObservationSpace(self):
         return gym.spaces.Dict(
@@ -123,8 +125,8 @@ class DifferentialDriveRobot(GenericRobot):
             )
 
     def apply_base_velocity(self, vels):
-        velocity_left_wheel = (vels[0] - 0.5 * self._wheelDistance * vels[1]) / self._wheelRadius
-        velocity_right_wheel = (vels[0] + 0.5 * self._wheelDistance * vels[1]) / self._wheelRadius
+        velocity_left_wheel = (vels[0] + 0.5 * self._wheelDistance * vels[1]) / self._wheelRadius
+        velocity_right_wheel = (vels[0] - 0.5 * self._wheelDistance * vels[1]) / self._wheelRadius
         wheelVelocities = np.array([velocity_left_wheel, velocity_right_wheel])
         self.apply_velocity_action_wheels(wheelVelocities)
 
@@ -136,6 +138,11 @@ class DifferentialDriveRobot(GenericRobot):
                 controlMode=p.VELOCITY_CONTROL,
                 targetVelocity=vels[i],
             )
+
+    def correctBaseOrientation(self, posBase):
+        if posBase[2] < -np.pi:
+            posBase[2] += 2 * np.pi
+        return posBase
 
     def updateState(self):
         """Updates the robot state.
@@ -157,9 +164,7 @@ class DifferentialDriveRobot(GenericRobot):
             ]
         )
         # make sure that the rotation is within -pi and pi
-        posBase[2] -= np.pi / 2.0
-        if posBase[2] < -np.pi:
-            posBase[2] += 2 * np.pi
+        self.correctBaseOrientation(posBase)
         # wheel velocities
         velWheels = p.getJointStates(self.robot, self.robot_joints)
         v_right = velWheels[0][1]
