@@ -5,9 +5,9 @@ import numpy as np
 
 
 class GenericRobot(ABC):
-    def __init__(self, n, fileName):
+    def __init__(self, n, urdfFile):
         self._n = n
-        self.fileName = fileName
+        self._urdfFile = urdfFile
         self.setJointIndices()
         self.readLimits()
         self._sensors = []
@@ -28,7 +28,7 @@ class GenericRobot(ABC):
         pass
 
     @abstractmethod
-    def setAccLimits(self):
+    def setAccelerationLimits(self):
         pass
 
     def getIndexedJointInfo(self):
@@ -38,7 +38,7 @@ class GenericRobot(ABC):
             indexedJointInfo[jointInfo[0]] = jointInfo[1]
         return indexedJointInfo
 
-    def getLimits(self):
+    def getJointLimits(self):
         return (self._limitPos_j, self._limitVel_j, self._limitTor_j)
 
     def getTorqueSpaces(self):
@@ -54,14 +54,14 @@ class GenericRobot(ABC):
             'xdot': gym.spaces.Box(low=self._limitVel_j[0, :], high=self._limitVel_j[1, :], dtype=np.float64), 
         })
 
-    def getVelSpaces(self):
+    def getVelocitySpaces(self):
         ospace = self.getObservationSpace()
         uu = self._limitVel_j[1, :]
         ul = self._limitVel_j[0, :]
         aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
         return (ospace, aspace)
 
-    def getAccSpaces(self):
+    def getAccelerationSpaces(self):
         ospace = self.getObservationSpace()
         uu = self._limitAcc_j[1, :]
         ul = self._limitAcc_j[0, :]
@@ -78,19 +78,16 @@ class GenericRobot(ABC):
                 force=self._friction,
             )
 
-    def get_ids(self):
-        return self.robot
-
     @abstractmethod
     def apply_torque_action(self, torques):
         pass
 
     @abstractmethod
-    def apply_vel_action(self, vels):
+    def apply_velocity_action(self, vels):
         pass
 
     @abstractmethod
-    def apply_acc_action(self, accs):
+    def apply_acceleration_action(self, accs):
         pass
 
     @abstractmethod
@@ -111,5 +108,5 @@ class GenericRobot(ABC):
         self._sensors.append(sensor)
         return sensor.getOSpaceSize()
 
-    def getSensors(self):
+    def sensors(self):
         return self._sensors

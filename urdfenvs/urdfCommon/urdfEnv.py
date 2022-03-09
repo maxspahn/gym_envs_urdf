@@ -115,7 +115,7 @@ class UrdfEnv(gym.Env):
         obst.add2Bullet(p)
 
         # refresh observation space of robots sensors
-        sensors = self.robot.getSensors()
+        sensors = self.robot.sensors()
         curDict = dict(self.observation_space.spaces)
         for sensor in sensors:
             curDict[sensor.name()] = sensor.getObservationSpace()

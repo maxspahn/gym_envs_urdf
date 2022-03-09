@@ -7,10 +7,10 @@ from urdfenvs.urdfCommon.genericRobot import GenericRobot
 
 
 class DifferentialDriveRobot(GenericRobot):
-    def __init__(self, n, fileName):
-        super().__init__(n, fileName)
-        self._r = None
-        self._l = None
+    def __init__(self, n, urdfFile):
+        super().__init__(n, urdfFile)
+        self._wheelRadius = None
+        self._wheelDistance = None
 
     def ns(self):
         return self.n() + 1
@@ -20,7 +20,7 @@ class DifferentialDriveRobot(GenericRobot):
             p.resetSimulation()
         baseOrientation = p.getQuaternionFromEuler([0, 0, pos[2]])
         self.robot = p.loadURDF(
-            fileName=self.fileName,
+            fileName=self._urdfFile,
             basePosition=[pos[0], pos[1], 0.15],
             baseOrientation=baseOrientation,
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
@@ -44,17 +44,16 @@ class DifferentialDriveRobot(GenericRobot):
             )
         # set base velocity
         self.updateState()
-        self._vels_int = vel
+        self._integratedVelocities = vel
 
     def readLimits(self):
-        robot = URDF.load(self.fileName)
+        robot = URDF.load(self._urdfFile)
         self._limitPos_j = np.zeros((2, self.ns()))
         self._limitVel_j = np.zeros((2, self.ns()))
         self._limitTor_j = np.zeros((2, self.n()))
         self._limitAcc_j = np.zeros((2, self.n()))
         for i in range(self.n()):
             joint = robot.joints[self.urdf_joints[i]]
-            print(joint.name)
             self._limitTor_j[0, i] = -joint.limit.effort
             self._limitTor_j[1, i] = joint.limit.effort
             if i >= 2:
@@ -67,7 +66,7 @@ class DifferentialDriveRobot(GenericRobot):
         self._limitPos_j[1, 0:3] = np.array([10, 10, 2 * np.pi])
         self._limitVel_j[0, 0:3] = np.array([-4, -4, -10])
         self._limitVel_j[1, 0:3] = np.array([4, 4, 10])
-        self.setAccLimits()
+        self.setAccelerationsLimits()
 
     def getObservationSpace(self):
         return gym.spaces.Dict(
@@ -99,22 +98,22 @@ class DifferentialDriveRobot(GenericRobot):
                 force=torques[i],
             )
 
-    def apply_acc_action(self, accs, dt):
-        self._vels_int += dt * accs
-        self._vels_int[0] = np.clip(
-            self._vels_int[0],
+    def apply_acceleration_action(self, accs, dt):
+        self._integratedVelocities += dt * accs
+        self._integratedVelocities[0] = np.clip(
+            self._integratedVelocities[0],
             0.7 * self._limitVelForward_j[0, 0],
             0.7 * self._limitVelForward_j[1, 0],
         )
-        self._vels_int[1] = np.clip(
-            self._vels_int[1],
+        self._integratedVelocities[1] = np.clip(
+            self._integratedVelocities[1],
             0.5 * self._limitVelForward_j[0, 1],
             0.5 * self._limitVelForward_j[1, 1],
         )
-        self.apply_base_velocity(self._vels_int)
-        self.apply_vel_action(self._vels_int)
+        self.apply_base_velocity(self._integratedVelocities)
+        self.apply_velocity_action(self._integratedVelocities)
 
-    def apply_vel_action_wheels(self, vels):
+    def apply_velocity_action_wheels(self, vels):
         for i in range(2):
             p.setJointMotorControl2(
                 self.robot,
@@ -124,12 +123,12 @@ class DifferentialDriveRobot(GenericRobot):
             )
 
     def apply_base_velocity(self, vels):
-        vel_left = (vels[0] - 0.5 * self._l * vels[1]) / self._r
-        vel_right = (vels[0] + 0.5 * self._l * vels[1]) / self._r
-        wheelVels = np.array([vel_right, vel_left])
-        self.apply_vel_action_wheels(wheelVels)
+        velocity_left_wheel = (vels[0] - 0.5 * self._wheelDistance * vels[1]) / self._wheelRadius
+        velocity_right_wheel = (vels[0] + 0.5 * self._wheelDistance * vels[1]) / self._wheelRadius
+        wheelVelocities = np.array([velocity_left_wheel, velocity_right_wheel])
+        self.apply_velocity_action_wheels(wheelVelocities)
 
-    def apply_vel_action(self, vels):
+    def apply_velocity_action(self, vels):
         for i in range(2, self._n):
             p.setJointMotorControl2(
                 self.robot,
@@ -168,14 +167,14 @@ class DifferentialDriveRobot(GenericRobot):
         # simple dynamics model to compute the forward and rotational velocity
         vf = np.array(
             [
-                0.5 * (v_right + v_left) * self._r,
-                (v_right - v_left) * self._r / self._l,
+                0.5 * (v_right + v_left) * self._wheelRadius,
+                (v_right - v_left) * self._wheelRadius / self._wheelDistance,
             ]
         )
-        Jnh = np.array(
+        jacobi_nonholonomic = np.array(
             [[np.cos(posBase[2]), 0], [np.sin(posBase[2]), 0], [0, 1]]
         )
-        velBase = np.dot(Jnh, vf)
+        velocityBase = np.dot(jacobi_nonholonomic, vf)
         # joint configurations for holonomic joints
         joint_pos_list = []
         joint_vel_list = []
@@ -189,5 +188,5 @@ class DifferentialDriveRobot(GenericRobot):
         self.state = {
             "x": np.concatenate((posBase, joint_pos)),
             "vel": vf,
-            "xdot": np.concatenate((velBase, joint_vel)),
+            "xdot": np.concatenate((velocityBase, joint_vel)),
         }

@@ -9,14 +9,14 @@ from urdfenvs.urdfCommon.genericRobot import GenericRobot
 
 
 class HolonomicRobot(GenericRobot):
-    def __init__(self, n, fileName):
-        super().__init__(n, fileName)
+    def __init__(self, n, urdfFile):
+        super().__init__(n, urdfFile)
 
     def reset(self, pos, vel):
         if hasattr(self, "robot"):
             p.resetSimulation()
         self.robot = p.loadURDF(
-            fileName=self.fileName,
+            fileName=self._urdfFile,
             basePosition=[0.0, 0.0, 0.0],
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
@@ -28,25 +28,24 @@ class HolonomicRobot(GenericRobot):
                 targetVelocity=vel[i],
             )
         self.updateState()
-        self._vels_int = vel
+        self._integratedVelocities = vel
 
 
     def readLimits(self):
-        robot = URDF.load(self.fileName)
+        robot = URDF.load(self._urdfFile)
         self._limitPos_j = np.zeros((2, self._n))
         self._limitVel_j = np.zeros((2, self._n))
         self._limitTor_j = np.zeros((2, self._n))
         self._limitAcc_j = np.zeros((2, self._n))
         for i, j in enumerate(self.urdf_joints):
             joint = robot.joints[j]
-            print(joint.name)
             self._limitPos_j[0, i] = joint.limit.lower
             self._limitPos_j[1, i] = joint.limit.upper
             self._limitVel_j[0, i] = -joint.limit.velocity
             self._limitVel_j[1, i] = joint.limit.velocity
             self._limitTor_j[0, i] = -joint.limit.effort
             self._limitTor_j[1, i] = joint.limit.effort
-        self.setAccLimits()
+        self.setAccelerationLimits()
 
     def getObservationSpace(self):
         return gym.spaces.Dict({
@@ -63,7 +62,7 @@ class HolonomicRobot(GenericRobot):
                 force=torques[i],
             )
 
-    def apply_vel_action(self, vels):
+    def apply_velocity_action(self, vels):
         for i in range(self._n):
             p.setJointMotorControl2(
                 self.robot,
@@ -72,9 +71,9 @@ class HolonomicRobot(GenericRobot):
                 targetVelocity=vels[i],
             )
 
-    def apply_acc_action(self, accs, dt):
-        self._vels_int += dt * accs
-        self.apply_vel_action(self._vels_int)
+    def apply_acceleration_action(self, accs, dt):
+        self._integratedVelocities += dt * accs
+        self.apply_velocity_action(self._integratedVelocities)
 
     def updateState(self):
         # Get Joint Configurations

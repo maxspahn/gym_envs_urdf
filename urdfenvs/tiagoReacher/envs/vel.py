@@ -5,7 +5,7 @@ class TiagoReacherVelEnv(TiagoReacherEnv):
 
     def applyAction(self, action):
         self.robot.apply_base_velocity(action)
-        self.robot.apply_vel_action(action)
+        self.robot.apply_velocity_action(action)
 
     def setSpaces(self):
-        (self.observation_space, self.action_space) = self.robot.getVelSpaces()
+        (self.observation_space, self.action_space) = self.robot.getVelocitySpaces()
