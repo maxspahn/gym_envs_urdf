@@ -9,8 +9,9 @@ class TiagoRobot(DifferentialDriveRobot):
         n = 19
         _urdfFile = os.path.join(os.path.dirname(__file__), "tiago_dual.urdf")
         super().__init__(n, _urdfFile)
-        self._r = 0.1
-        self._l = 0.4044
+        self._wheelRadius = 0.1
+        self._wheelDistance = 0.4044
+        self._spawnOffset = np.array([-0.1764081, 0.0, 0.1])
 
     def setJointIndices(self):
         self.robot_joints = [
