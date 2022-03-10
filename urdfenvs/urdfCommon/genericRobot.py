@@ -13,8 +13,11 @@ class GenericRobot(ABC):
     def __init__(self, n: int, urdfFile: str):
         """Constructor for generic robot.
 
-        :param n: Degrees of freedom of the robot
-        :param urdfFile: Full path to urdffile
+        Parameters
+        ----------
+
+        n: int : Degrees of freedom of the robot
+        urdfFile: str : Full path to urdffile
         """
         self._n: int = n
         self._urdfFile: str = urdfFile
@@ -30,15 +33,18 @@ class GenericRobot(ABC):
     def reset(self, pos: np.ndarray, vel: np.ndarray) -> None:
         """Resets the robot to an initial state.
 
-        :param pos: Initial joint positions
-        :param vel: Initial joint velocities
+        Parameters
+        ----------
+        pos: np.ndarray : Initial joint positions
+        vel: np.ndarray : Initial joint velocities
+
         """
         pass
 
     @abstractmethod
     def setJointIndices(self) -> None:
         """Sets joint indices for urdf parsing.
-
+        
         The urdf file is used to control the robot and
         to read the limits. Control is done using pybullet
         and reading the limits is urdfpy. The index counting
@@ -62,7 +68,7 @@ class GenericRobot(ABC):
 
     def getIndexedJointInfo(self) -> dict:
         """Get indexed joint info.
-
+        
         This function can be used for debugging and finding
         the correct joint indices for self.setJointIndices.
 
@@ -116,11 +122,10 @@ class GenericRobot(ABC):
 
     def disableVelocityControl(self):
         """Disables velocity control for all controlled joints.
-
+        
         By default, pybullet uses velocity control. This has to be disabled if
         torques should be directly controlled.
         See func:`~urdfenvs.urdfCommon.genericRobot.genericRobot.apply_torque_action`
-
         """
         self._friction = 0.0
         for i in range(self._n):
@@ -146,9 +151,10 @@ class GenericRobot(ABC):
     @abstractmethod
     def updateState(self) -> None:
         """Updates the state of the robot.
-
+        
         This function reads current joint position and velocities from the
         pyhsices engine.
+
         """
         pass
 

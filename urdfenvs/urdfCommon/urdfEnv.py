@@ -19,27 +19,33 @@ class WrongObservationError(Exception):
     caused the problem.
     """
 
-    def __init__(self, msg, observation, observationSpace):
+    def __init__(self, msg: str, observation: dict, observationSpace):
         """Constructor for error message.
 
-        :param msg: Default error message
-        :param observation: Observation when mismatch occured
-        :param observationSpace: Observation space of environment
+        Parameters
+        ----------
+
+        msg: Default error message
+        observation: Observation when mismatch occured
+        observationSpace: Observation space of environment
         """
         msgExt = self.getWrongObservation(observation, observationSpace)
         super().__init__(msg + msgExt)
 
-    def getWrongObservation(self, o, os):
+    def getWrongObservation(self, o: dict, os) -> str:
         """Detecting where the error occured.
 
-        :param o: observation
-        :param os: observation space
+        Parameters
+        ----------
+
+        o: observation
+        os: observation space
         """
         msgExt = ":\n"
         msgExt += self.checkDict(o, os)
         return msgExt
 
-    def checkDict(self, o_dict, os_dict, depth=1, tabbing=""):
+    def checkDict(self, o_dict: dict, os_dict, depth: int = 1, tabbing: str ="") -> str:
         """Checking correctness of dictonary observation.
 
         This methods searches for the cause for wrong observation.
@@ -49,10 +55,13 @@ class WrongObservationError(Exception):
         might have nested dictonaries, this function is called
         recursively.
 
-        :param o_dict: observation dictonary
-        :param os_dict: observation space dictonary
-        :param depth: current depth of nesting
-        :param tabbing: tabbing for error message
+        Parameters
+        ----------
+
+        o_dict: observation dictonary
+        os_dict: observation space dictonary
+        depth: current depth of nesting
+        tabbing: tabbing for error message
         """
         msgExt = ""
         for key in o_dict.keys():
@@ -71,17 +80,20 @@ class WrongObservationError(Exception):
                     )
         return msgExt
 
-    def checkBox(self, o_box, os_box, key, depth, tabbing):
+    def checkBox(self, o_box: np.ndarray, os_box, key: str, depth: int, tabbing: str) -> str:
         """Checks correctness of box observation.
 
         This methods detects which value in the observation caused the
         error to be raised. Then it updates the error message msg.
 
-        :param o_box: observation box
-        :param os_box: observation space box
-        :param key: key of observation
-        :param depth: current depth of nesting
-        :param tabbing: current tabbing for error message
+        Parameters
+        ----------
+
+        o_box: observation box
+        os_box: observation space box
+        key: key of observation
+        depth: current depth of nesting
+        tabbing: current tabbing for error message
         """
         msgExt = tabbing + "Error in " + key + "\n"
         for i, val in enumerate(o_box):
@@ -104,9 +116,11 @@ class UrdfEnv(gym.Env):
         rendering (p.GUI) or without (p.DIRECT). Note that rendering slows
         down the simulation.
 
-        :param robot: Robot instance to be simulated
-        :param render: Flag if simulator should render
-        :param dt: Time step for pyhsics engine
+        Parameters:
+
+        robot: Robot instance to be simulated
+        render: Flag if simulator should render
+        dt: Time step for pyhsics engine
         """
         self._dt: float = dt
         self._t: float = 0.0
@@ -176,7 +190,10 @@ class UrdfEnv(gym.Env):
     def addObstacle(self, obst) -> None:
         """Adds obstacle to the simulation environment.
 
-        :param obst: Obstacle from MotionPlanningEnv
+        Parameters
+        ----------
+
+        obst: Obstacle from MotionPlanningEnv
         """
         # add obstacle to environment
         self._obsts.append(obst)
@@ -199,7 +216,10 @@ class UrdfEnv(gym.Env):
     def addGoal(self, goal) -> None:
         """Adds goal to the simulation environment.
 
-        :param goal: Goal from MotionPlanningGoal
+        Parameters
+        ----------
+
+        goal: Goal from MotionPlanningGoal
         """
         self._goals.append(goal)
         goal.add2Bullet(p)
@@ -209,7 +229,10 @@ class UrdfEnv(gym.Env):
         # TODO: To be removed in the future and incorporated
         into addObstacle <10-03-22, maxspahn> #
 
-        :param limits: Positions of walls, [[x_low, y_low], [x_high, y_high]]
+        Parameters
+        ----------
+
+        limits: Positions of walls, [[x_low, y_low], [x_high, y_high]]
         """
         colwallId = p.createCollisionShape(
             p.GEOM_BOX, halfExtents=[0.05, 10.0, 0.5])
@@ -266,8 +289,11 @@ class UrdfEnv(gym.Env):
     def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> dict:
         """Resets the simulation and the robot.
 
-        :param pos: Initial joint positions of the robot
-        :param vel: Initial joint velocities of the robot
+        Parameters
+        ----------
+
+        pos: np.ndarray: Initial joint positions of the robot
+        vel: np.ndarray: Initial joint velocities of the robot
         """
         self._t = 0.0
         pos, vel = self.checkInitialState(pos, vel)
