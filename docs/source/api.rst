@@ -8,6 +8,12 @@ Generic Classes
    :inherited-members: 
    :show-inheritance:
 
+.. autoclass:: urdfenvs.urdfCommon.genericRobot.GenericRobot
+   :inherited-members: 
+   :show-inheritance:
+
+
+
 
 Exceptions
 --------------
