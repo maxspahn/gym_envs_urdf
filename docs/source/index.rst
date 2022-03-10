@@ -13,6 +13,7 @@ Welcome to urdfEnvs's documentation!
    introduction
    developpers
    contributing
+   api
 
 
 
