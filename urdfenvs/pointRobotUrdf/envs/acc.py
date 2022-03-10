@@ -4,8 +4,8 @@ from urdfenvs.pointRobotUrdf.envs.pointRobotEnv import PointRobotEnv
 
 class PointRobotAccEnv(PointRobotEnv):
 
-    def reset(self, initialSet=False, pos=np.zeros(2), vel=np.zeros(2)):
-        ob = super().reset(initialSet=initialSet, pos=pos, vel=vel)
+    def reset(self, pos=np.zeros(2), vel=np.zeros(2)):
+        ob = super().reset(pos=pos, vel=vel)
         self.robot.disableVelocityControl()
         return ob
 

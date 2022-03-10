@@ -4,8 +4,8 @@ from urdfenvs.albertReacher.envs.albertReacherEnv import AlbertReacherEnv
 class AlbertReacherTorEnv(AlbertReacherEnv):
     metadata = {"render.modes": ["human"]}
 
-    def reset(self, initialSet=False, pos=None, vel=None):
-        ob = super().reset(initialSet=initialSet, pos=pos, vel=vel)
+    def reset(self, pos=None, vel=None):
+        ob = super().reset(pos=pos, vel=vel)
         self.robot.disableVelocityControl()
         return ob
 
