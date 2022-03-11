@@ -15,7 +15,7 @@ class WrongObservationError(Exception):
 
     This Exception is initiated when an the observation is not within the
     defined observation space. The purpose of this exception is to give
-    the user better information about which specif part of the observation
+    the user better information about which specific part of the observation
     caused the problem.
     """
 
