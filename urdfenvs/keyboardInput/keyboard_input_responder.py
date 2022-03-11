@@ -3,11 +3,15 @@ from pynput.keyboard import Key
 import numpy as np
 import warnings
 
-# reserved keys are detected, but not executed by the gym environment 
-reserved_keys = [Key.esc,"q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "a", "s", "d", "f", "g", "h", "j", "k", "l",
-                 "z", "x", "c", "v", "b", "n", "m", "<", ",", ">", ".", "/", "?", ":", ";", "'", "[", "]", "{", "}", "\", "
-                 "|", "`", "~", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "_", "-", "=", "+", "!", "@", "#", "$",
-                 "%", "^", "&", "*", "(", ")"]
+# reserved keys are detected, but not executed by the gym environment
+reserved_keys = [
+    Key.esc, "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "a", "s", "d",
+    "f", "g", "h", "j", "k", "l", "z", "x", "c", "v", "b", "n", "m", "<", ",",
+    ">", ".", "/", "?", ":", ";", "'", "[", "]", "{", "}", "\"", "|", "`", "~",
+    "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "_", "-", "=", "+", "!",
+    "@", "#", "$", "%", "^", "&", "*", "(", ")"
+]
+
 
 class Responder:
     """

@@ -15,6 +15,7 @@ def main():
     cumReward = 0.0
     for e in range(n_episodes):
         ob = env.reset()
+        print(f"Initial observation : {ob}")
         if goal:
             from urdfGymExamples.sceneObjects.goal import dynamicGoal
             env.addGoal(dynamicGoal)
@@ -29,7 +30,7 @@ def main():
             else:
                 defaultAction[7] = 0.02
                 defaultAction[8] = 0.02
-            action = env.action_space.sample()
+            action = np.zeros(env.n())
             if gripper:
                 action = defaultAction[0:9]
             else:

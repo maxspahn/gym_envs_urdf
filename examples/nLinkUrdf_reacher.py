@@ -13,9 +13,9 @@ def main():
     cumReward = 0.0
     for e in range(n_episodes):
         ob = env.reset()
+        print(f"Initial observation : {ob}")
         print("Starting episode")
         for i in range(n_steps):
-            action = env.action_space.sample()
             action = defaultAction
             ob, reward, done, info = env.step(action)
             cumReward += reward

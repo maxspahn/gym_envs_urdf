@@ -1,6 +1,8 @@
 Generic URDF robots
 ===================
 
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/maxspahn/gym_envs_urdf.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/maxspahn/gym_envs_urdf/context:python)
+
 ### Generic URDF robots
 
 In this package, generic urdf robots and a panda gym environment are available.

@@ -1,8 +1,4 @@
-import pybullet as p
-import gym
 import os
-import math
-from urdfpy import URDF
 import numpy as np
 
 from urdfenvs.urdfCommon.differentialDriveRobot import DifferentialDriveRobot
