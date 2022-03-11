@@ -1,3 +1,48 @@
+Generic URDF robots
+===================
+
+### Generic URDF robots
+
+In this package, generic urdf robots and a panda gym environment are available.
+The goal is to make this environment as easy as possible to deploy. Although, we used the
+OpenAI-Gym framing, these environments are not necessarly restricted to
+Reinforcement-Learning but rather to local motion planning in general.
+
+<table>
+ <tr>
+  <td> Point Robot </td>
+  <td> Point Robot with Keyboard Input </td>
+  <td> Non-Holonomic Robot </td>
+ </tr>
+ <tr>
+  <td> <img src="/docs/source/img/pointRobot.gif" width="250" height="250"/> </td>
+  <td> <img src="/docs/source/img/pointRobotKeyboardInput.gif" width="250" height="250"/> </td>  
+  <td> <img src="/docs/source/img/boxerRobot.gif" width="250" height="250"/> </td>
+ </tr>
+</table>
+
+<table>
+ <tr>
+  <td> Tiago Robot </td>
+  <td> Tiago Robot with Keyboard Input </td>
+ </tr>
+ <tr>
+  <td> <img src="/docs/source/img/tiago.gif" width="250" height="250"/> </td>
+  <td> <img src="/docs/source/img/tiagoKeyboardInput.gif" width="250" height="250"/> </td>
+ </tr>
+</table>
+
+<table>
+ <tr>
+  <td> Panda Robot </td>
+  <td> Albert Robot </td>
+  </tr>
+ <tr>
+  <td> <img src="/docs/source/img/panda.gif" width="250" height="250"/> </td>
+  <td> <img src="/docs/source/img/albert.gif" width="250" height="250"/> </td>
+  </tr>
+</table>
+
 Getting Started
 ================
 
