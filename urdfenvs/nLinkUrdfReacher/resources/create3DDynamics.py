@@ -254,7 +254,7 @@ def main():
     else:
         n = int(sys.argv[1])
     print("Creating dynamics for urdf with " + str(n) + " joints")
-    dynamics, fk, _ = create3DDynamics(n)
+    dynamics, fk, _, _ = create3DDynamics(n)
     # save system
     dynamics_name = "./dynamics_" + str(n) + "_link.casadi"
     fk_name = "./fk_" + str(n) + "_link.casadi"

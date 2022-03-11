@@ -19,6 +19,7 @@ def main():
     vel0 = np.array([1.0, 0.0, 0.0])
     for e in range(n_episodes):
         ob = env.reset(pos=pos0, vel=vel0)
+        print(f"Initial observation : {ob}")
         env.setWalls(limits=[[-3, -2], [3, 2]])
         if obstacles:
             from examples.sceneObjects.obstacles import sphereObst1, sphereObst2, urdfObst1, dynamicSphereObst3

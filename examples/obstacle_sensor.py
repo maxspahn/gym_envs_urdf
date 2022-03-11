@@ -14,6 +14,7 @@ def main():
     pos0 = np.array([1.0, 0.1, 0.0])
     vel0 = np.array([1.0, 0.0, 0.0])
     ob = env.reset(pos=pos0, vel=vel0)
+    print(f"Initial observation : {ob}")
 
     # add obstacles
     env.addObstacle(sphereObst1)

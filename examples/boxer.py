@@ -12,10 +12,10 @@ def main():
     pos0 = np.array([1.0, 0.2, -1.0]) * 0.0
     for e in range(n_episodes):
         ob = env.reset(pos=pos0)
+        print(f"Initial observation : {ob}")
         env.setWalls(limits=[[-4, -4], [4, 4]])
         print("Starting episode")
         for i in range(n_steps):
-            action = env.action_space.sample()
             action = defaultAction
             ob, reward, done, info = env.step(action)
             cumReward += reward
