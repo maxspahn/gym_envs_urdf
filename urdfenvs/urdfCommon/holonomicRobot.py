@@ -1,6 +1,4 @@
 import pybullet as p
-import pybullet_data
-from abc import ABC, abstractmethod
 import gym
 from urdfpy import URDF
 import numpy as np
@@ -9,10 +7,7 @@ from urdfenvs.urdfCommon.genericRobot import GenericRobot
 
 
 class HolonomicRobot(GenericRobot):
-    def __init__(self, n, urdfFile):
-        super().__init__(n, urdfFile)
-
-    def reset(self, pos, vel):
+    def reset(self, pos: np.ndarray, vel: np.ndarray) -> None:
         if hasattr(self, "robot"):
             p.resetSimulation()
         self.robot = p.loadURDF(
@@ -30,8 +25,7 @@ class HolonomicRobot(GenericRobot):
         self.updateState()
         self._integratedVelocities = vel
 
-
-    def readLimits(self):
+    def readLimits(self) -> None:
         robot = URDF.load(self._urdfFile)
         self._limitPos_j = np.zeros((2, self._n))
         self._limitVel_j = np.zeros((2, self._n))
@@ -47,13 +41,23 @@ class HolonomicRobot(GenericRobot):
             self._limitTor_j[1, i] = joint.limit.effort
         self.setAccelerationLimits()
 
-    def getObservationSpace(self):
-        return gym.spaces.Dict({
-            'x': gym.spaces.Box(low=self._limitPos_j[0, :], high=self._limitPos_j[1, :], dtype=np.float64), 
-            'xdot': gym.spaces.Box(low=self._limitVel_j[0, :], high=self._limitVel_j[1, :], dtype=np.float64), 
-        })
+    def getObservationSpace(self) -> gym.spaces.Dict:
+        return gym.spaces.Dict(
+            {
+                "x": gym.spaces.Box(
+                    low=self._limitPos_j[0, :],
+                    high=self._limitPos_j[1, :],
+                    dtype=np.float64,
+                ),
+                "xdot": gym.spaces.Box(
+                    low=self._limitVel_j[0, :],
+                    high=self._limitVel_j[1, :],
+                    dtype=np.float64,
+                ),
+            }
+        )
 
-    def apply_torque_action(self, torques):
+    def apply_torque_action(self, torques: np.ndarray) -> None:
         for i in range(self._n):
             p.setJointMotorControl2(
                 self.robot,
@@ -62,7 +66,7 @@ class HolonomicRobot(GenericRobot):
                 force=torques[i],
             )
 
-    def apply_velocity_action(self, vels):
+    def apply_velocity_action(self, vels: np.ndarray) -> None:
         for i in range(self._n):
             p.setJointMotorControl2(
                 self.robot,
@@ -71,11 +75,11 @@ class HolonomicRobot(GenericRobot):
                 targetVelocity=vels[i],
             )
 
-    def apply_acceleration_action(self, accs, dt):
+    def apply_acceleration_action(self, accs: np.ndarray, dt: float) -> None:
         self._integratedVelocities += dt * accs
         self.apply_velocity_action(self._integratedVelocities)
 
-    def updateState(self):
+    def updateState(self) -> None:
         # Get Joint Configurations
         joint_pos_list = []
         joint_vel_list = []
@@ -87,4 +91,4 @@ class HolonomicRobot(GenericRobot):
         joint_vel = np.array(joint_vel_list)
 
         # Concatenate position, orientation, velocity
-        self.state = {'x': joint_pos, 'xdot': joint_vel}
+        self.state = {"x": joint_pos, "xdot": joint_vel}

@@ -7,16 +7,34 @@ from urdfenvs.urdfCommon.genericRobot import GenericRobot
 
 
 class DifferentialDriveRobot(GenericRobot):
-    def __init__(self, n, urdfFile):
-        super().__init__(n, urdfFile)
-        self._wheelRadius = None
-        self._wheelDistance = None
-        self._spawnOffset = np.array([0.0, 0.0, 0.15])
+    def __init__(self, n: int, urdfFile: str):
+        """Constructorr for differential drive robots.
 
-    def ns(self):
+        Attributes
+        ----------
+
+        _wheelRadius : float
+            The radius of the actuated wheels.
+        _wheelDistance : float
+            The distance between the actuated wheels.
+        _spawnOffset : np.ndarray
+            The offset by which the initial position must be shifted to align
+            observation with that position.
+        """
+        super().__init__(n, urdfFile)
+        self._wheelRadius: float = None
+        self._wheelDistance: float = None
+        self._spawnOffset: np.ndarray = np.array([0.0, 0.0, 0.15])
+
+    def ns(self) -> int:
+        """Returns the number of degrees of freedom.
+
+        This is needed as number of actuated joints `_n` is lower that the
+        number of degrees of freedom for differential drive robots.
+        """
         return self.n() + 1
 
-    def reset(self, pos=None, vel=None):
+    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> None:
         if hasattr(self, "robot"):
             p.resetSimulation()
         baseOrientation = p.getQuaternionFromEuler([0, 0, pos[2]])
@@ -48,7 +66,7 @@ class DifferentialDriveRobot(GenericRobot):
         self.updateState()
         self._integratedVelocities = vel
 
-    def readLimits(self):
+    def readLimits(self) -> None:
         robot = URDF.load(self._urdfFile)
         self._limitPos_j = np.zeros((2, self.ns()))
         self._limitVel_j = np.zeros((2, self.ns()))
@@ -70,7 +88,14 @@ class DifferentialDriveRobot(GenericRobot):
         self._limitVel_j[1, 0:3] = np.array([4, 4, 10])
         self.setAccelerationLimits()
 
-    def getObservationSpace(self):
+    def getObservationSpace(self) -> gym.spaces.Dict:
+        """Gets the observation space for a differential drive robot.
+
+        The observation space is represented as a dictonary. `x` and `xdot`
+        denote the configuration position and velocity and `vel` is the current
+        forward and rotational velocity of the base. Note that in `xdot`, the
+        velocity in Cartesian coordinates is used.
+        """
         return gym.spaces.Dict(
             {
                 "x": gym.spaces.Box(
@@ -91,7 +116,11 @@ class DifferentialDriveRobot(GenericRobot):
             }
         )
 
-    def apply_torque_action(self, torques):
+    def apply_torque_action(self, torques: np.ndarray) -> None:
+        """Applies torque action to the arm joints of the robot.
+
+        Torque control is not available for the base at the moment.
+        """
         for i in range(2, self._n):
             p.setJointMotorControl2(
                 self.robot,
@@ -100,7 +129,13 @@ class DifferentialDriveRobot(GenericRobot):
                 force=torques[i],
             )
 
-    def apply_acceleration_action(self, accs, dt):
+    def apply_acceleration_action(self, accs: np.ndarray, dt: float) -> None:
+        """Applies acceleration action to the robot.
+
+        The acceleration action relies on integration of the velocity signal
+        and applies velocities at the end. The integrated velocities are
+        clipped to avoid very large velocities.
+        """
         self._integratedVelocities += dt * accs
         self._integratedVelocities[0] = np.clip(
             self._integratedVelocities[0],
@@ -115,7 +150,8 @@ class DifferentialDriveRobot(GenericRobot):
         self.apply_base_velocity(self._integratedVelocities)
         self.apply_velocity_action(self._integratedVelocities)
 
-    def apply_velocity_action_wheels(self, vels):
+    def apply_velocity_action_wheels(self, vels: np.ndarray) -> None:
+        """Apllies angular velocities to the wheels."""
         for i in range(2):
             p.setJointMotorControl2(
                 self.robot,
@@ -124,13 +160,24 @@ class DifferentialDriveRobot(GenericRobot):
                 targetVelocity=vels[i],
             )
 
-    def apply_base_velocity(self, vels):
-        velocity_left_wheel = (vels[0] + 0.5 * self._wheelDistance * vels[1]) / self._wheelRadius
-        velocity_right_wheel = (vels[0] - 0.5 * self._wheelDistance * vels[1]) / self._wheelRadius
+    def apply_base_velocity(self, vels: np.ndarray) -> None:
+        """Applies forward and angular velocity to the base.
+
+        The forward and angular velocity of the base is first transformed in
+        angular velocities of the wheels using a simple dynamics model.
+
+        """
+        velocity_left_wheel = (
+            vels[0] + 0.5 * self._wheelDistance * vels[1]
+        ) / self._wheelRadius
+        velocity_right_wheel = (
+            vels[0] - 0.5 * self._wheelDistance * vels[1]
+        ) / self._wheelRadius
         wheelVelocities = np.array([velocity_left_wheel, velocity_right_wheel])
         self.apply_velocity_action_wheels(wheelVelocities)
 
-    def apply_velocity_action(self, vels):
+    def apply_velocity_action(self, vels: np.ndarray) -> None:
+        """Applies angular velocities to the arm joints."""
         for i in range(2, self._n):
             p.setJointMotorControl2(
                 self.robot,
@@ -139,12 +186,19 @@ class DifferentialDriveRobot(GenericRobot):
                 targetVelocity=vels[i],
             )
 
-    def correctBaseOrientation(self, posBase):
+    def correctBaseOrientation(self, posBase: np.ndarray) -> np.ndarray:
+        """Corrects base orientation by -pi.
+
+        The orientation observation should be zero when facing positive
+        x-direction. Some robot models are rotated by pi. This is corrected
+        here. The function also makes sure that the orientation is always
+        between -pi and pi.
+        """
         if posBase[2] < -np.pi:
             posBase[2] += 2 * np.pi
         return posBase
 
-    def updateState(self):
+    def updateState(self) -> None:
         """Updates the robot state.
 
         The robot state is stored in the dictonary self.state.  There, the key
