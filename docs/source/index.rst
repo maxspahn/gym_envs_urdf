@@ -10,6 +10,7 @@ Welcome to urdfEnvs's documentation!
    :maxdepth: 4
    :caption: Contents:
 
+   getting_started
    introduction
    developpers
    contributing

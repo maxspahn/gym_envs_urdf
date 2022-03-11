@@ -49,8 +49,8 @@ Switching
 =========
 
 Environments can be created using the normal gym syntax. For example the
-below code line creates a planar robot with 3 links and a constant k.
-Actions are torques to the individual joints.
+below code line creates a toy robot with 3 links.
+Actions are velocities to the individual joints.
 
 .. code:: python
 
