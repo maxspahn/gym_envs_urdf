@@ -1,6 +1,5 @@
----
-title: Getting started
----
+Getting Started
+================
 
 This is the guide to quickle get going with urdf gym environments.
 
