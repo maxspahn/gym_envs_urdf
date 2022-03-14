@@ -26,8 +26,7 @@ def main(conn):
         env.step(action)
 
     # kill the child properly
-    conn.send({"request_action": False,
-               "kill_child": True})
+    conn.send({"request_action": False, "kill_child": True})
 
 
 if __name__ == "__main__":
@@ -42,10 +41,12 @@ if __name__ == "__main__":
     responder = Responder(child_conn)
 
     # unlogical key bindings
-    custom_on_press = {Key.left: np.array([-1.0, 0.0]),
-                       Key.space: np.array([1.0, 0.0]),
-                       Key.page_down: np.array([1.0, 1.0]),
-                       Key.page_up: np.array([-1.0, -1.0])}
+    custom_on_press = {
+        Key.left: np.array([-1.0, 0.0]),
+        Key.space: np.array([1.0, 0.0]),
+        Key.page_down: np.array([1.0, 1.0]),
+        Key.page_up: np.array([-1.0, -1.0]),
+    }
 
     responder.setup(defaultAction=np.array([0.0, 0.0]))
     # responder.setup(custom_on_press=custom_on_press)

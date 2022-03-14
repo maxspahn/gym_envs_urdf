@@ -90,6 +90,8 @@ disable=abstract-method,
         map-builtin-not-iterating,
         misplaced-comparison-constant,
         missing-function-docstring,
+        missing-module-docstring,
+        missing-class-docstring,
         metaclass-assignment,
         next-method-called,
         next-method-defined,
@@ -162,7 +164,7 @@ output-format=text
 files-output=no
 
 # Tells whether to display a full report or only the messages
-reports=yes
+reports=no
 
 # Python expression which should return a note less than 10 (10 is the highest
 # note). You have access to the variables errors warning, statement which
