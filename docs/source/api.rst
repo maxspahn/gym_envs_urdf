@@ -11,9 +11,9 @@ Structure
         urdfenvs.mobileReacher.resources.mobileRobot.MobileRobot
         urdfenvs.nLinkUrdfReacher.resources.nLinkRobot.NLinkRobot
         urdfenvs.pointRobotUrdf.resources.pointRobot.PointRobot
-      :top-classes: urdfenvs.urdfCommon.genericRobot.GenericRobot
-          urdfenvs.urdfCommon.holonomicRobot.HolonomicRobot
-          urdfenvs.urdfCommon.differentialDriveRobot.DifferentialDriveRobot
+      :top-classes: urdfenvs.urdfCommon.generic_robot.GenericRobot
+          urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot
+          urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot
       :parts: 1
 
 Generic Classes
@@ -29,21 +29,21 @@ UrdfEnv
 GenericRobot
 ^^^^^^^^^^^^^
 
-.. autoclass:: urdfenvs.urdfCommon.genericRobot.GenericRobot
+.. autoclass:: urdfenvs.urdfCommon.generic_robot.GenericRobot
    :inherited-members: 
    :show-inheritance:
 
 DifferentialDriveRobot
 ***********************
 
-.. autoclass:: urdfenvs.urdfCommon.differentialDriveRobot.DifferentialDriveRobot
+.. autoclass:: urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot
    :inherited-members: 
    :show-inheritance:
 
 HolonomicRobot
 **************
 
-.. autoclass:: urdfenvs.urdfCommon.holonomicRobot.HolonomicRobot
+.. autoclass:: urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot
    :inherited-members: 
    :show-inheritance:
 

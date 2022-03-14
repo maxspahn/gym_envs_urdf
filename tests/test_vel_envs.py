@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def pointRobotEnv():
-    import urdfenvs.pointRobotUrdf
+    import urdfenvs.point_robot_urdf
     initPos = np.array([0.0, -1.0, 0.0])
     initVel = np.array([-1.0, 0.0, 0.0])
     env = gym.make("pointRobotUrdf-vel-v0", render=False, dt=0.01)
@@ -13,7 +13,7 @@ def pointRobotEnv():
 
 @pytest.fixture
 def pandaRobotEnv():
-    import urdfenvs.pandaReacher
+    import urdfenvs.panda_reacher
     initPos = np.array([0.0, 0.0, 0.0, -1.875, 0.0, 1.5, 0.0])
     initVel = np.array([0.0, 0.0, 1.0, 0.0, 0.0, 0.2, 0.0])
     env = gym.make("panda-reacher-vel-v0", dt=0.01, render=False, gripper=False)
@@ -23,7 +23,7 @@ def pandaRobotEnv():
 @pytest.fixture
 def nLinkRobotEnv():
     n = 1
-    import urdfenvs.nLinkUrdfReacher
+    import urdfenvs.n_link_urdf_reacher
     initPos = np.array([0.0])
     initVel = np.array([0.0])
     env = gym.make("nLink-urdf-reacher-vel-v0", n=n, dt=0.01, render=False)
@@ -32,7 +32,7 @@ def nLinkRobotEnv():
 
 @pytest.fixture
 def boxerRobotEnv():
-    import urdfenvs.boxerRobot
+    import urdfenvs.boxer_robot
     initPos = np.array([0.0, 0.0, 0.0])
     initVel = np.array([0.0, 0.0])
     env = gym.make("boxer-robot-vel-v0", dt=0.01, render=False)
@@ -41,7 +41,7 @@ def boxerRobotEnv():
 
 @pytest.fixture
 def tiagoReacherEnv():
-    import urdfenvs.tiagoReacher
+    import urdfenvs.tiago_reacher
     initPos = np.zeros(20)
     initPos[3] = 0.1
     initVel = np.zeros(19)
@@ -51,7 +51,7 @@ def tiagoReacherEnv():
 
 @pytest.fixture
 def albertReacherEnv():
-    import urdfenvs.albertReacher
+    import urdfenvs.albert_reacher
     initPos = np.zeros(10)
     initPos[6] = -1.501
     initPos[8] = 1.8675

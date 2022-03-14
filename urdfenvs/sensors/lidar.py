@@ -27,33 +27,33 @@ class Lidar(Sensor):
         Relative positions of first obstacle for each ray (x, y).
     """
 
-    def __init__(self, linkId, nbRays=10, rayLength=10.0):
+    def __init__(self, link_id, nb_rays=10, ray_length=10.0):
         super().__init__("lidarSensor")
-        self._nb_rays = nbRays
-        self._ray_length = rayLength
-        self._link_id = linkId
+        self._nb_rays = nb_rays
+        self._ray_length = ray_length
+        self._link_id = link_id
         self._thetas = [
-            i * 2 * np.pi / self._nbRays for i in range(self._nb_rays)
+            i * 2 * np.pi / self._nb_rays for i in range(self._nb_rays)
         ]
-        self._rel_positions = np.zeros(2 * nbRays)
+        self._rel_positions = np.zeros(2 * nb_rays)
 
     def get_observation_size(self):
         """Getter for the dimension of the observation space."""
-        return self._nbRays * 2
+        return self._nb_rays * 2
 
     def get_observation_space(self):
         """Create observation space, all observations should be inside the
         observation space."""
         return gym.spaces.Box(
-            0.0,
-            self._rayLength,
-            shape=(self.getOSpaceSize(),),
+            -self._ray_length,
+            self._ray_length,
+            shape=(self.get_observation_size(),),
             dtype=np.float64,
         )
 
     def sense(self, robot):
         """Sense the distance toward the next object with the Lidar."""
-        link_state = p.getLinkState(robot, self._linkId)
+        link_state = p.getLinkState(robot, self._link_id)
         lidar_position = link_state[0]
         ray_start = lidar_position
         for i, theta in enumerate(self._thetas):
@@ -64,4 +64,4 @@ class Lidar(Sensor):
             self._rel_positions[2 * i : 2 * i + 2] = (
                 np.array(lidar[0][3]) - np.array(ray_start)
             )[0:2]
-        return self._relPositions
+        return self._rel_positions

@@ -2,14 +2,14 @@ import gym
 import numpy as np
 import pytest
 
-from urdfenvs.sensors.obstacleSensor import ObstacleSensor
+from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
 from examples.sceneObjects.obstacles import sphereObst1, urdfObst1, dynamicSphereObst3
-import urdfenvs.pointRobotUrdf
+import urdfenvs.point_robot_urdf
 
 
 @pytest.fixture
 def pointRobotEnv():
-    import urdfenvs.pointRobotUrdf
+    import urdfenvs.point_robot_urdf
 
     env = gym.make("pointRobotUrdf-vel-v0", render=False, dt=0.01)
     _ = env.reset()
@@ -17,11 +17,11 @@ def pointRobotEnv():
 
 
 def test_staticObstacle(pointRobotEnv):
-    pointRobotEnv.addObstacle(sphereObst1)
+    pointRobotEnv.add_obstacle(sphereObst1)
 
     # add sensor
     sensor = ObstacleSensor()
-    pointRobotEnv.addSensor(sensor)
+    pointRobotEnv.add_sensor(sensor)
     action = np.random.random(pointRobotEnv.n())
     ob, _, _, _ = pointRobotEnv.step(action)
     assert "obstacleSensor" in ob
@@ -38,11 +38,11 @@ def test_staticObstacle(pointRobotEnv):
 
 
 def test_dynamicObstacle(pointRobotEnv):
-    pointRobotEnv.addObstacle(dynamicSphereObst3)
+    pointRobotEnv.add_obstacle(dynamicSphereObst3)
 
     # add sensor
     sensor = ObstacleSensor()
-    pointRobotEnv.addSensor(sensor)
+    pointRobotEnv.add_sensor(sensor)
     action = np.random.random(pointRobotEnv.n())
     ob, _, _, _ = pointRobotEnv.step(action)
     assert "obstacleSensor" in ob
@@ -64,9 +64,9 @@ def test_dynamicObstacle(pointRobotEnv):
 def test_urdfObstacle(pointRobotEnv):
     # add sensor
     sensor = ObstacleSensor()
-    pointRobotEnv.addSensor(sensor)
+    pointRobotEnv.add_sensor(sensor)
     # change order
-    pointRobotEnv.addObstacle(urdfObst1)
+    pointRobotEnv.add_obstacle(urdfObst1)
     action = np.random.random(pointRobotEnv.n())
     ob, _, _, _ = pointRobotEnv.step(action)
     assert "obstacleSensor" in ob
