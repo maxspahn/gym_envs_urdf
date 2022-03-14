@@ -1,12 +1,16 @@
 import gym
 import urdfenvs.pointRobotUrdf
 from urdfenvs.sensors.obstacleSensor import ObstacleSensor
-from examples.sceneObjects.obstacles import sphereObst1, urdfObst1, dynamicSphereObst3
+from examples.sceneObjects.obstacles import (
+    sphereObst1,
+    urdfObst1,
+    dynamicSphereObst3,
+)
 import numpy as np
 
 
 def main():
-    env = gym.make('pointRobotUrdf-vel-v0', dt=0.05, render=True)
+    env = gym.make("pointRobotUrdf-vel-v0", dt=0.05, render=True)
 
     defaultAction = np.array([0.1, 0.0, 0.0])
     n_episodes = 1
@@ -14,6 +18,7 @@ def main():
     pos0 = np.array([1.0, 0.1, 0.0])
     vel0 = np.array([1.0, 0.0, 0.0])
     ob = env.reset(pos=pos0, vel=vel0)
+    print(f"Initial observation : {ob}")
 
     # add obstacles
     env.addObstacle(sphereObst1)
@@ -22,7 +27,7 @@ def main():
 
     # add sensor
     sensor = ObstacleSensor()
-    env.addSensor(sensor)
+    env.add_sensor(sensor)
 
     for e in range(n_episodes):
 
@@ -33,8 +38,8 @@ def main():
             action = defaultAction
             ob, reward, done, info = env.step(action)
             # In observations, information about obstacles is stored in ob['obstacleSensor']
-            print(ob['obstacleSensor'])
+            print(ob["obstacleSensor"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
