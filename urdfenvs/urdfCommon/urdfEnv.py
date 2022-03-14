@@ -1,3 +1,4 @@
+""" Generic Open-AI gym environment for urdf imported robots."""
 import gym
 import time
 import numpy as np
@@ -29,10 +30,10 @@ class WrongObservationError(Exception):
         observation: Observation when mismatch occured
         observationSpace: Observation space of environment
         """
-        msgExt = self.getWrongObservation(observation, observationSpace)
-        super().__init__(msg + msgExt)
+        msg_ext = self.get_wrong_observation(observation, observationSpace)
+        super().__init__(msg + msg_ext)
 
-    def getWrongObservation(self, o: dict, os) -> str:
+    def get_wrong_observation(self, o: dict, os) -> str:
         """Detecting where the error occured.
 
         Parameters
@@ -41,11 +42,11 @@ class WrongObservationError(Exception):
         o: observation
         os: observation space
         """
-        msgExt = ":\n"
-        msgExt += self.checkDict(o, os)
-        return msgExt
+        msg_ext = ":\n"
+        msg_ext += self.check_dict(o, os)
+        return msg_ext
 
-    def checkDict(self, o_dict: dict, os_dict, depth: int = 1, tabbing: str ="") -> str:
+    def check_dict(self, o_dict: dict, os_dict, depth: int = 1, tabbing: str ="") -> str:
         """Checking correctness of dictonary observation.
 
         This methods searches for the cause for wrong observation.
@@ -63,24 +64,24 @@ class WrongObservationError(Exception):
         depth: current depth of nesting
         tabbing: tabbing for error message
         """
-        msgExt = ""
+        msg_ext = ""
         for key in o_dict.keys():
             if not os_dict[key].contains(o_dict[key]):
                 if isinstance(o_dict[key], dict):
-                    msgExt += tabbing + key + "\n"
-                    msgExt += self.checkDict(
+                    msg_ext += tabbing + key + "\n"
+                    msg_ext += self.check_dict(
                         o_dict[key],
                         os_dict[key],
                         depth=depth + 1,
                         tabbing=tabbing + "\t",
                     )
                 else:
-                    msgExt += self.checkBox(
+                    msg_ext += self.check_box(
                         o_dict[key], os_dict[key], key, depth, tabbing
                     )
-        return msgExt
+        return msg_ext
 
-    def checkBox(self, o_box: np.ndarray, os_box, key: str, depth: int, tabbing: str) -> str:
+    def check_box(self, o_box: np.ndarray, os_box, key: str, depth: int, tabbing: str) -> str:
         """Checks correctness of box observation.
 
         This methods detects which value in the observation caused the
@@ -95,13 +96,13 @@ class WrongObservationError(Exception):
         depth: current depth of nesting
         tabbing: current tabbing for error message
         """
-        msgExt = tabbing + "Error in " + key + "\n"
+        msg_ext = tabbing + "Error in " + key + "\n"
         for i, val in enumerate(o_box):
             if val < os_box.low[i]:
-                msgExt += f"{tabbing}\t{key}[{i}]: {val} < {os_box.low[i]}\n"
+                msg_ext += f"{tabbing}\t{key}[{i}]: {val} < {os_box.low[i]}\n"
             elif val > os_box.high[i]:
-                msgExt += f"{tabbing}\t{key}[{i}]: {val} > {os_box.high[i]}\n"
-        return msgExt
+                msg_ext += f"{tabbing}\t{key}[{i}]: {val} > {os_box.high[i]}\n"
+        return msg_ext
 
 
 class UrdfEnv(gym.Env):
@@ -124,10 +125,10 @@ class UrdfEnv(gym.Env):
         """
         self._dt: float = dt
         self._t: float = 0.0
-        self.robot: GenericRobot = robot
+        self._robot: GenericRobot = robot
         self._render: bool = render
-        self.done: bool = False
-        self._numSubSteps: float = 20
+        self._done: bool = False
+        self._num_sub_steps: float = 20
         self._obsts: list = []
         self._goals: list = []
 
@@ -149,19 +150,19 @@ class UrdfEnv(gym.Env):
         return self._t
 
     @abstractmethod
-    def setSpaces(self) -> None:
+    def set_spaces(self) -> None:
         """Set observation and action space."""
         pass
 
     @abstractmethod
-    def applyAction(self, action: np.ndarray) -> None:
+    def apply_action(self, action: np.ndarray) -> None:
         """Applies a given action to the robot."""
         pass
 
     def step(self, action):
         self._t += self.dt()
         # Feed action to the robot and get observation of robot's state
-        self.applyAction(action)
+        self.apply_action(action)
         for obst in self._obsts:
             obst.updateBulletPosition(p, t=self.t())
         for goal in self._goals:
@@ -187,7 +188,7 @@ class UrdfEnv(gym.Env):
             warnings.warn(str(err))
         return observation
 
-    def addObstacle(self, obst) -> None:
+    def add_obstacle(self, obst) -> None:
         """Adds obstacle to the simulation environment.
 
         Parameters
@@ -201,19 +202,19 @@ class UrdfEnv(gym.Env):
 
         # refresh observation space of robots sensors
         sensors = self.robot.sensors()
-        curDict = dict(self.observation_space.spaces)
+        cur_dict = dict(self.observation_space.spaces)
         for sensor in sensors:
-            curDict[sensor.name()] = sensor.getObservationSpace()
-        self.observation_space = gym.spaces.Dict(curDict)
+            cur_dict[sensor.name()] = sensor.getObservationSpace()
+        self.observation_space = gym.spaces.Dict(cur_dict)
 
         if self._t != 0.0:
             warnings.warn(
                 "Adding an object while the simulation already started")
 
-    def getObstacles(self) -> list:
+    def get_obstacles(self) -> list:
         return self._obsts
 
-    def addGoal(self, goal) -> None:
+    def add_goal(self, goal) -> None:
         """Adds goal to the simulation environment.
 
         Parameters
@@ -224,7 +225,7 @@ class UrdfEnv(gym.Env):
         self._goals.append(goal)
         goal.add2Bullet(p)
 
-    def setWalls(self, limits: list = [[-2, -2], [2, 2]]) -> None:
+    def set_walls(self, limits: list = [[-2, -2], [2, 2]]) -> None:
         """Adds walls to the simulation environment.
         # TODO: To be removed in the future and incorporated
         into addObstacle <10-03-22, maxspahn> #
@@ -234,38 +235,38 @@ class UrdfEnv(gym.Env):
 
         limits: Positions of walls, [[x_low, y_low], [x_high, y_high]]
         """
-        colwallId = p.createCollisionShape(
+        col_wall_id = p.createCollisionShape(
             p.GEOM_BOX, halfExtents=[0.05, 10.0, 0.5])
         p.createMultiBody(
             0,
-            colwallId,
+            col_wall_id,
             10,
             [limits[0][0], 0, 0],
             p.getQuaternionFromEuler([0, 0, 0]),
         )
         p.createMultiBody(
             0,
-            colwallId,
+            col_wall_id,
             10,
             [limits[1][0], 0, 0.0],
             p.getQuaternionFromEuler([0, 0, 0]),
         )
         p.createMultiBody(
             0,
-            colwallId,
+            col_wall_id,
             10,
             [0, limits[0][1], 0.0],
             p.getQuaternionFromEuler([0, 0, np.pi / 2]),
         )
         p.createMultiBody(
             0,
-            colwallId,
+            col_wall_id,
             10,
             [0, limits[1][1], 0.0],
             p.getQuaternionFromEuler([0, 0, np.pi / 2]),
         )
 
-    def addSensor(self, sensor: Sensor) -> None:
+    def add_sensor(self, sensor: Sensor) -> None:
         """Adds sensor to the robot.
 
         Adding a sensor requires an update to the observation space.
@@ -273,11 +274,11 @@ class UrdfEnv(gym.Env):
         gym.spaces.Dict.
         """
         self.robot.addSensor(sensor)
-        curDict = dict(self.observation_space.spaces)
-        curDict[sensor.name()] = sensor.getObservationSpace()
-        self.observation_space = gym.spaces.Dict(curDict)
+        cur_dict = dict(self.observation_space.spaces)
+        cur_dict[sensor.name()] = sensor.getObservationSpace()
+        self.observation_space = gym.spaces.Dict(cur_dict)
 
-    def checkInitialState(self, pos: np.ndarray, vel: np.ndarray) -> tuple:
+    def check_initial_state(self, pos: np.ndarray, vel: np.ndarray) -> tuple:
         """Filters initial state of the robot and returns a valid state."""
 
         if not isinstance(pos, np.ndarray) or not pos.size == self.robot.n():
