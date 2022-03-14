@@ -4,31 +4,31 @@ import pytest
 
 @pytest.fixture
 def pointRobotEnv():
-    import urdfenvs.pointRobotUrdf
-    initPos = np.array([0.0, -1.0, 0.0])
-    initVel = np.array([-1.0, 0.0, 0.0])
+    import urdfenvs.point_robot_urdf
+    init_pos = np.array([0.0, -1.0, 0.0])
+    init_vel = np.array([-1.0, 0.0, 0.0])
     env = gym.make("pointRobotUrdf-acc-v0", render=False, dt=0.01)
-    ob = env.reset(pos=initPos, vel=initVel)
-    return (env, initPos, initVel)
+    _ = env.reset(pos=init_pos, vel=init_vel)
+    return (env, init_pos, init_vel)
 
 @pytest.fixture
 def pandaRobotEnv():
-    import urdfenvs.pandaReacher
-    initPos = np.array([0.0, 0.0, 0.0, -1.875, 0.0, 1.5, 0.0])
-    initVel = np.array([0.0, 0.0, 1.0, 0.0, 0.0, 0.2, 0.0])
+    import urdfenvs.panda_reacher
+    init_pos = np.array([0.0, 0.0, 0.0, -1.875, 0.0, 1.5, 0.0])
+    init_vel = np.array([0.0, 0.0, 1.0, 0.0, 0.0, 0.2, 0.0])
     env = gym.make("panda-reacher-acc-v0", dt=0.01, render=False, gripper=False)
-    ob = env.reset(pos=initPos, vel=initVel)
-    return (env, initPos, initVel)
+    _ = env.reset(pos=init_pos, vel=init_vel)
+    return (env, init_pos, init_vel)
 
 @pytest.fixture
 def nLinkRobotEnv():
     n = 1
-    import urdfenvs.nLinkUrdfReacher
-    initPos = np.array([0.0])
-    initVel = np.array([0.0])
+    import urdfenvs.n_link_urdf_reacher
+    init_pos = np.array([0.0])
+    init_vel = np.array([0.0])
     env = gym.make("nLink-urdf-reacher-acc-v0", n=n, dt=0.01, render=False)
-    ob = env.reset(pos=initPos, vel=initVel)
-    return (env, initPos, initVel)
+    _ = env.reset(pos=init_pos, vel=init_vel)
+    return (env, init_pos, init_vel)
 
 @pytest.fixture
 def allEnvs(pointRobotEnv, pandaRobotEnv, nLinkRobotEnv):

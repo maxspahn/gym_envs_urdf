@@ -49,8 +49,8 @@ Switching
 =========
 
 Environments can be created using the normal gym syntax. For example the
-below code line creates a planar robot with 3 links and a constant k.
-Actions are torques to the individual joints.
+below code line creates a toy robot with 3 links.
+Actions are velocities to the individual joints.
 
 .. code:: python
 
@@ -74,7 +74,7 @@ object and passing it to the environment:
 .. code:: python
 
     sensor = ObstacleSensor()
-    env.addSensor(sensor)
+    env.add_sensor(sensor)
 
 The observations from the sensor are returned by the ``env.step(action)`` call.
 The structure of the observation varies depending on the sensor and its arguments
