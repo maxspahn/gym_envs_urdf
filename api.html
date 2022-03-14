@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API &mdash; urdfEnvs  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Contributing" href="contributing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> urdfEnvs
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Generic URDF robots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#switching">Switching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#adding-sensors-to-the-robot">Adding sensors to the robot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#robot-control-with-the-keyboard">Robot control with the keyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#examples">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developpers.html">Robot Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#structure">Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generic-classes">Generic Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#urdfenv">UrdfEnv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genericrobot">GenericRobot</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#differentialdriverobot">DifferentialDriveRobot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#holonomicrobot">HolonomicRobot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">urdfEnvs</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this headline"></a></h1>
+<section id="structure">
+<h2>Structure<a class="headerlink" href="#structure" title="Permalink to this headline"></a></h2>
+digraph inheritanceff1cfbf5d5 {
+bgcolor=transparent;
+rankdir=LR;
+size=&quot;8.0, 12.0&quot;;
+  &quot;ABC&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;Helper class that provides a standard way to create an ABC using&quot;];
+  &quot;AlbertRobot&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;];
+  &quot;DifferentialDriveRobot&quot; -&gt; &quot;AlbertRobot&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;BoxerRobot&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;];
+  &quot;DifferentialDriveRobot&quot; -&gt; &quot;BoxerRobot&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;DifferentialDriveRobot&quot; [URL=&quot;#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Differential drive robot.&quot;];
+  &quot;GenericRobot&quot; -&gt; &quot;DifferentialDriveRobot&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;GenericRobot&quot; [URL=&quot;#urdfenvs.urdfCommon.generic_robot.GenericRobot&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;GenericRobot.&quot;];
+  &quot;ABC&quot; -&gt; &quot;GenericRobot&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;HolonomicRobot&quot; [URL=&quot;#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Generic holonomic robot.&quot;];
+  &quot;GenericRobot&quot; -&gt; &quot;HolonomicRobot&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;MobileRobot&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;];
+  &quot;HolonomicRobot&quot; -&gt; &quot;MobileRobot&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;NLinkRobot&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;];
+  &quot;HolonomicRobot&quot; -&gt; &quot;NLinkRobot&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;PandaRobot&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;];
+  &quot;HolonomicRobot&quot; -&gt; &quot;PandaRobot&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;PointRobot&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;];
+  &quot;HolonomicRobot&quot; -&gt; &quot;PointRobot&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;TiagoRobot&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;];
+  &quot;DifferentialDriveRobot&quot; -&gt; &quot;TiagoRobot&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+}
+</section>
+<section id="generic-classes">
+<h2>Generic Classes<a class="headerlink" href="#generic-classes" title="Permalink to this headline"></a></h2>
+<section id="urdfenv">
+<h3>UrdfEnv<a class="headerlink" href="#urdfenv" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">urdfenvs.urdfCommon.urdf_env.</span></span><span class="sig-name descname"><span class="pre">UrdfEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">robot</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot" title="urdfenvs.urdfCommon.generic_robot.GenericRobot"><span class="pre">urdfenvs.urdfCommon.generic_robot.GenericRobot</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">render</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gym.core.Env</span></code></p>
+<p>Generic urdf-environment for OpenAI-Gym</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv.add_goal">
+<span class="sig-name descname"><span class="pre">add_goal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">goal</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv.add_goal" title="Permalink to this definition"></a></dt>
+<dd><p>Adds goal to the simulation environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>goal</strong> (<em>Goal from MotionPlanningGoal</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv.add_obstacle">
+<span class="sig-name descname"><span class="pre">add_obstacle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obst</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv.add_obstacle" title="Permalink to this definition"></a></dt>
+<dd><p>Adds obstacle to the simulation environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obst</strong> (<em>Obstacle from MotionPlanningEnv</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv.add_sensor">
+<span class="sig-name descname"><span class="pre">add_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">urdfenvs.sensors.sensor.Sensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv.add_sensor" title="Permalink to this definition"></a></dt>
+<dd><p>Adds sensor to the robot.</p>
+<p>Adding a sensor requires an update to the observation space.
+This seems to require a conversion to dict and back to
+gym.spaces.Dict.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv.apply_action">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">apply_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv.apply_action" title="Permalink to this definition"></a></dt>
+<dd><p>Applies a given action to the robot.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv.check_initial_state">
+<span class="sig-name descname"><span class="pre">check_initial_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv.check_initial_state" title="Permalink to this definition"></a></dt>
+<dd><p>Filters initial state of the robot and returns a valid state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv.close" title="Permalink to this definition"></a></dt>
+<dd><p>Override close in your subclass to perform any necessary cleanup.</p>
+<p>Environments will automatically close() themselves when
+garbage collected or when the program exits.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv.render" title="Permalink to this definition"></a></dt>
+<dd><p>Rendering the simulation environmemnt.</p>
+<p>As rendering is done rather by the self._render flag,
+only the sleep statement is called here. This speeds up
+the simulation when rendering is not desired.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the simulation and the robot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>np.ndarray: Initial joint positions of the robot</em>) – </p></li>
+<li><p><strong>vel</strong> (<em>np.ndarray: Initial joint velocities of the robot</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv.seed" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the seed for this env’s random number generator(s).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some environments use multiple pseudorandom number generators.
+We want to capture all such seeds used in order to ensure that
+there aren’t accidental correlations between multiple generators.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>Returns the list of seeds used in this env’s random</dt><dd><p>number generators. The first value in the list should be the
+“main” seed, or the value which a reproducer should pass to
+‘seed’. Often, the main seed equals the provided ‘seed’, but
+this won’t be true if seed=None, for example.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list&lt;bigint&gt;</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv.set_spaces">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv.set_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Set observation and action space.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv.set_walls">
+<span class="sig-name descname"><span class="pre">set_walls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limits</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[[-</span> <span class="pre">2,</span> <span class="pre">-</span> <span class="pre">2],</span> <span class="pre">[2,</span> <span class="pre">2]]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv.set_walls" title="Permalink to this definition"></a></dt>
+<dd><p>Adds walls to the simulation environment.
+# TODO: To be removed in the future and incorporated
+into addObstacle &lt;10-03-22, maxspahn&gt; #</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>limits</strong> (<em>Positions of walls</em><em>, </em><em>[</em><em>[</em><em>x_low</em><em>, </em><em>y_low</em><em>]</em><em>, </em><em>[</em><em>x_high</em><em>, </em><em>y_high</em><em>]</em><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv.step" title="Permalink to this definition"></a></dt>
+<dd><p>Run one timestep of the environment’s dynamics. When end of
+episode is reached, you are responsible for calling <cite>reset()</cite>
+to reset this environment’s state.</p>
+<p>Accepts an action and returns a tuple (observation, reward, done, info).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>action</strong> (<em>object</em>) – an action provided by the agent</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>agent’s observation of the current environment
+reward (float) : amount of reward returned after previous action
+done (bool): whether the episode has ended, in which case further step() calls will return undefined results
+info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>observation (object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.UrdfEnv.unwrapped">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">unwrapped</span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.UrdfEnv.unwrapped" title="Permalink to this definition"></a></dt>
+<dd><p>Completely unwrap this env.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The base non-wrapped gym.Env instance</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>gym.Env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="genericrobot">
+<h3>GenericRobot<a class="headerlink" href="#genericrobot" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">urdfenvs.urdfCommon.generic_robot.</span></span><span class="sig-name descname"><span class="pre">GenericRobot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">urdf_file</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>GenericRobot.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot.add_sensor">
+<span class="sig-name descname"><span class="pre">add_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">urdfenvs.sensors.sensor.Sensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot.add_sensor" title="Permalink to this definition"></a></dt>
+<dd><p>Adds sensor to the robot.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot.disable_velocity_control">
+<span class="sig-name descname"><span class="pre">disable_velocity_control</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot.disable_velocity_control" title="Permalink to this definition"></a></dt>
+<dd><p>Disables velocity control for all controlled joints.</p>
+<p>By default, pybullet uses velocity control. This has to be disabled if
+torques should be directly controlled.  See
+func:<cite>~urdfenvs.urdfCommon.generic_robot.generic_rob
+ot.apply_torque_action</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot.get_acceleration_spaces">
+<span class="sig-name descname"><span class="pre">get_acceleration_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot.get_acceleration_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Get observation space and action space when using acceleration
+control.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot.get_indexed_joint_info">
+<span class="sig-name descname"><span class="pre">get_indexed_joint_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot.get_indexed_joint_info" title="Permalink to this definition"></a></dt>
+<dd><p>Get indexed joint info.</p>
+<p>This function can be used for debugging and finding
+the correct joint indices for self.setJointIndices.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot.get_observation">
+<span class="sig-name descname"><span class="pre">get_observation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot.get_observation" title="Permalink to this definition"></a></dt>
+<dd><p>Updates all observation and concatenate joint states and sensor
+observation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot.get_observation_space">
+<span class="sig-name descname"><span class="pre">get_observation_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">gym.spaces.dict.Dict</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot.get_observation_space" title="Permalink to this definition"></a></dt>
+<dd><p>Get observation space.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot.get_torque_spaces">
+<span class="sig-name descname"><span class="pre">get_torque_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot.get_torque_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Get observation space and action space when using torque control.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot.get_velocity_spaces">
+<span class="sig-name descname"><span class="pre">get_velocity_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot.get_velocity_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Get observation space and action space when using velocity
+control.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot.read_limits">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">read_limits</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot.read_limits" title="Permalink to this definition"></a></dt>
+<dd><p>Read and set the joint limits.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot.reset">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the robot to an initial state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>np.ndarray : Initial joint positions</em>) – </p></li>
+<li><p><strong>vel</strong> (<em>np.ndarray : Initial joint velocities</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot.set_joint_indices">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_joint_indices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot.set_joint_indices" title="Permalink to this definition"></a></dt>
+<dd><p>Sets joint indices for urdf parsing.</p>
+<p>The urdf file is used to control the robot and
+to read the limits. Control is done using pybullet
+and reading the limits is urdfpy. The index counting
+is different for both so two lists need to be set
+for each robot, self._robot_joints for control
+and self._urdf_joints for reading the limits.
+When castor wheels are present, self._castor_joints
+are also specified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot.update_sensing">
+<span class="sig-name descname"><span class="pre">update_sensing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot.update_sensing" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the sensing of the robot’s sensors.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.generic_robot.GenericRobot.update_state">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot.update_state" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the state of the robot.</p>
+<p>This function reads current joint position and velocities from the
+pyhsices engine.</p>
+</dd></dl>
+
+</dd></dl>
+
+<section id="differentialdriverobot">
+<h4>DifferentialDriveRobot<a class="headerlink" href="#differentialdriverobot" title="Permalink to this headline"></a></h4>
+<dl class="py class">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">urdfenvs.urdfCommon.differential_drive_robot.</span></span><span class="sig-name descname"><span class="pre">DifferentialDriveRobot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">urdf_file</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot" title="urdfenvs.urdfCommon.generic_robot.GenericRobot"><code class="xref py py-class docutils literal notranslate"><span class="pre">urdfenvs.urdfCommon.generic_robot.GenericRobot</span></code></a></p>
+<p>Differential drive robot.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot._wheel_radius">
+<span class="sig-name descname"><span class="pre">_wheel_radius</span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot._wheel_radius" title="Permalink to this definition"></a></dt>
+<dd><p>The radius of the actuated wheels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot._wheel_distance">
+<span class="sig-name descname"><span class="pre">_wheel_distance</span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot._wheel_distance" title="Permalink to this definition"></a></dt>
+<dd><p>The distance between the actuated wheels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot._spawn_offset">
+<span class="sig-name descname"><span class="pre">_spawn_offset</span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot._spawn_offset" title="Permalink to this definition"></a></dt>
+<dd><p>The offset by which the initial position must be shifted to align
+observation with that position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.add_sensor">
+<span class="sig-name descname"><span class="pre">add_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">urdfenvs.sensors.sensor.Sensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.add_sensor" title="Permalink to this definition"></a></dt>
+<dd><p>Adds sensor to the robot.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.apply_acceleration_action">
+<span class="sig-name descname"><span class="pre">apply_acceleration_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.apply_acceleration_action" title="Permalink to this definition"></a></dt>
+<dd><p>Applies acceleration action to the robot.</p>
+<p>The acceleration action relies on integration of the velocity signal
+and applies velocities at the end. The integrated velocities are
+clipped to avoid very large velocities.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.apply_base_velocity">
+<span class="sig-name descname"><span class="pre">apply_base_velocity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.apply_base_velocity" title="Permalink to this definition"></a></dt>
+<dd><p>Applies forward and angular velocity to the base.</p>
+<p>The forward and angular velocity of the base is first transformed in
+angular velocities of the wheels using a simple dynamics model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.apply_torque_action">
+<span class="sig-name descname"><span class="pre">apply_torque_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">torques</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.apply_torque_action" title="Permalink to this definition"></a></dt>
+<dd><p>Applies torque action to the arm joints of the robot.</p>
+<p>Torque control is not available for the base at the moment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.apply_velocity_action">
+<span class="sig-name descname"><span class="pre">apply_velocity_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.apply_velocity_action" title="Permalink to this definition"></a></dt>
+<dd><p>Applies angular velocities to the arm joints.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.apply_velocity_action_wheels">
+<span class="sig-name descname"><span class="pre">apply_velocity_action_wheels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.apply_velocity_action_wheels" title="Permalink to this definition"></a></dt>
+<dd><p>Apllies angular velocities to the wheels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.correct_base_orientation">
+<span class="sig-name descname"><span class="pre">correct_base_orientation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_base</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.correct_base_orientation" title="Permalink to this definition"></a></dt>
+<dd><p>Corrects base orientation by -pi.</p>
+<p>The orientation observation should be zero when facing positive
+x-direction. Some robot models are rotated by pi. This is corrected
+here. The function also makes sure that the orientation is always
+between -pi and pi.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.disable_velocity_control">
+<span class="sig-name descname"><span class="pre">disable_velocity_control</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.disable_velocity_control" title="Permalink to this definition"></a></dt>
+<dd><p>Disables velocity control for all controlled joints.</p>
+<p>By default, pybullet uses velocity control. This has to be disabled if
+torques should be directly controlled.  See
+func:<cite>~urdfenvs.urdfCommon.generic_robot.generic_rob
+ot.apply_torque_action</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.get_acceleration_spaces">
+<span class="sig-name descname"><span class="pre">get_acceleration_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.get_acceleration_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Get observation space and action space when using acceleration
+control.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.get_indexed_joint_info">
+<span class="sig-name descname"><span class="pre">get_indexed_joint_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.get_indexed_joint_info" title="Permalink to this definition"></a></dt>
+<dd><p>Get indexed joint info.</p>
+<p>This function can be used for debugging and finding
+the correct joint indices for self.setJointIndices.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.get_observation">
+<span class="sig-name descname"><span class="pre">get_observation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.get_observation" title="Permalink to this definition"></a></dt>
+<dd><p>Updates all observation and concatenate joint states and sensor
+observation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.get_observation_space">
+<span class="sig-name descname"><span class="pre">get_observation_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">gym.spaces.dict.Dict</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.get_observation_space" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the observation space for a differential drive robot.</p>
+<p>The observation space is represented as a dictonary. <cite>x</cite> and <cite>xdot</cite>
+denote the configuration position and velocity and <cite>vel</cite> is the current
+forward and rotational velocity of the base. Note that in <cite>xdot</cite>, the
+velocity in Cartesian coordinates is used.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.get_torque_spaces">
+<span class="sig-name descname"><span class="pre">get_torque_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.get_torque_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Get observation space and action space when using torque control.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.get_velocity_spaces">
+<span class="sig-name descname"><span class="pre">get_velocity_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.get_velocity_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Get observation space and action space when using velocity
+control.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.ns">
+<span class="sig-name descname"><span class="pre">ns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.ns" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the number of degrees of freedom.</p>
+<p>This is needed as number of actuated joints <cite>_n</cite> is lower that the
+number of degrees of freedom for differential drive robots.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.read_limits">
+<span class="sig-name descname"><span class="pre">read_limits</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.read_limits" title="Permalink to this definition"></a></dt>
+<dd><p>Read and set the joint limits.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the robot to an initial state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>np.ndarray : Initial joint positions</em>) – </p></li>
+<li><p><strong>vel</strong> (<em>np.ndarray : Initial joint velocities</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.set_joint_indices">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_joint_indices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.set_joint_indices" title="Permalink to this definition"></a></dt>
+<dd><p>Sets joint indices for urdf parsing.</p>
+<p>The urdf file is used to control the robot and
+to read the limits. Control is done using pybullet
+and reading the limits is urdfpy. The index counting
+is different for both so two lists need to be set
+for each robot, self._robot_joints for control
+and self._urdf_joints for reading the limits.
+When castor wheels are present, self._castor_joints
+are also specified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.update_sensing">
+<span class="sig-name descname"><span class="pre">update_sensing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.update_sensing" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the sensing of the robot’s sensors.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.update_state">
+<span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot.update_state" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the robot state.</p>
+<p>The robot state is stored in the dictonary self.state.  There, the key
+x refers to the translational and rotational position in the world
+frame.  The key xdot referst to the translation and rotational velocity
+in the world frame.  For a differential-drive robot, the forward and
+rotational velocity is stored under the vel key. The value is then a
+numpy array with the values vel_forward and vel_rotational.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="holonomicrobot">
+<h4>HolonomicRobot<a class="headerlink" href="#holonomicrobot" title="Permalink to this headline"></a></h4>
+<dl class="py class">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">urdfenvs.urdfCommon.holonomic_robot.</span></span><span class="sig-name descname"><span class="pre">HolonomicRobot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">urdf_file</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#urdfenvs.urdfCommon.generic_robot.GenericRobot" title="urdfenvs.urdfCommon.generic_robot.GenericRobot"><code class="xref py py-class docutils literal notranslate"><span class="pre">urdfenvs.urdfCommon.generic_robot.GenericRobot</span></code></a></p>
+<p>Generic holonomic robot.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.add_sensor">
+<span class="sig-name descname"><span class="pre">add_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">urdfenvs.sensors.sensor.Sensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.add_sensor" title="Permalink to this definition"></a></dt>
+<dd><p>Adds sensor to the robot.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.disable_velocity_control">
+<span class="sig-name descname"><span class="pre">disable_velocity_control</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.disable_velocity_control" title="Permalink to this definition"></a></dt>
+<dd><p>Disables velocity control for all controlled joints.</p>
+<p>By default, pybullet uses velocity control. This has to be disabled if
+torques should be directly controlled.  See
+func:<cite>~urdfenvs.urdfCommon.generic_robot.generic_rob
+ot.apply_torque_action</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.get_acceleration_spaces">
+<span class="sig-name descname"><span class="pre">get_acceleration_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.get_acceleration_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Get observation space and action space when using acceleration
+control.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.get_indexed_joint_info">
+<span class="sig-name descname"><span class="pre">get_indexed_joint_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.get_indexed_joint_info" title="Permalink to this definition"></a></dt>
+<dd><p>Get indexed joint info.</p>
+<p>This function can be used for debugging and finding
+the correct joint indices for self.setJointIndices.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.get_observation">
+<span class="sig-name descname"><span class="pre">get_observation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.get_observation" title="Permalink to this definition"></a></dt>
+<dd><p>Updates all observation and concatenate joint states and sensor
+observation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.get_observation_space">
+<span class="sig-name descname"><span class="pre">get_observation_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">gym.spaces.dict.Dict</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.get_observation_space" title="Permalink to this definition"></a></dt>
+<dd><p>Get observation space.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.get_torque_spaces">
+<span class="sig-name descname"><span class="pre">get_torque_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.get_torque_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Get observation space and action space when using torque control.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.get_velocity_spaces">
+<span class="sig-name descname"><span class="pre">get_velocity_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.get_velocity_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Get observation space and action space when using velocity
+control.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.read_limits">
+<span class="sig-name descname"><span class="pre">read_limits</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.read_limits" title="Permalink to this definition"></a></dt>
+<dd><p>Read and set the joint limits.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the robot to an initial state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>np.ndarray : Initial joint positions</em>) – </p></li>
+<li><p><strong>vel</strong> (<em>np.ndarray : Initial joint velocities</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.set_joint_indices">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_joint_indices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.set_joint_indices" title="Permalink to this definition"></a></dt>
+<dd><p>Sets joint indices for urdf parsing.</p>
+<p>The urdf file is used to control the robot and
+to read the limits. Control is done using pybullet
+and reading the limits is urdfpy. The index counting
+is different for both so two lists need to be set
+for each robot, self._robot_joints for control
+and self._urdf_joints for reading the limits.
+When castor wheels are present, self._castor_joints
+are also specified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.update_sensing">
+<span class="sig-name descname"><span class="pre">update_sensing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.update_sensing" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the sensing of the robot’s sensors.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.update_state">
+<span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot.update_state" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the state of the robot.</p>
+<p>This function reads current joint position and velocities from the
+pyhsices engine.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+<section id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.WrongObservationError">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">urdfenvs.urdfCommon.urdf_env.</span></span><span class="sig-name descname"><span class="pre">WrongObservationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observationSpace</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.WrongObservationError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception when observation lays outside the defined observation space.</p>
+<p>This Exception is initiated when an the observation is not within the
+defined observation space. The purpose of this exception is to give
+the user better information about which specific part of the observation
+caused the problem.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.WrongObservationError.check_box">
+<span class="sig-name descname"><span class="pre">check_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o_box</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">os_box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tabbing</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.WrongObservationError.check_box" title="Permalink to this definition"></a></dt>
+<dd><p>Checks correctness of box observation.</p>
+<p>This methods detects which value in the observation caused the
+error to be raised. Then it updates the error message msg.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>o_box</strong> (<em>observation box</em>) – </p></li>
+<li><p><strong>os_box</strong> (<em>observation space box</em>) – </p></li>
+<li><p><strong>key</strong> (<em>key of observation</em>) – </p></li>
+<li><p><strong>depth</strong> (<em>current depth of nesting</em>) – </p></li>
+<li><p><strong>tabbing</strong> (<em>current tabbing for error message</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.WrongObservationError.check_dict">
+<span class="sig-name descname"><span class="pre">check_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">os_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tabbing</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.WrongObservationError.check_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Checking correctness of dictonary observation.</p>
+<p>This methods searches for the cause for wrong observation.
+It loops over all keys in this dictonary and verifies whether
+observation and observation spaces fit together. If this is not
+the case, the concerned key is checked again. As the observation
+might have nested dictonaries, this function is called
+recursively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>o_dict</strong> (<em>observation dictonary</em>) – </p></li>
+<li><p><strong>os_dict</strong> (<em>observation space dictonary</em>) – </p></li>
+<li><p><strong>depth</strong> (<em>current depth of nesting</em>) – </p></li>
+<li><p><strong>tabbing</strong> (<em>tabbing for error message</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.WrongObservationError.get_wrong_observation">
+<span class="sig-name descname"><span class="pre">get_wrong_observation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">os</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.WrongObservationError.get_wrong_observation" title="Permalink to this definition"></a></dt>
+<dd><p>Detecting where the error occured.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>o</strong> (<em>observation</em>) – </p></li>
+<li><p><strong>os</strong> (<em>observation space</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urdfenvs.urdfCommon.urdf_env.WrongObservationError.with_traceback">
+<span class="sig-name descname"><span class="pre">with_traceback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urdfenvs.urdfCommon.urdf_env.WrongObservationError.with_traceback" title="Permalink to this definition"></a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="contributing.html" class="btn btn-neutral float-left" title="Contributing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Max Spahn.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

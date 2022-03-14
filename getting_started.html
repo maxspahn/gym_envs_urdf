@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting started &mdash; urdfEnvs  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Generic URDF robots" href="introduction.html" />
+    <link rel="prev" title="Welcome to urdfEnvs’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> urdfEnvs
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pre-requisites">Pre-requisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optional-installation-with-poetry">Optional: Installation with poetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#run-example">Run example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-environments">Use environments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Generic URDF robots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#switching">Switching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#adding-sensors-to-the-robot">Adding sensors to the robot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#robot-control-with-the-keyboard">Robot control with the keyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#examples">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developpers.html">Robot Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">urdfEnvs</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Getting started</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/getting_started.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline"></a></h1>
+<p>This is the guide to quickle get going with urdf gym environments.</p>
+<section id="pre-requisites">
+<h2>Pre-requisites<a class="headerlink" href="#pre-requisites" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Python &gt;3.6, &lt;3.10</p></li>
+<li><p>pip3</p></li>
+<li><p>git</p></li>
+</ul>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<p>You first have to downlad the repository</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:maxspahn/gym_envs_urdf.git
+</pre></div>
+</div>
+<p>Then, you can install the package using pip as:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install .
+</pre></div>
+</div>
+</section>
+<section id="optional-installation-with-poetry">
+<h2>Optional: Installation with poetry<a class="headerlink" href="#optional-installation-with-poetry" title="Permalink to this headline"></a></h2>
+<p>If you want to use <a class="reference external" href="https://python-poetry.org/docs/">poetry</a>, you have to install it
+first. See their webpage for instructions <a class="reference external" href="https://python-poetry.org/docs/">docs</a>. Once
+poetry is installed, you can install the virtual environment with the following commands.
+Note that during the first installation <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">update</span></code> takes up to 300 secs.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry install
+</pre></div>
+</div>
+<p>The virtual environment is entered by</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry shell
+</pre></div>
+</div>
+<p>Inside the virtual environment you can access all the examples.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline"></a></h2>
+<section id="run-example">
+<h3>Run example<a class="headerlink" href="#run-example" title="Permalink to this headline"></a></h3>
+<p>You find several python scripts in <a class="reference external" href="https://github.com/maxspahn/gym_envs_urdf/tree/master/examples">examples/</a>. You can
+test those examples using the following (if you use poetry, make sure to enter the virtual
+environment first with <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">shell</span></code>)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">pointRobot</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Replace pointRobot.py with the name of the script you want to run.</p>
+</section>
+<section id="use-environments">
+<h3>Use environments<a class="headerlink" href="#use-environments" title="Permalink to this headline"></a></h3>
+<p>In the <code class="docutils literal notranslate"><span class="pre">examples</span></code>, you will find individual examples for all implemented
+robots. Environments can be created using the normal gym syntax.
+Gym environments rely mostly on three functions</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gym.make(...)</span></code> to create the environment,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gym.reset(...)</span></code> to reset the environment,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gym.step(action)</span></code> to step one time step in the environment.</p></li>
+</ul>
+<p>For example, in <a class="reference external" href="https://github.com/maxspahn/gym_envs_urdf/blob/master/examples/pointRobot.py">examples/pointRobot.py</a>, you
+can find the following syntax to <code class="docutils literal notranslate"><span class="pre">make</span></code>, <code class="docutils literal notranslate"><span class="pre">reset</span></code> and <code class="docutils literal notranslate"><span class="pre">step</span></code> the environment.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;pointRobotUrdf-vel-v0&#39;</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ob</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">pos0</span><span class="p">,</span> <span class="n">vel</span><span class="o">=</span><span class="n">vel0</span><span class="p">)</span>
+<span class="n">ob</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The id-tag in the <code class="docutils literal notranslate"><span class="pre">make</span></code> command specifies the robot and the control type.
+You can get a full list of all available environments using</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gym</span> <span class="kn">import</span> <span class="n">envs</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">envs</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Go ahead and explore all the examples you can finde there.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to urdfEnvs’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="introduction.html" class="btn btn-neutral float-right" title="Generic URDF robots" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Max Spahn.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

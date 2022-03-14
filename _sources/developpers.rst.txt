@@ -8,11 +8,11 @@ result in motion. In the following, some details on the structure are elaborated
 Generic Robot
 ---------------
 
-The python-class ``GenericRobot`` in ``urdfCommon/genericRobot.py`` is an abstract class that
+The python-class ``GenericRobot`` in ``urdfCommon/generic_robot.py`` is an abstract class that
 every robot inherits from. Abstract methods are used to force some methods to be
 implemented that are required by the environment. There are two intermediate classes,
 namely ``DifferentialDriveRobot`` and ``HolonomicRobot`` that derive from ``GenericRobot``. 
-The main difference between them is ``updateState`` function as the ``differentialDriveRobot``
+The main difference between them is ``update_state`` function as the ``differential_drive_robot``
 requires additional information.
 
 Robot States
