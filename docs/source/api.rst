@@ -4,13 +4,13 @@ API
 Structure
 ----------
 
-.. inheritance-diagram:: urdfenvs.boxerRobot.resources.boxerRobot.BoxerRobot
-        urdfenvs.albertReacher.resources.albertRobot.AlbertRobot
-        urdfenvs.tiagoReacher.resources.tiagoRobot.TiagoRobot
-        urdfenvs.pandaReacher.resources.pandaRobot.PandaRobot
-        urdfenvs.mobileReacher.resources.mobileRobot.MobileRobot
-        urdfenvs.nLinkUrdfReacher.resources.nLinkRobot.NLinkRobot
-        urdfenvs.pointRobotUrdf.resources.pointRobot.PointRobot
+.. inheritance-diagram:: urdfenvs.boxer_robot.resources.boxer_robot.BoxerRobot
+        urdfenvs.albert_reacher.resources.albert_robot.AlbertRobot
+        urdfenvs.tiago_reacher.resources.tiago_robot.TiagoRobot
+        urdfenvs.panda_reacher.resources.panda_robot.PandaRobot
+        urdfenvs.mobile_reacher.resources.mobile_robot.MobileRobot
+        urdfenvs.n_link_urdf_reacher.resources.n_link_robot.NLinkRobot
+        urdfenvs.point_robot_urdf.resources.point_robot.PointRobot
       :top-classes: urdfenvs.urdfCommon.generic_robot.GenericRobot
           urdfenvs.urdfCommon.holonomic_robot.HolonomicRobot
           urdfenvs.urdfCommon.differential_drive_robot.DifferentialDriveRobot
@@ -22,7 +22,7 @@ Generic Classes
 UrdfEnv
 ^^^^^^^
 
-.. autoclass:: urdfenvs.urdfCommon.urdfEnv.UrdfEnv
+.. autoclass:: urdfenvs.urdfCommon.urdf_env.UrdfEnv
    :inherited-members: 
    :show-inheritance:
 
@@ -50,7 +50,7 @@ HolonomicRobot
 Exceptions
 --------------
 
-.. autoclass:: urdfenvs.urdfCommon.urdfEnv.WrongObservationError
+.. autoclass:: urdfenvs.urdfCommon.urdf_env.WrongObservationError
    :inherited-members: 
    :show-inheritance:
 
