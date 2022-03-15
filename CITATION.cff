@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: gym_envs_urdf
+title: Urdf-Environment
 message: "If you use this software, please cite it as below."
 type: software
 authors:
@@ -10,5 +10,6 @@ authors:
     affiliation: Creator
 license: GPL-3.0
 version: 1.0.0
-doi: "10.0000/00000"
+doi: "10.4121/19362017"
 url: "https://github.com/maxspahn/gym_envs_urdf"
+
