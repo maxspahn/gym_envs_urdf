@@ -1,6 +1,6 @@
 import gym
 import urdfenvs.point_robot_urdf
-from urdfenvs.sensors.obstacleSensor import ObstacleSensor
+from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
 from examples.sceneObjects.obstacles import (
     sphereObst1,
     urdfObst1,
