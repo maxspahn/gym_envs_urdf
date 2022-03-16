@@ -2,8 +2,8 @@ import gym
 import urdfenvs.panda_reacher
 import numpy as np
 
-goal = True
-obstacles = True
+goal = False
+obstacles = False
 
 
 def main():
