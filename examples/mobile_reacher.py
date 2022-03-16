@@ -1,32 +1,27 @@
 import gym
-import urdfenvs.mobileReacher
+import urdfenvs.mobile_reacher
 import numpy as np
 
 
 def main():
-    #env = gym.make('mobile-reacher-tor-v0', dt=0.01, render=True)
-    #env = gym.make('mobile-reacher-vel-v0', dt=0.01, render=True)
-    env = gym.make('mobile-reacher-acc-v0', dt=0.01, render=True, gripper=False)
-    defaultAction = np.zeros(10)
-    defaultAction[0] = 0.1
-    defaultAction[5] = -0.0
-    defaultAction[-1] = 3.5
-    n_episodes = 1
+    # env = gym.make('mobile-reacher-tor-v0', dt=0.01, render=True)
+    # env = gym.make('mobile-reacher-vel-v0', dt=0.01, render=True)
+    env = gym.make("mobile-reacher-acc-v0", dt=0.01, render=True, gripper=False)
+
+    action = np.zeros(10)
+    action[0] = 0.1
+    action[5] = -0.0
+    action[-1] = 3.5
     n_steps = 100000
-    cumReward = 0.0
-    for e in range(n_episodes):
-        ob = env.reset()
-        print("Starting episode")
-        for i in range(n_steps):
-            if (int(i/100))%2 == 0:
-                defaultAction[-1] = -1.0
-            else:
-                defaultAction[-1] = 1.0
-            action = env.action_space.sample()
-            action = defaultAction
-            ob, reward, done, info = env.step(action)
-            cumReward += reward
+    ob = env.reset()
+    print(f"Initial observation : {ob}")
+    for i in range(n_steps):
+        if (int(i / 100)) % 2 == 0:
+            action[-1] = -1.0
+        else:
+            action[-1] = 1.0
+        ob, _, _, _ = env.step(action)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
