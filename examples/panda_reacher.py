@@ -2,8 +2,8 @@ import gym
 import urdfenvs.panda_reacher
 import numpy as np
 
-goal = False
-obstacles = False
+goal = True
+obstacles = True
 
 
 def main():
@@ -17,8 +17,12 @@ def main():
     print(f"Initial observation : {ob}")
     if goal:
         from examples.sceneObjects.goal import dynamicGoal
-
         env.add_goal(dynamicGoal)
+
+    if obstacles:
+        from examples.sceneObjects.obstacles import dynamicSphereObst2
+        env.add_goal(dynamicGoal)
+
     if obstacles:
         from examples.sceneObjects.obstacles import dynamicSphereObst2
 

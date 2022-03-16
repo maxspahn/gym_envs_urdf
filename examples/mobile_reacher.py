@@ -4,8 +4,6 @@ import numpy as np
 
 
 def main():
-    # env = gym.make('mobile-reacher-tor-v0', dt=0.01, render=True)
-    # env = gym.make('mobile-reacher-vel-v0', dt=0.01, render=True)
     env = gym.make("mobile-reacher-acc-v0", dt=0.01, render=True, gripper=False)
 
     action = np.zeros(10)
