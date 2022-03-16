@@ -16,11 +16,15 @@ def main():
     ob = env.reset()
     print(f"Initial observation : {ob}")
     if goal:
-        from urdfGymExamples.sceneObjects.goal import dynamicGoal
-
+        from examples.sceneObjects.goal import dynamicGoal
         env.add_goal(dynamicGoal)
+
     if obstacles:
-        from urdfGymExamples.sceneObjects.obstacles import dynamicSphereObst2
+        from examples.sceneObjects.obstacles import dynamicSphereObst2
+        env.add_goal(dynamicGoal)
+
+    if obstacles:
+        from examples.sceneObjects.obstacles import dynamicSphereObst2
 
         env.add_obstacle(dynamicSphereObst2)
     print("Starting episode")
