@@ -9,19 +9,18 @@ class Prius(BicycleModel):
 
     Attributes
     ---------
-    _correction: float
-        The correction is necessary as the wheels need to be actuated more than
-        what the kinematic model suggests so we correct this.
-        This is a workaround and should be investigated further.
+    _scaling: float
+        The size scaling in which the urdf should be spawned.
+        This also effects the dynamics of the system.
 
     """
     def __init__(self):
         n = 2
         urdf_file = os.path.join(os.path.dirname(__file__), 'prius.urdf')
+        self._scaling: float = 0.3
         super().__init__(n, urdf_file)
         self._wheel_radius = 0.31265
         self._wheel_distance = 0.494
-        self._correction: float = 3.0/10.0
         self._spawn_offset: np.ndarray = np.array([-0.435, 0.0, 0.05])
 
     def set_joint_indices(self):
