@@ -18,6 +18,7 @@ class BicycleModel(GenericRobot):
         The offset by which the initial position must be shifted to align
         observation with that position.
     """
+
     def __init__(self, n: int, urdf_file: str):
         """Constructor for bicyle model robot."""
         super().__init__(n, urdf_file)
@@ -42,7 +43,7 @@ class BicycleModel(GenericRobot):
             basePosition=spawn_pos,
             baseOrientation=base_orientation,
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
-            globalScaling=0.3,
+            globalScaling=self._scaling,
         )
         # set base velocity
         self.update_state()
@@ -55,7 +56,7 @@ class BicycleModel(GenericRobot):
         self._limit_tor_j = np.zeros((2, self.n()))
         self._limit_acc_j = np.zeros((2, self.n()))
         self._limit_pos_steering = np.zeros(2)
-        joint = robot.joints[self._steering_joints[1]-1]
+        joint = robot.joints[self._steering_joints[1] - 1]
         self._limit_pos_steering[0] = joint.limit.lower - 0.1
         self._limit_pos_steering[1] = joint.limit.upper + 0.1
         self._limit_vel_forward_j = np.array([[-40, -10], [40, 10]])
@@ -82,7 +83,7 @@ class BicycleModel(GenericRobot):
                 "steering": gym.spaces.Box(
                     low=self._limit_pos_steering[0],
                     high=self._limit_pos_steering[1],
-                    shape=(1, ),
+                    shape=(1,),
                     dtype=np.float64,
                 ),
                 "xdot": gym.spaces.Box(
@@ -106,7 +107,9 @@ class BicycleModel(GenericRobot):
             controlMode=p.VELOCITY_CONTROL,
             targetVelocity=vels[1],
         )
-        pos_wheel_right, _, _, _ = p.getJointState(self._robot, self._steering_joints[1])
+        pos_wheel_right, _, _, _ = p.getJointState(
+            self._robot, self._steering_joints[1]
+        )
         p.setJointMotorControl2(
             self._robot,
             self._steering_joints[0],
@@ -118,15 +121,16 @@ class BicycleModel(GenericRobot):
                 self._robot,
                 joint,
                 controlMode=p.VELOCITY_CONTROL,
-                targetVelocity=vels[0] / (self._wheel_radius * self._correction), 
+                targetVelocity=vels[0] / (self._wheel_radius * self._scaling),
             )
 
-
-    def apply_acceleration_action(self, vels: np.ndarray) -> None:
+    def apply_acceleration_action(self, accs: np.ndarray) -> None:
         print("Acceleration action is not available for prius.")
+        pass
 
-    def apply_torque_action(self, vels: np.ndarray) -> None:
+    def apply_torque_action(self, torques: np.ndarray) -> None:
         print("Torque action is not available for prius.")
+        pass
 
     def correct_base_orientation(self, pos_base: np.ndarray) -> np.ndarray:
         """Corrects base orientation by -pi.
@@ -161,23 +165,24 @@ class BicycleModel(GenericRobot):
             ]
         )
         self.correct_base_orientation(pos_base)
-        vel_base = np.array([link_state[6][0], link_state[6][1], link_state[7][2]])
+        vel_base = np.array(
+            [link_state[6][0], link_state[6][1], link_state[7][2]]
+        )
         # wheel velocities
         vel_wheels = p.getJointStates(self._robot, self._forward_joints[2:4])
         v_right = vel_wheels[0][1]
         v_left = vel_wheels[1][1]
-        vel = np.array([0.5 * (v_right + v_left) * self._correction * self._wheel_radius, vel_base[2]])
-        """
-        jacobi_nonholonomic = np.array(
-            [[np.cos(pos_base[2]), 0], [np.sin(pos_base[2]), 0], [0, 1]]
+        vel = np.array(
+            [
+                0.5 * (v_right + v_left) * self._scaling * self._wheel_radius,
+                vel_base[2],
+            ]
         )
-        vel_base = np.dot(jacobi_nonholonomic, vel)
-        """
         pos, _, _, _ = p.getJointState(self._robot, self._steering_joints[1])
         steering_pos = pos
         self.state = {
             "x": pos_base,
-            "vel": vel, 
+            "vel": vel,
             "xdot": vel_base,
             "steering": steering_pos,
         }
