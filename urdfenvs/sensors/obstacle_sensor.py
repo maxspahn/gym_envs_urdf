@@ -10,6 +10,15 @@ class ObstacleSensor(Sensor):
     object. The ObstacleSensor is thus a full information sensor which in the
     real world can never exist. The ObstacleSensor returns a dictionary with
     the position of every object when the sense function is called.
+
+    Attributes
+    ----------
+
+    _observation: dict
+        For every object the Pose and Twist are stored in the observation.
+        Pose contains position in cartesian format (x, y, z) and orientation in quaternion format (a, b, c, d)
+        Twist contains velocity in cartesian format (x, y, z) and angular velocity in quaternion format (a, b, c, d)
+
     """
 
     def __init__(self):
@@ -68,21 +77,28 @@ class ObstacleSensor(Sensor):
         return spaces_dict
 
     def sense(self, robot):
-        """Sense the exact position of all the objects."""
+        """
+        Sense the exact position of all the objects.
+
+
+        """
         observation = {}
 
         # assumption: p.getBodyInfo(0), p.getBodyInfo(1) are the robot and
         # ground plane respectively
         for obj_id in range(2, p.getNumBodies()):
-
             pos = p.getBasePositionAndOrientation(obj_id)
             vel = p.getBaseVelocity(obj_id)
 
             observation[str(obj_id)] = {
-                "x": np.array(pos[0]),
-                "xdot": np.array(vel[0]),
-                "theta": np.array(p.getEulerFromQuaternion(pos[1])),
-                "thetadot": np.array(vel[1]),
+                "pose": {
+                    "position": np.array(pos[0]),
+                    "orientation": np.array(pos[1])
+                },
+                "twist": {
+                    "linear": np.array(vel[0]),
+                    "angular": np.array(vel[1])
+                }
             }
 
         return observation
