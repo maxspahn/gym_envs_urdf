@@ -30,7 +30,7 @@ class ObstacleSensor(Sensor):
         size = 0
         for _ in range(2, p.getNumBodies()):
             size += (
-                12  # add space for x, xdot, theta and thetadot for every object
+                14  # add space for position, velocity, orientation and angular velocity
             )
         return size
 
@@ -47,30 +47,37 @@ class ObstacleSensor(Sensor):
         for obj_id in range(2, p.getNumBodies()):
             spaces_dict[str(obj_id)] = gym.spaces.Dict(
                 {
-                    "x": gym.spaces.Box(
-                        low=min_os_value,
-                        high=max_os_value,
-                        shape=(3,),
-                        dtype=np.float64,
-                    ),
-                    "xdot": gym.spaces.Box(
-                        low=min_os_value,
-                        high=max_os_value,
-                        shape=(3,),
-                        dtype=np.float64,
-                    ),
-                    "theta": gym.spaces.Box(
-                        low=-2 * np.pi,
-                        high=2 * np.pi,
-                        shape=(3,),
-                        dtype=np.float64,
-                    ),
-                    "thetadot": gym.spaces.Box(
-                        low=min_os_value,
-                        high=max_os_value,
-                        shape=(3,),
-                        dtype=np.float64,
-                    ),
+                    "pose": gym.spaces.Dict(
+                        {
+                            "position": gym.spaces.Box(
+                                low=min_os_value,
+                                high=max_os_value,
+                                shape=(3,),
+                                dtype=np.float64,
+                            ),
+                            "orientation": gym.spaces.Box(
+                                low=min_os_value,
+                                high=max_os_value,
+                                shape=(4,),
+                                dtype=np.float64,
+                            )
+                        }),
+                    "twist": gym.spaces.Dict(
+                        {
+                            "linear": gym.spaces.Box(
+                                low=min_os_value,
+                                high=max_os_value,
+                                shape=(3,),
+                                dtype=np.float64,
+                            ),
+                            "angular": gym.spaces.Box(
+                                low=min_os_value,
+                                high=max_os_value,
+                                shape=(4,),
+                                dtype=np.float64,
+                            )
+                        }
+                    )
                 }
             )
 

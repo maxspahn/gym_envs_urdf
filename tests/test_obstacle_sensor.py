@@ -26,12 +26,12 @@ def test_staticObstacle(pointRobotEnv):
     ob, _, _, _ = pointRobotEnv.step(action)
     assert "obstacleSensor" in ob
     assert "2" in ob["obstacleSensor"]
-    assert isinstance(ob["obstacleSensor"]["2"]["x"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["xdot"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["theta"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["thetadot"], np.ndarray)
+    assert isinstance(ob["obstacleSensor"]["2"]["pose"]["position"], np.ndarray)
+    assert isinstance(ob["obstacleSensor"]["2"]["twist"]["linear"], np.ndarray)
+    assert isinstance(ob["obstacleSensor"]["2"]["pose"]["orientation"], np.ndarray)
+    assert isinstance(ob["obstacleSensor"]["2"]["twist"]["angular"], np.ndarray)
     np.testing.assert_array_almost_equal(
-        ob["obstacleSensor"]["2"]["x"],
+        ob["obstacleSensor"]["2"]["pose"]["position"],
         sphereObst1.position(t=pointRobotEnv.t()),
         decimal=2,
     )
@@ -47,12 +47,12 @@ def test_dynamicObstacle(pointRobotEnv):
     ob, _, _, _ = pointRobotEnv.step(action)
     assert "obstacleSensor" in ob
     assert "2" in ob["obstacleSensor"]
-    assert isinstance(ob["obstacleSensor"]["2"]["x"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["xdot"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["theta"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["thetadot"], np.ndarray)
+    assert isinstance(ob["obstacleSensor"]["2"]["pose"]["position"], np.ndarray)
+    assert isinstance(ob["obstacleSensor"]["2"]["twist"]["linear"], np.ndarray)
+    assert isinstance(ob["obstacleSensor"]["2"]["pose"]["orientation"], np.ndarray)
+    assert isinstance(ob["obstacleSensor"]["2"]["twist"]["angular"], np.ndarray)
     np.testing.assert_array_almost_equal(
-        ob["obstacleSensor"]["2"]["x"],
+        ob["obstacleSensor"]["2"]["pose"]["position"],
         dynamicSphereObst3.position(t=pointRobotEnv.t()),
         decimal=2,
     )
@@ -71,12 +71,12 @@ def test_urdfObstacle(pointRobotEnv):
     ob, _, _, _ = pointRobotEnv.step(action)
     assert "obstacleSensor" in ob
     assert "2" in ob["obstacleSensor"]
-    assert isinstance(ob["obstacleSensor"]["2"]["x"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["xdot"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["theta"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["thetadot"], np.ndarray)
+    assert isinstance(ob["obstacleSensor"]["2"]["pose"]["position"], np.ndarray)
+    assert isinstance(ob["obstacleSensor"]["2"]["twist"]["linear"], np.ndarray)
+    assert isinstance(ob["obstacleSensor"]["2"]["pose"]["orientation"], np.ndarray)
+    assert isinstance(ob["obstacleSensor"]["2"]["twist"]["angular"], np.ndarray)
     np.testing.assert_array_almost_equal(
-        ob["obstacleSensor"]["2"]["x"],
+        ob["obstacleSensor"]["pose"]["position"],
         dynamicSphereObst3.position(t=pointRobotEnv.t()),
         decimal=2,
     )
