@@ -17,7 +17,7 @@ class ObstacleSensor(Sensor):
     _observation: dict
         For every object the Pose and Twist are stored in the observation.
         Pose contains position in cartesian format (x, y, z) and orientation in quaternion format (a, b, c, d)
-        Twist contains velocity in cartesian format (x, y, z) and angular velocity in quaternion format (a, b, c, d)
+        Twist contains velocity in cartesian format (x, y, z) and angular velocity in cartesian format (x, y, z)
 
     """
 
@@ -73,7 +73,7 @@ class ObstacleSensor(Sensor):
                             "angular": gym.spaces.Box(
                                 low=min_os_value,
                                 high=max_os_value,
-                                shape=(4,),
+                                shape=(3,),
                                 dtype=np.float64,
                             )
                         }

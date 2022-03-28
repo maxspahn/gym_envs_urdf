@@ -58,6 +58,20 @@ def test_dynamicObstacle(pointRobotEnv):
     )
 
 
+def test_shape_observation_space(pointRobotEnv):
+    # add obstacle and sensor
+    pointRobotEnv.add_obstacle(sphereObst1)
+    sensor = ObstacleSensor()
+    pointRobotEnv.add_sensor(sensor)
+    action = np.random.random(pointRobotEnv.n())
+    ob, _, _, _ = pointRobotEnv.step(action)
+
+    assert ob["obstacleSensor"]["2"]["pose"]["position"].shape == (3, )
+    assert ob["obstacleSensor"]["2"]["pose"]["orientation"].shape == (4, )
+    assert ob["obstacleSensor"]["2"]["twist"]["linear"].shape == (3, )
+    assert ob["obstacleSensor"]["2"]["twist"]["angular"].shape == (3, )
+
+
 @pytest.mark.skip(
     reason="Fails due to different position in pybullet and obstacle from motion planning scene"
 )
