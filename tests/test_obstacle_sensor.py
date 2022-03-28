@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
-from examples.sceneObjects.obstacles import sphereObst1, urdfObst1, dynamicSphereObst3
+from examples.scene_objects.obstacles import sphereObst1, urdfObst1, dynamicSphereObst3
 import urdfenvs.point_robot_urdf
 
 
