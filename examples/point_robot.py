@@ -19,7 +19,7 @@ def main():
     print(f"Initial observation : {ob}")
     env.set_walls(limits=[[-3, -2], [3, 2]])
     if obstacles:
-        from examples.sceneObjects.obstacles import (
+        from examples.scene_objects.obstacles import (
             sphereObst1,
             sphereObst2,
             urdfObst1,
@@ -31,7 +31,7 @@ def main():
         env.add_obstacle(urdfObst1)
         env.add_obstacle(dynamicSphereObst3)
     if goal:
-        from examples.sceneObjects.goal import splineGoal
+        from examples.scene_objects.goal import splineGoal
 
         env.add_goal(splineGoal)
     for _ in range(n_steps):
