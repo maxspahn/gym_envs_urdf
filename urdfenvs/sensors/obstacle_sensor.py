@@ -10,6 +10,15 @@ class ObstacleSensor(Sensor):
     object. The ObstacleSensor is thus a full information sensor which in the
     real world can never exist. The ObstacleSensor returns a dictionary with
     the position of every object when the sense function is called.
+
+    Attributes
+    ----------
+
+    _observation: dict
+        For every object the Pose and Twist are stored in the observation.
+        Pose contains position in cartesian format (x, y, z) and orientation in quaternion format (x, y, z, w)
+        Twist contains velocity in cartesian format (x, y, z) and angular velocity in cartesian format (x, y, z)
+
     """
 
     def __init__(self):
@@ -21,7 +30,7 @@ class ObstacleSensor(Sensor):
         size = 0
         for _ in range(2, p.getNumBodies()):
             size += (
-                12  # add space for x, xdot, theta and thetadot for every object
+                14  # add space for position, velocity, orientation and angular velocity
             )
         return size
 
@@ -38,51 +47,65 @@ class ObstacleSensor(Sensor):
         for obj_id in range(2, p.getNumBodies()):
             spaces_dict[str(obj_id)] = gym.spaces.Dict(
                 {
-                    "x": gym.spaces.Box(
-                        low=min_os_value,
-                        high=max_os_value,
-                        shape=(3,),
-                        dtype=np.float64,
-                    ),
-                    "xdot": gym.spaces.Box(
-                        low=min_os_value,
-                        high=max_os_value,
-                        shape=(3,),
-                        dtype=np.float64,
-                    ),
-                    "theta": gym.spaces.Box(
-                        low=-2 * np.pi,
-                        high=2 * np.pi,
-                        shape=(3,),
-                        dtype=np.float64,
-                    ),
-                    "thetadot": gym.spaces.Box(
-                        low=min_os_value,
-                        high=max_os_value,
-                        shape=(3,),
-                        dtype=np.float64,
-                    ),
+                    "pose": gym.spaces.Dict(
+                        {
+                            "position": gym.spaces.Box(
+                                low=min_os_value,
+                                high=max_os_value,
+                                shape=(3,),
+                                dtype=np.float64,
+                            ),
+                            "orientation": gym.spaces.Box(
+                                low=min_os_value,
+                                high=max_os_value,
+                                shape=(4,),
+                                dtype=np.float64,
+                            )
+                        }),
+                    "twist": gym.spaces.Dict(
+                        {
+                            "linear": gym.spaces.Box(
+                                low=min_os_value,
+                                high=max_os_value,
+                                shape=(3,),
+                                dtype=np.float64,
+                            ),
+                            "angular": gym.spaces.Box(
+                                low=min_os_value,
+                                high=max_os_value,
+                                shape=(3,),
+                                dtype=np.float64,
+                            )
+                        }
+                    )
                 }
             )
 
         return spaces_dict
 
     def sense(self, robot):
-        """Sense the exact position of all the objects."""
+        """
+        Sense the exact position of all the objects.
+
+
+        """
         observation = {}
 
         # assumption: p.getBodyInfo(0), p.getBodyInfo(1) are the robot and
         # ground plane respectively
         for obj_id in range(2, p.getNumBodies()):
-
             pos = p.getBasePositionAndOrientation(obj_id)
             vel = p.getBaseVelocity(obj_id)
 
             observation[str(obj_id)] = {
-                "x": np.array(pos[0]),
-                "xdot": np.array(vel[0]),
-                "theta": np.array(p.getEulerFromQuaternion(pos[1])),
-                "thetadot": np.array(vel[1]),
+                "pose": {
+                    "position": np.array(pos[0]),
+                    "orientation": np.array(pos[1])
+                },
+                "twist": {
+                    "linear": np.array(vel[0]),
+                    "angular": np.array(vel[1])
+                }
             }
 
         return observation
