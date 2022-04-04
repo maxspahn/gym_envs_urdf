@@ -1,68 +1,77 @@
 import gym
 import numpy as np
 import pytest
+import urdfenvs.albert_reacher
+import urdfenvs.point_robot_urdf
+import urdfenvs.panda_reacher
+import urdfenvs.n_link_urdf_reacher
+import urdfenvs.dual_arm
+import urdfenvs.tiago_reacher
+import urdfenvs.boxer_robot
 
 @pytest.fixture
 def pointRobotEnv():
-    import urdfenvs.point_robot_urdf
-    initPos = np.array([0.0, -1.0, 0.0])
-    initVel = np.array([-1.0, 0.0, 0.0])
+    init_pos = np.array([0.0, -1.0, 0.0])
+    init_vel = np.array([-1.0, 0.0, 0.0])
     env = gym.make("pointRobotUrdf-vel-v0", render=False, dt=0.01)
-    ob = env.reset(pos=initPos, vel=initVel)
-    return (env, initPos, initVel)
+    _ = env.reset(pos=init_pos, vel=init_vel)
+    return (env, init_pos, init_vel)
 
 @pytest.fixture
 def pandaRobotEnv():
-    import urdfenvs.panda_reacher
-    initPos = np.array([0.0, 0.0, 0.0, -1.875, 0.0, 1.5, 0.0])
-    initVel = np.array([0.0, 0.0, 1.0, 0.0, 0.0, 0.2, 0.0])
+    init_pos = np.array([0.0, 0.0, 0.0, -1.875, 0.0, 1.5, 0.0])
+    init_vel = np.array([0.0, 0.0, 1.0, 0.0, 0.0, 0.2, 0.0])
     env = gym.make("panda-reacher-vel-v0", dt=0.01, render=False, gripper=False)
-    ob = env.reset(pos=initPos, vel=initVel)
-    return (env, initPos, initVel)
+    ob = env.reset(pos=init_pos, vel=init_vel)
+    return (env, init_pos, init_vel)
 
 @pytest.fixture
 def nLinkRobotEnv():
     n = 1
-    import urdfenvs.n_link_urdf_reacher
-    initPos = np.array([0.0])
-    initVel = np.array([0.0])
+    init_pos = np.array([0.0])
+    init_vel = np.array([0.0])
     env = gym.make("nLink-urdf-reacher-vel-v0", n=n, dt=0.01, render=False)
-    ob = env.reset(pos=initPos, vel=initVel)
-    return (env, initPos, initVel)
+    _ = env.reset(pos=init_pos, vel=init_vel)
+    return (env, init_pos, init_vel)
 
 @pytest.fixture
 def boxerRobotEnv():
-    import urdfenvs.boxer_robot
-    initPos = np.array([0.0, 0.0, 0.0])
-    initVel = np.array([0.0, 0.0])
+    init_pos = np.array([0.0, 0.0, 0.0])
+    init_vel = np.array([0.0, 0.0])
     env = gym.make("boxer-robot-vel-v0", dt=0.01, render=False)
-    ob = env.reset(pos=initPos, vel=initVel)
-    return (env, initPos, initVel)
+    _ = env.reset(pos=init_pos, vel=init_vel)
+    return (env, init_pos, init_vel)
 
 @pytest.fixture
 def tiagoReacherEnv():
-    import urdfenvs.tiago_reacher
-    initPos = np.zeros(20)
-    initPos[3] = 0.1
-    initVel = np.zeros(19)
+    init_pos = np.zeros(20)
+    init_pos[3] = 0.1
+    init_vel = np.zeros(19)
     env = gym.make("tiago-reacher-vel-v0", dt=0.01, render=False)
-    ob = env.reset(pos=initPos, vel=initVel)
-    return (env, initPos, initVel)
+    _ = env.reset(pos=init_pos, vel=init_vel)
+    return (env, init_pos, init_vel)
 
 @pytest.fixture
 def albertReacherEnv():
-    import urdfenvs.albert_reacher
-    initPos = np.zeros(10)
-    initPos[6] = -1.501
-    initPos[8] = 1.8675
-    initPos[9] = -np.pi/4
-    initVel = np.zeros(9)
+    init_pos = np.zeros(10)
+    init_pos[6] = -1.501
+    init_pos[8] = 1.8675
+    init_pos[9] = -np.pi/4
+    init_vel = np.zeros(9)
     env = gym.make("albert-reacher-vel-v0", dt=0.01, render=False)
-    ob = env.reset(pos=initPos, vel=initVel)
-    return (env, initPos, initVel)
+    _ = env.reset(pos=init_pos, vel=init_vel)
+    return (env, init_pos, init_vel)
 
 @pytest.fixture
-def allEnvs(pointRobotEnv, pandaRobotEnv, nLinkRobotEnv):
+def dualArmEnv():
+    env = gym.make("dual-arm-vel-v0", dt=0.01, render=False)
+    init_pos = np.zeros(env.n())
+    init_vel = np.zeros(env.n())
+    _ = env.reset(pos=init_pos, vel=init_vel)
+    return (env, init_pos, init_vel)
+
+@pytest.fixture
+def allEnvs(pointRobotEnv, pandaRobotEnv, nLinkRobotEnv, dualArmEnv):
     return list(locals().values())
 
 @pytest.fixture
