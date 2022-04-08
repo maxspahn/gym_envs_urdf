@@ -16,7 +16,7 @@ class GenericRobot(ABC):
         ----------
 
         n: int : Degrees of freedom of the robot
-        urdf_file: str : Full path to urdffile
+        urdf_file: str : Full path to urdf file
         """
         self._n: int = n
         self._urdf_file: str = urdf_file

@@ -8,6 +8,7 @@ from urdfenvs.urdfCommon.generic_robot import GenericRobot
 
 class HolonomicRobot(GenericRobot):
     """Generic holonomic robot."""
+
     def reset(self, pos: np.ndarray, vel: np.ndarray) -> None:
         if hasattr(self, "_robot"):
             p.resetSimulation()
@@ -27,6 +28,7 @@ class HolonomicRobot(GenericRobot):
         self._integrated_velocities = vel
 
     def read_limits(self) -> None:
+        """ Set position, velocity, acceleration and motor torque lower en upper limits """
         robot = URDF.load(self._urdf_file)
         self._limit_pos_j = np.zeros((2, self._n))
         self._limit_vel_j = np.zeros((2, self._n))
@@ -43,18 +45,28 @@ class HolonomicRobot(GenericRobot):
         self.set_acceleration_limits()
 
     def get_observation_space(self) -> gym.spaces.Dict:
+        """
+        Gets the observation space for a holonomic robot.
+
+        The observation space is represented as a dictionary. `state` containing:
+        `position` the concatenated positions of joints in their local configuration space.
+        `velocity` the concatenated velocities of joints in their local configuration space.
+        """
         return gym.spaces.Dict(
             {
-                "x": gym.spaces.Box(
-                    low=self._limit_pos_j[0, :],
-                    high=self._limit_pos_j[1, :],
-                    dtype=np.float64,
-                ),
-                "xdot": gym.spaces.Box(
-                    low=self._limit_vel_j[0, :],
-                    high=self._limit_vel_j[1, :],
-                    dtype=np.float64,
-                ),
+                "state": gym.spaces.Dict({
+                    "position": gym.spaces.Box(
+                        low=self._limit_pos_j[0, :],
+                        high=self._limit_pos_j[1, :],
+                        dtype=np.float64,
+                    ),
+                    "velocity": gym.spaces.Box(
+                        low=self._limit_vel_j[0, :],
+                        high=self._limit_vel_j[1, :],
+                        dtype=np.float64,
+                    ),
+
+                }),
             }
         )
 
@@ -81,6 +93,18 @@ class HolonomicRobot(GenericRobot):
         self.apply_velocity_action(self._integrated_velocities)
 
     def update_state(self) -> None:
+        """
+        Updates the robot state.
+
+       The robot state is stored in the dictionary self.state, which contains:
+       `position`: np.array([joint_position_0, ..., joint_position_n-1)
+           the joints 0 to n-1 have al 1-dimensional configuration space
+           joint_position_i = (position in local configuration space)
+       `velocity`: np.array([joint_velocity_0, ..., joint_velocity_n-1])
+           the joints 0 to n-1 have al one dimensional configuration space
+           joint_velocity_i = (position in local configuration space)
+       """
+
         # Get Joint Configurations
         joint_pos_list = []
         joint_vel_list = []
@@ -92,4 +116,4 @@ class HolonomicRobot(GenericRobot):
         joint_vel = np.array(joint_vel_list)
 
         # Concatenate position, orientation, velocity
-        self.state = {"x": joint_pos, "xdot": joint_vel}
+        self.state = {"state": {"position": joint_pos, "velocity": joint_vel}}

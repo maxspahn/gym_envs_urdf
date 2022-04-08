@@ -205,18 +205,18 @@ class DifferentialDriveRobot(GenericRobot):
         """Updates the robot state.
 
         The robot state is stored in the dictionary self.state, which contains:
-        `position`: np.array((base_pose2D, joint_position_2,...,joint_position_n))
+        `position`: np.array((base_pose2D, joint_position_2, ..., joint_position_n))
             the position in local configuration space
             the base's configuration space aligns with the world frame
             base_pose2D = (x_positions, y_position, orientation)
             the joints 2 to n have al 1-dimensional configuration space
             joint_position_i = (position in local configuration space)
-        `velocity`: np.array((base_twist2D, joint_velocity_2,...,joint_velocity_n))
+        `velocity`: np.array((base_twist2D, joint_velocity_2, ..., joint_velocity_n))
             the velocity in local configuration space
             the base's configuration space aligns with the world frame
             base_pose2D = (x_positions, y_position, orientation)
             the joints 2 to n have al one dimensional configuration space
-            joint_position_i = (position in local configuration space)
+            joint_velocity_i = (position in local configuration space)
         `forward_velocity`: float
             forward velocity in robot frame
         """

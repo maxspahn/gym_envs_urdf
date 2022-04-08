@@ -82,13 +82,13 @@ def test_all(allEnvs):
     for env in allEnvs:
         ob = env[0].reset(pos=env[1], vel=env[2])
         action = np.random.random(env[0].n())
-        np.testing.assert_array_almost_equal(ob['x'], env[1], decimal=2)
+        np.testing.assert_array_almost_equal(ob['state']['position'], env[1], decimal=2)
         ob, _, _, _ = env[0].step(action)
         assert isinstance(ob, dict)
-        assert isinstance(ob['x'], np.ndarray)
-        assert isinstance(ob['xdot'], np.ndarray)
-        assert ob['x'].size == env[0].n()
-        np.testing.assert_array_almost_equal(ob['xdot'], action, decimal=2)
+        assert isinstance(ob['state']['position'], np.ndarray)
+        assert isinstance(ob['state']['velocity'], np.ndarray)
+        assert ob['state']['position'].size == env[0].n()
+        np.testing.assert_array_almost_equal(ob['state']['velocity'], action, decimal=2)
 
 def test_allNonHolonomic(allNonHolonomicEnvs):
     for env in allNonHolonomicEnvs:
