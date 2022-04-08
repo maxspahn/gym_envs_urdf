@@ -314,7 +314,7 @@ class UrdfEnv(gym.Env):
         return self._robot.get_observation()
 
     def render(self) -> None:
-        """Rendering the simulation environmemnt.
+        """Rendering the simulation environment.
 
         As rendering is done rather by the self._render flag,
         only the sleep statement is called here. This speeds up

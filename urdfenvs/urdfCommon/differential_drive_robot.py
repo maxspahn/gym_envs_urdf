@@ -69,7 +69,7 @@ class DifferentialDriveRobot(GenericRobot):
         self._integrated_velocities = vel
 
     def read_limits(self) -> None:
-        """ Set position, velocity, acceleration and motor torque lower en upper limit """
+        """ Set position, velocity, acceleration and motor torque lower en upper limits """
         robot = URDF.load(self._urdf_file)
         self._limit_pos_j = np.zeros((2, self.ns()))
         self._limit_vel_j = np.zeros((2, self.ns()))
