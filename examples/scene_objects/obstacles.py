@@ -21,7 +21,7 @@ urdfObst1Dict = {
     'dim': 3,
     'type': 'urdf',
     'geometry': {'position': [1.5, 0.0, 0.05]},
-    'urdf': os.path.join(os.path.dirname(__file__), 'obstacleData/duck.urdf'),
+    'urdf': os.path.join(os.path.dirname(__file__), 'obstacle_data/duck.urdf'),
 }
 urdfObst1 = UrdfObstacle(name='duckUrdf', contentDict=urdfObst1Dict)
 dynamicObst1Dict = {

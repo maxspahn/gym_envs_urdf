@@ -1,9 +1,9 @@
 import gym
-import urdfenvs.tiagoReacher
+import urdfenvs.tiago_reacher
 
 from multiprocessing import Process, Pipe
 import numpy as np
-from urdfenvs.keyboardInput.keyboard_input_responder import Responder
+from urdfenvs.keyboard_input.keyboard_input_responder import Responder
 from pynput.keyboard import Key
 
 
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         Key.page_up: np.array([-1.0, -1.0]),
     }
 
-    responder.setup(defaultAction=np.array([0.0, 0.0]))
+    responder.setup(default_action=np.array([0.0, 0.0]))
     # responder.setup(custom_on_press=custom_on_press)
 
     # start parent process

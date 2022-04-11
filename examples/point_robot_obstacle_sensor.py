@@ -1,7 +1,7 @@
 import gym
-import urdfenvs.pointRobotUrdf
-from urdfenvs.sensors.obstacleSensor import ObstacleSensor
-from examples.sceneObjects.obstacles import (
+import urdfenvs.point_robot_urdf
+from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
+from examples.scene_objects.obstacles import (
     sphereObst1,
     urdfObst1,
     dynamicSphereObst3,
@@ -21,9 +21,9 @@ def main():
     print(f"Initial observation : {ob}")
 
     # add obstacles
-    env.addObstacle(sphereObst1)
-    env.addObstacle(urdfObst1)
-    env.addObstacle(dynamicSphereObst3)
+    env.add_obstacle(sphereObst1)
+    env.add_obstacle(urdfObst1)
+    env.add_obstacle(dynamicSphereObst3)
 
     # add sensor
     sensor = ObstacleSensor()
