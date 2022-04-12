@@ -100,6 +100,14 @@ class WrongObservationError(Exception):
         tabbing: current tabbing for error message
         """
         msg_ext = tabbing + "Error in " + key + "\n"
+        if isinstance(o_box, float):
+            val = o_box
+            if val < os_box.low[0]:
+                msg_ext += f"{tabbing}\t{key}: {val} < {os_box.low[0]}\n"
+            elif val > os_box.high[0]:
+                msg_ext += f"{tabbing}\t{key}: {val} > {os_box.high[0]}\n"
+            return msg_ext
+
         for i, val in enumerate(o_box):
             if val < os_box.low[i]:
                 msg_ext += f"{tabbing}\t{key}[{i}]: {val} < {os_box.low[i]}\n"
