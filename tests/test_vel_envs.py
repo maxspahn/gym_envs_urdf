@@ -71,6 +71,7 @@ def priusEnv():
     ob = env.reset(pos=initPos, vel=initVel)
     return (env, initPos, initVel)
 
+@pytest.fixture
 def dualArmEnv():
     env = gym.make("dual-arm-vel-v0", dt=0.01, render=False)
     init_pos = np.zeros(env.n())
