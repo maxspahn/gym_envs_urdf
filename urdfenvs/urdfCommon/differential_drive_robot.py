@@ -94,7 +94,7 @@ class DifferentialDriveRobot(GenericRobot):
     def get_observation_space(self) -> gym.spaces.Dict:
         """Gets the observation space for a differential drive robot.
 
-        The observation space is represented as a dictionary. `state` containing:
+        The observation space is represented as a dictionary. `join_state` containing:
         `position` the concatenated positions of joints in their local configuration space.
         `velocity` the concatenated velocities of joints in their local configuration space.
         `forward_velocity` the forward velocity of the robot.
@@ -102,7 +102,7 @@ class DifferentialDriveRobot(GenericRobot):
 
         return gym.spaces.Dict(
             {
-                "state": gym.spaces.Dict({
+                "joint_state": gym.spaces.Dict({
                     "position": gym.spaces.Box(
                         low=self._limit_pos_j[0, :],
                         high=self._limit_pos_j[1, :],
@@ -204,7 +204,8 @@ class DifferentialDriveRobot(GenericRobot):
     def update_state(self) -> None:
         """Updates the robot state.
 
-        The robot state is stored in the dictionary self.state, which contains:
+        The robot state is stored in the self.state, which contains
+        a dictionary with key 'joint_state' with nested dictionaries:
         `position`: np.array((base_pose2D, joint_position_2, ..., joint_position_n))
             the position in local configuration space
             the base's configuration space aligns with the world frame
@@ -255,7 +256,7 @@ class DifferentialDriveRobot(GenericRobot):
         joint_vel = np.array(joint_vel_list)
 
         self.state = {
-            "state": {
+            "joint_state": {
                 "position": np.concatenate((pos_base, joint_pos)),
                 "velocity": np.concatenate((velocity_base, joint_vel)),
                 "forward_velocity": forward_velocity,

@@ -48,13 +48,13 @@ class HolonomicRobot(GenericRobot):
         """
         Gets the observation space for a holonomic robot.
 
-        The observation space is represented as a dictionary. `state` containing:
+        The observation space is represented as a dictionary. `joint_state` containing:
         `position` the concatenated positions of joints in their local configuration space.
         `velocity` the concatenated velocities of joints in their local configuration space.
         """
         return gym.spaces.Dict(
             {
-                "state": gym.spaces.Dict({
+                "joint_state": gym.spaces.Dict({
                     "position": gym.spaces.Box(
                         low=self._limit_pos_j[0, :],
                         high=self._limit_pos_j[1, :],
@@ -94,9 +94,9 @@ class HolonomicRobot(GenericRobot):
 
     def update_state(self) -> None:
         """
-        Updates the robot state.
+        Updates the robot joint_state.
 
-       The robot state is stored in the dictionary self.state, which contains:
+       The robot joint_state is stored in the dictionary self.state, which contains:
        `position`: np.array([joint_position_0, ..., joint_position_n-1)
            the joints 0 to n-1 have al 1-dimensional configuration space
            joint_position_i = (position in local configuration space)
@@ -116,4 +116,4 @@ class HolonomicRobot(GenericRobot):
         joint_vel = np.array(joint_vel_list)
 
         # Concatenate position, orientation, velocity
-        self.state = {"state": {"position": joint_pos, "velocity": joint_vel}}
+        self.state = {"joint_state": {"position": joint_pos, "velocity": joint_vel}}

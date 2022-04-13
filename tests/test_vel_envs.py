@@ -82,26 +82,26 @@ def test_all(allEnvs):
     for env in allEnvs:
         ob = env[0].reset(pos=env[1], vel=env[2])
         action = np.random.random(env[0].n())
-        np.testing.assert_array_almost_equal(ob['state']['position'], env[1], decimal=2)
+        np.testing.assert_array_almost_equal(ob['joint_state']['position'], env[1], decimal=2)
         ob, _, _, _ = env[0].step(action)
         assert isinstance(ob, dict)
-        assert isinstance(ob['state']['position'], np.ndarray)
-        assert isinstance(ob['state']['velocity'], np.ndarray)
-        assert ob['state']['position'].size == env[0].n()
-        np.testing.assert_array_almost_equal(ob['state']['velocity'], action, decimal=2)
+        assert isinstance(ob['joint_state']['position'], np.ndarray)
+        assert isinstance(ob['joint_state']['velocity'], np.ndarray)
+        assert ob['joint_state']['position'].size == env[0].n()
+        np.testing.assert_array_almost_equal(ob['joint_state']['velocity'], action, decimal=2)
 
 def test_allNonHolonomic(allNonHolonomicEnvs):
     for env in allNonHolonomicEnvs:
         ob = env[0].reset(pos=env[1], vel=env[2])
         action = np.random.random(env[0].n()) * 0.1
-        np.testing.assert_array_almost_equal(ob['state']['position'], env[1], decimal=2)
+        np.testing.assert_array_almost_equal(ob['joint_state']['position'], env[1], decimal=2)
         ob, _, _, _ = env[0].step(action)
         assert isinstance(ob, dict)
-        assert isinstance(ob['state']['position'], np.ndarray)
-        assert isinstance(ob['state']['velocity'], np.ndarray)
-        assert isinstance(ob['state']['forward_velocity'], float)
-        assert ob['state']['position'].size == env[0].n() + 1
-        assert ob['state']['velocity'].size == env[0].n() + 1
-        np.testing.assert_array_almost_equal(ob['state']['forward_velocity'], action[0], decimal=2)
-        np.testing.assert_array_almost_equal(ob['state']['velocity'][3:], action[2:], decimal=2)
+        assert isinstance(ob['joint_state']['position'], np.ndarray)
+        assert isinstance(ob['joint_state']['velocity'], np.ndarray)
+        assert isinstance(ob['joint_state']['forward_velocity'], float)
+        assert ob['joint_state']['position'].size == env[0].n() + 1
+        assert ob['joint_state']['velocity'].size == env[0].n() + 1
+        np.testing.assert_array_almost_equal(ob['joint_state']['forward_velocity'], action[0], decimal=2)
+        np.testing.assert_array_almost_equal(ob['joint_state']['velocity'][3:], action[2:], decimal=2)
 

@@ -82,7 +82,7 @@ class GenericRobot(ABC):
         """Get observation space."""
         return gym.spaces.Dict(
             {
-                "state": gym.spaces.Dict(
+                "joint_state": gym.spaces.Dict(
                     {
                         "position": gym.spaces.Box(
                         low=self._limitPos_j[0, :],

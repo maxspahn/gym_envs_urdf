@@ -19,38 +19,42 @@ Robot States
 ----------------
 
 All environments follow the OpenAI-Gym convention of returning observation, (reward,
-done, info). The observation is a dictionary containing as keys ``state`` and optional
+done, info). The observation is a dictionary containing as keys ``joint_state`` and optional
 observations from added sensors.
 
 HolonomicRobot
 ^^^^^^^^^^^^^^
 
-``state`` is a dictionary containing:
+``joint_state`` is a dictionary containing nested dictionaries:
 
-``position``: a numpy array containing the joint positions in for each degree of freedom.
+    ``position``: a numpy array containing the joint positions in for each degree of freedom.
 
-``velocity``: a numpy array containing the joint velocities in for each degree of freedom.
+    ``velocity``: a numpy array containing the joint velocities in for each degree of freedom.
 
-As example, the Panda robot has 7 joints. The numpy array ``ob["state"]["position"]`` and
-``ob["state"]["velocity"]`` both have dimension (7, ).
+As example, the Panda robot has 7 joints. The numpy array ``ob["joint_state"]["position"]`` and
+``ob["joint_state"]["velocity"]`` both have dimension (7, ).
 
 DifferentialDriveRobot
 ^^^^^^^^^^^^^^^^^^^^^^
 
-``position``: a numpy array containing the the joint positions for each degree of freedom.
-the base joint's configuration space equals the world frame and has 3 dimensions.
-x, y position and the orientation of the base joints' center of mass. Which is concatenated with
-the other joint positions.
-``velocity``: a numpy array containing all joint velocities. Just as the positions the base is
-3-dimensional.
-``forward_velocity``: a float with the forward velocity in robot frame.
+``joint_state`` is a dictionary containing nested dictionaries:
+
+    ``position``: a numpy array containing the the joint positions for each degree of freedom.
+    the base joint's configuration space equals the world frame and has 3 dimensions.
+    x, y position and the orientation of the base joints' center of mass. Which is concatenated with
+    the other joint positions.
+
+    ``velocity``: a numpy array containing all joint velocities. Just as the positions the base is
+    3-dimensional.
+
+    ``forward_velocity``: a float with the forward velocity in robot frame.
 
 Note that ``forward_velocity`` is redundant with ``velocity`` but we concluded
 that it might be useful for some methods and provide this information explicitly.
 
 As example, the Albert robot (a mobile base with a Panda arm attached) has 8 joints.
-array ``ob["state"]["position"]`` and
-``ob["state"]["velocity"]`` both have dimension (10, ). For positions (and similar for velocities)
+array ``ob["joint_state"]["position"]`` and
+``ob["joint_state"]["velocity"]`` both have dimension (10, ). For positions (and similar for velocities)
 in format ``(base_x_pos, base_y_pos, base_orientation, joint_2_pos, joint_3_pos, ..., joint_8_pos)``
 
 
