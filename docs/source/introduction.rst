@@ -66,6 +66,24 @@ A holonomic and a differential drive mobile manipulator are implemented:
 For most robots, different control interfaces are available, velocity
 control, acceleration control and torque control.
 
+
+Adding obstacles to the environment
+===================================
+
+
+Walls
+-----
+todo
+
+Shapes
+-------
+todo
+
+URDF Obstacles
+---------------
+todo
+
+
 Adding sensors to the robot
 ===========================
 A robot can be given a lidar or obstacle sensor by creating a sensor
