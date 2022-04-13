@@ -46,22 +46,22 @@ class WrongObservationError(Exception):
         return msg_ext
 
     def check_dict(
-        self, o_dict: dict, os_dict, depth: int = 1, tabbing: str = ""
+            self, o_dict: dict, os_dict, depth: int = 1, tabbing: str = ""
     ) -> str:
         """Checking correctness of dictonary observation.
 
         This methods searches for the cause for wrong observation.
-        It loops over all keys in this dictonary and verifies whether
+        It loops over all keys in this dictionary and verifies whether
         observation and observation spaces fit together. If this is not
         the case, the concerned key is checked again. As the observation
-        might have nested dictonaries, this function is called
+        might have nested dictionaries, this function is called
         recursively.
 
         Parameters
         ----------
 
-        o_dict: observation dictonary
-        os_dict: observation space dictonary
+        o_dict: observation dictionary
+        os_dict: observation space dictionary
         depth: current depth of nesting
         tabbing: tabbing for error message
         """
@@ -83,7 +83,7 @@ class WrongObservationError(Exception):
         return msg_ext
 
     def check_box(
-        self, o_box: np.ndarray, os_box, key: str, tabbing: str
+            self, o_box: np.ndarray, os_box, key: str, tabbing: str
     ) -> str:
         """Checks correctness of box observation.
 
@@ -96,7 +96,6 @@ class WrongObservationError(Exception):
         o_box: observation box
         os_box: observation space box
         key: key of observation
-        depth: current depth of nesting
         tabbing: current tabbing for error message
         """
         msg_ext = tabbing + "Error in " + key + "\n"
@@ -108,11 +107,39 @@ class WrongObservationError(Exception):
         return msg_ext
 
 
+def check_shape_dim(dim: np.ndarray, shape_type: str, dim_len: int, default: np.ndarray) -> np.ndarray:
+    """
+    Checks the dimension of a shape.
+
+    Parameters
+    ----------
+
+    dim: the dimension of the shape
+    shape_type: the shape type
+    dim_len: the number of dimensions should equal dim_len
+    default: fallback option for dim
+
+    """
+
+    # check dimensions
+    if isinstance(dim, np.ndarray) and np.size(dim) is dim_len:
+        pass
+    elif dim is None:
+        dim = default
+    else:
+        warnings.warn(
+            "{} dimension should be of type (np.ndarray, list) with shape = ({}, )\n"
+            " currently type(dim) = {}. Aborting..."
+                .format(shape_type, dim_len, type(dim)))
+        return default
+    return dim
+
+
 class UrdfEnv(gym.Env):
     """Generic urdf-environment for OpenAI-Gym"""
 
     def __init__(
-        self, robot: GenericRobot, render: bool = False, dt: float = 0.01
+            self, robot: GenericRobot, render: bool = False, dt: float = 0.01
     ) -> None:
         """Constructor for environment.
 
@@ -229,47 +256,94 @@ class UrdfEnv(gym.Env):
         self._goals.append(goal)
         goal.add2Bullet(p)
 
-    def set_walls(self, limits: list = [[-2, -2], [2, 2]]) -> None:
-        """Adds walls to the simulation environment.
-        # TODO: To be removed in the future and incorporated
-        into addObstacle <10-03-22, maxspahn> #
+    def add_walls(self, dim=np.array([0.2, 8, 0.5]),
+                  poses_2d=[[-4, 0.1, 0], [4, -0.1, 0], [0.1, 4, 0.5 * np.pi], [-.1, -4, 0.5 * np.pi]]) -> None:
+        """
+        Adds walls to the simulation environment.
 
         Parameters
         ----------
 
-        limits: Positions of walls, [[x_low, y_low], [x_high, y_high]]
+        dim = [width, length, height]
+        poses_2d = [[x_position, y_position, orientation], ...]
         """
-        col_wall_id = p.createCollisionShape(
-            p.GEOM_BOX, halfExtents=[0.05, 10.0, 0.5]
-        )
-        p.createMultiBody(
-            0,
-            col_wall_id,
-            10,
-            [limits[0][0], 0, 0],
-            p.getQuaternionFromEuler([0, 0, 0]),
-        )
-        p.createMultiBody(
-            0,
-            col_wall_id,
-            10,
-            [limits[1][0], 0, 0.0],
-            p.getQuaternionFromEuler([0, 0, 0]),
-        )
-        p.createMultiBody(
-            0,
-            col_wall_id,
-            10,
-            [0, limits[0][1], 0.0],
-            p.getQuaternionFromEuler([0, 0, np.pi / 2]),
-        )
-        p.createMultiBody(
-            0,
-            col_wall_id,
-            10,
-            [0, limits[1][1], 0.0],
-            p.getQuaternionFromEuler([0, 0, np.pi / 2]),
-        )
+        self.add_shape(shape_type="GEOM_BOX", dim=dim, mass=0, poses_2d=poses_2d)
+
+
+    def add_shape(self, shape_type: str, dim=None, mass=10, poses_2d=[[-2, 2, 0]], place_height=None) -> None:
+        """
+        Adds a shape to the simulation environment.
+
+        Parameters
+        ----------
+
+        shape_type: shape type, options are "GEOM_SPHERE", "GEOM_BOX", "GEOM_CYLINDER", "GEOM_CAPSULE"
+        dim: dimensions for the shape, dependent on the shape_type:
+            GEOM_SPHERE,    dim=[radius],                   type np.ndarray or list
+            GEOM_BOX,       dim=[width, length, height],    type np.ndarray or list
+            GEOM_CYLINDER,  dim=[radius, length],           type np.ndarray or list
+            GEOM_CAPSULE,   dim=[radius, length],           type np.ndarray or list
+        mass: objects mass
+        poses_2d: list of [[x_position, y_position, orientation)], ...] to place the objects
+        place_height: z_position of the center of mass
+            if place_height = None then the shape will be placed against the ground plane
+        """
+        # convert list to numpy array
+        if isinstance(dim, list):
+            dim = np.array(dim)
+
+        # create collisionShape
+        if shape_type == "GEOM_SPHERE":
+            # check dimensions
+            dim = check_shape_dim(dim, "GEOM_SPHERE", 1, default=np.array([0.5]))
+            shape_id = p.createCollisionShape(p.GEOM_SPHERE, radius=dim[0])
+
+        elif shape_type == "GEOM_BOX":
+            if dim is not None:
+                dim = 0.5 * dim
+            # check dimensions
+            dim = check_shape_dim(dim, "GEOM_BOX", 3, default=np.array([0.5, 0.5, 0.5]))
+            shape_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=dim)
+
+        elif shape_type == "GEOM_CYLINDER":
+            # check dimensions
+            dim = check_shape_dim(dim, "GEOM_CYLINDER", 2, default=np.array([0.5, 1.0]))
+            shape_id = p.createCollisionShape(p.GEOM_CYLINDER, radius=dim[0], height=dim[1])
+
+        elif shape_type == "GEOM_CAPSULE":
+            # check dimensions
+            dim = check_shape_dim(dim, "GEOM_CAPSULE", 2, default=np.array([0.5, 1.0]))
+            shape_id = p.createCollisionShape(p.GEOM_CAPSULE, radius=dim[0], height=dim[1])
+
+        else:
+            warnings.warn("Unknown shape type: {}, aborting...".format(shape_type))
+            return
+
+        # if place_height == None, place against ground plane
+        if place_height is None:
+            if shape_type is "GEOM_SPHERE":
+                place_height = dim[0]
+            elif shape_type is "GEOM_BOX":
+                place_height = dim[2]
+            elif shape_type is "GEOM_CYLINDER":
+                place_height = 0.5 * dim[1]
+            elif shape_type is "GEOM_CAPSULE":
+                place_height = dim[0] + 0.5 * dim[1]
+
+        # place the shape at poses_2d
+        for pose in poses_2d:
+            p.createMultiBody(
+                baseMass=mass,
+                baseCollisionShapeIndex=shape_id,
+                baseVisualShapeIndex=shape_id,
+                basePosition=[pose[0], pose[1], place_height],
+                baseOrientation=p.getQuaternionFromEuler([0, 0, pose[2]])
+            )
+
+        if self._t != 0.0:
+            warnings.warn(
+                "Adding an object while the simulation already started"
+            )
 
     def add_sensor(self, sensor: Sensor) -> None:
         """Adds sensor to the robot.
