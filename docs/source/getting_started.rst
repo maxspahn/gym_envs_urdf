@@ -14,7 +14,7 @@ Pre-requisites
 Installation
 ------------
 
-You first have to downlad the repository
+You first have to download the repository
 
 .. code:: bash
 
