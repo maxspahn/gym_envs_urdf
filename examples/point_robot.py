@@ -17,7 +17,7 @@ def main():
     vel0 = np.array([1.0, 0.0, 0.0])
     ob = env.reset(pos=pos0, vel=vel0)
     print(f"Initial observation : {ob}")
-    env.set_walls(limits=[[-3, -2], [3, 2]])
+    env.add_walls()
     if obstacles:
         from examples.scene_objects.obstacles import (
             sphereObst1,

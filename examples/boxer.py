@@ -13,7 +13,7 @@ def main():
     for e in range(n_episodes):
         ob = env.reset(pos=pos0)
         print(f"Initial observation : {ob}")
-        env.set_walls(limits=[[-4, -4], [4, 4]])
+        env.add_walls()
         print("Starting episode")
         for i in range(n_steps):
             action = defaultAction
