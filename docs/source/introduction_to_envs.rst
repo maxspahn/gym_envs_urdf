@@ -1,7 +1,9 @@
 Use environments
 ^^^^^^^^^^^^^^^^
 
-In the ``examples``, you will find individual examples for all implemented
+
+Examples can be found in the `urdfenvs/examples<https://github.com/maxspahn/gym_envs_urdf/tree/master/examples>`_ folder
+you will find individual examples for all implemented
 robots. Environments can be created using the normal gym syntax.
 Gym environments rely mostly on three functions
 
@@ -30,7 +32,7 @@ You can get a full list of all available environments using
 Go ahead and explore all the examples you can find there.
 
 Switching
-=========
+--------
 
 Environments can be created using the normal gym syntax. For example the
 below code line creates a toy robot with 3 links.
@@ -50,9 +52,3 @@ A holonomic and a differential drive mobile manipulator are implemented:
 For most robots, different control interfaces are available, velocity
 control, acceleration control and torque control.
 
-
-Examples
-========
-
-Examples can be found in the `urdfenvs/examples
-<https://github.com/maxspahn/gym_envs_urdf/tree/master/examples>`_ folder.

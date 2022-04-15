@@ -1,10 +1,10 @@
 Adding obstacles to the environment
 ===================================
 
-
 Walls
 -----
-todo
+
+
 
 Shapes
 -------
@@ -15,9 +15,9 @@ URDF Obstacles
 todo
 
 
+Sensors
+--------
 
-Adding sensors to the robot
-===========================
 A robot can be given a lidar or obstacle sensor by creating a sensor
 object and passing it to the environment:
 
