@@ -11,8 +11,10 @@ Welcome to urdfEnvs's documentation!
    :caption: Contents:
 
    getting_started
-   introduction
+   introduction_to_envs
+   adding_to_envs
    developpers
+   dependencies
    contributing
    api
 
