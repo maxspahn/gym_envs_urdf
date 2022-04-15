@@ -23,12 +23,12 @@ motion planning in general.
 +--------+--------+--------+
 
 Getting started
-===================
+===============
 
 This is the guide to quickle get going with urdf gym environments.
 
 Pre-requisites
-----------------
+--------------
 
 - Python >3.6, <3.10
 - pip3
@@ -71,7 +71,7 @@ The virtual environment is entered by
 Inside the virtual environment you can access all the examples.
 
 Installing dependencies
-=======================
+-----------------------
 
 This package depends on casadi for dynamics generation and gym.
 Dependencies should be installed through pip or poetry, see below.
@@ -93,9 +93,6 @@ Options are ``keyboard`` and ``scenes``.
 
 Examples
 -----------
-
-Run example
-^^^^^^^^^^^
 
 You find several python scripts in `examples/
 <https://github.com/maxspahn/gym_envs_urdf/tree/master/examples>`_. You can
