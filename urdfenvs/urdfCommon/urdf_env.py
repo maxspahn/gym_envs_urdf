@@ -267,7 +267,7 @@ class UrdfEnv(gym.Env):
         dim = [width, length, height]
         poses_2d = [[x_position, y_position, orientation], ...]
         """
-        self.add_shape(shape_type="GEOM_BOX", dim=dim, mass=0, poses_2d=poses_2d)
+        self.add_shapes(shape_type="GEOM_BOX", dim=dim, mass=0, poses_2d=poses_2d)
 
 
     def add_shapes(self, shape_type: str, dim=None, mass=10, poses_2d=[[-2, 2, 0]], place_height=None) -> None:
