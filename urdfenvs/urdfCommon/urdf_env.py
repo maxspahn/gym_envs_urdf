@@ -270,7 +270,7 @@ class UrdfEnv(gym.Env):
         self.add_shape(shape_type="GEOM_BOX", dim=dim, mass=0, poses_2d=poses_2d)
 
 
-    def add_shape(self, shape_type: str, dim=None, mass=10, poses_2d=[[-2, 2, 0]], place_height=None) -> None:
+    def add_shapes(self, shape_type: str, dim=None, mass=10, poses_2d=[[-2, 2, 0]], place_height=None) -> None:
         """
         Adds a shape to the simulation environment.
 
