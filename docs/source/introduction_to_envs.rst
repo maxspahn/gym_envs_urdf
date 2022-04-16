@@ -1,5 +1,5 @@
-Use environments
-^^^^^^^^^^^^^^^^
+Creating environments
+^^^^^^^^^^^^^^^^^^^^^
 
 
 Examples can be found in the `urdfenvs/examples<https://github.com/maxspahn/gym_envs_urdf/tree/master/examples>`_ folder

@@ -1,11 +1,13 @@
+Dependencies
+============
 
-Scenes dependency
-=================
+Scenes
+-------
 todo...
 
 
 Robot control with the keyboard
-===============================
+-------------------------------
 
 Control robot actuators with keyboard keys. This is done by:
 
