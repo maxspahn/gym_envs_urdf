@@ -1,5 +1,6 @@
 import gym
 import urdfenvs.braitenberg_robot
+from urdfenvs.sensors.light_sensor import LightSensor
 import numpy as np
 
 goal = True
@@ -20,9 +21,13 @@ def main():
     action = np.array([0.8, 0.8])
     n_steps = 100000
     pos0 = np.array([1.0, 0.2, -1.0])
+    light_sensor_1 = LightSensor('light_sensor_1_link')
+    light_sensor_2 = LightSensor('light_sensor_2_link')
     ob = env.reset(pos=pos0)
     if goal:
         env.add_goal(initialize_goal())
+    env.add_sensor(light_sensor_1)
+    env.add_sensor(light_sensor_2)
     print(f"Initial observation : {ob}")
     for _ in range(n_steps):
         ob, *_ = env.step(action)
