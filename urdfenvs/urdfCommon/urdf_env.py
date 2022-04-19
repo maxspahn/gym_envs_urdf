@@ -116,9 +116,9 @@ class WrongObservationError(Exception):
         return msg_ext
 
 
-def check_shape_dim(dim: np.ndarray, shape_type: str, dim_len: int, default: np.ndarray) -> np.ndarray:
+def filter_shape_dim(dim: np.ndarray, shape_type: str, dim_len: int, default: np.ndarray) -> np.ndarray:
     """
-    Checks the dimension of a shape.
+    Checks and filters the dimension of a shape depending on the shape, warns were necessary.
 
     Parameters
     ----------
@@ -304,7 +304,7 @@ class UrdfEnv(gym.Env):
         # create collisionShape
         if shape_type == "GEOM_SPHERE":
             # check dimensions
-            dim = check_shape_dim(dim, "GEOM_SPHERE", 1, default=np.array([0.5]))
+            dim = filter_shape_dim(dim, "GEOM_SPHERE", 1, default=np.array([0.5]))
             shape_id = p.createCollisionShape(p.GEOM_SPHERE, radius=dim[0])
             default_height = dim[0]
 
@@ -312,19 +312,19 @@ class UrdfEnv(gym.Env):
             if dim is not None:
                 dim = 0.5 * dim
             # check dimensions
-            dim = check_shape_dim(dim, "GEOM_BOX", 3, default=np.array([0.5, 0.5, 0.5]))
+            dim = filter_shape_dim(dim, "GEOM_BOX", 3, default=np.array([0.5, 0.5, 0.5]))
             shape_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=dim)
             default_height = dim[2]
 
         elif shape_type == "GEOM_CYLINDER":
             # check dimensions
-            dim = check_shape_dim(dim, "GEOM_CYLINDER", 2, default=np.array([0.5, 1.0]))
+            dim = filter_shape_dim(dim, "GEOM_CYLINDER", 2, default=np.array([0.5, 1.0]))
             shape_id = p.createCollisionShape(p.GEOM_CYLINDER, radius=dim[0], height=dim[1])
             default_height = 0.5 * dim[1]
 
         elif shape_type == "GEOM_CAPSULE":
             # check dimensions
-            dim = check_shape_dim(dim, "GEOM_CAPSULE", 2, default=np.array([0.5, 1.0]))
+            dim = filter_shape_dim(dim, "GEOM_CAPSULE", 2, default=np.array([0.5, 1.0]))
             shape_id = p.createCollisionShape(p.GEOM_CAPSULE, radius=dim[0], height=dim[1])
             default_height = dim[0] + 0.5 * dim[1]
 
