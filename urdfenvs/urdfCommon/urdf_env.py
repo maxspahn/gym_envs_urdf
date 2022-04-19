@@ -270,7 +270,7 @@ class UrdfEnv(gym.Env):
         self.add_shapes(shape_type="GEOM_BOX", dim=dim, mass=0, poses_2d=poses_2d)
 
 
-    def add_shapes(self, shape_type: str, dim=None, mass=10, poses_2d=[[-2, 2, 0]], place_height=None) -> None:
+    def add_shapes(self, shape_type: str, dim=None, mass=0, poses_2d=[[-2, 2, 0]], place_height=None) -> None:
         """
         Adds a shape to the simulation environment.
 
@@ -297,6 +297,7 @@ class UrdfEnv(gym.Env):
             # check dimensions
             dim = check_shape_dim(dim, "GEOM_SPHERE", 1, default=np.array([0.5]))
             shape_id = p.createCollisionShape(p.GEOM_SPHERE, radius=dim[0])
+            default_height = dim[0]
 
         elif shape_type == "GEOM_BOX":
             if dim is not None:
@@ -304,31 +305,26 @@ class UrdfEnv(gym.Env):
             # check dimensions
             dim = check_shape_dim(dim, "GEOM_BOX", 3, default=np.array([0.5, 0.5, 0.5]))
             shape_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=dim)
+            default_height = dim[2]
 
         elif shape_type == "GEOM_CYLINDER":
             # check dimensions
             dim = check_shape_dim(dim, "GEOM_CYLINDER", 2, default=np.array([0.5, 1.0]))
             shape_id = p.createCollisionShape(p.GEOM_CYLINDER, radius=dim[0], height=dim[1])
+            default_height = 0.5 * dim[1]
 
         elif shape_type == "GEOM_CAPSULE":
             # check dimensions
             dim = check_shape_dim(dim, "GEOM_CAPSULE", 2, default=np.array([0.5, 1.0]))
             shape_id = p.createCollisionShape(p.GEOM_CAPSULE, radius=dim[0], height=dim[1])
+            default_height = dim[0] + 0.5 * dim[1]
 
         else:
             warnings.warn("Unknown shape type: {}, aborting...".format(shape_type))
             return
 
-        # if place_height == None, place against ground plane
         if place_height is None:
-            if shape_type is "GEOM_SPHERE":
-                place_height = dim[0]
-            elif shape_type is "GEOM_BOX":
-                place_height = dim[2]
-            elif shape_type is "GEOM_CYLINDER":
-                place_height = 0.5 * dim[1]
-            elif shape_type is "GEOM_CAPSULE":
-                place_height = dim[0] + 0.5 * dim[1]
+            place_height = default_height
 
         # place the shape at poses_2d
         for pose in poses_2d:
