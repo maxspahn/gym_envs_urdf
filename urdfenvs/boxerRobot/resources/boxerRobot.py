@@ -11,6 +11,7 @@ class BoxerRobot(DifferentialDriveRobot):
         super().__init__(n, fileName)
         self._r = 0.08
         self._l = 0.494
+        self._controldrive = "wheels"
 
     def setJointIndices(self):
         self.urdf_joints = [2, 3]
@@ -21,3 +22,4 @@ class BoxerRobot(DifferentialDriveRobot):
         accLimit = np.array([1.0, 1.0])
         self._limitAcc_j[0, :] = -accLimit
         self._limitAcc_j[1, :] = accLimit
+

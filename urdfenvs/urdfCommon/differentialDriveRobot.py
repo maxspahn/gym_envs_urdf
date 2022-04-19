@@ -11,6 +11,7 @@ class DifferentialDriveRobot(GenericRobot):
         super().__init__(n, fileName)
         self._r = None
         self._l = None
+        self._controldrive == "vel,rot"
 
     def ns(self):
         return self.n() + 1
@@ -124,8 +125,12 @@ class DifferentialDriveRobot(GenericRobot):
             )
 
     def apply_base_velocity(self, vels):
-        vel_left = (vels[0] - 0.5 * self._l * vels[1]) / self._r
-        vel_right = (vels[0] + 0.5 * self._l * vels[1]) / self._r
+        if self._controldrive == "wheels":
+            vel_left = vels[0] * self._r
+            vel_right = vels[1] * self._r
+        else:
+            vel_left = (vels[0] - 0.5 * self._l * vels[1]) / self._r
+            vel_right = (vels[0] + 0.5 * self._l * vels[1]) / self._r
         wheelVels = np.array([vel_right, vel_left])
         self.apply_vel_action_wheels(wheelVels)
 
