@@ -48,26 +48,27 @@ class WrongObservationError(Exception):
     def check_dict(
         self, o_dict: dict, os_dict, depth: int = 1, tabbing: str = ""
     ) -> str:
-        """Checking correctness of dictonary observation.
+        """Checking correctness of dictionary observation.
 
         This methods searches for the cause for wrong observation.
-        It loops over all keys in this dictonary and verifies whether
+        It loops over all keys in this dictionary and verifies whether
         observation and observation spaces fit together. If this is not
         the case, the concerned key is checked again. As the observation
-        might have nested dictonaries, this function is called
+        might have nested dictionaries, this function is called
         recursively.
 
         Parameters
         ----------
 
-        o_dict: observation dictonary
-        os_dict: observation space dictonary
+        o_dict: observation dictionary
+        os_dict: observation space dictionary
         depth: current depth of nesting
         tabbing: tabbing for error message
         """
         msg_ext = ""
         for key in o_dict.keys():
             if not os_dict[key].contains(o_dict[key]):
+
                 if isinstance(o_dict[key], dict):
                     msg_ext += tabbing + key + "\n"
                     msg_ext += self.check_dict(
@@ -321,7 +322,7 @@ class UrdfEnv(gym.Env):
         return self._robot.get_observation()
 
     def render(self) -> None:
-        """Rendering the simulation environmemnt.
+        """Rendering the simulation environment.
 
         As rendering is done rather by the self._render flag,
         only the sleep statement is called here. This speeds up

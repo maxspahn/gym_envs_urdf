@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 import gym
 import numpy as np
 
-
 from urdfenvs.sensors.sensor import Sensor
 
 
@@ -17,7 +16,7 @@ class GenericRobot(ABC):
         ----------
 
         n: int : Degrees of freedom of the robot
-        urdf_file: str : Full path to urdffile
+        urdf_file: str : Full path to urdf file
         """
         self._n: int = n
         self._urdf_file: str = urdf_file
@@ -83,16 +82,20 @@ class GenericRobot(ABC):
         """Get observation space."""
         return gym.spaces.Dict(
             {
-                "x": gym.spaces.Box(
-                    low=self._limitPos_j[0, :],
-                    high=self._limitPos_j[1, :],
-                    dtype=np.float64,
-                ),
-                "xdot": gym.spaces.Box(
-                    low=self._limit_vel_j[0, :],
-                    high=self._limit_vel_j[1, :],
-                    dtype=np.float64,
-                ),
+                "joint_state": gym.spaces.Dict(
+                    {
+                        "position": gym.spaces.Box(
+                        low=self._limitPos_j[0, :],
+                        high=self._limitPos_j[1, :],
+                        dtype=np.float64,
+                    ),
+                        "velocity": gym.spaces.Box(
+                            low=self._limit_vel_j[0, :],
+                            high=self._limit_vel_j[1, :],
+                            dtype=np.float64,
+                        ),
+                    }
+                )
             }
         )
 
@@ -156,7 +159,7 @@ class GenericRobot(ABC):
         """Updates the state of the robot.
 
         This function reads current joint position and velocities from the
-        pyhsices engine.
+        physics engine.
 
         """
         pass

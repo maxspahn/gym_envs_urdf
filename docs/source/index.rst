@@ -12,7 +12,7 @@ Welcome to urdfEnvs's documentation!
 
    getting_started
    introduction
-   developpers
+   developers
    contributing
    api
 
