@@ -194,19 +194,33 @@ to be that way. -->
     <parent link="base_link"/>
     <child link="chassis_link"/>
   </joint>
-  <link name="ee_link">
+  <link name="light_sensor_1_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <sphere radius="0.0625"/>
+        <box size="0.1 0.01 0.1"/>
       </geometry>
-      <material name="Boxer_Red"/>
+      <material name="Boxer_Blue"/>
     </visual>
   </link>
-  <joint name="ee_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 -0.4 0"/>
+  <link name="light_sensor_2_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.1 0.01 0.1"/>
+      </geometry>
+      <material name="Boxer_Blue"/>
+    </visual>
+  </link>
+  <joint name="light_sensor_1_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.15 -0.37 0.07"/>
     <parent link="base_link"/>
-    <child link="ee_link"/>
+    <child link="light_sensor_1_link"/>
+  </joint>
+  <joint name="light_sensor_2_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="-0.15 -0.37 0.07"/>
+    <parent link="base_link"/>
+    <child link="light_sensor_2_link"/>
   </joint>
   <joint name="base_add_orientation" type="fixed">
     <origin rpy="0 0 1.57079" xyz="0.0 0 0"/>

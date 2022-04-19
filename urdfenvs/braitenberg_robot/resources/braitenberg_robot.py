@@ -27,3 +27,14 @@ class BraitenbergRobot(DifferentialDriveRobot):
         if pos_base[2] < -np.pi:
             pos_base[2] += 2 * np.pi
         return pos_base
+
+    def apply_base_velocity(self, vels: np.ndarray) -> None:
+        """Applies left and right wheel velocity to the base.
+
+        This function overwrites the default behavior of the differential drive.
+        """
+        velocity_left_wheel = vels[0] / self._wheel_radius
+        velocity_right_wheel = vels[1] / self._wheel_radius
+
+        wheel_velocities = np.array([velocity_left_wheel, velocity_right_wheel])
+        self.apply_velocity_action_wheels(wheel_velocities)
