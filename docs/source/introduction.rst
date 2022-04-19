@@ -103,8 +103,3 @@ Additionally custom key bindings and a default action can and passed as arguemen
 to the responder. An example can be found in `urdfenvs/examples/keyboard_input.py
 <https://github.com/maxspahn/gym_envs_urdf/blob/master/examples/keyboard_input.py>`_.
 
-Examples
-========
-
-Examples can be found in the `urdfenvs/examples
-<https://github.com/maxspahn/gym_envs_urdf/tree/master/examples>`_ folder.
