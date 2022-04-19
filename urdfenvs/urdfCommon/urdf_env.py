@@ -48,7 +48,7 @@ class WrongObservationError(Exception):
     def check_dict(
             self, o_dict: dict, os_dict, depth: int = 1, tabbing: str = ""
     ) -> str:
-        """Checking correctness of dictonary observation.
+        """Checking correctness of dictionary observation.
 
         This methods searches for the cause for wrong observation.
         It loops over all keys in this dictionary and verifies whether
@@ -68,6 +68,7 @@ class WrongObservationError(Exception):
         msg_ext = ""
         for key in o_dict.keys():
             if not os_dict[key].contains(o_dict[key]):
+
                 if isinstance(o_dict[key], dict):
                     msg_ext += tabbing + key + "\n"
                     msg_ext += self.check_dict(
@@ -99,6 +100,14 @@ class WrongObservationError(Exception):
         tabbing: current tabbing for error message
         """
         msg_ext = tabbing + "Error in " + key + "\n"
+        if isinstance(o_box, float):
+            val = o_box
+            if val < os_box.low[0]:
+                msg_ext += f"{tabbing}\t{key}: {val} < {os_box.low[0]}\n"
+            elif val > os_box.high[0]:
+                msg_ext += f"{tabbing}\t{key}: {val} > {os_box.high[0]}\n"
+            return msg_ext
+
         for i, val in enumerate(o_box):
             if val < os_box.low[i]:
                 msg_ext += f"{tabbing}\t{key}[{i}]: {val} < {os_box.low[i]}\n"
@@ -383,7 +392,7 @@ class UrdfEnv(gym.Env):
         return self._robot.get_observation()
 
     def render(self) -> None:
-        """Rendering the simulation environmemnt.
+        """Rendering the simulation environment.
 
         As rendering is done rather by the self._render flag,
         only the sleep statement is called here. This speeds up
