@@ -31,6 +31,7 @@ def main():
     print(f"Initial observation : {ob}")
     for _ in range(n_steps):
         ob, *_ = env.step(action)
+        print(ob)
 
 
 if __name__ == "__main__":

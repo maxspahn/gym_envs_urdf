@@ -20,7 +20,7 @@ class LightSensor(Sensor):
     """
 
     def __init__(self, link_name: str):
-        super().__init__("lightSensor")
+        super().__init__(f"{link_name}")
         self._link_name = link_name
 
     def get_observation_size(self):
