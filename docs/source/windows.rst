@@ -15,7 +15,7 @@ First, you have to install a minimum version of python. Python 3.10.4
 can be found https://www.python.org/downloads/release/python-3104/
 
 Python is usually installed in
-:file:`C:\Users\<User-Name>\AppData\Local\Programs\Python\Python310\python.exe`.
+:file:`C:\\Users\\<User-Name>\\AppData\\Local\\Programs\\Python\\Python310\\python.exe`.
 You can find the exact location by running the python interpreter from
 the start menu. Simply search for python after you have installed with
 the link from above. You can then launch the interpreter. In there you
