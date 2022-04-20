@@ -7,6 +7,9 @@ from urdfenvs.sensors.sensor import Sensor
 
 from urdfenvs.helpers.functions import link_name_to_link_id
 
+class LightSensorError(Exception):
+    pass
+
 
 class LightSensor(Sensor):
     """
@@ -42,12 +45,23 @@ class LightSensor(Sensor):
 
         Assumes that there is no other obstacle in the environment.
         Link 0 and 1 are reserved to robot and ground plane.
+        Assumes that the goal is the third body.
 
         Returns
         ---------
         np.array
             Position of the light source as (x, y)
+
+        Raises
+        ---------
+        LightSensorError
+            If the above assumed properties of the environment are not met.
+            The light sensor raises an exception.
         """
+        if p.getNumBodies() < 3:
+            raise LightSensorError("There is no light source in the environment.")
+        if p.getNumBodies() > 3: 
+            raise LightSensorError("There are mulitple objects in the environment.")
         for obj_id in range(2, p.getNumBodies()):
             pos = p.getBasePositionAndOrientation(obj_id)[0][0:2]
             vel = p.getBaseVelocity(obj_id)
