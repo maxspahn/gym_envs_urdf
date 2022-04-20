@@ -77,7 +77,7 @@ class LightSensor(Sensor):
 
     def sense(self, robot):
         pos_light_source = self.get_position_of_light_source()
-        pos_sensor = self.get_position_of_sensor()
+        pos_sensor = self.get_pose_of_sensor()
         print(f"pos_light_source: {pos_light_source}")
         print(f"pos_sensor: {pos_sensor}")
         # TODO: Insert function to compute the intensity of the light source <19-04-22, maxspahn> #
