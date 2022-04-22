@@ -3,7 +3,6 @@ import numpy as np
 
 from urdfenvs.urdfCommon.differential_drive_robot import DifferentialDriveRobot
 
-
 class BraitenbergRobot(DifferentialDriveRobot):
     def __init__(self):
         n = 2
@@ -29,12 +28,12 @@ class BraitenbergRobot(DifferentialDriveRobot):
         return pos_base
 
     def apply_base_velocity(self, vels: np.ndarray) -> None:
-        """Applies left and right wheel velocity to the base.
+         """Applies left and right wheel velocity to the base.
+ 
+         This function overwrites the default behavior of the differential drive.
+         """
+         velocity_left_wheel = vels[0] / self._wheel_radius
+         velocity_right_wheel = vels[1] / self._wheel_radius
 
-        This function overwrites the default behavior of the differential drive.
-        """
-        velocity_left_wheel = vels[0] / self._wheel_radius
-        velocity_right_wheel = vels[1] / self._wheel_radius
-
-        wheel_velocities = np.array([velocity_left_wheel, velocity_right_wheel])
-        self.apply_velocity_action_wheels(wheel_velocities)
+         wheel_velocities = np.array([velocity_left_wheel, velocity_right_wheel])
+         self.apply_velocity_action_wheels(wheel_velocities)
