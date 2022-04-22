@@ -20,8 +20,8 @@ def main():
     env = gym.make("braitenberg-robot-vel-v0", dt=0.01, render=True)
     action = np.array([1, 1])
     n_steps = 10000
-    pos0 = np.array([-2, 0, 0])
-    light_sensor_1 = LightSensor('light_sensor_1_link')
+    pos0 = np.array([-1, -1, 0])
+    light_sensor_1 = LightSensor('light_sensor_1_link', "1D")
     #light_sensor_2 = LightSensor('light_sensor_2_link')
     ob = env.reset(pos=pos0)
     if goal:
