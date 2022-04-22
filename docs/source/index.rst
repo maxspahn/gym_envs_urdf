@@ -11,6 +11,7 @@ Welcome to urdfEnvs's documentation!
    :caption: Contents:
 
    getting_started
+   windows
    introduction_to_envs
    adding_to_envs
    developpers
