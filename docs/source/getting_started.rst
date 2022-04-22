@@ -23,8 +23,16 @@ You first have to downlad the repository
 Then, you can install the package using pip as:
 
 .. code:: bash
-   
+
    pip3 install .
+
+The code can be installed in editible mode using
+
+.. code:: bash
+
+   pip3 install -e .
+
+Note that we recommend using poetry in this case.
 
 Optional: Installation with poetry
 ------------------------------------
