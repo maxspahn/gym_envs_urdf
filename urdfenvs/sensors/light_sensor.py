@@ -90,8 +90,8 @@ class LightSensor(Sensor):
             angle_source = np.arctan2(distance_sensor_y,distance_sensor_x)
             if angle_source <= 0:
                 angle_source += 2*np.pi
-                angle_source_sensor = angle_source - angle_sensor
-                angle_intensity = np.cos(angle_source_sensor)
+            angle_source_sensor = angle_source - angle_sensor
+            angle_intensity = np.cos(angle_source_sensor)
             if angle_intensity < 0:
                 angle_intensity = 0
             intens_light = angle_intensity/((distance_sensor+1)**2)
