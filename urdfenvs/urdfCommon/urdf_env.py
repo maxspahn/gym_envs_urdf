@@ -116,12 +116,22 @@ class WrongObservationError(Exception):
                 msg_ext += f"{tabbing}\t{key}[{i}]: {val} > {os_box.high[i]}\n"
         return msg_ext
 
+def flatten_observation(observation_dictonary: dict) -> np.ndarray:
+    observation_list = []
+    for val in observation_dictonary.values():
+        if isinstance(val, np.ndarray):
+            observation_list += val.tolist()
+        elif isinstance(val, dict):
+            observation_list += flatten_observation(val).tolist()
+    observation_array = np.array(observation_list)
+    return observation_array
+
 
 class UrdfEnv(gym.Env):
     """Generic urdf-environment for OpenAI-Gym"""
 
     def __init__(
-        self, robot: GenericRobot, render: bool = False, dt: float = 0.01
+        self, robot: GenericRobot, flatten_observation: bool = False, render: bool = False, dt: float = 0.01
     ) -> None:
         """Constructor for environment.
 
@@ -143,6 +153,7 @@ class UrdfEnv(gym.Env):
         self._num_sub_steps: float = 20
         self._obsts: list = []
         self._goals: list = []
+        self._flatten_observation: bool = flatten_observation
 
         if self._render:
             cid = p.connect(p.SHARED_MEMORY)
@@ -198,7 +209,10 @@ class UrdfEnv(gym.Env):
                 self.observation_space,
             )
             warnings.warn(str(err))
-        return observation
+        if self._flatten_observation:
+            return flatten_observation(observation)
+        else:
+            return observation
 
     def add_obstacle(self, obst) -> None:
         """Adds obstacle to the simulation environment.
