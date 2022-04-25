@@ -8,7 +8,7 @@ goal = False
 
 
 def main():
-    env = gym.make("pointRobotUrdf-vel-v0", dt=0.05, render=True)
+    env = gym.make("pointRobotUrdf-vel-v0", dt=0.05, render=True, flatten_observation=True)
     lidar = Lidar(4, nb_rays=4)
     env.add_sensor(lidar)
     action = np.array([0.1, 0.0, 1.0])
