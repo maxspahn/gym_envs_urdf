@@ -22,9 +22,10 @@ class LightSensor(Sensor):
         Link of robot where the sensor should be connected to.
     """
 
-    def __init__(self, link_name: str):
-        super().__init__(f"{link_name}")
+    def __init__(self, link_name: str, dimension: str):
+        super().__init__("lightSensor")
         self._link_name = link_name
+        self._dimension = dimension
 
     def get_observation_size(self):
         """Getter for the dimension of the observation space."""
@@ -45,7 +46,6 @@ class LightSensor(Sensor):
 
         Assumes that there is no other obstacle in the environment.
         Link 0 and 1 are reserved to robot and ground plane.
-        Assumes that the goal is the third body.
 
         Returns
         ---------
@@ -92,7 +92,26 @@ class LightSensor(Sensor):
     def sense(self, robot):
         pos_light_source = self.get_position_of_light_source()
         pos_sensor = self.get_pose_of_sensor()
-        print(f"pos_light_source: {pos_light_source}")
-        print(f"pos_sensor: {pos_sensor}")
-        # TODO: Insert function to compute the intensity of the light source <19-04-22, maxspahn> #
-        return 0.5
+        distance_sensor_x = (pos_light_source[0]-pos_sensor[0] )
+        distance_sensor_y = (pos_light_source[1]-pos_sensor[1])
+        distance_sensor = (distance_sensor_x**2 + distance_sensor_y**2)**0.5
+        if self._dimension == "2D":
+            #2D Sensor
+            angle_sensor = pos_sensor[2]
+            angle_source = np.arctan2(distance_sensor_y,distance_sensor_x)
+            if angle_source <= 0:
+                angle_source += 2*np.pi
+            angle_source_sensor = angle_source - angle_sensor
+            angle_intensity = np.cos(angle_source_sensor)
+            if angle_intensity < 0:
+                angle_intensity = 0
+            intens_light = angle_intensity/((distance_sensor+1)**2)
+        else:
+            #1D sensor
+            intens_light = 1/(abs(distance_sensor_x) + 1)**2
+        #print(f"pos_sensor: {pos_sensor}")
+        #print(f"angle_sensor: {angle_sensor}",f"angle_source: {angle_source}",f"angle_source_sensor: {angle_source_sensor}")
+        #print(f"pos_light_source: {pos_light_source}")
+        #print(f"pos_sensor: {pos_sensor}")
+        print(f"LDR value: {intens_light}")
+        return intens_light
