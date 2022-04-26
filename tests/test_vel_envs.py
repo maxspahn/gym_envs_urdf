@@ -112,7 +112,7 @@ def test_allDifferentialDrive(allDifferentialDriveEnvs):
         assert isinstance(ob, dict)
         assert isinstance(ob['joint_state']['position'], np.ndarray)
         assert isinstance(ob['joint_state']['velocity'], np.ndarray)
-        assert isinstance(ob['joint_state']['forward_velocity'], float)
+        assert isinstance(ob['joint_state']['forward_velocity'], np.ndarray)
         assert ob['joint_state']['position'].size == env[0].n() + 1
         assert ob['joint_state']['velocity'].size == env[0].n() + 1
         np.testing.assert_array_almost_equal(ob['joint_state']['forward_velocity'], action[0], decimal=2)

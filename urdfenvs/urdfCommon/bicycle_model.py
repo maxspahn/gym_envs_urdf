@@ -59,11 +59,11 @@ class BicycleModel(GenericRobot):
         joint = robot.joints[self._steering_joints[1] - 1]
         self._limit_pos_steering[0] = joint.limit.lower - 0.1
         self._limit_pos_steering[1] = joint.limit.upper + 0.1
-        self._limit_vel_forward_j = np.array([[-40, -10], [40, 10]])
-        self._limit_pos_j[0, 0:3] = np.array([-1000, -1000, -2 * np.pi])
-        self._limit_pos_j[1, 0:3] = np.array([1000, 1000, 2 * np.pi])
-        self._limit_vel_j[0, 0:3] = np.array([-40, -40, -10])
-        self._limit_vel_j[1, 0:3] = np.array([40, 40, 10])
+        self._limit_vel_forward_j = np.array([[-40., -10.], [40., 10.]])
+        self._limit_pos_j[0, 0:3] = np.array([-1000., -1000., -2 * np.pi])
+        self._limit_pos_j[1, 0:3] = np.array([1000., 1000, 2 * np.pi])
+        self._limit_vel_j[0, 0:3] = np.array([-40., -40., -10.])
+        self._limit_vel_j[1, 0:3] = np.array([40., 40., 10.])
         self.set_acceleration_limits()
 
     def get_observation_space(self) -> gym.spaces.Dict:
@@ -179,7 +179,7 @@ class BicycleModel(GenericRobot):
             ]
         )
         pos, _, _, _ = p.getJointState(self._robot, self._steering_joints[1])
-        steering_pos = pos
+        steering_pos = np.array([pos])
         self.state = {
             "x": pos_base,
             "vel": vel,

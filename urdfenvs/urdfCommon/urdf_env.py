@@ -68,7 +68,6 @@ class WrongObservationError(Exception):
         msg_ext = ""
         for key in o_dict.keys():
             if not os_dict[key].contains(o_dict[key]):
-
                 if isinstance(o_dict[key], dict):
                     msg_ext += tabbing + key + "\n"
                     msg_ext += self.check_dict(
