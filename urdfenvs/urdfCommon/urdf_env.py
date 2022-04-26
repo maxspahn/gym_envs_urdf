@@ -46,7 +46,7 @@ class WrongObservationError(Exception):
         return msg_ext
 
     def check_dict(
-            self, o_dict: dict, os_dict, depth: int = 1, tabbing: str = ""
+        self, o_dict: dict, os_dict, depth: int = 1, tabbing: str = ""
     ) -> str:
         """Checking correctness of dictionary observation.
 
@@ -83,7 +83,7 @@ class WrongObservationError(Exception):
         return msg_ext
 
     def check_box(
-            self, o_box: np.ndarray, os_box, key: str, tabbing: str
+        self, o_box: np.ndarray, os_box, key: str, tabbing: str
     ) -> str:
         """Checks correctness of box observation.
 
@@ -115,9 +115,12 @@ class WrongObservationError(Exception):
         return msg_ext
 
 
-def filter_shape_dim(dim: np.ndarray, shape_type: str, dim_len: int, default: np.ndarray) -> np.ndarray:
+def filter_shape_dim(
+    dim: np.ndarray, shape_type: str, dim_len: int, default: np.ndarray
+) -> np.ndarray:
     """
-    Checks and filters the dimension of a shape depending on the shape, warns were necessary.
+    Checks and filters the dimension of a shape depending
+    on the shape, warns were necessary.
 
     Parameters
     ----------
@@ -136,9 +139,10 @@ def filter_shape_dim(dim: np.ndarray, shape_type: str, dim_len: int, default: np
         dim = default
     else:
         warnings.warn(
-            "{} dimension should be of type (np.ndarray, list) with shape = ({}, )\n"
-            " currently type(dim) = {}. Aborting..."
-                .format(shape_type, dim_len, type(dim)))
+            f"{shape_type} dimension should be of"
+            "type (np.ndarray, list) with shape = ({dim_len}, )\n"
+            " currently type(dim) = {type(dim)}. Aborting..."
+        )
         return default
     return dim
 
@@ -147,7 +151,7 @@ class UrdfEnv(gym.Env):
     """Generic urdf-environment for OpenAI-Gym"""
 
     def __init__(
-            self, robot: GenericRobot, render: bool = False, dt: float = 0.01
+        self, robot: GenericRobot, render: bool = False, dt: float = 0.01
     ) -> None:
         """Constructor for environment.
 
@@ -264,8 +268,11 @@ class UrdfEnv(gym.Env):
         self._goals.append(goal)
         goal.add2Bullet(p)
 
-    def add_walls(self, dim=np.array([0.2, 8, 0.5]),
-                  poses_2d=[[-4, 0.1, 0], [4, -0.1, 0], [0.1, 4, 0.5 * np.pi], [-.1, -4, 0.5 * np.pi]]) -> None:
+    def add_walls(
+        self,
+        dim=np.array([0.2, 8, 0.5]),
+        poses_2d=None,
+    ) -> None:
         """
         Adds walls to the simulation environment.
 
@@ -275,27 +282,54 @@ class UrdfEnv(gym.Env):
         dim = [width, length, height]
         poses_2d = [[x_position, y_position, orientation], ...]
         """
-        self.add_shapes(shape_type="GEOM_BOX", dim=dim, mass=0, poses_2d=poses_2d)
+        if poses_2d is None:
+            poses_2d = [
+                [-4, 0.1, 0],
+                [4, -0.1, 0],
+                [0.1, 4, 0.5 * np.pi],
+                [-0.1, -4, 0.5 * np.pi],
+            ]
+        self.add_shapes(
+            shape_type="GEOM_BOX", dim=dim, mass=0, poses_2d=poses_2d
+        )
 
-
-    def add_shapes(self, shape_type: str, dim=None, mass=0, poses_2d=[[-2, 2, 0]], place_height=None) -> None:
+    def add_shapes(
+        self,
+        shape_type: str,
+        dim=None,
+        mass: float = 0,
+        poses_2d: list = None,
+        place_height=None,
+    ) -> None:
         """
         Adds a shape to the simulation environment.
 
         Parameters
         ----------
 
-        shape_type: shape type, options are "GEOM_SPHERE", "GEOM_BOX", "GEOM_CYLINDER", "GEOM_CAPSULE"
-        dim: dimensions for the shape, dependent on the shape_type:
-            GEOM_SPHERE,    dim=[radius],                   type np.ndarray or list
-            GEOM_BOX,       dim=[width, length, height],    type np.ndarray or list
-            GEOM_CYLINDER,  dim=[radius, length],           type np.ndarray or list
-            GEOM_CAPSULE,   dim=[radius, length],           type np.ndarray or list
-        mass: objects mass
-        poses_2d: list of [[x_position, y_position, orientation)], ...] to place the objects
-        place_height: z_position of the center of mass
-            if place_height = None then the shape will be placed against the ground plane
+        shape_type: str
+            options are:
+                "GEOM_SPHERE",
+                "GEOM_BOX",
+                "GEOM_CYLINDER",
+                "GEOM_CAPSULE"
+            .
+        dim: np.ndarray or list
+            dimensions for the shape, dependent on the shape_type:
+                GEOM_SPHERE,    dim=[radius]
+                GEOM_BOX,       dim=[width, length, height]
+                GEOM_CYLINDER,  dim=[radius, length]
+                GEOM_CAPSULE,   dim=[radius, length]
+        mass: float
+            objects mass (default = 0 : fixed shape)
+        poses_2d: list
+            poses where the shape should be placed. Each element
+            must be of form [x_position, y_position, orientation]
+        place_height: float
+            z_position of the center of mass
         """
+        if poses_2d is None:
+            poses_2d = [[-2, 2, 0]]
         # convert list to numpy array
         if isinstance(dim, list):
             dim = np.array(dim)
@@ -303,7 +337,9 @@ class UrdfEnv(gym.Env):
         # create collisionShape
         if shape_type == "GEOM_SPHERE":
             # check dimensions
-            dim = filter_shape_dim(dim, "GEOM_SPHERE", 1, default=np.array([0.5]))
+            dim = filter_shape_dim(
+                dim, "GEOM_SPHERE", 1, default=np.array([0.5])
+            )
             shape_id = p.createCollisionShape(p.GEOM_SPHERE, radius=dim[0])
             default_height = dim[0]
 
@@ -311,24 +347,36 @@ class UrdfEnv(gym.Env):
             if dim is not None:
                 dim = 0.5 * dim
             # check dimensions
-            dim = filter_shape_dim(dim, "GEOM_BOX", 3, default=np.array([0.5, 0.5, 0.5]))
+            dim = filter_shape_dim(
+                dim, "GEOM_BOX", 3, default=np.array([0.5, 0.5, 0.5])
+            )
             shape_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=dim)
             default_height = dim[2]
 
         elif shape_type == "GEOM_CYLINDER":
             # check dimensions
-            dim = filter_shape_dim(dim, "GEOM_CYLINDER", 2, default=np.array([0.5, 1.0]))
-            shape_id = p.createCollisionShape(p.GEOM_CYLINDER, radius=dim[0], height=dim[1])
+            dim = filter_shape_dim(
+                dim, "GEOM_CYLINDER", 2, default=np.array([0.5, 1.0])
+            )
+            shape_id = p.createCollisionShape(
+                p.GEOM_CYLINDER, radius=dim[0], height=dim[1]
+            )
             default_height = 0.5 * dim[1]
 
         elif shape_type == "GEOM_CAPSULE":
             # check dimensions
-            dim = filter_shape_dim(dim, "GEOM_CAPSULE", 2, default=np.array([0.5, 1.0]))
-            shape_id = p.createCollisionShape(p.GEOM_CAPSULE, radius=dim[0], height=dim[1])
+            dim = filter_shape_dim(
+                dim, "GEOM_CAPSULE", 2, default=np.array([0.5, 1.0])
+            )
+            shape_id = p.createCollisionShape(
+                p.GEOM_CAPSULE, radius=dim[0], height=dim[1]
+            )
             default_height = dim[0] + 0.5 * dim[1]
 
         else:
-            warnings.warn("Unknown shape type: {}, aborting...".format(shape_type))
+            warnings.warn(
+                "Unknown shape type: {shape_type}, aborting..."
+            )
             return
 
         if place_height is None:
@@ -341,7 +389,7 @@ class UrdfEnv(gym.Env):
                 baseCollisionShapeIndex=shape_id,
                 baseVisualShapeIndex=shape_id,
                 basePosition=[pose[0], pose[1], place_height],
-                baseOrientation=p.getQuaternionFromEuler([0, 0, pose[2]])
+                baseOrientation=p.getQuaternionFromEuler([0, 0, pose[2]]),
             )
 
         if self._t != 0.0:
