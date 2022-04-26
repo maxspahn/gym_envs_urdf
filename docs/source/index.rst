@@ -12,8 +12,10 @@ Welcome to urdfEnvs's documentation!
 
    getting_started
    windows
-   introduction
-   developers
+   introduction_to_envs
+   adding_to_envs
+   developpers
+   dependencies
    contributing
    api
 
