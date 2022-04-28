@@ -848,7 +848,7 @@ scenes = ["motion-planning-scenes"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6, <3.11"
-content-hash = "432baee696ae9ad28812e971e96c38dc3ecd95be14e0c1875b3f284292d47d38"
+content-hash = "462b33127849d0a6f295d46033bc00855a25c67401cf31273e360086fba1f70e"
 
 [metadata.files]
 alabaster = [
