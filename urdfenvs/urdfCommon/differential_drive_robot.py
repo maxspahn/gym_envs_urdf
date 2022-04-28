@@ -84,11 +84,11 @@ class DifferentialDriveRobot(GenericRobot):
                 self._limit_pos_j[1, i + 1] = joint.limit.upper
                 self._limit_vel_j[0, i + 1] = -joint.limit.velocity
                 self._limit_vel_j[1, i + 1] = joint.limit.velocity
-        self._limit_vel_forward_j = np.array([[-4, -10], [4, 10]])
-        self._limit_pos_j[0, 0:3] = np.array([-10, -10, -2 * np.pi])
-        self._limit_pos_j[1, 0:3] = np.array([10, 10, 2 * np.pi])
-        self._limit_vel_j[0, 0:3] = np.array([-4, -4, -10])
-        self._limit_vel_j[1, 0:3] = np.array([4, 4, 10])
+        self._limit_vel_forward_j = np.array([[-4., -10.], [4., 10.]])
+        self._limit_pos_j[0, 0:3] = np.array([-10., -10., -2 * np.pi])
+        self._limit_pos_j[1, 0:3] = np.array([10., 10., 2 * np.pi])
+        self._limit_vel_j[0, 0:3] = np.array([-4., -4., -10.])
+        self._limit_vel_j[1, 0:3] = np.array([4., 4., 10.])
         self.set_acceleration_limits()
 
     def get_observation_space(self) -> gym.spaces.Dict:
@@ -114,8 +114,9 @@ class DifferentialDriveRobot(GenericRobot):
                         dtype=np.float64,
                     ),
                     "forward_velocity": gym.spaces.Box(
-                        low=np.array(self._limit_vel_forward_j[0][0]),
-                        high=np.array(self._limit_vel_forward_j[1][0]),
+                        low=np.array([self._limit_vel_forward_j[0][0]]),
+                        high=np.array([self._limit_vel_forward_j[1][0]]),
+                        shape=(1,),
                         dtype=np.float64,
                     )
                 })
@@ -259,6 +260,6 @@ class DifferentialDriveRobot(GenericRobot):
             "joint_state": {
                 "position": np.concatenate((pos_base, joint_pos)),
                 "velocity": np.concatenate((velocity_base, joint_vel)),
-                "forward_velocity": forward_velocity,
+                "forward_velocity": np.array([forward_velocity]),
             }
         }
