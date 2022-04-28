@@ -5,8 +5,8 @@ from urdfenvs.urdfCommon.urdf_env import UrdfEnv
 
 
 class BoxerRobotEnv(UrdfEnv):
-    def __init__(self, render=False, dt=0.01):
-        super().__init__(BoxerRobot(), render=render, dt=dt)
+    def __init__(self, **kwargs):
+        super().__init__(BoxerRobot(), **kwargs)
         self.set_spaces()
 
     def check_initial_state(self, pos, vel):
