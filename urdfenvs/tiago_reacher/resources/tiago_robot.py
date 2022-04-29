@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import pybullet as p
 from urdfpy import URDF
 from urdfenvs.urdfCommon.differential_drive_robot import DifferentialDriveRobot
 
