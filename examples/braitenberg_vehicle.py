@@ -18,15 +18,15 @@ def initialize_goal():
 
 def main():
     env = gym.make("braitenberg-robot-vel-v0", dt=0.01, render=True)
-    action = np.array([1, 1])
+    action = np.array([6, 6])
     n_steps = 10000
     pos0 = np.array([-1, -1, 0])
-    light_sensor_1 = LightSensor('light_sensor_1_link', "1D")
+    #light_sensor_1 = LightSensor('light_sensor_1_link', "1D")
     #light_sensor_2 = LightSensor('light_sensor_2_link')
     ob = env.reset(pos=pos0)
     if goal:
         env.add_goal(initialize_goal())
-    env.add_sensor(light_sensor_1)
+    #env.add_sensor(light_sensor_1)
     #env.add_sensor(light_sensor_2)
     #print(f"Initial observation : {ob}")
     for _ in range(n_steps):

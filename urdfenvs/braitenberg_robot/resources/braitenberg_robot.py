@@ -37,3 +37,9 @@ class BraitenbergRobot(DifferentialDriveRobot):
 
          wheel_velocities = np.array([velocity_left_wheel, velocity_right_wheel])
          self.apply_velocity_action_wheels(wheel_velocities)
+         
+    def read_limits(self):
+        super().read_limits()
+        self._limit_vel_forward_j = np.array([[-100., -10.], [100., 10.]])
+        self._limit_vel_j[0, 0:3] = np.array([-100., -100., -10.])
+        self._limit_vel_j[1, 0:3] = np.array([100., 100., 10.])
