@@ -22,8 +22,9 @@ class LightSensor(Sensor):
         Link of robot where the sensor should be connected to.
     """
 
-    def __init__(self, link_name: str, dimension: str):
-        super().__init__("lightSensor")
+    def __init__(self, link_name: str, dimension: str, name_addition: str):
+        self._name_addition = name_addition
+        super().__init__("lightSensor"+self._name_addition)
         self._link_name = link_name
         self._dimension = dimension
 
@@ -113,5 +114,5 @@ class LightSensor(Sensor):
         #print(f"angle_sensor: {angle_sensor}",f"angle_source: {angle_source}",f"angle_source_sensor: {angle_source_sensor}")
         #print(f"pos_light_source: {pos_light_source}")
         #print(f"pos_sensor: {pos_sensor}")
-        print(f"LDR value: {intens_light}")
+        #print(f"LDR value: {intens_light}")
         return intens_light
