@@ -49,6 +49,8 @@ class DifferentialDriveRobot(GenericRobot):
             baseOrientation=base_orientation,
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
+        self.set_joint_indices()
+        self.read_limits()
         # Joint indices as found by p.getJointInfo()
         # set castor wheel friction to zero
         for i in self._castor_joints:
@@ -92,15 +94,6 @@ class DifferentialDriveRobot(GenericRobot):
         self._limit_vel_j[1, 0:3] = np.array([4., 4., 10.])
         self.set_acceleration_limits()
 
-    def preload(self) -> None:
-        """ preload the URDF to automate extraction of joint ids"""
-        self._robot = p.loadURDF(
-            fileName=self._urdf_file,
-            flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
-        )
-        self.set_joint_indices()
-        self.read_limits()
-
     def get_observation_space(self) -> gym.spaces.Dict:
         """Gets the observation space for a differential drive robot.
 
@@ -109,7 +102,6 @@ class DifferentialDriveRobot(GenericRobot):
         `velocity` the concatenated velocities of joints in their local configuration space.
         `forward_velocity` the forward velocity of the robot.
         """
-        self.preload()
         return gym.spaces.Dict(
             {
                 "joint_state": gym.spaces.Dict({

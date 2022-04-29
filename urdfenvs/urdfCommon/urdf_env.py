@@ -447,6 +447,7 @@ class UrdfEnv(gym.Env):
             fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
         )
         self._robot.reset(pos=pos, vel=vel)
+        self.set_spaces()
         self.plane = Plane()
         p.setGravity(0, 0, -10.0)
         p.stepSimulation()
