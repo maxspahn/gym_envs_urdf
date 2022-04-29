@@ -20,11 +20,8 @@ class GenericRobot(ABC):
         """
         self._n: int = n
         self._urdf_file: str = urdf_file
-
-        self.set_joint_indices()
-        self.read_limits()
         self._sensors = []
-
+    
     def n(self) -> int:
         return self._n
 
