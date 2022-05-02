@@ -79,7 +79,7 @@ class GenericRobot(ABC):
             if "caster" in joint_name:
                 self._castor_joints.append(i)
         
-        
+
     def get_observation_space(self) -> gym.spaces.Dict:
         """Get observation space."""
         return gym.spaces.Dict(
