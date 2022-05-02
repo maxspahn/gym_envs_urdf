@@ -14,7 +14,6 @@ class TiagoRobot(DifferentialDriveRobot):
         self._spawn_offset = np.array([-0.1764081, 0.0, 0.1])
 
     def set_joint_indices(self):
-        joint_info = self.get_indexed_joint_info()
         wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"] 
         torso_joint_name = ["torso_lift_joint"] 
         head_joint_names = ["head_" + str(i) + "_joint" for i in range(3)] 
@@ -32,13 +31,8 @@ class TiagoRobot(DifferentialDriveRobot):
         for i, joint in enumerate(robot.joints): 
             if joint.name in self._joint_names: 
                 self._urdf_joints.append(i) 
-        self._robot_joints = [] 
-        self._castor_joints = [] 
-        for index in joint_info:
-            if joint_info[index].decode("UTF-8") in self._joint_names:
-                self._robot_joints.append(index)
-            if "caster" in joint_info[index].decode("UTF-8"):
-                self._castor_joints.append(index)
+        self.get_indexed_joint_info()
+
 
     def set_acceleration_limits(self):
         acc_limit = np.ones(self._n)
