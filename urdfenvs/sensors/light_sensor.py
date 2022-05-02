@@ -107,6 +107,18 @@ class LightSensor(Sensor):
             if angle_intensity < 0:
                 angle_intensity = 0
             intens_light = angle_intensity/((distance_sensor+1)**2)
+        elif self._dimension == "360":
+            angle_sensor = pos_sensor[2]
+            angle_source = np.arctan2(distance_sensor_y,distance_sensor_x)
+            if angle_source <= 0:
+                angle_source += 2*np.pi
+            angle_source_sensor = angle_source - angle_sensor
+            angle_cos = np.cos(angle_source_sensor)
+            if angle_cos <= 0:
+                angle_intensity = abs(np.sin(angle_source_sensor))
+            else:
+                angle_intensity = 0.5 + 0.5*np.cos(angle_source_sensor)
+            intens_light = (angle_intensity/((distance_sensor+1)**2))
         else:
             #1D sensor
             intens_light = 1/(abs(distance_sensor_x) + 1)**2
