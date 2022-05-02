@@ -62,19 +62,24 @@ class GenericRobot(ABC):
     def set_acceleration_limits(self):
         pass
 
-    def get_indexed_joint_info(self) -> dict:
+    def get_indexed_joint_info(self) -> None:
         """Get indexed joint info.
 
         This function can be used for debugging and finding
         the correct joint indices for self.setJointIndices.
 
         """
-        indexed_joint_info = {}
+        self._robot_joints = [] 
+        self._castor_joints = [] 
         for i in range(p.getNumJoints(self._robot)):
             joint_info = p.getJointInfo(self._robot, i)
-            indexed_joint_info[joint_info[0]] = joint_info[1]
-        return indexed_joint_info
-
+            joint_name = joint_info[1].decode("UTF-8")
+            if joint_name in self._joint_names:
+                self._robot_joints.append(i)
+            if "caster" in joint_name:
+                self._castor_joints.append(i)
+        
+        
     def get_observation_space(self) -> gym.spaces.Dict:
         """Get observation space."""
         return gym.spaces.Dict(
