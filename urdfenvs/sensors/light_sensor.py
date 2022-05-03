@@ -22,9 +22,9 @@ class LightSensor(Sensor):
         Link of robot where the sensor should be connected to.
     """
 
-    def __init__(self, link_name: str, dimension: str, name_addition: str):
+    def __init__(self, link_name: str, dimension: str):
         self._name_addition = name_addition
-        super().__init__("lightSensor"+self._name_addition)
+        super().__init__(f"{link_name}")
         self._link_name = link_name
         self._dimension = dimension
 

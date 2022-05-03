@@ -21,7 +21,7 @@ def main():
     action = np.array([1, 1])
     n_steps = 10000
     pos0 = np.array([-2, 0, 0])
-    light_sensor_1 = LightSensor('light_sensor_1_link', "360","_")
+    light_sensor_1 = LightSensor('light_sensor_1_link', "360")
     #light_sensor_2 = LightSensor('light_sensor_2_link')
     ob = env.reset(pos=pos0)
     if goal:
@@ -31,7 +31,7 @@ def main():
     #print(f"Initial observation : {ob}")
     for _ in range(n_steps):
         ob, *_ = env.step(action)
-        print(ob)
+        #print(ob)
 
 
 if __name__ == "__main__":
