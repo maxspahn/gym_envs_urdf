@@ -36,6 +36,7 @@ def main():
         env.add_goal(splineGoal)
     for _ in range(n_steps):
         ob, _, _, _ = env.step(action)
+        print(ob)
 
 
 if __name__ == "__main__":
