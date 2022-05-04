@@ -113,15 +113,11 @@ class LightSensor(Sensor):
             if angle_source <= 0:
                 angle_source += 2*np.pi
             angle_source_sensor = angle_source - angle_sensor
-            angle_cos = np.cos(angle_source_sensor)
-            if angle_cos <= 0:
-                angle_intensity = abs(np.sin(angle_source_sensor))
-            else:
-                angle_intensity = 0.5 + 0.5*np.cos(angle_source_sensor)
+            angle_intensity = 0.5 + 0.5*np.cos(angle_source_sensor)
             intens_light = (angle_intensity/((distance_sensor+1)**2))
         else:
             #1D sensor
-            intens_light = 1/(abs(distance_sensor_x) + 1)**2
+            intens_light = 1/(abs(distance_sensor) + 1)**2
         #print(f"pos_sensor: {pos_sensor}")
         #print(f"angle_sensor: {angle_sensor}",f"angle_source: {angle_source}",f"angle_source_sensor: {angle_source_sensor}")
         #print(f"pos_light_source: {pos_light_source}")
