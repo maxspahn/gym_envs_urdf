@@ -449,7 +449,7 @@ class UrdfEnv(gym.Env):
         self._robot.reset(pos=pos, vel=vel)
         if not self._space_set: 
             self.set_spaces()
-            self._space_setted = True
+            self._space_set = True
         self.plane = Plane()
         p.setGravity(0, 0, -10.0)
         p.stepSimulation()
