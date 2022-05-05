@@ -184,7 +184,7 @@ class UrdfEnv(gym.Env):
         self._obsts: list = []
         self._goals: list = []
         self._flatten_observation: bool = flatten_observation
-        self._space_setted = False
+        self._space_set = False
         if self._render:
             cid = p.connect(p.SHARED_MEMORY)
             if cid < 0:
@@ -447,7 +447,7 @@ class UrdfEnv(gym.Env):
             fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
         )
         self._robot.reset(pos=pos, vel=vel)
-        if not self._space_setted: 
+        if not self._space_set: 
             self.set_spaces()
             self._space_setted = True
         self.plane = Plane()
