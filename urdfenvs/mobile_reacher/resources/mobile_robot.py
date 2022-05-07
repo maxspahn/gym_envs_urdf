@@ -1,7 +1,7 @@
 import pybullet as p
 import os
 import numpy as np
-
+from urdfpy import URDF
 from urdfenvs.urdfCommon.holonomic_robot import HolonomicRobot
 
 
@@ -22,12 +22,24 @@ class MobileRobot(HolonomicRobot):
 
     def set_joint_indices(self):
         if self._gripper:
-            self._robot_joints = [0, 1, 2, 4, 5, 6, 7, 8, 9, 10]
-            self._urdf_joints = [0, 1, 2, 4, 5, 6, 7, 8, 9, 10]
+            mobile_joint_names = ["mobile_joint_x", "mobile_joint_y","mobile_joint_theta"] 
+            panda_joint_names = ["panda_joint"+str(i) for i in range(1,8)]
+            self._joint_names = ( 
+                mobile_joint_names+panda_joint_names 
+            )
         else:
-            self._robot_joints = [0, 1, 2, 4, 5, 6, 7, 8, 9, 10]
-            self._urdf_joints = [0, 1, 2, 4, 5, 6, 7, 8, 9, 10]
-
+            mobile_joint_names = ["mobile_joint_x", "mobile_joint_y","mobile_joint_theta"] 
+            panda_joint_names = ["panda_joint"+str(i) for i in range(1,8)]
+            self._joint_names = ( 
+                mobile_joint_names+panda_joint_names 
+            )
+        robot = URDF.load(self._urdf_file)
+        self._urdf_joints = [] 
+        for i, joint in enumerate(robot.joints): 
+            if joint.name in self._joint_names: 
+                self._urdf_joints.append(i) 
+        self.get_indexed_joint_info()
+        
     def reset(self, pos=None, vel=None):
         self._integrated_velocities = vel
         return super().reset(pos=pos, vel=vel)
