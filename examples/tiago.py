@@ -24,7 +24,6 @@ def main():
     vel0 = np.zeros(19)
     # vel0[0:2] = np.array([0.0, 0.0])
     # vel0[5:12] = np.array([0.1, 0.1, 0.2, -0.1, 0.1, 0.2, 0.0])
-    print("resetting")
     ob = env.reset(pos=pos0, vel=vel0)
     print("base: ", ob["joint_state"]["position"][0:3])
     print("torso: ", ob["joint_state"]["position"][3])
