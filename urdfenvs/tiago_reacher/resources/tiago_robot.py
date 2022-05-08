@@ -13,7 +13,7 @@ class TiagoRobot(DifferentialDriveRobot):
         self._wheel_distance = 0.4044
         self._spawn_offset = np.array([-0.1764081, 0.0, 0.1])
 
-    def set_joint_indices(self):
+    def set_joint_names(self):
         wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"] 
         torso_joint_name = ["torso_lift_joint"] 
         head_joint_names = ["head_" + str(i) + "_joint" for i in range(3)] 
@@ -26,11 +26,6 @@ class TiagoRobot(DifferentialDriveRobot):
             + arm_right_joint_names 
             + arm_left_joint_names 
         ) 
-        robot = URDF.load(self._urdf_file) 
-        self._urdf_joints = [] 
-        for i, joint in enumerate(robot.joints): 
-            if joint.name in self._joint_names: 
-                self._urdf_joints.append(i) 
         self.get_indexed_joint_info()
 
 

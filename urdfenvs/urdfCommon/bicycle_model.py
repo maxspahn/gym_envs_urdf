@@ -45,7 +45,7 @@ class BicycleModel(GenericRobot):
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
             globalScaling=self._scaling,
         )
-        self.set_joint_indices()
+        self.set_joint_names()
         self.read_limits()
         # set base velocity
         self.update_state()

@@ -20,7 +20,7 @@ class PandaRobot(HolonomicRobot):
             n = 7
         super().__init__(n, urdf_file)
 
-    def set_joint_indices(self):
+    def set_joint_names(self):
         if self._gripper:
             panda_finger_joint_names = ["panda_finger_joint1","panda_finger_joint2"] 
             panda_joint_names = ["panda_joint"+str(i) for i in range(1,8)]

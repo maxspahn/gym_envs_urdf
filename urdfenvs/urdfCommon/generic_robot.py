@@ -2,7 +2,7 @@ import pybullet as p
 from abc import ABC, abstractmethod
 import gym
 import numpy as np
-
+from urdfpy import URDF
 from urdfenvs.sensors.sensor import Sensor
 
 
@@ -38,17 +38,10 @@ class GenericRobot(ABC):
         pass
 
     @abstractmethod
-    def set_joint_indices(self) -> None:
+    def set_joint_names(self) -> None:
         """Sets joint indices for urdf parsing.
 
-        The urdf file is used to control the robot and
-        to read the limits. Control is done using pybullet
-        and reading the limits is urdfpy. The index counting
-        is different for both so two lists need to be set
-        for each robot, self._robot_joints for control
-        and self._urdf_joints for reading the limits.
-        When castor wheels are present, self._castor_joints
-        are also specified.
+        Input the names of joints manually.
 
         """
         pass
@@ -63,12 +56,16 @@ class GenericRobot(ABC):
         pass
 
     def get_indexed_joint_info(self) -> None:
-        """Get indexed joint info.
+        """Automated extraction of joint ids
 
-        This function can be used for debugging and finding
-        the correct joint indices for self.setJointIndices.
+        Extract joint ids by the joint names.
 
         """
+        robot = URDF.load(self._urdf_file) 
+        self._urdf_joints = [] 
+        for i, joint in enumerate(robot.joints): 
+            if joint.name in self._joint_names: 
+                self._urdf_joints.append(i) 
         self._robot_joints = [] 
         self._castor_joints = [] 
         for i in range(p.getNumJoints(self._robot)):
