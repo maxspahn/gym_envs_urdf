@@ -1,6 +1,5 @@
 import os
 import numpy as np
-from urdfpy import URDF
 from urdfenvs.urdfCommon.holonomic_robot import HolonomicRobot
 
 
