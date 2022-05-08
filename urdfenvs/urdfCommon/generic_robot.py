@@ -74,9 +74,10 @@ class GenericRobot(ABC):
         for i in range(p.getNumJoints(self._robot)):
             joint_info = p.getJointInfo(self._robot, i)
             joint_name = joint_info[1].decode("UTF-8")
+            print(joint_name)
             if joint_name in self._joint_names:
                 self._robot_joints.append(i)
-            if "caster" in joint_name:
+            if "castor" in joint_name:
                 self._castor_joints.append(i)
         
 
