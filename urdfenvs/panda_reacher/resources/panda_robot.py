@@ -36,16 +36,10 @@ class PandaRobot(HolonomicRobot):
         robot = URDF.load(self._urdf_file)
         self._urdf_joints = [] 
         for i, joint in enumerate(robot.joints):
-            #print(str(i) + ":  " + joint.name) 
             if joint.name in self._joint_names: 
                 self._urdf_joints.append(i) 
         self.get_indexed_joint_info()
-        # if self._gripper:
-        #     self._robot_joints = [1, 2, 3, 4, 5, 6, 7, 9, 10]
-        #     self._urdf_joints = [1, 2, 3, 4, 5, 6, 7, 9, 10]
-        # else:
-        #     self._robot_joints = [1, 2, 3, 4, 5, 6, 7]
-        #     self._urdf_joints = [1, 2, 3, 4, 5, 6, 7]
+
 
     def set_acceleration_limits(self):
         acc_limit = np.array(
