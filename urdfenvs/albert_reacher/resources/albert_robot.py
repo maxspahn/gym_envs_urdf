@@ -14,7 +14,7 @@ class AlbertRobot(DifferentialDriveRobot):
 
     def set_joint_indices(self):
         wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"] 
-        mmrobot_joint_name = ["mmrobot_joint" + str(i) for i in range(1,9)] 
+        mmrobot_joint_name = ["mmrobot_joint" + str(i) for i in range(1,8)] 
         self._joint_names = ( 
             wheel_joint_names 
             + mmrobot_joint_name 
@@ -25,7 +25,6 @@ class AlbertRobot(DifferentialDriveRobot):
             if joint.name in self._joint_names: 
                 self._urdf_joints.append(i) 
         self.get_indexed_joint_info()
-
 
     def set_acceleration_limits(self):
         acc_limit = np.array(
