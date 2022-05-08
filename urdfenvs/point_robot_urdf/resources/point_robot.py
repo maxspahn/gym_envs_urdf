@@ -10,13 +10,8 @@ class PointRobot(HolonomicRobot):
         n = 3
         super().__init__(n, urdf_file)
 
-    def set_joint_indices(self):
+    def set_joint_names(self):
         self._joint_names = ["mobile_joint_x","mobile_joint_y","mobile_joint_theta"]
-        robot = URDF.load(self._urdf_file) 
-        self._urdf_joints = [] 
-        for i, joint in enumerate(robot.joints): 
-            if joint.name in self._joint_names: 
-                self._urdf_joints.append(i) 
         self.get_indexed_joint_info()
 
     def set_acceleration_limits(self):

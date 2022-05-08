@@ -1,6 +1,5 @@
 import os
 import numpy as np
-from urdfpy import URDF
 from urdfenvs.urdfCommon.differential_drive_robot import DifferentialDriveRobot
 
 
@@ -12,18 +11,13 @@ class AlbertRobot(DifferentialDriveRobot):
         self._wheel_radius = 0.08
         self._wheel_distance = 0.494
 
-    def set_joint_indices(self):
+    def set_joint_names(self):
         wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"] 
         mmrobot_joint_name = ["mmrobot_joint" + str(i) for i in range(1,8)] 
         self._joint_names = ( 
             wheel_joint_names 
             + mmrobot_joint_name 
-        ) 
-        robot = URDF.load(self._urdf_file) 
-        self._urdf_joints = [] 
-        for i, joint in enumerate(robot.joints): 
-            if joint.name in self._joint_names: 
-                self._urdf_joints.append(i) 
+        )
         self.get_indexed_joint_info()
 
     def set_acceleration_limits(self):

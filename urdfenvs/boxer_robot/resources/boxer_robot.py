@@ -12,16 +12,11 @@ class BoxerRobot(DifferentialDriveRobot):
         self._wheel_radius = 0.08
         self._wheel_distance = 0.494
 
-    def set_joint_indices(self):
+    def set_joint_names(self):
         wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"] 
         self._joint_names = ( 
             wheel_joint_names 
         ) 
-        robot = URDF.load(self._urdf_file) 
-        self._urdf_joints = [] 
-        for i, joint in enumerate(robot.joints): 
-            if joint.name in self._joint_names: 
-                self._urdf_joints.append(i) 
         self.get_indexed_joint_info()
 
 

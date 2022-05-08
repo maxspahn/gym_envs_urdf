@@ -20,7 +20,7 @@ class MobileRobot(HolonomicRobot):
             n = 10
         super().__init__(n, urdf_file)
 
-    def set_joint_indices(self):
+    def set_joint_names(self):
         if self._gripper:
             mobile_joint_names = ["mobile_joint_x", "mobile_joint_y","mobile_joint_theta"] 
             panda_joint_names = ["panda_joint"+str(i) for i in range(1,8)]
