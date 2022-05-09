@@ -33,12 +33,6 @@ class MobileRobot(HolonomicRobot):
             self._joint_names = ( 
                 mobile_joint_names+panda_joint_names 
             )
-        robot = URDF.load(self._urdf_file)
-        self._urdf_joints = [] 
-        for i, joint in enumerate(robot.joints): 
-            if joint.name in self._joint_names: 
-                self._urdf_joints.append(i) 
-        self.get_indexed_joint_info()
         
     def reset(self, pos=None, vel=None):
         self._integrated_velocities = vel

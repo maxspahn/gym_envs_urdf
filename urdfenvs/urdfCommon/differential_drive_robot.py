@@ -50,6 +50,7 @@ class DifferentialDriveRobot(GenericRobot):
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
         self.set_joint_names()
+        self.get_indexed_joint_info()
         self.read_limits()
         # Joint indices as found by p.getJointInfo()
         # set castor wheel friction to zero

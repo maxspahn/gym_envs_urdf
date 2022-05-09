@@ -18,7 +18,6 @@ class AlbertRobot(DifferentialDriveRobot):
             wheel_joint_names 
             + mmrobot_joint_name 
         )
-        self.get_indexed_joint_info()
 
     def set_acceleration_limits(self):
         acc_limit = np.array(

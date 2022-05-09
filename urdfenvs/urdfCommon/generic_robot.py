@@ -61,6 +61,8 @@ class GenericRobot(ABC):
         Extract joint ids by the joint names.
 
         """
+        if not hasattr(self, '_joint_names'):
+            return
         robot = URDF.load(self._urdf_file) 
         self._urdf_joints = [] 
         for i, joint in enumerate(robot.joints): 
