@@ -25,7 +25,6 @@ class TiagoRobot(DifferentialDriveRobot):
             + arm_right_joint_names 
             + arm_left_joint_names 
         ) 
-        self.get_indexed_joint_info()
 
 
     def set_acceleration_limits(self):

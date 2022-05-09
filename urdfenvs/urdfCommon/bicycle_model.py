@@ -46,6 +46,7 @@ class BicycleModel(GenericRobot):
             globalScaling=self._scaling,
         )
         self.set_joint_names()
+        self.get_indexed_joint_info()
         self.read_limits()
         # set base velocity
         self.update_state()

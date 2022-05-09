@@ -16,7 +16,6 @@ class BoxerRobot(DifferentialDriveRobot):
         self._joint_names = ( 
             wheel_joint_names 
         ) 
-        self.get_indexed_joint_info()
 
 
     def set_acceleration_limits(self):

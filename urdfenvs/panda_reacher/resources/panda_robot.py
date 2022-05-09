@@ -32,7 +32,6 @@ class PandaRobot(HolonomicRobot):
             self._joint_names = ( 
                 panda_joint_names 
             )
-        self.get_indexed_joint_info()
 
 
     def set_acceleration_limits(self):
