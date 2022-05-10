@@ -9,7 +9,6 @@ class AlbertReacherEnv(UrdfEnv):
 
     def __init__(self, **kwargs):
         super().__init__(AlbertRobot(), **kwargs)
-        self.set_spaces()
 
     def check_initial_state(self, pos, vel):
         if not isinstance(pos, np.ndarray) or not pos.size == self._robot.n()+1:

@@ -5,5 +5,4 @@ from urdfenvs.urdfCommon.urdf_env import UrdfEnv
 class PointRobotEnv(UrdfEnv):
     def __init__(self, **kwargs):
         super().__init__(PointRobot(), **kwargs)
-        self.set_spaces()
         self.reset()
