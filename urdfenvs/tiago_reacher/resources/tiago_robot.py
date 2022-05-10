@@ -16,8 +16,10 @@ class TiagoRobot(DifferentialDriveRobot):
         wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"]
         torso_joint_name = ["torso_lift_joint"]
         head_joint_names = ["head_" + str(i) + "_joint" for i in range(3)]
-        arm_right_joint_names = ["arm_right_" + str(i) + "_joint" for i in range(8)]
-        arm_left_joint_names = ["arm_left_" + str(i) + "_joint" for i in range(8)]
+        arm_right_joint_names = ["arm_right_" + str(i) + \
+                                    "_joint" for i in range(8)]
+        arm_left_joint_names = ["arm_left_" + str(i) + \
+                                    "_joint" for i in range(8)]
         self._joint_names = (
             wheel_joint_names
             + torso_joint_name
