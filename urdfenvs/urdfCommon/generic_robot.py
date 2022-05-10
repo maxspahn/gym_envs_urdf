@@ -68,14 +68,18 @@ class GenericRobot(ABC):
         for i, joint in enumerate(robot.joints): 
             if joint.name in self._joint_names: 
                 self._urdf_joints.append(i) 
-        self._robot_joints = [] 
-        self._castor_joints = [] 
-        for i in range(p.getNumJoints(self._robot)):
+        self._robot_joints = []
+        self._castor_joints = []
+        num_joints = p.getNumJoints(self._robot)
+        for name in self._joint_names:
+            for i in range(num_joints):
+                joint_info = p.getJointInfo(self._robot, i)
+                joint_name = joint_info[1].decode("UTF-8")
+                if joint_name == name:
+                    self._robot_joints.append(i)
+        for i in range(num_joints):
             joint_info = p.getJointInfo(self._robot, i)
             joint_name = joint_info[1].decode("UTF-8")
-            print(joint_name)
-            if joint_name in self._joint_names:
-                self._robot_joints.append(i)
             if "castor" in joint_name:
                 self._castor_joints.append(i)
         
