@@ -21,7 +21,7 @@ class GenericRobot(ABC):
         self._n: int = n
         self._urdf_file: str = urdf_file
         self._sensors = []
-    
+
     def n(self) -> int:
         return self._n
 
@@ -61,13 +61,13 @@ class GenericRobot(ABC):
         Extract joint ids by the joint names.
 
         """
-        if not hasattr(self, '_joint_names'):
+        if not hasattr(self, "_joint_names"):
             return
-        robot = URDF.load(self._urdf_file) 
-        self._urdf_joints = [] 
-        for i, joint in enumerate(robot.joints): 
-            if joint.name in self._joint_names: 
-                self._urdf_joints.append(i) 
+        robot = URDF.load(self._urdf_file)
+        self._urdf_joints = []
+        for i, joint in enumerate(robot.joints):
+            if joint.name in self._joint_names:
+                self._urdf_joints.append(i)
         self._robot_joints = []
         self._castor_joints = []
         num_joints = p.getNumJoints(self._robot)
@@ -82,7 +82,7 @@ class GenericRobot(ABC):
             joint_name = joint_info[1].decode("UTF-8")
             if "castor" in joint_name:
                 self._castor_joints.append(i)
-        
+
 
     def get_observation_space(self) -> gym.spaces.Dict:
         """Get observation space."""

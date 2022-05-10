@@ -21,18 +21,18 @@ class MobileRobot(HolonomicRobot):
 
     def set_joint_names(self):
         if self._gripper:
-            mobile_joint_names = ["mobile_joint_x", "mobile_joint_y","mobile_joint_theta"] 
+            mobile_joint_names = ["mobile_joint_x", "mobile_joint_y","mobile_joint_theta"]
             panda_joint_names = ["panda_joint"+str(i) for i in range(1,8)]
-            self._joint_names = ( 
-                mobile_joint_names+panda_joint_names 
+            self._joint_names = (
+                mobile_joint_names+panda_joint_names
             )
         else:
-            mobile_joint_names = ["mobile_joint_x", "mobile_joint_y","mobile_joint_theta"] 
+            mobile_joint_names = ["mobile_joint_x", "mobile_joint_y","mobile_joint_theta"]
             panda_joint_names = ["panda_joint"+str(i) for i in range(1,8)]
-            self._joint_names = ( 
-                mobile_joint_names+panda_joint_names 
+            self._joint_names = (
+                mobile_joint_names+panda_joint_names
             )
-        
+
     def reset(self, pos=None, vel=None):
         self._integrated_velocities = vel
         return super().reset(pos=pos, vel=vel)

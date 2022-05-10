@@ -29,6 +29,18 @@ tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)"
 tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "cloudpickle"]
 
 [[package]]
+name = "autopep8"
+version = "1.6.0"
+description = "A tool that automatically formats Python code to conform to the PEP 8 style guide"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+pycodestyle = ">=2.8.0"
+toml = "*"
+
+[[package]]
 name = "babel"
 version = "2.10.1"
 description = "Internationalization utilities"
@@ -262,7 +274,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "motion-planning-scenes"
-version = "0.1.11"
+version = "0.1.16"
 description = "Generic motion planning scenes, including goals and obstacles."
 category = "main"
 optional = true
@@ -273,6 +285,7 @@ develop = false
 casadi = "3.5.6.pre2"
 geomdl = "^5.3.1"
 numpy = "^1.19.0"
+pyquaternion = "^0.9.9"
 pytest = "^6.2.5"
 PyYAML = "^6.0"
 
@@ -280,7 +293,7 @@ PyYAML = "^6.0"
 type = "git"
 url = "https://git@github.com/maxspahn/motion_planning_scenes.git"
 reference = "main"
-resolved_reference = "cba9f7a9450c86e9b14e6a32ce7f31bdc3f278df"
+resolved_reference = "52a4de5c17e05082a1ae4b8b42ac64547b54c387"
 
 [[package]]
 name = "multiprocess"
@@ -385,6 +398,14 @@ description = "Official Python Interface for the Bullet Physics SDK specialized 
 category = "main"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "pycodestyle"
+version = "2.8.0"
+description = "Python style guide checker"
+category = "dev"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "pycollada"
@@ -494,6 +515,21 @@ python-versions = ">=3.6"
 
 [package.extras]
 diagrams = ["jinja2", "railroad-diagrams"]
+
+[[package]]
+name = "pyquaternion"
+version = "0.9.9"
+description = "A fully featured, pythonic library for representing and using quaternions."
+category = "main"
+optional = true
+python-versions = "*"
+
+[package.dependencies]
+numpy = "*"
+
+[package.extras]
+dev = ["mkdocs"]
+test = ["nose"]
 
 [[package]]
 name = "pyrender"
@@ -848,7 +884,7 @@ scenes = ["motion-planning-scenes"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6, <3.11"
-content-hash = "432baee696ae9ad28812e971e96c38dc3ecd95be14e0c1875b3f284292d47d38"
+content-hash = "81b1821bb3ac178cd90e902de81ddc48f45e75b73d400a6b390febb31363e781"
 
 [metadata.files]
 alabaster = [
@@ -862,6 +898,10 @@ atomicwrites = [
 attrs = [
     {file = "attrs-21.4.0-py2.py3-none-any.whl", hash = "sha256:2d27e3784d7a565d36ab851fe94887c5eccd6a463168875832a1be79c82828b4"},
     {file = "attrs-21.4.0.tar.gz", hash = "sha256:626ba8234211db98e869df76230a137c4c40a12d72445c45d5f5b716f076e2fd"},
+]
+autopep8 = [
+    {file = "autopep8-1.6.0-py2.py3-none-any.whl", hash = "sha256:ed77137193bbac52d029a52c59bec1b0629b5a186c495f1eb21b126ac466083f"},
+    {file = "autopep8-1.6.0.tar.gz", hash = "sha256:44f0932855039d2c15c4510d6df665e4730f2b8582704fa48f9c55bd3e17d979"},
 ]
 babel = [
     {file = "Babel-2.10.1-py3-none-any.whl", hash = "sha256:3f349e85ad3154559ac4930c3918247d319f21910d5ce4b25d439ed8693b98d2"},
@@ -1209,6 +1249,10 @@ pybullet = [
     {file = "pybullet-3.2.4-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:30aa324bc26c981b1e42d2143e75912a35436646c8d1bb4f9b3ee1a98a61bfdf"},
     {file = "pybullet-3.2.4.tar.gz", hash = "sha256:959e85bc0051324b9c4aba23d79365b77de216f9ceebc392f9d551fe63a0ebc6"},
 ]
+pycodestyle = [
+    {file = "pycodestyle-2.8.0-py2.py3-none-any.whl", hash = "sha256:720f8b39dde8b293825e7ff02c475f3077124006db4f440dcbc9a20b76548a20"},
+    {file = "pycodestyle-2.8.0.tar.gz", hash = "sha256:eddd5847ef438ea1c7870ca7eb78a9d47ce0cdb4851a5523949f2601d0cbbe7f"},
+]
 pycollada = [
     {file = "pycollada-0.6.tar.gz", hash = "sha256:fcd6f38fd981e350f9ec754d9671834017accd600e967d6d299a6cfdae5ba4f4"},
 ]
@@ -1269,6 +1313,11 @@ pyopengl = [
 pyparsing = [
     {file = "pyparsing-3.0.7-py3-none-any.whl", hash = "sha256:a6c06a88f252e6c322f65faf8f418b16213b51bdfaece0524c1c1bc30c63c484"},
     {file = "pyparsing-3.0.7.tar.gz", hash = "sha256:18ee9022775d270c55187733956460083db60b37d0d0fb357445f3094eed3eea"},
+]
+pyquaternion = [
+    {file = "pyquaternion-0.9.9-py2-none-any.whl", hash = "sha256:d0eb69219ca99bfcbc25c1e2c4f82e58c61dce3e907e929f13c5f3615e4b6518"},
+    {file = "pyquaternion-0.9.9-py3-none-any.whl", hash = "sha256:e65f6e3f7b1fdf1a9e23f82434334a1ae84f14223eee835190cd2e841f8172ec"},
+    {file = "pyquaternion-0.9.9.tar.gz", hash = "sha256:b1f61af219cb2fe966b5fb79a192124f2e63a3f7a777ac3cadf2957b1a81bea8"},
 ]
 pyrender = [
     {file = "pyrender-0.1.45-py3-none-any.whl", hash = "sha256:5cf751d1f21fba4640e830cef3a0b5a95ed0f05677bf92c6b8330056b4023aeb"},
