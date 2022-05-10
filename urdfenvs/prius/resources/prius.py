@@ -23,7 +23,7 @@ class Prius(BicycleModel):
         self._wheel_distance = 0.494
         self._spawn_offset: np.ndarray = np.array([-0.435, 0.0, 0.05])
 
-    def set_joint_names(self):
+    def set_joint_indices(self):
         """Set joint indices.
 
         For the bicycle model robots, the steering joints and the forward joints

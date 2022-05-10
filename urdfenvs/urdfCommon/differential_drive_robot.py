@@ -28,7 +28,6 @@ class DifferentialDriveRobot(GenericRobot):
         self._wheel_distance: float = None
         self._spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15])
 
-
     def ns(self) -> int:
         """Returns the number of degrees of freedom.
 
@@ -49,9 +48,6 @@ class DifferentialDriveRobot(GenericRobot):
             baseOrientation=base_orientation,
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
-        self.set_joint_names()
-        self.get_indexed_joint_info()
-        self.read_limits()
         # Joint indices as found by p.getJointInfo()
         # set castor wheel friction to zero
         for i in self._castor_joints:
@@ -103,6 +99,7 @@ class DifferentialDriveRobot(GenericRobot):
         `velocity` the concatenated velocities of joints in their local configuration space.
         `forward_velocity` the forward velocity of the robot.
         """
+
         return gym.spaces.Dict(
             {
                 "joint_state": gym.spaces.Dict({

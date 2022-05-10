@@ -1,5 +1,6 @@
 import os
 import numpy as np
+
 from urdfenvs.urdfCommon.differential_drive_robot import DifferentialDriveRobot
 
 
@@ -11,12 +12,10 @@ class BoxerRobot(DifferentialDriveRobot):
         self._wheel_radius = 0.08
         self._wheel_distance = 0.494
 
-    def set_joint_names(self):
-        wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"] 
-        self._joint_names = ( 
-            wheel_joint_names 
-        ) 
-
+    def set_joint_indices(self):
+        self._urdf_joints = [2, 3]
+        self._robot_joints = [4, 5]
+        self._castor_joints = [2, 3]
 
     def set_acceleration_limits(self):
         acc_limit = np.array([1.0, 1.0])
