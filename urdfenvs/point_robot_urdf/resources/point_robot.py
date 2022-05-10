@@ -1,6 +1,5 @@
 import os
 import numpy as np
-
 from urdfenvs.urdfCommon.holonomic_robot import HolonomicRobot
 
 
@@ -10,9 +9,8 @@ class PointRobot(HolonomicRobot):
         n = 3
         super().__init__(n, urdf_file)
 
-    def set_joint_indices(self):
-        self._robot_joints = [0, 1, 2]
-        self._urdf_joints = [0, 1, 2]
+    def set_joint_names(self):
+        self._joint_names = ["mobile_joint_x","mobile_joint_y","mobile_joint_theta"]
 
     def set_acceleration_limits(self):
         acc_limit = np.ones(self._n)
