@@ -13,18 +13,18 @@ class TiagoRobot(DifferentialDriveRobot):
         self._spawn_offset = np.array([-0.1764081, 0.0, 0.1])
 
     def set_joint_names(self):
-        wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"] 
-        torso_joint_name = ["torso_lift_joint"] 
-        head_joint_names = ["head_" + str(i) + "_joint" for i in range(3)] 
-        arm_right_joint_names = ["arm_right_" + str(i) + "_joint" for i in range(8)] 
-        arm_left_joint_names = ["arm_left_" + str(i) + "_joint" for i in range(8)] 
-        self._joint_names = ( 
-            wheel_joint_names 
-            + torso_joint_name 
-            + head_joint_names 
-            + arm_right_joint_names 
-            + arm_left_joint_names 
-        ) 
+        wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"]
+        torso_joint_name = ["torso_lift_joint"]
+        head_joint_names = ["head_" + str(i) + "_joint" for i in range(3)]
+        arm_right_joint_names = ["arm_right_" + str(i) + "_joint" for i in range(8)]
+        arm_left_joint_names = ["arm_left_" + str(i) + "_joint" for i in range(8)]
+        self._joint_names = (
+            wheel_joint_names
+            + torso_joint_name
+            + head_joint_names
+            + arm_right_joint_names
+            + arm_left_joint_names
+        )
 
 
     def set_acceleration_limits(self):

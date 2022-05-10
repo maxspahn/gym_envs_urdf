@@ -12,11 +12,11 @@ class AlbertRobot(DifferentialDriveRobot):
         self._wheel_distance = 0.494
 
     def set_joint_names(self):
-        wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"] 
-        mmrobot_joint_name = ["mmrobot_joint" + str(i) for i in range(1,8)] 
-        self._joint_names = ( 
-            wheel_joint_names 
-            + mmrobot_joint_name 
+        wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"]
+        mmrobot_joint_name = ["mmrobot_joint" + str(i) for i in range(1,8)]
+        self._joint_names = (
+            wheel_joint_names
+            + mmrobot_joint_name
         )
 
     def set_acceleration_limits(self):
