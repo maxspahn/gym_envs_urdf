@@ -1,6 +1,5 @@
 import os
 import numpy as np
-
 from urdfenvs.urdfCommon.holonomic_robot import HolonomicRobot
 
 
@@ -11,7 +10,7 @@ class NLinkRobot(HolonomicRobot):
         )
         super().__init__(n, urdf_file)
 
-    def set_joint_indices(self):
+    def set_joint_names(self):
         self._robot_joints = list(range(1, self.n() + 1))
         self._urdf_joints = list(range(1, self.n() + 1))
 

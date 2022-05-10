@@ -1,6 +1,5 @@
 import os
 import numpy as np
-
 from urdfenvs.urdfCommon.holonomic_robot import HolonomicRobot
 
 
@@ -20,13 +19,20 @@ class PandaRobot(HolonomicRobot):
             n = 7
         super().__init__(n, urdf_file)
 
-    def set_joint_indices(self):
+    def set_joint_names(self):
         if self._gripper:
-            self._robot_joints = [1, 2, 3, 4, 5, 6, 7, 9, 10]
-            self._urdf_joints = [1, 2, 3, 4, 5, 6, 7, 9, 10]
+            panda_finger_joint_names = ["panda_finger_joint1","panda_finger_joint2"] 
+            panda_joint_names = ["panda_joint"+str(i) for i in range(1,8)]
+            self._joint_names = ( 
+                panda_finger_joint_names+
+                panda_joint_names 
+            )
         else:
-            self._robot_joints = [1, 2, 3, 4, 5, 6, 7]
-            self._urdf_joints = [1, 2, 3, 4, 5, 6, 7]
+            panda_joint_names = ["panda_joint"+str(i) for i in range(1,8)]
+            self._joint_names = ( 
+                panda_joint_names 
+            )
+
 
     def set_acceleration_limits(self):
         acc_limit = np.array(
