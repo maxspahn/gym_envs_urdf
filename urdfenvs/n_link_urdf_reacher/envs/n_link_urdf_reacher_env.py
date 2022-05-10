@@ -5,3 +5,4 @@ from urdfenvs.urdfCommon.urdf_env import UrdfEnv
 class NLinkUrdfReacherEnv(UrdfEnv):
     def __init__(self, n=3, **kwargs):
         super().__init__(NLinkRobot(n), **kwargs)
+        self.set_spaces()
