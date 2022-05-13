@@ -16,8 +16,10 @@ class ObstacleSensor(Sensor):
 
     _observation: dict
         For every object the Pose and Twist are stored in the observation.
-        Pose contains position in cartesian format (x, y, z) and orientation in quaternion format (x, y, z, w)
-        Twist contains velocity in cartesian format (x, y, z) and angular velocity in cartesian format (x, y, z)
+        Pose contains position in cartesian format (x, y, z) 
+        and orientation in quaternion format (x, y, z, w)
+        Twist contains velocity in cartesian format (x, y, z) 
+        and angular velocity in cartesian format (x, y, z)
 
     """
 
@@ -30,7 +32,8 @@ class ObstacleSensor(Sensor):
         size = 0
         for _ in range(2, p.getNumBodies()):
             size += (
-                14  # add space for position, velocity, orientation and angular velocity
+                14  # add space for position, velocity, 
+                    # orientation and angular velocity
             )
         return size
 
