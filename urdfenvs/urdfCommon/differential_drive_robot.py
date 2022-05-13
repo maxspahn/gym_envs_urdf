@@ -73,7 +73,8 @@ class DifferentialDriveRobot(GenericRobot):
         self._integrated_velocities = vel
 
     def read_limits(self) -> None:
-        """ Set position, velocity, acceleration and motor torque lower en upper limits """
+        """ Set position, velocity, acceleration
+        and motor torque lower en upper limits """
         robot = URDF.load(self._urdf_file)
         self._limit_pos_j = np.zeros((2, self.ns()))
         self._limit_vel_j = np.zeros((2, self.ns()))
@@ -98,9 +99,12 @@ class DifferentialDriveRobot(GenericRobot):
     def get_observation_space(self) -> gym.spaces.Dict:
         """Gets the observation space for a differential drive robot.
 
-        The observation space is represented as a dictionary. `join_state` containing:
-        `position` the concatenated positions of joints in their local configuration space.
-        `velocity` the concatenated velocities of joints in their local configuration space.
+        The observation space is represented as a dictionary.
+        `join_state` containing:
+        `position` the concatenated positions of joints
+        in their local configuration space.
+        `velocity` the concatenated velocities of joints
+        in their local configuration space.
         `forward_velocity` the forward velocity of the robot.
         """
         return gym.spaces.Dict(
@@ -173,8 +177,9 @@ class DifferentialDriveRobot(GenericRobot):
     def apply_base_velocity(self, vels: np.ndarray) -> None:
         """Applies forward and angular velocity to the base.
 
-        The forward and angular velocity of the base is first transformed in
-        angular velocities of the wheels using a simple dynamics model.
+        The forward and angular velocity of the base
+        is first transformed in angular velocities of
+        the wheels using a simple dynamics model.
 
         """
         velocity_left_wheel = (vels[0] + 0.5 * self._wheel_distance * vels[1]) / self._wheel_radius
@@ -210,13 +215,15 @@ class DifferentialDriveRobot(GenericRobot):
 
         The robot state is stored in the self.state, which contains
         a dictionary with key 'joint_state' with nested dictionaries:
-        `position`: np.array((base_pose2D, joint_position_2, ..., joint_position_n))
+        `position`: np.array((base_pose2D, joint_position_2, ..., 
+        joint_position_n))
             the position in local configuration space
             the base's configuration space aligns with the world frame
             base_pose2D = (x_positions, y_position, orientation)
             the joints 2 to n have al 1-dimensional configuration space
             joint_position_i = (position in local configuration space)
-        `velocity`: np.array((base_twist2D, joint_velocity_2, ..., joint_velocity_n))
+        `velocity`: np.array((base_twist2D, joint_velocity_2, ..., 
+        joint_velocity_n))
             the velocity in local configuration space
             the base's configuration space aligns with the world frame
             base_pose2D = (x_positions, y_position, orientation)
