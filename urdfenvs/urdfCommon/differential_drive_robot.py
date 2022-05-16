@@ -215,14 +215,14 @@ class DifferentialDriveRobot(GenericRobot):
 
         The robot state is stored in the self.state, which contains
         a dictionary with key 'joint_state' with nested dictionaries:
-        `position`: np.array((base_pose2D, joint_position_2, ..., 
+        `position`: np.array((base_pose2D, joint_position_2, ...,
         joint_position_n))
             the position in local configuration space
             the base's configuration space aligns with the world frame
             base_pose2D = (x_positions, y_position, orientation)
             the joints 2 to n have al 1-dimensional configuration space
             joint_position_i = (position in local configuration space)
-        `velocity`: np.array((base_twist2D, joint_velocity_2, ..., 
+        `velocity`: np.array((base_twist2D, joint_velocity_2, ...,
         joint_velocity_n))
             the velocity in local configuration space
             the base's configuration space aligns with the world frame
