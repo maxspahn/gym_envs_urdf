@@ -161,7 +161,7 @@ class UrdfEnv(gym.Env):
     """Generic urdf-environment for OpenAI-Gym"""
 
     def __init__(
-        self, robot: GenericRobot, flatten_observation: bool = False, \
+        self, robot: GenericRobot, flatten_observation: bool = False,
         render: bool = False, dt: float = 0.01
     ) -> None:
         """Constructor for environment.
