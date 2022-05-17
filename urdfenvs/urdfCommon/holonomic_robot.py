@@ -126,5 +126,5 @@ class HolonomicRobot(GenericRobot):
         joint_vel = np.array(joint_vel_list)
 
         # Concatenate position, orientation, velocity
-        self.state = {"joint_state": {"position": joint_pos, \
-        "velocity": joint_vel}}
+        self.state = {"joint_state": {"position": joint_pos,
+                      "velocity": joint_vel}}
