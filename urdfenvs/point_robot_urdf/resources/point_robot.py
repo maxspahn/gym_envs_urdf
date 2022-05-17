@@ -10,8 +10,8 @@ class PointRobot(HolonomicRobot):
         super().__init__(n, urdf_file)
 
     def set_joint_names(self):
-        self._joint_names = ["mobile_joint_x","mobile_joint_y", \
-                                "mobile_joint_theta"]
+        self._joint_names = ["mobile_joint_x","mobile_joint_y",
+                            "mobile_joint_theta"]
 
     def set_acceleration_limits(self):
         acc_limit = np.ones(self._n)
