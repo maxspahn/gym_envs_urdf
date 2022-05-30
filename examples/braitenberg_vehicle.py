@@ -10,7 +10,7 @@ def initialize_goal():
     from MotionPlanningGoal.dynamicSubGoal import DynamicSubGoal
     goal1Dict = {
         "m": 3, "w": 1.0, "prime": True, 'indices': [0, 1, 2], 'parent_link': 0, 'child_link': 3,
-        'desired_position': [0.37, 0.15, 0], 'epsilon': 0.1, 'type': "staticSubGoal", 
+        'desired_position': [0, 0, 0], 'epsilon': 0.1, 'type': "staticSubGoal", 
     }
 
     return StaticSubGoal(name="goal1", contentDict=goal1Dict)
@@ -22,16 +22,16 @@ def main():
     n_steps = 10000
     pos0 = np.array([-2, 0, 0])
     light_sensor_1 = LightSensor('light_sensor_1_link', "360")
-    #light_sensor_2 = LightSensor('light_sensor_2_link')
+    light_sensor_2 = LightSensor('light_sensor_2_link', "360")
     ob = env.reset(pos=pos0)
     if goal:
         env.add_goal(initialize_goal())
     env.add_sensor(light_sensor_1)
-    #env.add_sensor(light_sensor_2)
+    env.add_sensor(light_sensor_2)
     #print(f"Initial observation : {ob}")
     for _ in range(n_steps):
         ob, *_ = env.step(action)
-        #print(ob)
+        print(ob)
 
 
 if __name__ == "__main__":

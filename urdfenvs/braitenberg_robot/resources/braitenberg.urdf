@@ -223,12 +223,12 @@ to be that way. -->
     </visual>
   </link>
   <joint name="light_sensor_1_joint" type="fixed">
-    <origin rpy="0 0 4.7124" xyz="0.275 -0.25 0.07"/>
+    <origin rpy="0 0 1.57079" xyz="0.275 -0.25 0.07"/>
     <parent link="base_link"/>
     <child link="light_sensor_1_link"/>
   </joint>
   <joint name="light_sensor_2_joint" type="fixed">
-    <origin rpy="0 0 1.5708" xyz="-0.275 -0.25 0.07"/>
+    <origin rpy="0 0 4.71239" xyz="-0.275 -0.25 0.07"/>
     <parent link="base_link"/>
     <child link="light_sensor_2_link"/>
   </joint>
