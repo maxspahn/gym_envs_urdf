@@ -26,8 +26,8 @@ class PandaRobot(HolonomicRobot):
             panda_joint_names = ["panda_joint"+str(i)
                                      for i in range(1,8)]
             self._joint_names = (
-                panda_finger_joint_names+
-                panda_joint_names
+                panda_joint_names+
+                panda_finger_joint_names
             )
         else:
             panda_joint_names = ["panda_joint"+str(i) for i in range(1,8)]

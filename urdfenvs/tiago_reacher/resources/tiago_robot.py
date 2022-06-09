@@ -24,8 +24,8 @@ class TiagoRobot(DifferentialDriveRobot):
             wheel_joint_names
             + torso_joint_name
             + head_joint_names
-            + arm_right_joint_names
             + arm_left_joint_names
+            + arm_right_joint_names
         )
 
 
