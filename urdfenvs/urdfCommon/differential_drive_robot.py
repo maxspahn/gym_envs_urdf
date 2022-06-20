@@ -36,6 +36,22 @@ class DifferentialDriveRobot(GenericRobot):
         """
         return self.n() + 1
 
+    def get_velocity_spaces(self) -> tuple:
+        """Get observation space and action space when using velocity
+        control.
+
+        Overrides velocity spaces from default, because a differential drive has limits in x,y and
+        theta direction, while the action space should be limited to the forward and angular velocity."""
+        ospace = self.get_observation_space()
+        uu = np.concatenate(
+            (self._limit_vel_forward_j[1, :], self._limit_vel_j[1, 3:]), axis=0
+        )
+        ul = np.concatenate(
+            (self._limit_vel_forward_j[0, :], self._limit_vel_j[0, 3:]), axis=0
+        )
+        aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
+        return (ospace, aspace)
+
     def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> None:
         """ Reset simulation and add robot """
         if hasattr(self, "_robot"):
@@ -84,11 +100,11 @@ class DifferentialDriveRobot(GenericRobot):
                 self._limit_pos_j[1, i + 1] = joint.limit.upper
                 self._limit_vel_j[0, i + 1] = -joint.limit.velocity
                 self._limit_vel_j[1, i + 1] = joint.limit.velocity
-        self._limit_vel_forward_j = np.array([[-4., -10.], [4., 10.]])
-        self._limit_pos_j[0, 0:3] = np.array([-10., -10., -2 * np.pi])
-        self._limit_pos_j[1, 0:3] = np.array([10., 10., 2 * np.pi])
-        self._limit_vel_j[0, 0:3] = np.array([-4., -4., -10.])
-        self._limit_vel_j[1, 0:3] = np.array([4., 4., 10.])
+        self._limit_vel_forward_j = np.array([[-4.0, -10.0], [4.0, 10.0]])
+        self._limit_pos_j[0, 0:3] = np.array([-10.0, -10.0, -2 * np.pi])
+        self._limit_pos_j[1, 0:3] = np.array([10.0, 10.0, 2 * np.pi])
+        self._limit_vel_j[0, 0:3] = np.array([-4.0, -4.0, -10.0])
+        self._limit_vel_j[1, 0:3] = np.array([4.0, 4.0, 10.0])
         self.set_acceleration_limits()
 
     def get_observation_space(self) -> gym.spaces.Dict:
@@ -102,24 +118,26 @@ class DifferentialDriveRobot(GenericRobot):
 
         return gym.spaces.Dict(
             {
-                "joint_state": gym.spaces.Dict({
-                    "position": gym.spaces.Box(
-                        low=self._limit_pos_j[0, :],
-                        high=self._limit_pos_j[1, :],
-                        dtype=np.float64,
-                    ),
-                    "velocity": gym.spaces.Box(
-                        low=self._limit_vel_j[0, :],
-                        high=self._limit_vel_j[1, :],
-                        dtype=np.float64,
-                    ),
-                    "forward_velocity": gym.spaces.Box(
-                        low=np.array([self._limit_vel_forward_j[0][0]]),
-                        high=np.array([self._limit_vel_forward_j[1][0]]),
-                        shape=(1,),
-                        dtype=np.float64,
-                    )
-                })
+                "joint_state": gym.spaces.Dict(
+                    {
+                        "position": gym.spaces.Box(
+                            low=self._limit_pos_j[0, :],
+                            high=self._limit_pos_j[1, :],
+                            dtype=np.float64,
+                        ),
+                        "velocity": gym.spaces.Box(
+                            low=self._limit_vel_j[0, :],
+                            high=self._limit_vel_j[1, :],
+                            dtype=np.float64,
+                        ),
+                        "forward_velocity": gym.spaces.Box(
+                            low=np.array([self._limit_vel_forward_j[0][0]]),
+                            high=np.array([self._limit_vel_forward_j[1][0]]),
+                            shape=(1,),
+                            dtype=np.float64,
+                        ),
+                    }
+                )
             }
         )
 
@@ -174,8 +192,12 @@ class DifferentialDriveRobot(GenericRobot):
         angular velocities of the wheels using a simple dynamics model.
 
         """
-        velocity_left_wheel = (vels[0] + 0.5 * self._wheel_distance * vels[1]) / self._wheel_radius
-        velocity_right_wheel = (vels[0] - 0.5 * self._wheel_distance * vels[1]) / self._wheel_radius
+        velocity_left_wheel = (
+            vels[0] + 0.5 * self._wheel_distance * vels[1]
+        ) / self._wheel_radius
+        velocity_right_wheel = (
+            vels[0] - 0.5 * self._wheel_distance * vels[1]
+        ) / self._wheel_radius
 
         wheel_velocities = np.array([velocity_left_wheel, velocity_right_wheel])
         self.apply_velocity_action_wheels(wheel_velocities)
@@ -239,12 +261,16 @@ class DifferentialDriveRobot(GenericRobot):
         v_left = vel_wheels[1][1]
         # simple dynamics model to compute the forward and angular velocity
         forward_velocity = 0.5 * (v_right + v_left) * self._wheel_radius
-        angular_velocity = (v_right - v_left) * self._wheel_radius / self._wheel_distance
+        angular_velocity = (
+            (v_right - v_left) * self._wheel_radius / self._wheel_distance
+        )
 
         jacobi_nonholonomic = np.array(
             [[np.cos(pos_base[2]), 0], [np.sin(pos_base[2]), 0], [0, 1]]
         )
-        velocity_base = np.dot(jacobi_nonholonomic, np.array([forward_velocity, angular_velocity]))
+        velocity_base = np.dot(
+            jacobi_nonholonomic, np.array([forward_velocity, angular_velocity])
+        )
 
         # joint configurations for holonomic joints
         joint_pos_list = []
