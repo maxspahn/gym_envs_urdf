@@ -50,7 +50,7 @@ class DifferentialDriveRobot(GenericRobot):
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
         self.set_joint_names()
-        self.get_indexed_joint_info()
+        self.extract_joint_ids()
         self.read_limits()
         # Joint indices as found by p.getJointInfo()
         # set castor wheel friction to zero
@@ -75,13 +75,12 @@ class DifferentialDriveRobot(GenericRobot):
     def read_limits(self) -> None:
         """ Set position, velocity, acceleration
         and motor torque lower en upper limits """
-        robot = URDF.load(self._urdf_file)
         self._limit_pos_j = np.zeros((2, self.ns()))
         self._limit_vel_j = np.zeros((2, self.ns()))
         self._limit_tor_j = np.zeros((2, self.n()))
         self._limit_acc_j = np.zeros((2, self.n()))
         for i in range(self.n()):
-            joint = robot.joints[self._urdf_joints[i]]
+            joint = self._urdf_robot.joints[self._urdf_joints[i]]
             self._limit_tor_j[0, i] = -joint.limit.effort
             self._limit_tor_j[1, i] = joint.limit.effort
             if i >= 2:

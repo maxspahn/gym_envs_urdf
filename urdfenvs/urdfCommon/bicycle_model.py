@@ -46,20 +46,19 @@ class BicycleModel(GenericRobot):
             globalScaling=self._scaling,
         )
         self.set_joint_names()
-        self.get_indexed_joint_info()
+        self.extract_joint_ids()
         self.read_limits()
         # set base velocity
         self.update_state()
         self._integrated_velocities = vel
 
     def read_limits(self) -> None:
-        robot = URDF.load(self._urdf_file)
         self._limit_pos_j = np.zeros((2, self.ns()))
         self._limit_vel_j = np.zeros((2, self.ns()))
         self._limit_tor_j = np.zeros((2, self.n()))
         self._limit_acc_j = np.zeros((2, self.n()))
         self._limit_pos_steering = np.zeros(2)
-        joint = robot.joints[self._steering_joints[1] - 1]
+        joint = self._urdf_robot.joints[self._steering_joints[1] - 1]
         self._limit_pos_steering[0] = joint.limit.lower - 0.1
         self._limit_pos_steering[1] = joint.limit.upper + 0.1
         self._limit_vel_forward_j = np.array([[-40., -10.], [40., 10.]])

@@ -21,6 +21,7 @@ class GenericRobot(ABC):
         self._n: int = n
         self._urdf_file: str = urdf_file
         self._sensors = []
+        self._urdf_robot = URDF.load(self._urdf_file)
 
     def n(self) -> int:
         return self._n
@@ -55,7 +56,7 @@ class GenericRobot(ABC):
     def set_acceleration_limits(self):
         pass
 
-    def get_indexed_joint_info(self) -> None:
+    def extract_joint_ids(self) -> None:
         """Automated extraction of joint ids
 
         Extract joint ids by the joint names.
@@ -63,9 +64,8 @@ class GenericRobot(ABC):
         """
         if not hasattr(self, "_joint_names"):
             return
-        robot = URDF.load(self._urdf_file)
         self._urdf_joints = []
-        for i, joint in enumerate(robot.joints):
+        for i, joint in enumerate(self._urdf_robot.joints):
             if joint.name in self._joint_names:
                 self._urdf_joints.append(i)
         self._robot_joints = []
