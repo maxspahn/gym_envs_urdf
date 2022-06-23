@@ -8,7 +8,7 @@ obstacles = True
 
 def main():
     env = gym.make("pointRobotUrdf-vel-v0", dt=0.05, render=True, flatten_observation=False)
-    lidar = Lidar(4, nb_rays=4)
+    lidar = Lidar(4, nb_rays=4, raw_data=False)
     env.add_sensor(lidar)
     action = np.array([0.1, 0.0, 0.0])
     n_steps = 100000
