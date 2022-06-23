@@ -18,7 +18,7 @@ class HolonomicRobot(GenericRobot):
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
         self.set_joint_names()
-        self.get_indexed_joint_info()
+        self.extract_joint_ids()
         self.read_limits()
         for i in range(self._n):
             p.resetJointState(
@@ -35,13 +35,12 @@ class HolonomicRobot(GenericRobot):
         Set position, velocity, acceleration and
         motor torque lower en upper limits
         """
-        robot = URDF.load(self._urdf_file)
         self._limit_pos_j = np.zeros((2, self._n))
         self._limit_vel_j = np.zeros((2, self._n))
         self._limit_tor_j = np.zeros((2, self._n))
         self._limit_acc_j = np.zeros((2, self._n))
         for i, j in enumerate(self._urdf_joints):
-            joint = robot.joints[j]
+            joint = self._urdf_robot.joints[j]
             self._limit_pos_j[0, i] = joint.limit.lower
             self._limit_pos_j[1, i] = joint.limit.upper
             self._limit_vel_j[0, i] = -joint.limit.velocity
