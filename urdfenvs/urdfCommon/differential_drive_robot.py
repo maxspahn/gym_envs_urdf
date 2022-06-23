@@ -1,6 +1,5 @@
 import pybullet as p
 import gym
-from urdfpy import URDF
 import numpy as np
 
 from urdfenvs.urdfCommon.generic_robot import GenericRobot
