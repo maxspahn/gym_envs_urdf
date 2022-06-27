@@ -25,20 +25,28 @@ class Lidar(Sensor):
         Angles for which rays are emitted.
     _rel_positions: np.ndarray
         Relative positions of first obstacle for each ray (x, y).
+    _raw_data: bool
+        Switch whether relative positions or raw distances are returned.
+    _distance: np.ndarray
+        Raw distance information for rays.
     """
 
-    def __init__(self, link_id, nb_rays=10, ray_length=10.0):
+    def __init__(self, link_id, nb_rays=10, ray_length=10.0, raw_data=True):
         super().__init__("lidarSensor")
         self._nb_rays = nb_rays
+        self._raw_data = raw_data
         self._ray_length = ray_length
         self._link_id = link_id
         self._thetas = [
             i * 2 * np.pi / self._nb_rays for i in range(self._nb_rays)
         ]
         self._rel_positions = np.zeros(2 * nb_rays)
+        self._distances = np.zeros(nb_rays)
 
     def get_observation_size(self):
         """Getter for the dimension of the observation space."""
+        if self._raw_data:
+            return self._nb_rays
         return self._nb_rays * 2
 
     def get_observation_space(self):
@@ -64,4 +72,7 @@ class Lidar(Sensor):
             self._rel_positions[2 * i : 2 * i + 2] = (
                 np.array(lidar[0][3]) - np.array(ray_start)
             )[0:2]
+            self._distances[i] = np.linalg.norm(self._rel_positions[2 * i: 2 * i +2])
+        if self._raw_data:
+            return self._distances
         return self._rel_positions
