@@ -2,7 +2,6 @@ import gym
 import urdfenvs.tiago_reacher
 import numpy as np
 
-
 def main():
     env = gym.make("tiago-reacher-vel-v0", dt=0.01, render=True)
     action = np.zeros(env.n())

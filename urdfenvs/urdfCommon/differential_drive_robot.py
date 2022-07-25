@@ -1,6 +1,5 @@
 import pybullet as p
 import gym
-from urdfpy import URDF
 import numpy as np
 
 from urdfenvs.urdfCommon.generic_robot import GenericRobot
@@ -27,6 +26,7 @@ class DifferentialDriveRobot(GenericRobot):
         self._wheel_radius: float = None
         self._wheel_distance: float = None
         self._spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15])
+
 
     def ns(self) -> int:
         """Returns the number of degrees of freedom.
@@ -64,6 +64,9 @@ class DifferentialDriveRobot(GenericRobot):
             baseOrientation=base_orientation,
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
+        self.set_joint_names()
+        self.extract_joint_ids()
+        self.read_limits()
         # Joint indices as found by p.getJointInfo()
         # set castor wheel friction to zero
         for i in self._castor_joints:
@@ -85,14 +88,14 @@ class DifferentialDriveRobot(GenericRobot):
         self._integrated_velocities = vel
 
     def read_limits(self) -> None:
-        """ Set position, velocity, acceleration and motor torque lower en upper limits """
-        robot = URDF.load(self._urdf_file)
+        """ Set position, velocity, acceleration
+        and motor torque lower en upper limits """
         self._limit_pos_j = np.zeros((2, self.ns()))
         self._limit_vel_j = np.zeros((2, self.ns()))
         self._limit_tor_j = np.zeros((2, self.n()))
         self._limit_acc_j = np.zeros((2, self.n()))
         for i in range(self.n()):
-            joint = robot.joints[self._urdf_joints[i]]
+            joint = self._urdf_robot.joints[self._urdf_joints[i]]
             self._limit_tor_j[0, i] = -joint.limit.effort
             self._limit_tor_j[1, i] = joint.limit.effort
             if i >= 2:
@@ -110,12 +113,14 @@ class DifferentialDriveRobot(GenericRobot):
     def get_observation_space(self) -> gym.spaces.Dict:
         """Gets the observation space for a differential drive robot.
 
-        The observation space is represented as a dictionary. `join_state` containing:
-        `position` the concatenated positions of joints in their local configuration space.
-        `velocity` the concatenated velocities of joints in their local configuration space.
+        The observation space is represented as a dictionary.
+        `join_state` containing:
+        `position` the concatenated positions of joints
+        in their local configuration space.
+        `velocity` the concatenated velocities of joints
+        in their local configuration space.
         `forward_velocity` the forward velocity of the robot.
         """
-
         return gym.spaces.Dict(
             {
                 "joint_state": gym.spaces.Dict(
@@ -188,8 +193,9 @@ class DifferentialDriveRobot(GenericRobot):
     def apply_base_velocity(self, vels: np.ndarray) -> None:
         """Applies forward and angular velocity to the base.
 
-        The forward and angular velocity of the base is first transformed in
-        angular velocities of the wheels using a simple dynamics model.
+        The forward and angular velocity of the base
+        is first transformed in angular velocities of
+        the wheels using a simple dynamics model.
 
         """
         velocity_left_wheel = (
@@ -229,13 +235,15 @@ class DifferentialDriveRobot(GenericRobot):
 
         The robot state is stored in the self.state, which contains
         a dictionary with key 'joint_state' with nested dictionaries:
-        `position`: np.array((base_pose2D, joint_position_2, ..., joint_position_n))
+        `position`: np.array((base_pose2D, joint_position_2, ...,
+            joint_position_n))
             the position in local configuration space
             the base's configuration space aligns with the world frame
             base_pose2D = (x_positions, y_position, orientation)
             the joints 2 to n have al 1-dimensional configuration space
             joint_position_i = (position in local configuration space)
-        `velocity`: np.array((base_twist2D, joint_velocity_2, ..., joint_velocity_n))
+        `velocity`: np.array((base_twist2D, joint_velocity_2, ...,
+            joint_velocity_n))
             the velocity in local configuration space
             the base's configuration space aligns with the world frame
             base_pose2D = (x_positions, y_position, orientation)

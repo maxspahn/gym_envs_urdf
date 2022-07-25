@@ -8,7 +8,6 @@ class PandaReacherEnv(UrdfEnv):
         super().__init__(
             PandaRobot(gripper=gripper, friction=friction), **kwargs
         )
-        self.set_spaces()
 
     def check_initial_state(self, pos, vel):
         if not isinstance(pos, np.ndarray) or not pos.size == self._robot.n():

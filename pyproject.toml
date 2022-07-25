@@ -28,6 +28,7 @@ docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-napoleon"]
 
 
 [tool.poetry.dev-dependencies]
+autopep8 = "^1.6.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

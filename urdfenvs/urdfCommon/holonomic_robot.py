@@ -1,6 +1,5 @@
 import pybullet as p
 import gym
-from urdfpy import URDF
 import numpy as np
 
 from urdfenvs.urdfCommon.generic_robot import GenericRobot
@@ -17,6 +16,9 @@ class HolonomicRobot(GenericRobot):
             basePosition=[0.0, 0.0, 0.0],
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
+        self.set_joint_names()
+        self.extract_joint_ids()
+        self.read_limits()
         for i in range(self._n):
             p.resetJointState(
                 self._robot,
@@ -28,14 +30,16 @@ class HolonomicRobot(GenericRobot):
         self._integrated_velocities = vel
 
     def read_limits(self) -> None:
-        """ Set position, velocity, acceleration and motor torque lower en upper limits """
-        robot = URDF.load(self._urdf_file)
+        """
+        Set position, velocity, acceleration and
+        motor torque lower en upper limits
+        """
         self._limit_pos_j = np.zeros((2, self._n))
         self._limit_vel_j = np.zeros((2, self._n))
         self._limit_tor_j = np.zeros((2, self._n))
         self._limit_acc_j = np.zeros((2, self._n))
         for i, j in enumerate(self._urdf_joints):
-            joint = robot.joints[j]
+            joint = self._urdf_robot.joints[j]
             self._limit_pos_j[0, i] = joint.limit.lower
             self._limit_pos_j[1, i] = joint.limit.upper
             self._limit_vel_j[0, i] = -joint.limit.velocity
@@ -48,9 +52,12 @@ class HolonomicRobot(GenericRobot):
         """
         Gets the observation space for a holonomic robot.
 
-        The observation space is represented as a dictionary. `joint_state` containing:
-        `position` the concatenated positions of joints in their local configuration space.
-        `velocity` the concatenated velocities of joints in their local configuration space.
+        The observation space is represented as a dictionary.
+        `joint_state` containing:
+        `position` the concatenated positions of joints in
+        their local configuration space.
+        `velocity` the concatenated velocities of joints in
+        their local configuration space.
         """
         return gym.spaces.Dict(
             {
@@ -96,7 +103,8 @@ class HolonomicRobot(GenericRobot):
         """
         Updates the robot joint_state.
 
-       The robot joint_state is stored in the dictionary self.state, which contains:
+        The robot joint_state is stored in the dictionary self.state,
+        which contains:
        `position`: np.array([joint_position_0, ..., joint_position_n-1)
            the joints 0 to n-1 have al 1-dimensional configuration space
            joint_position_i = (position in local configuration space)
@@ -116,4 +124,5 @@ class HolonomicRobot(GenericRobot):
         joint_vel = np.array(joint_vel_list)
 
         # Concatenate position, orientation, velocity
-        self.state = {"joint_state": {"position": joint_pos, "velocity": joint_vel}}
+        self.state = {"joint_state": {"position": joint_pos,
+                      "velocity": joint_vel}}
