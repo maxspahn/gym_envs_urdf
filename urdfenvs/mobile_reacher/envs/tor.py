@@ -14,4 +14,4 @@ class MobileReacherTorEnv(MobileReacherEnv):
         (
             self.observation_space,
             self.action_space,
-        ) = self._robot.getTorqueSpaces()
+        ) = self._robot.get_torque_spaces()
