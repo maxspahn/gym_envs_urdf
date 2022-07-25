@@ -161,7 +161,8 @@ class UrdfEnv(gym.Env):
     """Generic urdf-environment for OpenAI-Gym"""
 
     def __init__(
-        self, robot: GenericRobot, flatten_observation: bool = False, render: bool = False, dt: float = 0.01
+        self, robot: GenericRobot, flatten_observation: bool = False,
+        render: bool = False, dt: float = 0.01
     ) -> None:
         """Constructor for environment.
 
@@ -184,7 +185,7 @@ class UrdfEnv(gym.Env):
         self._obsts: list = []
         self._goals: list = []
         self._flatten_observation: bool = flatten_observation
-
+        self._space_set = False
         if self._render:
             cid = p.connect(p.SHARED_MEMORY)
             if cid < 0:
@@ -447,6 +448,9 @@ class UrdfEnv(gym.Env):
             fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
         )
         self._robot.reset(pos=pos, vel=vel)
+        if not self._space_set:
+            self.set_spaces()
+            self._space_set = True
         self.plane = Plane()
         p.setGravity(0, 0, -10.0)
         p.stepSimulation()
