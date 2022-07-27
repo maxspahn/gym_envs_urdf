@@ -96,11 +96,11 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "decorator"
-version = "4.4.2"
+version = "5.1.1"
 description = "Decorators for Humans"
 category = "main"
 optional = false
-python-versions = ">=2.6, !=3.0.*, !=3.1.*"
+python-versions = ">=3.5"
 
 [[package]]
 name = "dill"
@@ -301,25 +301,25 @@ dill = ">=0.3.4"
 
 [[package]]
 name = "networkx"
-version = "2.5.1"
+version = "2.2"
 description = "Python package for creating and manipulating graphs and networks"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
 
 [package.dependencies]
-decorator = ">=4.3,<5"
+decorator = ">=4.3.0"
 
 [package.extras]
-all = ["numpy", "scipy", "pandas", "matplotlib", "pygraphviz", "pydot", "pyyaml", "lxml", "pytest"]
+all = ["numpy", "scipy", "pandas", "matplotlib", "pygraphviz", "pydot", "pyyaml", "gdal", "lxml", "nose"]
 gdal = ["gdal"]
 lxml = ["lxml"]
 matplotlib = ["matplotlib"]
+nose = ["nose"]
 numpy = ["numpy"]
 pandas = ["pandas"]
 pydot = ["pydot"]
 pygraphviz = ["pygraphviz"]
-pytest = ["pytest"]
 pyyaml = ["pyyaml"]
 scipy = ["scipy"]
 
@@ -821,11 +821,10 @@ description = "URDF parser and manipulator for Python"
 category = "main"
 optional = false
 python-versions = "*"
-develop = false
 
 [package.dependencies]
 lxml = "*"
-networkx = ">=2.2"
+networkx = "2.2"
 numpy = "*"
 pillow = "*"
 pycollada = "0.6"
@@ -837,12 +836,6 @@ trimesh = "*"
 [package.extras]
 dev = ["flake8", "pre-commit", "pytest", "pytest-cov", "tox"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-automodapi"]
-
-[package.source]
-type = "git"
-url = "https://git@github.com/maxspahn/urdfpy.git"
-reference = "fix-networkx-dependency"
-resolved_reference = "63b0b4d1f06136cbfd5367f556eb4d29f0d140b6"
 
 [[package]]
 name = "urllib3"
@@ -877,7 +870,7 @@ scenes = ["motion-planning-scenes"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6, <3.11"
-content-hash = "25ebc9db5dfd503b809a01d334bbb2298dc3bdb2a0cc4fe29b3aca7809921e26"
+content-hash = "bd3bb0717da1484585f0cc1bf94f2e8733d941631e155ab0812a236b33081c78"
 
 [metadata.files]
 alabaster = []
@@ -920,8 +913,8 @@ colorama = [
     {file = "colorama-0.4.5.tar.gz", hash = "sha256:e6c6b4334fc50988a639d9b98aa429a0b57da6e17b9a44f0451f930b6967b7a4"},
 ]
 decorator = [
-    {file = "decorator-4.4.2-py2.py3-none-any.whl", hash = "sha256:41fa54c2a0cc4ba648be4fd43cff00aedf5b9465c9bf18d64325bc225f08f760"},
-    {file = "decorator-4.4.2.tar.gz", hash = "sha256:e3a62f0520172440ca0dcc823749319382e377f37f140a0b99ef45fecb84bfe7"},
+    {file = "decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"},
+    {file = "decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330"},
 ]
 dill = [
     {file = "dill-0.3.4-py2.py3-none-any.whl", hash = "sha256:7e40e4a70304fd9ceab3535d36e58791d9c4a776b38ec7f7ec9afc8d3dca4d4f"},
@@ -1110,8 +1103,7 @@ motion-planning-scenes = [
 ]
 multiprocess = []
 networkx = [
-    {file = "networkx-2.5.1-py3-none-any.whl", hash = "sha256:0635858ed7e989f4c574c2328380b452df892ae85084144c73d8cd819f0c4e06"},
-    {file = "networkx-2.5.1.tar.gz", hash = "sha256:109cd585cac41297f71103c3c42ac6ef7379f29788eb54cb751be5a663bb235a"},
+    {file = "networkx-2.2.zip", hash = "sha256:45e56f7ab6fe81652fb4bc9f44faddb0e9025f469f602df14e3b2551c2ea5c8b"},
 ]
 numpy = [
     {file = "numpy-1.19.5-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:cc6bd4fd593cb261332568485e20a0712883cf631f6f5e8e86a52caa8b2b50ff"},
@@ -1349,7 +1341,10 @@ typing-extensions = [
     {file = "typing_extensions-4.1.1-py3-none-any.whl", hash = "sha256:21c85e0fe4b9a155d0799430b0ad741cdce7e359660ccbd8b530613e8df88ce2"},
     {file = "typing_extensions-4.1.1.tar.gz", hash = "sha256:1a9462dcc3347a79b1f1c0271fbe79e844580bb598bafa1ed208b94da3cdcd42"},
 ]
-urdfpy = []
+urdfpy = [
+    {file = "urdfpy-0.0.22-py3-none-any.whl", hash = "sha256:ec9d944bd8a28fe0914b6038e8119ebd53905bc4c507744e35b46a3fa02529bd"},
+    {file = "urdfpy-0.0.22.tar.gz", hash = "sha256:9dc30ebd8f26f1812d2adb9f542dffeb4537963fa2588d14d98e2f6b862d798f"},
+]
 urllib3 = []
 zipp = [
     {file = "zipp-3.6.0-py3-none-any.whl", hash = "sha256:9fe5ea21568a0a70e50f273397638d39b03353731e6cbbb3fd8502a33fec40bc"},
