@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation using windows &mdash; urdfEnvs  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Creating environments" href="introduction_to_envs.html" />
+    <link rel="prev" title="Generic URDF robots" href="getting_started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> urdfEnvs
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Generic URDF robots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#getting-started">Getting started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation using windows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#making-the-windows-system-run">Making the windows system run!</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#python">Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#git">Git</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#c">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#poetry">Poetry</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="introduction_to_envs.html">Creating environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adding_to_envs.html">Adding elements to the environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">urdfEnvs</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Installation using windows</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/windows.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installation-using-windows">
+<h1>Installation using windows<a class="headerlink" href="#installation-using-windows" title="Permalink to this headline"></a></h1>
+<section id="making-the-windows-system-run">
+<h2>Making the windows system run!<a class="headerlink" href="#making-the-windows-system-run" title="Permalink to this headline"></a></h2>
+<section id="python">
+<h3>Python<a class="headerlink" href="#python" title="Permalink to this headline"></a></h3>
+<p>First, you have to install a minimum version of python. Python 3.10.4
+can be found <a class="reference external" href="https://www.python.org/downloads/release/python-3104/">https://www.python.org/downloads/release/python-3104/</a></p>
+<p>Python is usually installed in
+<code class="file docutils literal notranslate"><span class="pre">C:\Users\&lt;User-Name&gt;\AppData\Local\Programs\Python\Python310\python.exe</span></code>.
+You can find the exact location by running the python interpreter from
+the start menu. Simply search for python after you have installed with
+the link from above. You can then launch the interpreter. In there you
+run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">)</span> <span class="c1"># prints the location of the python executable.</span>
+</pre></div>
+</div>
+<p>For for information you can also look at
+<a class="reference external" href="https://blog.finxter.com/how-to-find-path-where-python-is-installed-on-windows/">https://blog.finxter.com/how-to-find-path-where-python-is-installed-on-windows/</a>.</p>
+</section>
+<section id="git">
+<h3>Git<a class="headerlink" href="#git" title="Permalink to this headline"></a></h3>
+<p>We recommand installing git for windows from <a class="reference external" href="https://gitforwindows.org/">https://gitforwindows.org/</a>.
+Follow the installation guide. This program will also offer you a
+minimal linux-link terminal. Very helpful to learn the very basics of
+linux commands.</p>
+<p>Just like with the python interpreter, you can now open a git-bash
+command line by searching for the program in the start menu. You can now
+navigate around with the normal linux commands: - ls : list content of
+current directory - cd : change directory to - pwd : show current path</p>
+<p>In order to interact with github you should first setup a ssh-key to
+facilitate the communication with github. You can follow the
+documentation on the github docu page:
+<a class="reference external" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh">https://docs.github.com/en/authentication/connecting-to-github-with-ssh</a>.</p>
+<p>Once git is setup you download the repository by clicking on its github
+website, <a class="reference external" href="https://github.com/maxspahn/gym_envs_urdf">https://github.com/maxspahn/gym_envs_urdf</a>, on the clone
+button in green. This link is then added to your clipboard. Inside the
+git-bash terminal you then paste:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:maxspahn/gym_envs_urdf.git
+</pre></div>
+</div>
+<p>If it is your first time using git, you may be asked to add github to
+the known-hosts list for the ssh configuration. You confirm that by
+typing <code class="docutils literal notranslate"><span class="pre">yes</span></code>.</p>
+<p>You have successfully downloaded the package. Installation will be
+covered once all other dependencies are setup.</p>
+</section>
+<section id="c">
+<h3>C++<a class="headerlink" href="#c" title="Permalink to this headline"></a></h3>
+<p>Some dependencies of the package require C++. If you already have visual
+studio installed, you should already have the C++ compiler. If not, we
+recommand installing visual studio, even though it introduces some
+overhead.</p>
+</section>
+<section id="poetry">
+<h3>Poetry<a class="headerlink" href="#poetry" title="Permalink to this headline"></a></h3>
+<p>We recommand using poetry to install the package. It also allows you to
+interact with the package and make custom changes or add third party
+libraries. You can install it according to their documentation
+<a class="reference external" href="https://python-poetry.org/docs/">https://python-poetry.org/docs/</a>. Open a powershell and paste</p>
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">Invoke-WebRequest</span> <span class="n">-Uri</span> <span class="n">https</span><span class="p">://</span><span class="n">raw</span><span class="p">.</span><span class="n">githubusercontent</span><span class="p">.</span><span class="n">com</span><span class="p">/</span><span class="n">python-poetry</span><span class="p">/</span><span class="n">poetry</span><span class="p">/</span><span class="n">master</span><span class="p">/</span><span class="nb">get-poetry</span><span class="p">.</span><span class="n">py</span> <span class="n">-UseBasicParsing</span><span class="p">).</span><span class="n">Content</span> <span class="p">|</span> <span class="n">py</span>
+</pre></div>
+</div>
+<p>Sometimes, <code class="docutils literal notranslate"><span class="pre">py</span></code> needs to be replaced with <code class="docutils literal notranslate"><span class="pre">python</span></code>. You can find out
+which to use by simply typing both and see which one opens the python
+interpreter terminal.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting_started.html" class="btn btn-neutral float-left" title="Generic URDF robots" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="introduction_to_envs.html" class="btn btn-neutral float-right" title="Creating environments" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Max Spahn.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

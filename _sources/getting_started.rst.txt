@@ -1,10 +1,34 @@
-Getting started
+Generic URDF robots
 ===================
+
+In this package, generic urdf robots and a panda gym environment are
+available. The goal is to make this environment as easy as possible to
+deploy. Although, we used the OpenAI-Gym framing, these environments are
+not necessarly restricted to Reinforcement-Learning but rather to local
+motion planning in general.
+
+.. |img1| image:: img/pointRobot.gif
+.. |img2| image:: img/pointRobotKeyboardInput.gif
+.. |img3| image:: img/boxerRobot.gif
+.. |img4| image:: img/tiagoKeyboardInput.gif
+.. |img5| image:: img/panda.gif
+.. |img6| image:: img/albert.gif
+
+
++--------+--------+--------+
+| |img1| | |img2| | |img3| |
++--------+--------+--------+
++--------+--------+--------+
+| |img4| | |img5| | |img6| |
++--------+--------+--------+
+
+Getting started
+===============
 
 This is the guide to quickle get going with urdf gym environments.
 
 Pre-requisites
-----------------
+--------------
 
 - Python >3.6, <3.10
 - pip3
@@ -14,7 +38,7 @@ Pre-requisites
 Installation
 ------------
 
-You first have to downlad the repository
+You first have to download the repository
 
 .. code:: bash
 
@@ -23,8 +47,16 @@ You first have to downlad the repository
 Then, you can install the package using pip as:
 
 .. code:: bash
-   
+
    pip3 install .
+
+The code can be installed in editible mode using
+
+.. code:: bash
+
+   pip3 install -e .
+
+Note that we recommend using poetry in this case.
 
 Optional: Installation with poetry
 ------------------------------------
@@ -46,11 +78,29 @@ The virtual environment is entered by
 
 Inside the virtual environment you can access all the examples.
 
+Installing dependencies
+-----------------------
+
+This package depends on casadi for dynamics generation and gym.
+Dependencies should be installed through pip or poetry, see below.
+
+Using pip, you can use
+
+.. code:: bash
+
+    pip3 install '.[options]'
+
+Using poetry
+
+.. code:: bash
+
+    poetry install -E <options>
+
+Options are ``keyboard`` and ``scenes``.
+
+
 Examples
 -----------
-
-Run example
-^^^^^^^^^^^
 
 You find several python scripts in `examples/
 <https://github.com/maxspahn/gym_envs_urdf/tree/master/examples>`_. You can
@@ -62,37 +112,3 @@ environment first with ``poetry shell``)
    python3 pointRobot.py
 
 Replace pointRobot.py with the name of the script you want to run.
-
-Use environments
-^^^^^^^^^^^^^^^^
-
-
-In the ``examples``, you will find individual examples for all implemented 
-robots. Environments can be created using the normal gym syntax. 
-Gym environments rely mostly on three functions
-
-- ``gym.make(...)`` to create the environment, 
-- ``gym.reset(...)`` to reset the environment, 
-- ``gym.step(action)`` to step one time step in the environment.
-
-For example, in `examples/pointRobot.py
-<https://github.com/maxspahn/gym_envs_urdf/blob/master/examples/pointRobot.py>`_, you 
-can find the following syntax to ``make``, ``reset`` and ``step`` the environment.
-
-.. code:: python
-
-    env = gym.make('pointRobotUrdf-vel-v0', dt=0.05, render=True)
-    ob = env.reset(pos=pos0, vel=vel0)
-    ob, reward, done, info = env.step(action)
-
-The id-tag in the ``make`` command specifies the robot and the control type.
-You can get a full list of all available environments using
-
-.. code:: python
-
-   from gym import envs
-   print(envs.registry.all())
-
-
-Go ahead and explore all the examples you can finde there.
-

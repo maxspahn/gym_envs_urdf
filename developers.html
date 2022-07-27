@@ -18,9 +18,7 @@
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Contributing" href="contributing.html" />
-    <link rel="prev" title="Generic URDF robots" href="introduction.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -39,19 +37,13 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Generic URDF robots</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html#switching">Switching</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html#adding-sensors-to-the-robot">Adding sensors to the robot</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html#robot-control-with-the-keyboard">Robot control with the keyboard</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html#examples">Examples</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Robot Structure</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#generic-robot">Generic Robot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#robot-states">Robot States</a></li>
-</ul>
-</li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Generic URDF robots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#getting-started">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="windows.html">Installation using windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction_to_envs.html">Creating environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adding_to_envs.html">Adding elements to the environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
@@ -72,7 +64,7 @@
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
       <li>Robot Structure</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/developpers.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/developers.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -96,24 +88,45 @@ requires additional information.</p>
 </section>
 <section id="robot-states">
 <h2>Robot States<a class="headerlink" href="#robot-states" title="Permalink to this headline"></a></h2>
-<p>All environments follow the OpenAI-Gym convention of returning the observation (reward,
-done, info). The observation is a dictionary containing as keys <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">xdot</span></code> and optional
-observations. <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">xdot</span></code> are numpy arrays for the position and the velocity in each
-degree of freedom. For example, the panda robot returns two 7-dimensional arrays
-containing the joint positions and joint velocities. For non-holonomic robots, such as the
-boxer, the observation also contains information about forward and rotational velocity
-under the key <code class="docutils literal notranslate"><span class="pre">vel</span></code>. Note that this information is redundant with <code class="docutils literal notranslate"><span class="pre">xdot</span></code> but we concluded
+<p>All environments follow the OpenAI-Gym convention of returning observation, (reward,
+done, info). The observation is a dictionary containing as keys <code class="docutils literal notranslate"><span class="pre">joint_state</span></code> and optional
+observations from added sensors.</p>
+<section id="holonomicrobot">
+<h3>HolonomicRobot<a class="headerlink" href="#holonomicrobot" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">joint_state</span></code> is a dictionary containing nested dictionaries:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">position</span></code>: a numpy array containing the joint positions in for each degree of freedom.</p>
+<p><code class="docutils literal notranslate"><span class="pre">velocity</span></code>: a numpy array containing the joint velocities in for each degree of freedom.</p>
+</div></blockquote>
+<p>As example, the Panda robot has 7 joints. The numpy array <code class="docutils literal notranslate"><span class="pre">ob[&quot;joint_state&quot;][&quot;position&quot;]</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ob[&quot;joint_state&quot;][&quot;velocity&quot;]</span></code> both have dimension (7, ).</p>
+</section>
+<section id="differentialdriverobot">
+<h3>DifferentialDriveRobot<a class="headerlink" href="#differentialdriverobot" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">joint_state</span></code> is a dictionary containing nested dictionaries:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">position</span></code>: a numpy array containing the the joint positions for each degree of freedom.
+the base joint’s configuration space equals the world frame and has 3 dimensions.
+x, y position and the orientation of the base joints’ center of mass. Which is concatenated with
+the other joint positions.</p>
+<p><code class="docutils literal notranslate"><span class="pre">velocity</span></code>: a numpy array containing all joint velocities. Just as the positions the base is
+3-dimensional.</p>
+<p><code class="docutils literal notranslate"><span class="pre">forward_velocity</span></code>: a float with the forward velocity in robot frame.</p>
+</div></blockquote>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">forward_velocity</span></code> is redundant with <code class="docutils literal notranslate"><span class="pre">velocity</span></code> but we concluded
 that it might be useful for some methods and provide this information explicitly.</p>
+<p>As example, the Albert robot (a mobile base with a Panda arm attached) has 8 joints.
+array <code class="docutils literal notranslate"><span class="pre">ob[&quot;joint_state&quot;][&quot;position&quot;]</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ob[&quot;joint_state&quot;][&quot;velocity&quot;]</span></code> both have dimension (10, ). For positions (and similar for velocities)
+in format <code class="docutils literal notranslate"><span class="pre">(base_x_pos,</span> <span class="pre">base_y_pos,</span> <span class="pre">base_orientation,</span> <span class="pre">joint_2_pos,</span> <span class="pre">joint_3_pos,</span> <span class="pre">...,</span> <span class="pre">joint_8_pos)</span></code></p>
+</section>
 </section>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="introduction.html" class="btn btn-neutral float-left" title="Generic URDF robots" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="contributing.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

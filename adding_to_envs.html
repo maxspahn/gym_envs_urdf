@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adding elements to the environment &mdash; urdfEnvs  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Dependencies" href="dependencies.html" />
+    <link rel="prev" title="Creating environments" href="introduction_to_envs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> urdfEnvs
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Generic URDF robots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#getting-started">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="windows.html">Installation using windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction_to_envs.html">Creating environments</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Adding elements to the environment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#walls">Walls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#shapes">Shapes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#urdf-files">URDF files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#goals">Goals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">urdfEnvs</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Adding elements to the environment</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/adding_to_envs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="adding-elements-to-the-environment">
+<h1>Adding elements to the environment<a class="headerlink" href="#adding-elements-to-the-environment" title="Permalink to this headline"></a></h1>
+<section id="walls">
+<h2>Walls<a class="headerlink" href="#walls" title="Permalink to this headline"></a></h2>
+<p>To add a wall use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">env</span><span class="o">.</span><span class="n">add_walls</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">poses_2d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>dim: numpy.ndarray or list
+| (optional) dim, short for dimensions if given dim must
+| be of length 3 corresponding to [width, length, height].</p>
+<div class="line-block">
+<div class="line">poses_2d: [np.ndarray, …] or [list, …]</div>
+<div class="line">(optional) if given poses_2d must be a list with lists or numpy arrays of length 3</div>
+<div class="line">correspond to [x_position, y_position, orientation] which refers to walls centers of mass.</div>
+<div class="line">The height of the center of mass will be adjusted such that the bottom of the wall</div>
+<div class="line">aligns with the ground plane. multiple walls can be placed</div>
+<div class="line">by having multiple pose_2d in poses_2d.</div>
+</div>
+</section>
+<section id="shapes">
+<h2>Shapes<a class="headerlink" href="#shapes" title="Permalink to this headline"></a></h2>
+<p>To add a shape use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">env</span><span class="o">.</span><span class="n">add_shapes</span><span class="p">(</span><span class="n">shape_type</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">poses_2d</span><span class="p">,</span> <span class="n">place_height</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">shape_type: str</div>
+<div class="line">(required) the 4 options available are:</div>
+<div class="line">“GEOM_SPHERE”, “GEOM_BOX”, “GEOM_CYLINDER”, “GEOM_CAPSULE”.</div>
+</div>
+<div class="line-block">
+<div class="line">dim: numpy array of list</div>
+<div class="line">(optional), if dimensions is specified the length dependents on the shape_type:</div>
+<div class="line-block">
+<div class="line">GEOM_SPHERE,    dim=[radius],</div>
+<div class="line">GEOM_BOX,       dim=[width, length, height],</div>
+<div class="line">GEOM_CYLINDER,  dim=[radius, length],</div>
+<div class="line">GEOM_CAPSULE,   dim=[radius, length],</div>
+</div>
+</div>
+<div class="line-block">
+<div class="line">mass: int or float</div>
+<div class="line">(optional) mass refers to the objects mass, which in uniformly distributed.</div>
+</div>
+<div class="line-block">
+<div class="line">poses_2d: [np.ndarray, …] or [list, …]</div>
+<div class="line">(optional) if specified poses_2d must be a list containing lists or numpy arrays of length 3</div>
+<div class="line">correspond to [x_position, y_position, orientation] indicates the shapes center of mass.</div>
+<div class="line">multiple walls can be placed by having multiple pose_2d in poses_2d.</div>
+</div>
+<div class="line-block">
+<div class="line">place_height: int or float</div>
+<div class="line">(optional) if specified it refers to the z_position of the center of mass</div>
+<div class="line">if not specified, the shape will be placed such that the shapes bottom</div>
+<div class="line">aligns with the ground plane.</div>
+</div>
+</section>
+<section id="urdf-files">
+<h2>URDF files<a class="headerlink" href="#urdf-files" title="Permalink to this headline"></a></h2>
+<p>todo</p>
+</section>
+<section id="sensors">
+<h2>Sensors<a class="headerlink" href="#sensors" title="Permalink to this headline"></a></h2>
+<p>A robot can be given a lidar or obstacle sensor by creating a sensor
+object and passing it to the environment:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sensor</span> <span class="o">=</span> <span class="n">ObstacleSensor</span><span class="p">()</span>
+<span class="n">env</span><span class="o">.</span><span class="n">add_sensor</span><span class="p">(</span><span class="n">sensor</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The observations from the sensor are returned by the <code class="docutils literal notranslate"><span class="pre">env.step(action)</span></code> call.
+The structure of the observation varies depending on the sensor and its arguments
+for more info see the Sensor class and subclasses located at urdfenvs/sensors/</p>
+</section>
+<section id="goals">
+<h2>Goals<a class="headerlink" href="#goals" title="Permalink to this headline"></a></h2>
+<p>todo..</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="introduction_to_envs.html" class="btn btn-neutral float-left" title="Creating environments" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dependencies.html" class="btn btn-neutral float-right" title="Dependencies" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Max Spahn.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
