@@ -9,8 +9,7 @@ python = "^3.6, <3.11"
 pybullet = "^3.2.1"
 gym = "^0.21.0"
 numpy = "^1.19.0"
-casadi = "3.5.6.pre2"
-motion-planning-scenes = {git = "https://git@github.com/maxspahn/motion_planning_scenes.git", rev = "main", optional = true}
+motion-planning-scenes = {version = "^0.1.19", optional = true}
 pynput = {version = "^1.7.6", optional = true}
 multiprocess = {version = "^0.70.12", optional = true}
 urdfpy = {git = "https://git@github.com/maxspahn/urdfpy.git", rev = "fix-networkx-dependency"}
