@@ -4,11 +4,10 @@ from urdfenvs.urdfCommon.urdf_env import UrdfEnv
 
 
 class PandaReacherEnv(UrdfEnv):
-    def __init__(self, render=False, dt=0.01, friction=0.0, gripper=False):
+    def __init__(self, friction=0.0, gripper=False, **kwargs):
         super().__init__(
-            PandaRobot(gripper=gripper, friction=friction), render=render, dt=dt
+            PandaRobot(gripper=gripper, friction=friction), **kwargs
         )
-        self.set_spaces()
 
     def check_initial_state(self, pos, vel):
         if not isinstance(pos, np.ndarray) or not pos.size == self._robot.n():

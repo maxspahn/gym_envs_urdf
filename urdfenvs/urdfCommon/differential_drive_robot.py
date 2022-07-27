@@ -1,6 +1,5 @@
 import pybullet as p
 import gym
-from urdfpy import URDF
 import numpy as np
 
 from urdfenvs.urdfCommon.generic_robot import GenericRobot
@@ -20,12 +19,14 @@ class DifferentialDriveRobot(GenericRobot):
         The offset by which the initial position must be shifted to align
         observation with that position.
     """
+
     def __init__(self, n: int, urdf_file: str):
-        """Constructorr for differential drive robots."""
+        """Constructor for differential drive robots."""
         super().__init__(n, urdf_file)
         self._wheel_radius: float = None
         self._wheel_distance: float = None
         self._spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15])
+
 
     def ns(self) -> int:
         """Returns the number of degrees of freedom.
@@ -35,7 +36,24 @@ class DifferentialDriveRobot(GenericRobot):
         """
         return self.n() + 1
 
+    def get_velocity_spaces(self) -> tuple:
+        """Get observation space and action space when using velocity
+        control.
+
+        Overrides velocity spaces from default, because a differential drive has limits in x,y and
+        theta direction, while the action space should be limited to the forward and angular velocity."""
+        ospace = self.get_observation_space()
+        uu = np.concatenate(
+            (self._limit_vel_forward_j[1, :], self._limit_vel_j[1, 3:]), axis=0
+        )
+        ul = np.concatenate(
+            (self._limit_vel_forward_j[0, :], self._limit_vel_j[0, 3:]), axis=0
+        )
+        aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
+        return (ospace, aspace)
+
     def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> None:
+        """ Reset simulation and add robot """
         if hasattr(self, "_robot"):
             p.resetSimulation()
         base_orientation = p.getQuaternionFromEuler([0, 0, pos[2]])
@@ -46,9 +64,11 @@ class DifferentialDriveRobot(GenericRobot):
             baseOrientation=base_orientation,
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
+        self.set_joint_names()
+        self.extract_joint_ids()
+        self.read_limits()
         # Joint indices as found by p.getJointInfo()
         # set castor wheel friction to zero
-        # print(self.getIndexedJointInfo())
         for i in self._castor_joints:
             p.setJointMotorControl2(
                 self._robot,
@@ -68,13 +88,14 @@ class DifferentialDriveRobot(GenericRobot):
         self._integrated_velocities = vel
 
     def read_limits(self) -> None:
-        robot = URDF.load(self._urdf_file)
+        """ Set position, velocity, acceleration
+        and motor torque lower en upper limits """
         self._limit_pos_j = np.zeros((2, self.ns()))
         self._limit_vel_j = np.zeros((2, self.ns()))
         self._limit_tor_j = np.zeros((2, self.n()))
         self._limit_acc_j = np.zeros((2, self.n()))
         for i in range(self.n()):
-            joint = robot.joints[self._urdf_joints[i]]
+            joint = self._urdf_robot.joints[self._urdf_joints[i]]
             self._limit_tor_j[0, i] = -joint.limit.effort
             self._limit_tor_j[1, i] = joint.limit.effort
             if i >= 2:
@@ -82,38 +103,46 @@ class DifferentialDriveRobot(GenericRobot):
                 self._limit_pos_j[1, i + 1] = joint.limit.upper
                 self._limit_vel_j[0, i + 1] = -joint.limit.velocity
                 self._limit_vel_j[1, i + 1] = joint.limit.velocity
-        self._limit_vel_forward_j = np.array([[-4, -10], [4, 10]])
-        self._limit_pos_j[0, 0:3] = np.array([-10, -10, -2 * np.pi])
-        self._limit_pos_j[1, 0:3] = np.array([10, 10, 2 * np.pi])
-        self._limit_vel_j[0, 0:3] = np.array([-4, -4, -10])
-        self._limit_vel_j[1, 0:3] = np.array([4, 4, 10])
+        self._limit_vel_forward_j = np.array([[-4.0, -10.0], [4.0, 10.0]])
+        self._limit_pos_j[0, 0:3] = np.array([-10.0, -10.0, -2 * np.pi])
+        self._limit_pos_j[1, 0:3] = np.array([10.0, 10.0, 2 * np.pi])
+        self._limit_vel_j[0, 0:3] = np.array([-4.0, -4.0, -10.0])
+        self._limit_vel_j[1, 0:3] = np.array([4.0, 4.0, 10.0])
         self.set_acceleration_limits()
 
     def get_observation_space(self) -> gym.spaces.Dict:
         """Gets the observation space for a differential drive robot.
 
-        The observation space is represented as a dictonary. `x` and `xdot`
-        denote the configuration position and velocity and `vel` is the current
-        forward and rotational velocity of the base. Note that in `xdot`, the
-        velocity in Cartesian coordinates is used.
+        The observation space is represented as a dictionary.
+        `join_state` containing:
+        `position` the concatenated positions of joints
+        in their local configuration space.
+        `velocity` the concatenated velocities of joints
+        in their local configuration space.
+        `forward_velocity` the forward velocity of the robot.
         """
         return gym.spaces.Dict(
             {
-                "x": gym.spaces.Box(
-                    low=self._limit_pos_j[0, :],
-                    high=self._limit_pos_j[1, :],
-                    dtype=np.float64,
-                ),
-                "vel": gym.spaces.Box(
-                    low=self._limit_vel_forward_j[0, :],
-                    high=self._limit_vel_forward_j[1, :],
-                    dtype=np.float64,
-                ),
-                "xdot": gym.spaces.Box(
-                    low=self._limit_vel_j[0, :],
-                    high=self._limit_vel_j[1, :],
-                    dtype=np.float64,
-                ),
+                "joint_state": gym.spaces.Dict(
+                    {
+                        "position": gym.spaces.Box(
+                            low=self._limit_pos_j[0, :],
+                            high=self._limit_pos_j[1, :],
+                            dtype=np.float64,
+                        ),
+                        "velocity": gym.spaces.Box(
+                            low=self._limit_vel_j[0, :],
+                            high=self._limit_vel_j[1, :],
+                            dtype=np.float64,
+                        ),
+                        "forward_velocity": gym.spaces.Box(
+                            low=np.array([self._limit_vel_forward_j[0][0]]),
+                            high=np.array([self._limit_vel_forward_j[1][0]]),
+                            shape=(1,),
+                            dtype=np.float64,
+                        ),
+                    }
+                )
             }
         )
 
@@ -152,7 +181,7 @@ class DifferentialDriveRobot(GenericRobot):
         self.apply_velocity_action(self._integrated_velocities)
 
     def apply_velocity_action_wheels(self, vels: np.ndarray) -> None:
-        """Apllies angular velocities to the wheels."""
+        """Applies angular velocities to the wheels."""
         for i in range(2):
             p.setJointMotorControl2(
                 self._robot,
@@ -164,8 +193,9 @@ class DifferentialDriveRobot(GenericRobot):
     def apply_base_velocity(self, vels: np.ndarray) -> None:
         """Applies forward and angular velocity to the base.
 
-        The forward and angular velocity of the base is first transformed in
-        angular velocities of the wheels using a simple dynamics model.
+        The forward and angular velocity of the base
+        is first transformed in angular velocities of
+        the wheels using a simple dynamics model.
 
         """
         velocity_left_wheel = (
@@ -174,6 +204,7 @@ class DifferentialDriveRobot(GenericRobot):
         velocity_right_wheel = (
             vels[0] - 0.5 * self._wheel_distance * vels[1]
         ) / self._wheel_radius
+
         wheel_velocities = np.array([velocity_left_wheel, velocity_right_wheel])
         self.apply_velocity_action_wheels(wheel_velocities)
 
@@ -202,12 +233,24 @@ class DifferentialDriveRobot(GenericRobot):
     def update_state(self) -> None:
         """Updates the robot state.
 
-        The robot state is stored in the dictonary self.state.  There, the key
-        x refers to the translational and rotational position in the world
-        frame.  The key xdot referst to the translation and rotational velocity
-        in the world frame.  For a differential-drive robot, the forward and
-        rotational velocity is stored under the vel key. The value is then a
-        numpy array with the values vel_forward and vel_rotational.
+        The robot state is stored in the self.state, which contains
+        a dictionary with key 'joint_state' with nested dictionaries:
+        `position`: np.array((base_pose2D, joint_position_2, ...,
+            joint_position_n))
+            the position in local configuration space
+            the base's configuration space aligns with the world frame
+            base_pose2D = (x_positions, y_position, orientation)
+            the joints 2 to n have al 1-dimensional configuration space
+            joint_position_i = (position in local configuration space)
+        `velocity`: np.array((base_twist2D, joint_velocity_2, ...,
+            joint_velocity_n))
+            the velocity in local configuration space
+            the base's configuration space aligns with the world frame
+            base_pose2D = (x_positions, y_position, orientation)
+            the joints 2 to n have al one dimensional configuration space
+            joint_velocity_i = (position in local configuration space)
+        `forward_velocity`: float
+            forward velocity in robot frame
         """
         # base position
         link_state = p.getLinkState(self._robot, 0, computeLinkVelocity=0)
@@ -224,17 +267,19 @@ class DifferentialDriveRobot(GenericRobot):
         vel_wheels = p.getJointStates(self._robot, self._robot_joints)
         v_right = vel_wheels[0][1]
         v_left = vel_wheels[1][1]
-        # simple dynamics model to compute the forward and rotational velocity
-        vf = np.array(
-            [
-                0.5 * (v_right + v_left) * self._wheel_radius,
-                (v_right - v_left) * self._wheel_radius / self._wheel_distance,
-            ]
+        # simple dynamics model to compute the forward and angular velocity
+        forward_velocity = 0.5 * (v_right + v_left) * self._wheel_radius
+        angular_velocity = (
+            (v_right - v_left) * self._wheel_radius / self._wheel_distance
         )
+
         jacobi_nonholonomic = np.array(
             [[np.cos(pos_base[2]), 0], [np.sin(pos_base[2]), 0], [0, 1]]
         )
-        velocity_base = np.dot(jacobi_nonholonomic, vf)
+        velocity_base = np.dot(
+            jacobi_nonholonomic, np.array([forward_velocity, angular_velocity])
+        )
+
         # joint configurations for holonomic joints
         joint_pos_list = []
         joint_vel_list = []
@@ -246,7 +291,9 @@ class DifferentialDriveRobot(GenericRobot):
         joint_vel = np.array(joint_vel_list)
 
         self.state = {
-            "x": np.concatenate((pos_base, joint_pos)),
-            "vel": vf,
-            "xdot": np.concatenate((velocity_base, joint_vel)),
+            "joint_state": {
+                "position": np.concatenate((pos_base, joint_pos)),
+                "velocity": np.concatenate((velocity_base, joint_vel)),
+                "forward_velocity": np.array([forward_velocity]),
+            }
         }

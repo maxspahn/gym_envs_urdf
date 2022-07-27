@@ -1,16 +1,15 @@
 [tool.poetry]
 name = "urdfenvs"
-version = "0.1.9"
+version = "0.2.2"
 description = "Simple simulation environment for robots, based on the urdf files."
 authors = ["Max Spahn <m.spahn@tudelft.nl>"]
 
 [tool.poetry.dependencies]
-python = ">=3.6, <3.11"
+python = "^3.6, <3.11"
 pybullet = "^3.2.1"
 gym = "^0.21.0"
-numpy = "^1.10.0"
-casadi = "^3.5.5"
-motion-planning-scenes = {version = "^0.1.1", optional = true}
+numpy = "^1.19.0"
+motion-planning-scenes = {version = "^0.1.19", optional = true}
 pynput = {version = "^1.7.6", optional = true}
 multiprocess = {version = "^0.70.12", optional = true}
 urdfpy = {git = "https://git@github.com/maxspahn/urdfpy.git", rev = "fix-networkx-dependency"}
@@ -28,6 +27,7 @@ docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-napoleon"]
 
 
 [tool.poetry.dev-dependencies]
+autopep8 = "^1.6.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

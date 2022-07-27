@@ -6,10 +6,9 @@ from urdfenvs.urdfCommon.urdf_env import UrdfEnv
 
 
 class MobileReacherEnv(UrdfEnv):
-    def __init__(self, render=False, dt=0.01, gripper=False):
-        super().__init__(MobileRobot(gripper=gripper), render=render, dt=dt)
+    def __init__(self, gripper=False, **kwargs):
+        super().__init__(MobileRobot(gripper=gripper), **kwargs)
         self._n = self._robot.n()
-        self.set_spaces()
 
     def check_initial_state(self, pos, vel):
         if not isinstance(pos, np.ndarray) or not pos.size == self._robot.n():
