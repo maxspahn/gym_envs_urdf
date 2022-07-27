@@ -1,17 +1,17 @@
-from urdfenvs.generic_reacher.envs.generic_reacher_env import GenericReacherEnv
+from urdfenvs.generic_urdf_reacher.envs.generic_urdf_reacher_env import GenericUrdfReacherEnv
 
 
-class GenericReacherAccEnv(GenericReacherEnv):
+class GenericUrdfReacherTorEnv(GenericUrdfReacherEnv):
     def reset(self, pos=None, vel=None):
         ob = super().reset(pos=pos, vel=vel)
         self._robot.disable_velocity_control()
         return ob
 
     def apply_action(self, action):
-        self._robot.apply_acceleration_action(action, self.dt())
+        self._robot.apply_torque_action(action)
 
     def set_spaces(self):
         (
             self.observation_space,
             self.action_space,
-        ) = self._robot.get_acceleration_spaces()
+        ) = self._robot.get_torque_spaces()

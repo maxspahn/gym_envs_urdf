@@ -2,7 +2,7 @@ import numpy as np
 from urdfenvs.urdfCommon.holonomic_robot import HolonomicRobot
 
 
-class GenericRobot(HolonomicRobot):
+class GenericUrdfReacher(HolonomicRobot):
     def __init__(self, urdf):
         self._urdf = urdf
         super().__init__(-1, self._urdf)

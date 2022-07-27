@@ -1,7 +1,7 @@
-from urdfenvs.generic_reacher.envs.generic_reacher_env import GenericReacherEnv
+from urdfenvs.generic_urdf_reacher.envs.generic_urdf_reacher_env import GenericUrdfReacherEnv
 
 
-class GenericReacherVelEnv(GenericReacherEnv):
+class GenericUrdfReacherVelEnv(GenericUrdfReacherEnv):
     metadata = {"render.modes": ["human"]}
 
     def apply_action(self, action):

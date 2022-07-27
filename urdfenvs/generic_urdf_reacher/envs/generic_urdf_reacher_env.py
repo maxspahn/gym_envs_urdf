@@ -1,12 +1,12 @@
 import numpy as np
-from urdfenvs.generic_reacher.resources.generic_robot import GenericRobot
+from urdfenvs.generic_urdf_reacher.resources.generic_urdf_reacher import GenericUrdfReacher
 from urdfenvs.urdfCommon.urdf_env import UrdfEnv
 
 
-class GenericReacherEnv(UrdfEnv):
+class GenericUrdfReacherEnv(UrdfEnv):
     def __init__(self, urdf, **kwargs):
         super().__init__(
-            GenericRobot(urdf), **kwargs
+            GenericUrdfReacher(urdf), **kwargs
         )
 
     def check_initial_state(self, pos, vel):

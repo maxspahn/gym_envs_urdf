@@ -1,5 +1,5 @@
 import gym
-import urdfenvs.generic_reacher
+import urdfenvs.generic_urdf_reacher
 import numpy as np
 
 goal = False
@@ -10,11 +10,10 @@ def main():
     urdf_file = "ur5.urdf"
 
     env = gym.make(
-        "generic-reacher-tor-v0", dt=0.01, urdf=urdf_file, render=True
+        "generic-urdf-reacher-vel-v0", dt=0.01, urdf=urdf_file, render=True
     )
     n = env.n()
-    action = np.ones(n) * -0.0
-    action[0] = 0.0
+    action = np.ones(n) * -0.2
     n_steps = 100000
     pos0 = np.zeros(n)
     pos0[1] = -0.0
