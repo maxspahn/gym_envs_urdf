@@ -3,7 +3,6 @@ from urdfenvs.urdfCommon.urdf_env import UrdfEnv
 
 
 class PointRobotEnv(UrdfEnv):
-    def __init__(self, render=False, dt=0.01):
-        super().__init__(PointRobot(), render=render, dt=dt)
-        self.set_spaces()
+    def __init__(self, **kwargs):
+        super().__init__(PointRobot(), **kwargs)
         self.reset()

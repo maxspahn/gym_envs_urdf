@@ -1,6 +1,6 @@
+from itertools import chain
 import os
 import numpy as np
-
 from urdfenvs.urdfCommon.holonomic_robot import HolonomicRobot
 
 
@@ -27,9 +27,9 @@ class DualArmRobot(HolonomicRobot):
         )
         super().__init__(n, urdf_file)
 
-    def set_joint_indices(self):
-        self._robot_joints = [1, 3, 4, 6, 7]
-        self._urdf_joints = [2, 3, 4, 6, 7]
+    def set_joint_names(self):
+        self._joint_names = ["joint" + str(i) for i in
+                             chain(range(1,4),range(5,7))]
 
     def set_acceleration_limits(self):
         acc_limit = np.ones(self._n)

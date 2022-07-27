@@ -2,7 +2,6 @@ import gym
 import urdfenvs.tiago_reacher
 import numpy as np
 
-
 def main():
     env = gym.make("tiago-reacher-vel-v0", dt=0.01, render=True)
     action = np.zeros(env.n())
@@ -25,11 +24,11 @@ def main():
     # vel0[0:2] = np.array([0.0, 0.0])
     # vel0[5:12] = np.array([0.1, 0.1, 0.2, -0.1, 0.1, 0.2, 0.0])
     ob = env.reset(pos=pos0, vel=vel0)
-    print("base: ", ob["x"][0:3])
-    print("torso: ", ob["x"][3])
-    print("head: ", ob["x"][4:6])
-    print("left arm: ", ob["x"][6:13])
-    print("right arm: ", ob["x"][13:20])
+    print("base: ", ob["joint_state"]["position"][0:3])
+    print("torso: ", ob["joint_state"]["position"][3])
+    print("head: ", ob["joint_state"]["position"][4:6])
+    print("left arm: ", ob["joint_state"]["position"][6:13])
+    print("right arm: ", ob["joint_state"]["position"][13:20])
     print("Starting episode")
     for _ in range(n_steps):
         ob, _, _, _ = env.step(action)

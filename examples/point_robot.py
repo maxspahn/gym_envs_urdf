@@ -1,6 +1,5 @@
 import gym
 import urdfenvs.point_robot_urdf
-from urdfenvs.sensors.lidar import Lidar
 import numpy as np
 
 obstacles = False
@@ -8,16 +7,14 @@ goal = False
 
 
 def main():
-    env = gym.make("pointRobotUrdf-vel-v0", dt=0.05, render=True)
-    lidar = Lidar(4, nb_rays=4)
-    env.add_sensor(lidar)
+    env = gym.make("pointRobotUrdf-vel-v0", dt=0.05, render=True, flatten_observation=True)
     action = np.array([0.1, 0.0, 1.0])
     n_steps = 100000
     pos0 = np.array([1.0, 0.1, 0.0])
     vel0 = np.array([1.0, 0.0, 0.0])
     ob = env.reset(pos=pos0, vel=vel0)
     print(f"Initial observation : {ob}")
-    env.set_walls(limits=[[-3, -2], [3, 2]])
+    env.add_walls()
     if obstacles:
         from examples.scene_objects.obstacles import (
             sphereObst1,

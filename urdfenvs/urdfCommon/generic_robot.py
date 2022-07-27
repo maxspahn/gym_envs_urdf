@@ -2,8 +2,7 @@ import pybullet as p
 from abc import ABC, abstractmethod
 import gym
 import numpy as np
-
-
+from urdfpy import URDF
 from urdfenvs.sensors.sensor import Sensor
 
 
@@ -17,14 +16,12 @@ class GenericRobot(ABC):
         ----------
 
         n: int : Degrees of freedom of the robot
-        urdf_file: str : Full path to urdffile
+        urdf_file: str : Full path to urdf file
         """
         self._n: int = n
         self._urdf_file: str = urdf_file
-
-        self.set_joint_indices()
-        self.read_limits()
         self._sensors = []
+        self._urdf_robot = URDF.load(self._urdf_file)
 
     def n(self) -> int:
         return self._n
@@ -42,17 +39,10 @@ class GenericRobot(ABC):
         pass
 
     @abstractmethod
-    def set_joint_indices(self) -> None:
+    def set_joint_names(self) -> None:
         """Sets joint indices for urdf parsing.
 
-        The urdf file is used to control the robot and
-        to read the limits. Control is done using pybullet
-        and reading the limits is urdfpy. The index counting
-        is different for both so two lists need to be set
-        for each robot, self._robot_joints for control
-        and self._urdf_joints for reading the limits.
-        When castor wheels are present, self._castor_joints
-        are also specified.
+        Input the names of joints manually.
 
         """
         pass
@@ -66,33 +56,52 @@ class GenericRobot(ABC):
     def set_acceleration_limits(self):
         pass
 
-    def get_indexed_joint_info(self) -> dict:
-        """Get indexed joint info.
+    def extract_joint_ids(self) -> None:
+        """Automated extraction of joint ids
 
-        This function can be used for debugging and finding
-        the correct joint indices for self.setJointIndices.
+        Extract joint ids by the joint names.
 
         """
-        indexed_joint_info = {}
-        for i in range(p.getNumJoints(self._robot)):
+        if not hasattr(self, "_joint_names"):
+            return
+        self._urdf_joints = []
+        for i, joint in enumerate(self._urdf_robot.joints):
+            if joint.name in self._joint_names:
+                self._urdf_joints.append(i)
+        self._robot_joints = []
+        self._castor_joints = []
+        num_joints = p.getNumJoints(self._robot)
+        for name in self._joint_names:
+            for i in range(num_joints):
+                joint_info = p.getJointInfo(self._robot, i)
+                joint_name = joint_info[1].decode("UTF-8")
+                if joint_name == name:
+                    self._robot_joints.append(i)
+        for i in range(num_joints):
             joint_info = p.getJointInfo(self._robot, i)
-            indexed_joint_info[joint_info[0]] = joint_info[1]
-        return indexed_joint_info
+            joint_name = joint_info[1].decode("UTF-8")
+            if "castor" in joint_name:
+                self._castor_joints.append(i)
+
 
     def get_observation_space(self) -> gym.spaces.Dict:
         """Get observation space."""
         return gym.spaces.Dict(
             {
-                "x": gym.spaces.Box(
-                    low=self._limitPos_j[0, :],
-                    high=self._limitPos_j[1, :],
-                    dtype=np.float64,
-                ),
-                "xdot": gym.spaces.Box(
-                    low=self._limit_vel_j[0, :],
-                    high=self._limit_vel_j[1, :],
-                    dtype=np.float64,
-                ),
+                "joint_state": gym.spaces.Dict(
+                    {
+                        "position": gym.spaces.Box(
+                        low=self._limitPos_j[0, :],
+                        high=self._limitPos_j[1, :],
+                        dtype=np.float64,
+                    ),
+                        "velocity": gym.spaces.Box(
+                            low=self._limit_vel_j[0, :],
+                            high=self._limit_vel_j[1, :],
+                            dtype=np.float64,
+                        ),
+                    }
+                )
             }
         )
 
@@ -156,7 +165,7 @@ class GenericRobot(ABC):
         """Updates the state of the robot.
 
         This function reads current joint position and velocities from the
-        pyhsices engine.
+        physics engine.
 
         """
         pass

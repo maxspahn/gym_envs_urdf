@@ -1,6 +1,5 @@
 import os
 import numpy as np
-
 from urdfenvs.urdfCommon.differential_drive_robot import DifferentialDriveRobot
 
 
@@ -13,50 +12,22 @@ class TiagoRobot(DifferentialDriveRobot):
         self._wheel_distance = 0.4044
         self._spawn_offset = np.array([-0.1764081, 0.0, 0.1])
 
-    def set_joint_indices(self):
-        self._robot_joints = [
-            6,
-            8,
-            18,
-            19,
-            20,
-            22,
-            23,
-            24,
-            25,
-            26,
-            27,
-            28,
-            37,
-            38,
-            39,
-            40,
-            41,
-            42,
-            43,
-        ]
-        self._urdf_joints = [
-            6,
-            8,
-            19,
-            20,
-            21,
-            23,
-            24,
-            25,
-            26,
-            27,
-            28,
-            29,
-            38,
-            39,
-            40,
-            41,
-            42,
-            43,
-            44,
-        ]
-        self._castor_joints = [9, 10, 11, 12, 13, 14, 15, 16]
+    def set_joint_names(self):
+        wheel_joint_names = ["wheel_right_joint", "wheel_left_joint"]
+        torso_joint_name = ["torso_lift_joint"]
+        head_joint_names = ["head_" + str(i) + "_joint" for i in range(3)]
+        arm_right_joint_names = ["arm_right_" + str(i) +
+                                    "_joint" for i in range(8)]
+        arm_left_joint_names = ["arm_left_" + str(i) +
+                                    "_joint" for i in range(8)]
+        self._joint_names = (
+            wheel_joint_names
+            + torso_joint_name
+            + head_joint_names
+            + arm_left_joint_names
+            + arm_right_joint_names
+        )
+
 
     def set_acceleration_limits(self):
         acc_limit = np.ones(self._n)
