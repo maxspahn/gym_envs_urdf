@@ -1,7 +1,7 @@
-from urdfenvs.mobile_reacher.envs.mobile_reacher_env import MobileReacherEnv
+from urdfenvs.generic_urdf_reacher.envs.generic_urdf_reacher_env import GenericUrdfReacherEnv
 
 
-class MobileReacherTorEnv(MobileReacherEnv):
+class GenericUrdfReacherTorEnv(GenericUrdfReacherEnv):
     def reset(self, pos=None, vel=None):
         ob = super().reset(pos=pos, vel=vel)
         self._robot.disable_velocity_control()

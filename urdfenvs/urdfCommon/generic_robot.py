@@ -18,10 +18,16 @@ class GenericRobot(ABC):
         n: int : Degrees of freedom of the robot
         urdf_file: str : Full path to urdf file
         """
-        self._n: int = n
         self._urdf_file: str = urdf_file
         self._sensors = []
         self._urdf_robot = URDF.load(self._urdf_file)
+        if n > 0:
+            self._n = n
+        else:
+            self._n: int = len(self._urdf_robot._actuated_joints)
+        self.set_joint_names()
+        self.extract_joint_ids()
+        self.read_limits()
 
     def n(self) -> int:
         return self._n
@@ -68,20 +74,21 @@ class GenericRobot(ABC):
         for i, joint in enumerate(self._urdf_robot.joints):
             if joint.name in self._joint_names:
                 self._urdf_joints.append(i)
-        self._robot_joints = []
-        self._castor_joints = []
-        num_joints = p.getNumJoints(self._robot)
-        for name in self._joint_names:
-            for i in range(num_joints):
-                joint_info = p.getJointInfo(self._robot, i)
-                joint_name = joint_info[1].decode("UTF-8")
-                if joint_name == name:
-                    self._robot_joints.append(i)
-        for i in range(num_joints):
-            joint_info = p.getJointInfo(self._robot, i)
-            joint_name = joint_info[1].decode("UTF-8")
-            if "castor" in joint_name:
-                self._castor_joints.append(i)
+        if hasattr(self, "_robot"):
+            self._robot_joints = []
+            self._castor_joints = []
+            num_joints = p.getNumJoints(self._robot)
+            for name in self._joint_names:
+                for i in range(num_joints):
+                    joint_info = p.getJointInfo(self._robot, i)
+                    joint_name = joint_info[1].decode("UTF-8")
+                    if joint_name == name:
+                        self._robot_joints.append(i)
+                for i in range(num_joints):
+                    joint_info = p.getJointInfo(self._robot, i)
+                    joint_name = joint_info[1].decode("UTF-8")
+                    if "castor" in joint_name:
+                        self._castor_joints.append(i)
 
 
     def get_observation_space(self) -> gym.spaces.Dict:
@@ -91,8 +98,8 @@ class GenericRobot(ABC):
                 "joint_state": gym.spaces.Dict(
                     {
                         "position": gym.spaces.Box(
-                        low=self._limitPos_j[0, :],
-                        high=self._limitPos_j[1, :],
+                        low=self._limit_pos_j[0, :],
+                        high=self._limit_pos_j[1, :],
                         dtype=np.float64,
                     ),
                         "velocity": gym.spaces.Box(
