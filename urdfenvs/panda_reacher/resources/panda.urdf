@@ -41,7 +41,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/visual/link1.dae"/>
+        <mesh filename="meshes/visual/link1.obj"/>
       </geometry>
       <material name="">
         <color rgba="1 1 1 1"/>
@@ -71,7 +71,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/visual/link2.dae"/>
+        <mesh filename="meshes/visual/link2.obj"/>
       </geometry>
       <material name="">
         <color rgba="1 1 1 1"/>
@@ -101,11 +101,9 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/visual/link3.dae"/>
+        <mesh filename="meshes/visual/link3.obj"/>
       </geometry>
-      <material name="">
-        <color rgba="1 1 1 1"/>
-      </material>
+      <material name="panda_white"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -131,7 +129,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/visual/link4.dae"/>
+        <mesh filename="meshes/visual/link4.obj"/>
       </geometry>
       <material name="">
         <color rgba="1 1 1 1"/>
@@ -163,7 +161,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/visual/link5.dae"/>
+        <mesh filename="meshes/visual/link5.obj"/>
       </geometry>
       <material name="">
         <color rgba="1 1 1 1"/>
@@ -193,7 +191,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/visual/link6.dae"/>
+        <mesh filename="meshes/visual/link6.obj"/>
       </geometry>
       <material name="">
         <color rgba="1 1 1 1"/>
@@ -243,19 +241,6 @@
     <child link="panda_link7"/>
     <axis xyz="0 0 1"/>
     <limit effort="12" lower="-2.8973" upper="2.8973" velocity="2.6100"/>
-  </joint>
-  <!-- critical as zero mass link -->
-  <link name="panda_link8"/>
-    <inertial>
-      <mass value="0.01"/>
-      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
-      <inertia ixx="0.000888868887021" ixy="-0.00012239074652" ixz="3.98699829666e-05" iyy="0.000888001373233" iyz="-9.33825115206e-05" izz="0.0007176834609"/>
-    </inertial>
-  <joint name="panda_joint8" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0.107"/>
-    <parent link="panda_link7"/>
-    <child link="panda_link8"/>
-    <axis xyz="0 0 0"/>
   </joint>
 </robot>
 

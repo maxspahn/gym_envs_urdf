@@ -1,7 +1,10 @@
-from urdfenvs.n_link_urdf_reacher.resources.n_link_robot import NLinkRobot
-from urdfenvs.urdfCommon.urdf_env import UrdfEnv
+import os
+from urdfenvs.generic_urdf_reacher.envs.generic_urdf_reacher_env import GenericUrdfReacherEnv
 
 
-class NLinkUrdfReacherEnv(UrdfEnv):
+class NLinkUrdfReacherEnv(GenericUrdfReacherEnv):
     def __init__(self, n=3, **kwargs):
-        super().__init__(NLinkRobot(n), **kwargs)
+        urdf_file = os.path.join(
+            os.path.dirname(__file__), "../resources/nlink_" + str(n) + ".urdf"
+        )
+        super().__init__(urdf_file, **kwargs)
