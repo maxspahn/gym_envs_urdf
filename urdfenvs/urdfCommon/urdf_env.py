@@ -402,7 +402,7 @@ class UrdfEnv(gym.Env):
             p.createMultiBody(
                 baseMass=mass,
                 baseCollisionShapeIndex=shape_id,
-                baseVisualShapeIndex=shape_id,
+                baseVisualShapeIndex=-1,
                 basePosition=[pose[0], pose[1], place_height],
                 baseOrientation=p.getQuaternionFromEuler([0, 0, pose[2]]),
             )
