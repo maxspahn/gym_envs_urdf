@@ -191,6 +191,14 @@ class UrdfEnv(gym.Env):
             warnings.warn(str(err))
         return observation
 
+    def refresh_os(self) -> None:
+        """ refreshes the observation space for all sensors. """
+        sensors = self._robot.sensors()
+        cur_dict = dict(self.observation_space.spaces)
+        for sensor in sensors:
+            cur_dict[sensor.name()] = sensor.get_observation_space()
+        self.observation_space = gym.spaces.Dict(cur_dict)
+
     def add_obstacle(self, obst) -> None:
         """Adds obstacle to the simulation environment.
 
@@ -202,18 +210,14 @@ class UrdfEnv(gym.Env):
         # add obstacle to environment
         self._obsts.append(obst)
         obst.add2Bullet(p)
-
-        # refresh observation space of robots sensors
-        sensors = self._robot.sensors()
-        cur_dict = dict(self.observation_space.spaces)
-        for sensor in sensors:
-            cur_dict[sensor.name()] = sensor.get_observation_space()
-        self.observation_space = gym.spaces.Dict(cur_dict)
+       
+        # refresh observation space for robots sensors
+        self.refresh_os()
 
         if self._t != 0.0:
             warnings.warn(
-                "Adding an object while the simulation already started"
-            )
+                    "Adding an object while the simulation already started"
+                    )
 
     def get_obstacles(self) -> list:
         return self._obsts
@@ -270,6 +274,10 @@ class UrdfEnv(gym.Env):
             [0, limits[1][1], 0.0],
             p.getQuaternionFromEuler([0, 0, np.pi / 2]),
         )
+ 
+        # refresh observation space for robots sensors
+        self.refresh_os()
+
 
     def add_sensor(self, sensor: Sensor) -> None:
         """Adds sensor to the robot.
