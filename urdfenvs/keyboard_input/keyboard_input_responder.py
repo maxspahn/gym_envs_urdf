@@ -111,6 +111,7 @@ class Responder:
         """
         if custom_on_press is None:
             # default action keybindings
+            # pylint: disable=unused-argument
             def on_press(key):
                 if key == Key.up:
                     self.action = np.array([1.0, 0.0])

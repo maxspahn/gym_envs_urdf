@@ -64,7 +64,7 @@ class Lidar(Sensor):
         link_state = p.getLinkState(robot, self._link_id)
         lidar_position = link_state[0]
         ray_start = lidar_position
-        # Alpha and gamma both are the angle of the robot rotated along the z-axis.
+        # Alpha and gamma are the angles of the robot rotated along the z-axis.
         alpha = np.arcsin(link_state[1][2]) * 2
         gamma = np.arccos(link_state[1][3]) * 2
         for i, theta in enumerate(self._thetas):
@@ -75,7 +75,9 @@ class Lidar(Sensor):
             self._rel_positions[2 * i : 2 * i + 2] = (
                 np.array(lidar[0][3]) - np.array(ray_start)
             )[0:2]
-            self._distances[i] = np.linalg.norm(self._rel_positions[2 * i: 2 * i +2])
+            self._distances[i] = np.linalg.norm(
+                    self._rel_positions[2 * i: 2 * i +2])
+
         if self._raw_data:
             return self._distances
         return self._rel_positions

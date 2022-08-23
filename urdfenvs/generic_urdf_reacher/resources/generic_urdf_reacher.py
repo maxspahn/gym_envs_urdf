@@ -9,7 +9,8 @@ class GenericUrdfReacher(HolonomicRobot):
 
     def set_joint_names(self):
         # TODO Replace it with a automated extraction
-        self._joint_names = [joint.name for joint in self._urdf_robot._actuated_joints]
+        self._joint_names = [joint.name for joint in
+                self._urdf_robot._actuated_joints]
 
     def set_acceleration_limits(self):
         acc_limit = np.array(

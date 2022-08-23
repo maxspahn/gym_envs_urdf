@@ -3,7 +3,7 @@ from urdfenvs.tiago_reacher.envs.tiago_reacher_env import TiagoReacherEnv
 
 
 class TiagoReacherTorEnv(TiagoReacherEnv):
-    def __init__(self, render=False, dt=0.01, n=19, friction=0.3):
+    def __init__(self, render=False, dt=0.01, friction=0.3):
         super().__init__(render=render, dt=dt)
         self._friction = friction
 
