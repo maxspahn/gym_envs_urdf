@@ -40,8 +40,9 @@ class DifferentialDriveRobot(GenericRobot):
         """Get observation space and action space when using velocity
         control.
 
-        Overrides velocity spaces from default, because a differential drive has limits in x,y and
-        theta direction, while the action space should be limited to the forward and angular velocity."""
+        Overrides velocity spaces from default, because a differential
+        drive has limits in x,y and theta direction, while the action
+        space should be limited to the forward and angular velocity."""
         ospace = self.get_observation_space()
         uu = np.concatenate(
             (self._limit_vel_forward_j[1, :], self._limit_vel_j[1, 3:]), axis=0

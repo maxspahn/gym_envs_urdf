@@ -111,8 +111,7 @@ class Responder:
         """
         if custom_on_press is None:
             # default action keybindings
-            # pylint: disable=unused-argument
-            def on_press(key):
+            def on_press(key): # pylint: disable=unused-argument
                 if key == Key.up:
                     self.action = np.array([1.0, 0.0])
                 if key == Key.down:
@@ -124,7 +123,7 @@ class Responder:
 
         else:
             # custom action keybindings
-            def on_press(key):
+            def on_press(key): # pylint: disable=unused-argument
                 # print("key pressed: {}".format(key))
                 for custom_key in custom_on_press:
                     if key == custom_key:
@@ -139,12 +138,12 @@ class Responder:
         """
         if custom_on_release is None:
             # default action keybindings
-            def on_press(key):
+            def on_press(key): # pylint: disable=unused-argument
                 self.action = self.default_action
 
         else:
             # custom action keybindings
-            def on_press(key):
+            def on_press(key): # pylint: disable=unused-argument
                 for custom_key in custom_on_release:
                     if key == custom_key:
                         self.action = custom_on_release[custom_key]
@@ -160,9 +159,9 @@ class Responder:
             # send action
             self.conn.send({"action": self._action})
         elif request["kill_child"]:
-            raise Exception
+            raise SystemExit
         else:
-            raise Exception("Cannot handle action request")
+            raise TypeError()
 
     def setup(
         self,
@@ -234,7 +233,7 @@ class Responder:
         while p.is_alive():
             try:
                 self.respond()
-            except Exception:
+            except KeyError:
                 return
 
     # getters and setters

@@ -197,3 +197,6 @@ class GenericRobot(ABC):
 
     def sensors(self) -> list:
         return self._sensors
+
+    def limit_pos_j(self) -> np.ndarray:
+        return self._lim_pos_j

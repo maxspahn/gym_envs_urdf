@@ -11,8 +11,10 @@ class GenericUrdfReacherEnv(UrdfEnv):
 
     def check_initial_state(self, pos, vel):
         if not isinstance(pos, np.ndarray) or not pos.size == self._robot.n():
-            center_position = (self._robot._limit_pos_j[0] + 
-                    self._robot._limit_pos_j[1])/2
+            center_position = (self._robot.limit_pos_j[0] +
+                    self._robot.limit_pos_j[1])/2
+            center_position = (self.robot.limit_pos_j[0] +
+                    self._robot.limit_pos_j[1])/2
             pos = center_position
         if not isinstance(vel, np.ndarray) or not vel.size == self._robot.n():
             vel = np.zeros(self._robot.n())

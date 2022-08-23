@@ -125,11 +125,13 @@ class BicycleModel(GenericRobot):
                 targetVelocity=vels[0] / (self._wheel_radius * self._scaling),
             )
 
-    def apply_acceleration_action(self, accs: np.ndarray) -> None:
+    # pylint: disable=unused arguement
+    # pylint: disable=W0621
+    def apply_acceleration_action(self, accs: np.ndarray) -> None: # pylint: disable=unused-argument
         print("Acceleration action is not available for prius.")
         pass
 
-    def apply_torque_action(self, torques: np.ndarray) -> None:
+    def apply_torque_action(self, torques: np.ndarray) -> None: # pylint: disable=unused-argument
         print("Torque action is not available for prius.")
         pass
 
