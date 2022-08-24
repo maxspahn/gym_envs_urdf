@@ -181,7 +181,7 @@ class GenericRobot(ABC):
         """Updates the sensing of the robot's sensors."""
         self.sensor_observation = {}
         for sensor in self._sensors:
-            self.sensor_observation[sensor.name()] = sensor.sense(self._robot)
+            self.sensor_observation[sensor.name()] = sensor.sense()
 
     def get_observation(self) -> dict:
         """Updates all observation and concatenate joint states and sensor

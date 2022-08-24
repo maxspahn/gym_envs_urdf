@@ -218,9 +218,9 @@ class UrdfEnv(gym.Env):
         # Feed action to the robot and get observation of robot's state
         self.apply_action(action)
         for obst in self._obsts:
-            obst.updateBulletPosition(p, t=self.t())
+            obst.update_bullet_position(p, t=self.t())
         for goal in self._goals:
-            goal.updateBulletPosition(p, t=self.t())
+            goal.update_bullet_position(p, t=self.t())
         p.stepSimulation()
         ob = self._get_ob()
 
