@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'urdfEnvs'
-copyright = '2022, Max Spahn'
+project_copyright = '2022, Max Spahn'
 author = 'Max Spahn'
 
 

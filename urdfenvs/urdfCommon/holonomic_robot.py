@@ -17,6 +17,7 @@ class HolonomicRobot(GenericRobot):
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
         self.set_joint_names()
+
         self.extract_joint_ids()
         for i in range(self._n):
             p.resetJointState(
