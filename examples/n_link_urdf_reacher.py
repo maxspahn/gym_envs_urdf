@@ -1,5 +1,5 @@
 import gym
-import urdfenvs.n_link_urdf_reacher
+import urdfenvs.n_link_urdf_reacher # pylint: disable=unused-import
 import numpy as np
 
 

@@ -1,5 +1,5 @@
 import gym
-import urdfenvs.tiago_reacher
+import urdfenvs.tiago_reacher # pylint: disable=unused-import
 import numpy as np
 
 def main():

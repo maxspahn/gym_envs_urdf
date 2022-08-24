@@ -1,5 +1,5 @@
 import gym
-import urdfenvs.dual_arm
+import urdfenvs.dual_arm # pylint: disable=unused-import
 import numpy as np
 
 

@@ -1,5 +1,5 @@
 import gym
-import urdfenvs.mobile_reacher
+import urdfenvs.mobile_reacher # pylint: disable=unused-import
 import numpy as np
 
 

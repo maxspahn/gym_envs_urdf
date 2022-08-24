@@ -1,13 +1,20 @@
 import gym
-import urdfenvs.point_robot_urdf
+import urdfenvs.point_robot_urdf # pylint: disable=unused-import
 from urdfenvs.sensors.lidar import Lidar
 import numpy as np
+from examples.scene_objects.obstacles import (
+    sphereObst1,
+    sphereObst2,
+    urdfObst1,
+    dynamicSphereObst3,
+)
 
 obstacles = True
 
 
 def main():
-    env = gym.make("pointRobotUrdf-vel-v0", dt=0.05, render=True, flatten_observation=False)
+    env = gym.make("pointRobotUrdf-vel-v0", dt=0.05,
+            render=True, flatten_observation=False)
     lidar = Lidar(4, nb_rays=4, raw_data=False)
     env.add_sensor(lidar)
     action = np.array([0.1, 0.0, 0.0])
@@ -18,20 +25,14 @@ def main():
     print(f"Initial observation : {ob}")
     env.add_walls()
     if obstacles:
-        from examples.scene_objects.obstacles import (
-            sphereObst1,
-            sphereObst2,
-            urdfObst1,
-            dynamicSphereObst3,
-        )
-
         env.add_obstacle(sphereObst1)
         env.add_obstacle(sphereObst2)
         env.add_obstacle(urdfObst1)
         env.add_obstacle(dynamicSphereObst3)
+
     for _ in range(n_steps):
         ob, _, _, _ = env.step(action)
-        print(ob['lidarSensor'])
+        print(ob["lidarSensor"])
 
 
 if __name__ == "__main__":

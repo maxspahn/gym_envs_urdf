@@ -1,5 +1,5 @@
 import gym
-import urdfenvs.albert_reacher
+import urdfenvs.albert_reacher # pylint: disable=unused-import
 import numpy as np
 import warnings
 

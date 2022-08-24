@@ -1,6 +1,5 @@
 import gym
-import urdfenvs.tiago_reacher
-
+import urdfenvs.tiago_reacher # pylint: disable=unused-import
 from multiprocessing import Process, Pipe
 import numpy as np
 from urdfenvs.keyboard_input.keyboard_input_responder import Responder
@@ -15,7 +14,7 @@ def main(conn):
 
     # create zero input action
     action = np.zeros(env.n())
-    for i in range(n_steps):
+    for _ in range(n_steps):
 
         # request and receive action
         conn.send({"request_action": True, "kill_child": False})

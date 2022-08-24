@@ -1,6 +1,9 @@
 import gym
-import urdfenvs.panda_reacher
+import urdfenvs.panda_reacher # pylint: disable=unused-import
 import numpy as np
+
+from examples.scene_objects.goal import dynamicGoal
+from examples.scene_objects.obstacles import dynamicSphereObst2
 
 goal = False
 obstacles = False
@@ -16,17 +19,14 @@ def main():
     ob = env.reset()
     print(f"Initial observation : {ob}")
     if goal:
-        from examples.scene_objects.goal import dynamicGoal
         env.add_goal(dynamicGoal)
 
     if obstacles:
-        from examples.scene_objects.obstacles import dynamicSphereObst2
         env.add_goal(dynamicGoal)
 
     if obstacles:
-        from examples.scene_objects.obstacles import dynamicSphereObst2
-
         env.add_obstacle(dynamicSphereObst2)
+
     print("Starting episode")
     for i in range(n_steps):
         if (int(i / 70)) % 2 == 0:

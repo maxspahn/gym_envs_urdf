@@ -1,5 +1,5 @@
 import gym
-import urdfenvs.prius
+import urdfenvs.prius # pylint: disable=unused-import
 import numpy as np
 
 
@@ -10,9 +10,9 @@ def main():
     pos0 = np.array([-1.0, 0.2, -0.0])
     ob = env.reset(pos=pos0)
     print(f"Initial observation : {ob}")
-    for i in range(n_steps):
+    for _ in range(n_steps):
         ob, _, _, _ = env.step(action)
-        if ob['steering'] > 0.2:
+        if ob["steering"] > 0.2:
             action[1] = 0
 
 

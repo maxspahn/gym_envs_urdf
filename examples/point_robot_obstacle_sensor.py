@@ -1,5 +1,5 @@
 import gym
-import urdfenvs.point_robot_urdf
+import urdfenvs.point_robot_urdf # pylint: disable=unused-import
 from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
 from examples.scene_objects.obstacles import (
     sphereObst1,
@@ -12,7 +12,7 @@ import numpy as np
 def main():
     env = gym.make("pointRobotUrdf-vel-v0", dt=0.05, render=True)
 
-    defaultAction = np.array([0.1, 0.0, 0.0])
+    default_action = np.array([0.1, 0.0, 0.0])
     n_episodes = 1
     n_steps = 100000
     pos0 = np.array([1.0, 0.1, 0.0])
@@ -29,15 +29,14 @@ def main():
     sensor = ObstacleSensor()
     env.add_sensor(sensor)
 
-    for e in range(n_episodes):
+    for _ in range(n_episodes):
 
         print("Starting episode")
         t = 0
-        for i in range(n_steps):
+        for _ in range(n_steps):
             t += env.dt()
-            action = defaultAction
-            ob, reward, done, info = env.step(action)
-            # In observations, information about obstacles is stored in ob['obstacleSensor']
+            action =default_action
+            ob, _ = env.step(action)
             print(ob["obstacleSensor"])
 
 
