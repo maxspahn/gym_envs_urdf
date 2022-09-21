@@ -52,6 +52,11 @@ class QuadrotorModel(GenericRobot):
         self._swawn_offset: np.ndarray = np.array(
             [0.0, 0.0, 0.15])  # TODO: check this value
 
+        self._pos = np.zeros(3)
+        self._quat = np.array([0., 0., 0., 1.])
+        self._vel = np.zeros(3)
+        self._omega = np.zeros(3)
+
     def ns(self) -> int:
         """Returns the number of degrees of freedom.
 
@@ -73,34 +78,46 @@ class QuadrotorModel(GenericRobot):
             globalScaling=self._scaling,
         )
 
-        # precompute inertia
-        k = self._k_drag / self._k_thrust
-        L = self._arm_length
-        self._TM = np.array([[1,  1,  1,  1],
-                            [0,  L,  0, -L],
-                            [-L,  0,  L,  0],
-                            [k, -k,  k, -k]])
-        self._inv_inertia = np.linalg.inv(self._inertia)
-        self._weight = np.array([0, 0, self._mass * self._gravity])
+        # # precompute inertia
+        # k = self._k_drag / self._k_thrust
+        # L = self._arm_length
+        # self._TM = np.array([[1,  1,  1,  1],
+        #                     [0,  L,  0, -L],
+        #                     [-L,  0,  L,  0],
+        #                     [k, -k,  k, -k]])
+        # self._inv_inertia = np.linalg.inv(self._inertia)
+        # self._weight = np.array([0, 0, self._mass * self._gravity])
 
         self.set_joint_names()
         self.extract_joint_ids()
         self.read_limits()
+        for i in range(self._n):
+            p.resetJointState(
+                self._robot,
+                self._robot_joints[i],
+                pos[i],
+                targetVelocity=vel[i],
+            )
         # set base velocity
         self.update_state()
 
     def read_limits(self) -> None:
-        self._limit_pos_j = np.zeros((2, self.ns()))
+        self._limit_pos_j = np.zeros((2, self.n() + 4))
+        self._limit_vel_j = np.zeros((2, self.ns()))
 
         # Position limits (x, y, z)
         self._limit_pos_j[0, 0:3] = np.array([-1000., -1000., 0])
         self._limit_pos_j[1, 0:3] = np.array([1000., 1000., 100.])
 
-        # Attitude limits (roll, pitch, yaw)
-        self._limit_pos_j[0, 3:6] = np.array([-np.pi, -np.pi, -np.pi])
-        self._limit_pos_j[1, 3:6] = np.array([np.pi, np.pi, np.pi])
+        # Quaternion limits
+        self._limit_pos_j[0, 3:7] = np.array([-1, -1, -1, -1])
+        self._limit_pos_j[1, 3:7] = np.array([1, 1, 1, 1])
 
         # TODO
+        self._limit_vel_j[0, 0:3] = np.array([-40., -40., -40.])
+        self._limit_vel_j[1, 0:3] = np.array([40., 40., 40.])
+        self._limit_vel_j[0, 3:6] = np.array([-10., -10., -10.])
+        self._limit_vel_j[1, 3:6] = np.array([10., 10., 10.])
 
     def get_observation_space(self) -> gym.spaces.Dict:
         """Gets the observation space for the quadrotor model.
@@ -119,18 +136,18 @@ class QuadrotorModel(GenericRobot):
                     dtype=np.float64,
                 ),
                 "q": gym.spaces.Box(
-                    low=self._limit_pos_j[0, 3:6],
-                    high=self._limit_pos_j[1, 3:6],
+                    low=self._limit_pos_j[0, 3:7],
+                    high=self._limit_pos_j[1, 3:7],
                     dtype=np.float64,
                 ),
                 "v": gym.spaces.Box(
-                    low=self._limit_vel_j[0, :],
-                    high=self._limit_vel_j[1, :],
+                    low=self._limit_vel_j[0, :3],
+                    high=self._limit_vel_j[1, :3],
                     dtype=np.float64,
                 ),
                 "w": gym.spaces.Box(
-                    low=self._limit_vel_j[0, :],
-                    high=self._limit_vel_j[1, :],
+                    low=self._limit_vel_j[0, 3:6],
+                    high=self._limit_vel_j[1, 3:6],
                     dtype=np.float64,
                 ),
 
@@ -138,25 +155,69 @@ class QuadrotorModel(GenericRobot):
         )
 
     def apply_velocity_action(self, vels: np.ndarray) -> None:
-        """Applies the velocity action to the quadrotor.
+        """Applies the propeller speed action to the quadrotor.
         """
-        pass
+        for i in range(4):
+            p.setJointMotorControl2(
+                self._robot,
+                self._robot_joints[i],
+                controlMode=p.VELOCITY_CONTROL,
+                targetVelocity=vels[i],
+            )
+        
+        self.apply_thrust(vels)
+        self.apply_drag_effect(vels)
 
     def apply_acceleration_action(self, accs: np.ndarray) -> None:
         pass
 
     def apply_torque_action(self, torques: np.ndarray) -> None:
         """Applies the torques to the quadrotor model.
-
-        Parameters
-        ----------
-        torques : np.ndarray
-            The torques to be applied to the quadrotor model.
         """
-        pass
+        print("Torque action is not available for quadrotor model.")
 
     def correct_base_orientation(self) -> None:
         pass
+
+    def apply_thrust(self, rpm: np.ndarray) -> None:
+
+        thrusts = self._k_thrust * np.square(rpm)
+
+        k = self._k_drag / self._k_thrust
+        L = self._arm_length
+        torque_mat = np.array([[1,  1,  1,  1],
+                               [0,  L,  0, -L],
+                               [-L,  0,  L,  0],
+                               [k, -k,  k, -k]])
+        U = torque_mat @ thrusts
+        T = U[1:]
+        for i in range(4):
+            p.applyExternalForce(self._robot,
+                                 self._robot_joints[i],
+                                 posObj=[0, 0, 0],
+                                 forceObj=[0, 0, thrusts[i]],
+                                 flags=p.LINK_FRAME)
+        p.applyExternalTorque(self._robot,
+                              0,
+                              torqueObj=T,
+                              flags=p.LINK_FRAME)
+        print("Thrusts: ", thrusts)
+                              
+
+    def apply_drag_effect(self, rpm) -> None:
+        """PyBullet implementation of a drag model
+
+        Base on the system identification in (Foster, 2015)
+
+        """
+        base_rot = np.array(
+            p.getMatrixFromQuaternion(self._quat)).reshape(3, 3)
+        drag = np.dot(base_rot, self._k_drag * np.array(self._vel))
+        p.applyExternalForce(self._robot,
+                             0,
+                             forceObj=drag,
+                             posObj=[0, 0, 0],
+                             flags=p.LINK_FRAME)
 
     def update_state(self) -> None:
         """Update the robot state.
@@ -165,69 +226,21 @@ class QuadrotorModel(GenericRobot):
         which contains
         `x`: position, np.array([x, y, z])
         `v`: velocity, np.array([vx, vy, vz])
-        `q`: attitude, np.array([row, pitch, yaw])
+        `q`: attitude, np.array([qx, qy, qz, qw])
         `w`: angular_velocity, np.array([dr, dp, dy])
         """
         # base position
         link_state = p.getLinkState(self._robot, 0, computeLinkVelocity=1)
-        pos_base = np.array(
+        self._pos = np.array(
             [link_state[0][0], link_state[0][1], link_state[0][2]]
         )
-
-        rotor_speed = np.clip(
-            thrust_cmd, self._rotor_min_rpm, self._rotor_max_rpm)
-        rotor_thrust = self._k_thrust * np.square(rotor_speed)
+        self._quat = np.array(link_state[1])
+        self._vel = np.array(link_state[6])
+        self._omega = np.array(link_state[7])
+        
         self.state = {
-            "x": np.array(),
-            "v": np.array(),
-            "q": np.array(),
-            "w": np.array(),
+            "x": self._pos,
+            "v": self._vel,
+            "q": self._quat,
+            "w": self._omega,
         }
-
-    @classmethod
-    def rotate_k(cls, q):
-        """
-        Rotate the unit vector k by quaternion q. This is the third column of
-        the rotation matrix associated with a rotation by q.
-        """
-        return np.array([2 * (q[0] * q[2] + q[1] * q[3]),
-                         2 * (q[1] * q[2] - q[0] * q[3]),
-                         1 - 2 * (q[0] ** 2 + q[1] ** 2)])
-
-    @classmethod
-    def hat_map(cls, s):
-        """
-        Given vector s in R^3, return associate skew symmetric matrix S in R^3x3
-        """
-        return np.array([[0, -s[2], s[1]],
-                         [s[2], 0, -s[0]],
-                         [-s[1], s[0], 0]])
-
-    @classmethod
-    def quat_dot(quat, omega):
-        """
-        Parameters:
-            quaternion, [i,j,k,w]
-            omega, angular velocity of body in body axes
-
-        Returns
-            quat_dot, [i,j,k,w]
-
-        """
-        # Adapted from "Quaternions And Dynamics" by Basile Graf.
-        (q0, q1, q2, q3) = (quat[0], quat[1], quat[2], quat[3])
-        G = np.array([[q3,  q2, -q1, -q0],
-                      [-q2,  q3,  q0, -q1],
-                      [q1, -q0,  q3, -q2]])
-        quat_dot = 0.5 * G.T @ omega
-        # Augment to maintain unit quaternion.
-        quat_err = np.sum(quat**2) - 1
-        quat_err_grad = 2 * quat
-        quat_dot = quat_dot - quat_err * quat_err_grad
-        return quat_dot
-
-    @classmethod
-    def quat2rpy(q: np.ndarray) -> np.ndarray:
-        """Converts quaternion to roll, pitch, yaw
-        """
-        pass

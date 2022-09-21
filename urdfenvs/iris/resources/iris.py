@@ -24,7 +24,7 @@ class IRIS(QuadrotorModel):
         self._arm_length    = 0.046
         self._mass          = 0.030
         self._inertia       = np.diag([1.43e-5, 1.43e-5, 2.89e-5])
-        self._k_thrust      = 2.3e-08
+        self._k_thrust      = 2.3e-06
         self._k_drag        = 7.8e-11
         self._rotor_max_rpm = 2500
         self._rotor_min_rpm = 0
