@@ -21,8 +21,8 @@ class IRIS(QuadrotorModel):
         self._scaling: float = 1.0
         super().__init__(n, urdf_file)
         self._arm_length    = 0.046
-        self._k_thrust      = 2.3e-06
-        self._k_drag        = 7.8e-11
+        self._k_thrust      = 5.5716e-06
+        self._k_drag        = 1.367e-07
         self._rotor_max_rpm = 2500
         self._rotor_min_rpm = 0
         self._spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15])
