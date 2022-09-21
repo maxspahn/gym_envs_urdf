@@ -16,7 +16,7 @@ class QuadrotorModel(GenericRobot):
         The radius of the actuated propellers
     _arm_length : float
         The length of the arm connecting the propellers to the center of mass
-    _k_thrusst : float
+    _k_thrust : float
         The thrust coefficient, N/(rad/s)**2
     _k_drag : float
         The drag coefficient, Nm/(rad/s)**2
@@ -157,7 +157,7 @@ class QuadrotorModel(GenericRobot):
             )
 
         self.apply_thrust(vels)
-        self.apply_drag_effect(vels)
+        # self.apply_drag_effect(vels)  # TODO: check literatures for the drag effect
 
     def apply_acceleration_action(self, accs: np.ndarray) -> None:
         print("Acceleration control not implemented for quadrotor model.")
@@ -172,14 +172,17 @@ class QuadrotorModel(GenericRobot):
 
     def apply_thrust(self, rate: np.ndarray) -> None:
         """PyBullet implementation of a thrust model
+        
+        Given the rotor rate, calculate the thrust force and moment. 
+        The implementation is following Upenn MEAM 620 project 1..
 
         Parameters
         ----------
         rate : ndarray
             (4)-shaped array of ints containing the rate values of the 4 motors.        
         """
-
-        thrusts = self._k_thrust * np.square(rate)
+        direction = np.sign(rate) * np.array([1, 1, -1, -1])
+        thrusts = self._k_thrust * np.square(rate) * direction
 
         k = self._k_drag / self._k_thrust
         l = self._arm_length

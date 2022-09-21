@@ -45,6 +45,15 @@ Reinforcement-Learning but rather to local motion planning in general.
   </tr>
 </table>
 
+<table>
+<tr>
+  <td> Drone </td>
+</tr>
+<tr>
+  <td> <img src="/docs/source/img/iris.gif" width="250" height="250"/> </td>
+</tr>
+</table>
+
 Getting Started
 ================
 
