@@ -16,15 +16,9 @@ class QuadrotorModel(GenericRobot):
         The radius of the actuated propellers
     _arm_length : float
         The length of the arm connecting the propellers to the center of mass
-    _gravity : float
-        The gravitational constant
-    _mass : float
-        The mass of the quadrotor
-    _inertia : np.ndarray
-        The inertia tensor of the quadrotor, [Ixx, Iyy, Izz]
-    _Kf : float
+    _k_thrusst : float
         The thrust coefficient, N/(rad/s)**2
-    _Kg : float
+    _k_drag : float
         The drag coefficient, Nm/(rad/s)**2
     _rotor_max_rpm : float
         The maximum rpm of the motor, rad/s
@@ -35,6 +29,14 @@ class QuadrotorModel(GenericRobot):
         The offset by which the initial position must be shifted to align
         observation with that position.
 
+    self._pos : np.ndarray
+        The position of the quadrotor in the world frame
+    self._quat : np.ndarray
+        The orientation of the quadrotor in the world frame
+    self._vel : np.ndarray
+        The linear velocity of the quadrotor in the world frame
+    self._omega : np.ndarray
+        The angular velocity of the quadrotor in the world frame
     """
 
     def __init__(self, n: int, urdf_file: str) -> None:
@@ -42,9 +44,6 @@ class QuadrotorModel(GenericRobot):
         super().__init__(n, urdf_file)
         self._propeller_radius: float = None
         self._arm_length: float = None
-        self._gravity: float = 9.81
-        self._inertia: np.ndarray = np.zeros(3)
-        self._mass: float = None
         self._k_thrust: float = None
         self._k_drag: float = None
         self._rotor_max_rpm: float = None
@@ -78,16 +77,6 @@ class QuadrotorModel(GenericRobot):
             globalScaling=self._scaling,
         )
 
-        # # precompute inertia
-        # k = self._k_drag / self._k_thrust
-        # L = self._arm_length
-        # self._TM = np.array([[1,  1,  1,  1],
-        #                     [0,  L,  0, -L],
-        #                     [-L,  0,  L,  0],
-        #                     [k, -k,  k, -k]])
-        # self._inv_inertia = np.linalg.inv(self._inertia)
-        # self._weight = np.array([0, 0, self._mass * self._gravity])
-
         self.set_joint_names()
         self.extract_joint_ids()
         self.read_limits()
@@ -113,9 +102,11 @@ class QuadrotorModel(GenericRobot):
         self._limit_pos_j[0, 3:7] = np.array([-1, -1, -1, -1])
         self._limit_pos_j[1, 3:7] = np.array([1, 1, 1, 1])
 
-        # TODO
+        # Velocity limits (x, y, z)
         self._limit_vel_j[0, 0:3] = np.array([-40., -40., -40.])
         self._limit_vel_j[1, 0:3] = np.array([40., 40., 40.])
+        
+        # body rate limits
         self._limit_vel_j[0, 3:6] = np.array([-10., -10., -10.])
         self._limit_vel_j[1, 3:6] = np.array([10., 10., 10.])
 
@@ -164,12 +155,12 @@ class QuadrotorModel(GenericRobot):
                 controlMode=p.VELOCITY_CONTROL,
                 targetVelocity=vels[i],
             )
-        
+
         self.apply_thrust(vels)
         self.apply_drag_effect(vels)
 
     def apply_acceleration_action(self, accs: np.ndarray) -> None:
-        pass
+        print("Acceleration control not implemented for quadrotor model.")
 
     def apply_torque_action(self, torques: np.ndarray) -> None:
         """Applies the torques to the quadrotor model.
@@ -179,18 +170,25 @@ class QuadrotorModel(GenericRobot):
     def correct_base_orientation(self) -> None:
         pass
 
-    def apply_thrust(self, rpm: np.ndarray) -> None:
+    def apply_thrust(self, rate: np.ndarray) -> None:
+        """PyBullet implementation of a thrust model
 
-        thrusts = self._k_thrust * np.square(rpm)
+        Parameters
+        ----------
+        rate : ndarray
+            (4)-shaped array of ints containing the rate values of the 4 motors.        
+        """
+
+        thrusts = self._k_thrust * np.square(rate)
 
         k = self._k_drag / self._k_thrust
-        L = self._arm_length
+        l = self._arm_length
         torque_mat = np.array([[1,  1,  1,  1],
-                               [0,  L,  0, -L],
-                               [-L,  0,  L,  0],
+                               [0,  l,  0, -l],
+                               [-l,  0,  l,  0],
                                [k, -k,  k, -k]])
-        U = torque_mat @ thrusts
-        T = U[1:]
+        u = torque_mat @ thrusts
+        torque = u[1:]
         for i in range(4):
             p.applyExternalForce(self._robot,
                                  self._robot_joints[i],
@@ -199,20 +197,24 @@ class QuadrotorModel(GenericRobot):
                                  flags=p.LINK_FRAME)
         p.applyExternalTorque(self._robot,
                               0,
-                              torqueObj=T,
+                              torqueObj=torque,
                               flags=p.LINK_FRAME)
-        print("Thrusts: ", thrusts)
-                              
 
-    def apply_drag_effect(self, rpm) -> None:
+    def apply_drag_effect(self, rate: np.ndarray) -> None:
         """PyBullet implementation of a drag model
 
         Base on the system identification in (Foster, 2015)
 
+        Parameters
+        ----------
+        rate : ndarray
+            (4)-shaped array of ints containing the rate values of the 4 motors.
+
         """
         base_rot = np.array(
             p.getMatrixFromQuaternion(self._quat)).reshape(3, 3)
-        drag = np.dot(base_rot, self._k_drag * np.array(self._vel))
+        drag_factors = -1 * self._k_drag * np.sum(rate)
+        drag = np.dot(base_rot, drag_factors * np.array(self._vel))
         p.applyExternalForce(self._robot,
                              0,
                              forceObj=drag,
@@ -237,7 +239,7 @@ class QuadrotorModel(GenericRobot):
         self._quat = np.array(link_state[1])
         self._vel = np.array(link_state[6])
         self._omega = np.array(link_state[7])
-        
+
         self.state = {
             "x": self._pos,
             "v": self._vel,
