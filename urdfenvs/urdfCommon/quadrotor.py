@@ -149,12 +149,13 @@ class QuadrotorModel(GenericRobot):
     def apply_velocity_action(self, vels: np.ndarray) -> None:
         """Applies the propeller speed action to the quadrotor.
         """
+        direction = np.array([1, 1, -1, -1])
         for i in range(4):
             p.setJointMotorControl2(
                 self._robot,
                 self._robot_joints[i],
                 controlMode=p.VELOCITY_CONTROL,
-                targetVelocity=vels[i],
+                targetVelocity=vels[i] * direction[i],
             )
 
         self.apply_thrust(vels)
@@ -182,8 +183,7 @@ class QuadrotorModel(GenericRobot):
         rate : ndarray
             (4)-shaped array of ints containing the rate values of the 4 motors.        
         """
-        direction = np.sign(rate) * np.array([1, 1, -1, -1])
-        thrusts = self._k_thrust * np.square(rate) * direction
+        thrusts = self._k_thrust * np.square(rate)
 
         k = self._k_drag / self._k_thrust
         l = self._arm_length

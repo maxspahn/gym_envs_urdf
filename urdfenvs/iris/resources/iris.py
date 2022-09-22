@@ -29,6 +29,19 @@ class IRIS(QuadrotorModel):
 
     def set_joint_names(self) -> None:
         """Set joint indices.
+        - 1: front right, anticlockwise
+        - 2: back left, anticlockwise
+        - 3: front left, clockwise
+        - 4: back right, clockwise
+        
+        Top-down view:
+        
+        2      3
+          x  x          
+            x   => front
+          x  x     
+        4      1
+        
         """
         self._robot_joints = [1, 2, 3, 4]
     
