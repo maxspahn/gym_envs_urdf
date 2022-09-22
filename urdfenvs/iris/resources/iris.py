@@ -19,13 +19,13 @@ class IRIS(QuadrotorModel):
         n = 4  # number of actuated joints
         urdf_file = os.path.join(os.path.dirname(__file__), 'iris.urdf')
         self._scaling: float = 1.0
-        super().__init__(n, urdf_file)
         self._arm_length    = 0.046
         self._k_thrust      = 5.5716e-06
         self._k_drag        = 1.367e-07
         self._rotor_max_rpm = 2500
         self._rotor_min_rpm = 0
-        self._spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15])
+        self._spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.00047494])
+        super().__init__(n, urdf_file)
 
     def set_joint_names(self) -> None:
         """Set joint indices.

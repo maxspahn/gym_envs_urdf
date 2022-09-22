@@ -42,12 +42,6 @@ class QuadrotorModel(GenericRobot):
     def __init__(self, n: int, urdf_file: str) -> None:
         """Constructor for quadrotor model robot."""
         super().__init__(n, urdf_file)
-        self._propeller_radius: float = None
-        self._arm_length: float = None
-        self._k_thrust: float = None
-        self._k_drag: float = None
-        self._rotor_max_rpm: float = None
-        self._rotor_min_rpm: float = None
         self._swawn_offset: np.ndarray = np.array(
             [0.0, 0.0, 0.15])  # TODO: check this value
 
@@ -55,6 +49,9 @@ class QuadrotorModel(GenericRobot):
         self._quat = np.array([0., 0., 0., 1.])
         self._vel = np.zeros(3)
         self._omega = np.zeros(3)
+        self._rotor_velocity = np.zeros(4)
+        self.state = {"joint_state": {"pose": np.zeros(7), "velocity":
+            np.zeros(6), "rotor_velocity": np.zeros(4)}}
 
     def ns(self) -> int:
         """Returns the number of degrees of freedom.
@@ -110,39 +107,39 @@ class QuadrotorModel(GenericRobot):
         # body rate limits
         self._limit_vel_j[0, 3:6] = np.array([-10., -10., -10.])
         self._limit_vel_j[1, 3:6] = np.array([10., 10., 10.])
+        
+        # rotor limits
+        self._limit_rotors_j = np.zeros((2, 4))
+        self._limit_rotors_j[0, :] = np.ones(4) * self._rotor_min_rpm
+        self._limit_rotors_j[1, :] = np.ones(4) * self._rotor_max_rpm
 
     def get_observation_space(self) -> gym.spaces.Dict:
         """Gets the observation space for the quadrotor model.
 
         The observation space is represented as a dictionary.
-        `x` denotes the position of the quadrotor in the world frame.
-        `v` denotes the velocity of the quadrotor in the world frame.
-        `q` denotes the orientation (row, pitch, yaw),
-        `w` denotes the angular velocity (dr, dp, dy).
+        `pose` denotes the pose of the quadrotor in the world frame.
+        `velocity` denotes the velocity of the quadrotor in the world frame.
+        `rotor_velocities; denotes the rotor velocities.
         """
         return gym.spaces.Dict(
             {
-                "x": gym.spaces.Box(
-                    low=self._limit_pos_j[0, :3],
-                    high=self._limit_pos_j[1, :3],
-                    dtype=np.float64,
-                ),
-                "q": gym.spaces.Box(
-                    low=self._limit_pos_j[0, 3:7],
-                    high=self._limit_pos_j[1, 3:7],
-                    dtype=np.float64,
-                ),
-                "v": gym.spaces.Box(
-                    low=self._limit_vel_j[0, :3],
-                    high=self._limit_vel_j[1, :3],
-                    dtype=np.float64,
-                ),
-                "w": gym.spaces.Box(
-                    low=self._limit_vel_j[0, 3:6],
-                    high=self._limit_vel_j[1, 3:6],
-                    dtype=np.float64,
-                ),
-
+                "joint_state": gym.spaces.Dict({
+                    "pose": gym.spaces.Box(
+                        low=self._limit_pos_j[0, :],
+                        high=self._limit_pos_j[1, :],
+                        dtype=np.float32,
+                    ),
+                    "velocity": gym.spaces.Box(
+                        low=self._limit_vel_j[0, :],
+                        high=self._limit_vel_j[1, :],
+                        dtype=np.float32,
+                    ),
+                    "rotor_velocity": gym.spaces.Box(
+                        low=self._limit_rotors_j[0,:],
+                        high=self._limit_rotors_j[1,:],
+                        dtype=np.float32,
+                    ),
+                }),
             }
         )
 
@@ -157,6 +154,7 @@ class QuadrotorModel(GenericRobot):
                 controlMode=p.VELOCITY_CONTROL,
                 targetVelocity=vels[i] * direction[i],
             )
+        self._rotor_velocity = vels
 
         self.apply_thrust(vels)
         # self.apply_drag_effect(vels)  # TODO: check literatures for the drag effect
@@ -244,9 +242,7 @@ class QuadrotorModel(GenericRobot):
         self._vel = np.array(link_state[6])
         self._omega = np.array(link_state[7])
 
-        self.state = {
-            "x": self._pos,
-            "v": self._vel,
-            "q": self._quat,
-            "w": self._omega,
-        }
+        self.state['joint_state']['pose'] = np.concatenate((self._pos, self._quat))
+        self.state['joint_state']['velocity'] = np.concatenate((self._vel, self._omega))
+        self.state['joint_state']['rotor_velocity'] = self._rotor_velocity
+
