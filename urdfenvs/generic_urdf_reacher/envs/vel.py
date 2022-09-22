@@ -1,6 +1,9 @@
-from urdfenvs.iris.envs.iris_env import IRISEnv
+from urdfenvs.generic_urdf_reacher.envs.generic_urdf_reacher_env import GenericUrdfReacherEnv
 
-class IRISRotorVelEnv(IRISEnv):
+
+class GenericUrdfReacherVelEnv(GenericUrdfReacherEnv):
+    metadata = {"render.modes": ["human"]}
+
     def apply_action(self, action):
         self._robot.apply_velocity_action(action)
 

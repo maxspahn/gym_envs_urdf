@@ -1,7 +1,11 @@
-from urdfenvs.dual_arm.resources.dual_arm_robot import DualArmRobot
-from urdfenvs.urdfCommon.urdf_env import UrdfEnv
+import os
+
+from urdfenvs.generic_urdf_reacher.envs.generic_urdf_reacher_env import GenericUrdfReacherEnv
 
 
-class DualArmEnv(UrdfEnv):
+class DualArmEnv(GenericUrdfReacherEnv):
     def __init__(self, **kwargs):
-        super().__init__(DualArmRobot(), **kwargs)
+        urdf_file = os.path.join(
+            os.path.dirname(__file__), "../resources/dual_arm.urdf"
+        )
+        super().__init__(urdf_file, **kwargs)
