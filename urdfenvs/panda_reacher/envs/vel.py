@@ -1,14 +1,5 @@
 from urdfenvs.panda_reacher.envs.panda_reacher_env import PandaReacherEnv
+from urdfenvs.generic_urdf_reacher.envs.vel import GenericUrdfReacherVelEnv
 
-
-class PandaReacherVelEnv(PandaReacherEnv):
-    metadata = {"render.modes": ["human"]}
-
-    def apply_action(self, action):
-        self._robot.apply_velocity_action(action)
-
-    def set_spaces(self):
-        (
-            self.observation_space,
-            self.action_space,
-        ) = self._robot.get_velocity_spaces()
+class PandaReacherVelEnv(PandaReacherEnv, GenericUrdfReacherVelEnv):
+    pass
