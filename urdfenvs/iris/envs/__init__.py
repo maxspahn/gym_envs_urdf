@@ -1,1 +1,1 @@
-from urdfenvs.iris.envs.vel import IRISRotorSpeedEnv
+from urdfenvs.iris.envs.vel import IRISRotorVelEnv

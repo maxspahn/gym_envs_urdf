@@ -1,6 +1,6 @@
 from urdfenvs.iris.envs.iris_env import IRISEnv
 
-class IRISRotorSpeedEnv(IRISEnv):
+class IRISRotorVelEnv(IRISEnv):
     def apply_action(self, action):
         self._robot.apply_velocity_action(action)
 
