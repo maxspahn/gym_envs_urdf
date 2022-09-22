@@ -16,7 +16,7 @@ class IRIS(QuadrotorModel):
     """
 
     def __init__(self):
-        n = 3
+        n = 4  # number of actuated joints
         urdf_file = os.path.join(os.path.dirname(__file__), 'iris.urdf')
         self._scaling: float = 1.0
         super().__init__(n, urdf_file)

@@ -61,14 +61,15 @@ class QuadrotorModel(GenericRobot):
 
         This is needed as number of actuated joints `_n` is lower that the
         number of degrees of freedom for quadrotor models.
+        
         """
-        return self.n() + 3
+        return 6
 
     def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> None:
         if hasattr(self, "_robot"):
             p.resetSimulation()
-        base_orientation = p.getQuaternionFromEuler([0, 0, pos[2]])
-        spawn_pos = self._spawn_offset + np.array([pos[0], pos[1], 0.0])
+        base_orientation = pos[3:7]
+        spawn_pos = self._spawn_offset + np.array([pos[0], pos[1], pos[2]])
         self._robot = p.loadURDF(
             fileName=self._urdf_file,
             basePosition=spawn_pos,
@@ -80,18 +81,18 @@ class QuadrotorModel(GenericRobot):
         self.set_joint_names()
         self.extract_joint_ids()
         self.read_limits()
-        for i in range(self._n):
+        for i in range(self.n()):
             p.resetJointState(
                 self._robot,
                 self._robot_joints[i],
-                pos[i],
+                0,
                 targetVelocity=vel[i],
             )
         # set base velocity
         self.update_state()
 
     def read_limits(self) -> None:
-        self._limit_pos_j = np.zeros((2, self.n() + 4))
+        self._limit_pos_j = np.zeros((2, self.ns() + 1))
         self._limit_vel_j = np.zeros((2, self.ns()))
 
         # Position limits (x, y, z)
