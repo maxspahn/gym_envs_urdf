@@ -45,13 +45,13 @@ class QuadrotorModel(GenericRobot):
         self._swawn_offset: np.ndarray = np.array(
             [0.0, 0.0, 0.15])  # TODO: check this value
 
-        self._pos = np.zeros(3)
-        self._quat = np.array([0., 0., 0., 1.])
-        self._vel = np.zeros(3)
-        self._omega = np.zeros(3)
-        self._rotor_velocity = np.zeros(4)
-        self.state = {"joint_state": {"pose": np.zeros(7), "velocity":
-            np.zeros(6), "rotor_velocity": np.zeros(4)}}
+        self._pos = np.zeros(3,dtype=np.float32)
+        self._quat = np.array([0., 0., 0., 1.], dtype=np.float32)
+        self._vel = np.zeros(3, dtype=np.float32)
+        self._omega = np.zeros(3, dtype=np.float32)
+        self._rotor_velocity = np.zeros(4, dtype=np.float32)
+        self.state = {"joint_state": {"pose": np.zeros(7, dtype=np.float32), "velocity":
+            np.zeros(6, dtype=np.float32), "rotor_velocity": np.zeros(4, dtype=np.float32)}}
 
     def ns(self) -> int:
         """Returns the number of degrees of freedom.
@@ -154,7 +154,7 @@ class QuadrotorModel(GenericRobot):
                 controlMode=p.VELOCITY_CONTROL,
                 targetVelocity=vels[i] * direction[i],
             )
-        self._rotor_velocity = vels
+        self._rotor_velocity = vels.astype('float32')
 
         self.apply_thrust(vels)
         # self.apply_drag_effect(vels)  # TODO: check literatures for the drag effect
@@ -236,11 +236,11 @@ class QuadrotorModel(GenericRobot):
         # base position
         link_state = p.getLinkState(self._robot, 0, computeLinkVelocity=1)
         self._pos = np.array(
-            [link_state[0][0], link_state[0][1], link_state[0][2]]
+            [link_state[0][0], link_state[0][1], link_state[0][2]], dtype=np.float32
         )
-        self._quat = np.array(link_state[1])
-        self._vel = np.array(link_state[6])
-        self._omega = np.array(link_state[7])
+        self._quat = np.array(link_state[1], dtype=np.float32)
+        self._vel = np.array(link_state[6], dtype=np.float32)
+        self._omega = np.array(link_state[7], dtype=np.float32)
 
         self.state['joint_state']['pose'] = np.concatenate((self._pos, self._quat))
         self.state['joint_state']['velocity'] = np.concatenate((self._vel, self._omega))
