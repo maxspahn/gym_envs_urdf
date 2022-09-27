@@ -6,7 +6,7 @@ from urdfenvs.urdfCommon.urdf_env import UrdfEnv
 class GenericUrdfReacherEnv(UrdfEnv):
     def __init__(self, urdf, **kwargs):
         super().__init__(
-            GenericUrdfReacher(urdf), **kwargs
+            [GenericUrdfReacher(urdf_file) for urdf_file in urdf], **kwargs
         )
 
     def check_initial_state(self, pos, vel):

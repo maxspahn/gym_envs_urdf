@@ -4,6 +4,7 @@ import numpy as np
 import pybullet as p
 import warnings
 from abc import abstractmethod
+from typing import List
 
 from urdfenvs.urdfCommon.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
@@ -161,7 +162,7 @@ class UrdfEnv(gym.Env):
     """Generic urdf-environment for OpenAI-Gym"""
 
     def __init__(
-        self, robot: GenericRobot, flatten_observation: bool = False,
+        self, robots: List[GenericRobot], flatten_observation: bool = False,
         render: bool = False, dt: float = 0.01
     ) -> None:
         """Constructor for environment.
@@ -178,7 +179,8 @@ class UrdfEnv(gym.Env):
         """
         self._dt: float = dt
         self._t: float = 0.0
-        self._robot: GenericRobot = robot
+        self._robots: List[GenericRobot] = robots
+        self._robot = self._robots[0]
         self._render: bool = render
         self._done: bool = False
         self._num_sub_steps: float = 20
@@ -195,7 +197,7 @@ class UrdfEnv(gym.Env):
             p.connect(p.DIRECT)
 
     def n(self) -> int:
-        return self._robot.n()
+        return sum([robot.n() for robot in self._robots])
 
     def dt(self) -> float:
         return self._dt
@@ -232,7 +234,10 @@ class UrdfEnv(gym.Env):
 
     def _get_ob(self) -> dict:
         """Compose the observation."""
-        observation = self._robot.get_observation()
+        observation = {}
+        for i, robot in enumerate(self._robots):
+            observation[f'robot_{i}'] = robot.get_observation()
+        return observation
         if not self.observation_space.contains(observation):
             err = WrongObservationError(
                 "The observation does not fit the defined observation space",
@@ -447,7 +452,8 @@ class UrdfEnv(gym.Env):
         p.setPhysicsEngineParameter(
             fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
         )
-        self._robot.reset(pos=pos, vel=vel)
+        for robot in self._robots:
+            robot.reset(pos=pos, vel=vel)
         if not self._space_set:
             self.set_spaces()
             self._space_set = True
