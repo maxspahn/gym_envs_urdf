@@ -6,15 +6,15 @@ from urdfpy import URDF
 from urdfenvs.sensors.sensor import Sensor
 from enum import Enum
 
-class ControlModes(Enum):
-    torque = 1
-    acceleration = 2
-    velocity = 3
+class ControlMode(Enum):
+    torque = 'tor'
+    acceleration = 'acc'
+    velocity = 'vel'
 
 class GenericRobot(ABC):
     """GenericRobot."""
 
-    def __init__(self, n: int, urdf_file: str, mode=ControlModes.velocity):
+    def __init__(self, n: int, urdf_file: str, mode=ControlMode.velocity):
         """Constructor for generic robot.
 
         Parameters
@@ -26,7 +26,7 @@ class GenericRobot(ABC):
         self._urdf_file: str = urdf_file
         self._sensors = []
         self._urdf_robot = URDF.load(self._urdf_file)
-        self._mode = ControlModes(mode)
+        self._mode = ControlMode(mode)
         if n > 0:
             self._n = n
         else:
@@ -118,6 +118,16 @@ class GenericRobot(ABC):
             }
         )
 
+    def check_state(self, pos: np.ndarray, vel: np.ndarray) -> tuple:
+        """Filters state of the robot and returns a valid state."""
+
+        if not isinstance(pos, np.ndarray) or not pos.size == self.n():
+            pos = np.zeros(self.n())
+        if not isinstance(vel, np.ndarray) or not vel.size == self.n():
+            vel = np.zeros(self.n())
+        return pos, vel
+
+
     def get_torque_spaces(self) -> tuple:
         """Get observation space and action space when using torque control."""
         ospace = self.get_observation_space()
@@ -174,22 +184,21 @@ class GenericRobot(ABC):
         pass
 
     def apply_action(self, action, dt=None) -> None:
-        print(action)
-        if self._mode == ControlModes.torque:
+        if self._mode == ControlMode.torque:
             self.apply_torque_action(action)
-        elif self._mode == ControlModes.velocity:
+        elif self._mode == ControlMode.velocity:
             self.apply_velocity_action(action)
-        elif self._mode == ControlModes.acceleration:
+        elif self._mode == ControlMode.acceleration:
             self.apply_acceleration_action(action, dt)
         else:
             raise Exception(f"ControlMode {self._mode} not implemented")
 
     def get_spaces(self):
-        if self._mode == ControlModes.torque:
+        if self._mode == ControlMode.torque:
             return self.get_torque_spaces()
-        elif self._mode == ControlModes.velocity:
+        elif self._mode == ControlMode.velocity:
             return self.get_velocity_spaces()
-        elif self._mode == ControlModes.acceleration:
+        elif self._mode == ControlMode.acceleration:
             return self.get_acceleration_spaces()
         else:
             raise Exception(f"ControlMode {self._mode} not implemented")

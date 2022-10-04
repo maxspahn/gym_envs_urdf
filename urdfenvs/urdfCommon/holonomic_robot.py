@@ -9,7 +9,6 @@ class HolonomicRobot(GenericRobot):
     """Generic holonomic robot."""
 
     def reset(self, pos: np.ndarray, vel: np.ndarray, base_pos: np.ndarray=[0.0, 0.0, 0.0]) -> None:
-        print(base_pos)
         if hasattr(self, "_robot"):
             p.resetSimulation()
         self._robot = p.loadURDF(

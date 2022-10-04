@@ -180,7 +180,6 @@ class UrdfEnv(gym.Env):
         self._dt: float = dt
         self._t: float = 0.0
         self._robots: List[GenericRobot] = robots
-        self._robot = self._robots[0]
         self._render: bool = render
         self._done: bool = False
         self._num_sub_steps: float = 20
@@ -205,20 +204,19 @@ class UrdfEnv(gym.Env):
     def t(self) -> float:
         return self._t
 
-    @abstractmethod
     def set_spaces(self) -> None:
         """Set observation and action space."""
-        # TODO: spaces for multiple robots
-        for robot in self._robots:
+        self.observation_space = {}
+        self.action_space = {}
+
+        for i, robot in enumerate(self._robots):
             ( 
-                self.observation_space,
-                self.action_space
+                obs_space,
+                action_space
             ) = robot.get_spaces()
 
-    @abstractmethod
-    def apply_action(self, action: np.ndarray) -> None:
-        """Applies a given action to the robot."""
-        pass
+            self.observation_space[f'robot_{i}'] = obs_space
+            self.action_space[f'robot_{i}'] = action_space
 
     def step(self, actions):
         self._t += self.dt()
@@ -248,15 +246,17 @@ class UrdfEnv(gym.Env):
         """Compose the observation."""
         observation = {}
         for i, robot in enumerate(self._robots):
-            observation[f'robot_{i}'] = robot.get_observation()
-        return observation
-        if not self.observation_space.contains(observation):
-            err = WrongObservationError(
-                "The observation does not fit the defined observation space",
-                observation,
-                self.observation_space,
-            )
-            warnings.warn(str(err))
+            obs = robot.get_observation()
+
+            if not self.observation_space[f'robot_{i}'].contains(observation):
+                err = WrongObservationError(
+                    "The observation does not fit the defined observation space",
+                    obs,
+                    self.observation_space[f'robot_{i}'],
+                )
+                warnings.warn(str(err))
+
+            observation[f'robot_{i}'] = obs
         if self._flatten_observation:
             return flatten_observation(observation)
         else:
@@ -275,11 +275,14 @@ class UrdfEnv(gym.Env):
         obst.add2Bullet(p)
 
         # refresh observation space of robots sensors
-        sensors = self._robot.sensors()
-        cur_dict = dict(self.observation_space.spaces)
-        for sensor in sensors:
-            cur_dict[sensor.name()] = sensor.get_observation_space()
-        self.observation_space = gym.spaces.Dict(cur_dict)
+
+        for i, robot in enumerate(self._robots):
+            cur_dict = dict(self.observation_space[f'robot_{i}'].spaces)
+            sensors = robot.sensors()
+            for sensor in sensors:
+                cur_dict[sensor.name()] = sensor.get_observation_space()
+
+            self.observation_space[f'robot_{i}'] = gym.spaces.Dict(cur_dict)
 
         if self._t != 0.0:
             warnings.warn(
@@ -436,19 +439,11 @@ class UrdfEnv(gym.Env):
         This seems to require a conversion to dict and back to
         gym.spaces.Dict.
         """
-        self._robot.add_sensor(sensor)
-        cur_dict = dict(self.observation_space.spaces)
-        cur_dict[sensor.name()] = sensor.get_observation_space()
-        self.observation_space = gym.spaces.Dict(cur_dict)
-
-    def check_initial_state(self, pos: np.ndarray, vel: np.ndarray) -> tuple:
-        """Filters initial state of the robot and returns a valid state."""
-
-        if not isinstance(pos, np.ndarray) or not pos.size == self._robot.n():
-            pos = np.zeros(self._robot.n())
-        if not isinstance(vel, np.ndarray) or not vel.size == self._robot.n():
-            vel = np.zeros(self._robot.n())
-        return pos, vel
+        for i, robot in enumerate(self._robots):
+            robot.add_sensor(sensor)
+            cur_dict = dict(self.observation_space[f'robot_{i}'].spaces)
+            cur_dict[sensor.name()] = sensor.get_observation_space()
+            self.observation_space[f'robot_{i}'] = gym.spaces.Dict(cur_dict)
 
     def reset(self, pos: np.ndarray = None, vel: np.ndarray = None, base_pos: np.ndarray = None) -> dict:
         """Resets the simulation and the robot.
@@ -460,11 +455,11 @@ class UrdfEnv(gym.Env):
         vel: np.ndarray: Initial joint velocities of the robot
         """
         self._t = 0.0
-        pos, vel = self.check_initial_state(pos, vel)
         p.setPhysicsEngineParameter(
             fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
         )
         for i, robot in enumerate(self._robots):
+            pos, vel = robot.check_state(pos, vel)
             robot.reset(pos=pos, vel=vel, base_pos=base_pos[i])
         if not self._space_set:
             self.set_spaces()
@@ -472,7 +467,7 @@ class UrdfEnv(gym.Env):
         self.plane = Plane()
         p.setGravity(0, 0, -10.0)
         p.stepSimulation()
-        return self._robot.get_observation()
+        return self._get_ob()
 
     def render(self) -> None:
         """Rendering the simulation environment.

@@ -4,7 +4,12 @@ from urdfenvs.urdfCommon.urdf_env import UrdfEnv
 
 
 class GenericUrdfReacherEnv(UrdfEnv):
-    def __init__(self, urdf, mode, **kwargs):
+    def __init__(self, urdf, mode=None, **kwargs):
+        if mode is None:
+            mode = ["vel"] * len(urdf)
+            
+        assert len(urdf) == len(mode)
+
         super().__init__(
             [GenericUrdfReacher(urdf_file, mode) for urdf_file, mode in zip(urdf, mode)], **kwargs
         )
