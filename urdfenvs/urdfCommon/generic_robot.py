@@ -4,12 +4,17 @@ import gym
 import numpy as np
 from urdfpy import URDF
 from urdfenvs.sensors.sensor import Sensor
+from enum import Enum
 
+class ControlModes(Enum):
+    torque = 1
+    acceleration = 2
+    velocity = 3
 
 class GenericRobot(ABC):
     """GenericRobot."""
 
-    def __init__(self, n: int, urdf_file: str):
+    def __init__(self, n: int, urdf_file: str, mode=ControlModes.velocity):
         """Constructor for generic robot.
 
         Parameters
@@ -21,6 +26,7 @@ class GenericRobot(ABC):
         self._urdf_file: str = urdf_file
         self._sensors = []
         self._urdf_robot = URDF.load(self._urdf_file)
+        self._mode = ControlModes(mode)
         if n > 0:
             self._n = n
         else:
@@ -166,6 +172,27 @@ class GenericRobot(ABC):
     @abstractmethod
     def apply_acceleration_action(self, accs) -> None:
         pass
+
+    def apply_action(self, action, dt=None) -> None:
+        print(action)
+        if self._mode == ControlModes.torque:
+            self.apply_torque_action(action)
+        elif self._mode == ControlModes.velocity:
+            self.apply_velocity_action(action)
+        elif self._mode == ControlModes.acceleration:
+            self.apply_acceleration_action(action, dt)
+        else:
+            raise Exception(f"ControlMode {self._mode} not implemented")
+
+    def get_spaces(self):
+        if self._mode == ControlModes.torque:
+            return self.get_torque_spaces()
+        elif self._mode == ControlModes.velocity:
+            return self.get_velocity_spaces()
+        elif self._mode == ControlModes.acceleration:
+            return self.get_acceleration_spaces()
+        else:
+            raise Exception(f"ControlMode {self._mode} not implemented")
 
     @abstractmethod
     def update_state(self) -> None:

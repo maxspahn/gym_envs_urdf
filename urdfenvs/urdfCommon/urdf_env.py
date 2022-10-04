@@ -208,17 +208,29 @@ class UrdfEnv(gym.Env):
     @abstractmethod
     def set_spaces(self) -> None:
         """Set observation and action space."""
-        pass
+        # TODO: spaces for multiple robots
+        for robot in self._robots:
+            ( 
+                self.observation_space,
+                self.action_space
+            ) = robot.get_spaces()
 
     @abstractmethod
     def apply_action(self, action: np.ndarray) -> None:
         """Applies a given action to the robot."""
         pass
 
-    def step(self, action):
+    def step(self, actions):
         self._t += self.dt()
         # Feed action to the robot and get observation of robot's state
-        self.apply_action(action)
+
+        action_id = 0
+        for robot in self._robots:
+            action = actions[action_id:action_id+robot.n()]
+            robot.apply_action(action, self.dt())
+            action_id +=robot.n()
+
+        # self.apply_action(action)
         for obst in self._obsts:
             obst.updateBulletPosition(p, t=self.t())
         for goal in self._goals:
@@ -438,7 +450,7 @@ class UrdfEnv(gym.Env):
             vel = np.zeros(self._robot.n())
         return pos, vel
 
-    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> dict:
+    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None, base_pos: np.ndarray = None) -> dict:
         """Resets the simulation and the robot.
 
         Parameters
@@ -452,8 +464,8 @@ class UrdfEnv(gym.Env):
         p.setPhysicsEngineParameter(
             fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
         )
-        for robot in self._robots:
-            robot.reset(pos=pos, vel=vel)
+        for i, robot in enumerate(self._robots):
+            robot.reset(pos=pos, vel=vel, base_pos=base_pos[i])
         if not self._space_set:
             self.set_spaces()
             self._space_set = True

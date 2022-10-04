@@ -4,9 +4,9 @@ from urdfenvs.urdfCommon.urdf_env import UrdfEnv
 
 
 class GenericUrdfReacherEnv(UrdfEnv):
-    def __init__(self, urdf, **kwargs):
+    def __init__(self, urdf, mode, **kwargs):
         super().__init__(
-            [GenericUrdfReacher(urdf_file) for urdf_file in urdf], **kwargs
+            [GenericUrdfReacher(urdf_file, mode) for urdf_file, mode in zip(urdf, mode)], **kwargs
         )
 
     def check_initial_state(self, pos, vel):

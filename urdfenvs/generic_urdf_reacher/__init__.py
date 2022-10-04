@@ -11,3 +11,7 @@ register(
     id='generic-urdf-reacher-acc-v0',
     entry_point='urdfenvs.generic_urdf_reacher.envs:GenericUrdfReacherAccEnv'
 )
+register(
+    id='generic-urdf-reacher-v0',
+    entry_point='urdfenvs.generic_urdf_reacher.envs:GenericUrdfReacherEnv'
+)
