@@ -14,11 +14,11 @@ class Prius(BicycleModel):
         This also effects the dynamics of the system.
 
     """
-    def __init__(self):
+    def __init__(self, mode: str):
         n = 2
         urdf_file = os.path.join(os.path.dirname(__file__), 'prius.urdf')
         self._scaling: float = 0.3
-        super().__init__(n, urdf_file)
+        super().__init__(n, urdf_file, mode)
         self._wheel_radius = 0.31265
         self._wheel_distance = 0.494
         self._spawn_offset: np.ndarray = np.array([-0.435, 0.0, 0.05])

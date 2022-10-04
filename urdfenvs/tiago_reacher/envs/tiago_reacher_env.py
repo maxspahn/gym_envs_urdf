@@ -6,7 +6,7 @@ from urdfenvs.urdfCommon.urdf_env import UrdfEnv
 
 class TiagoReacherEnv(UrdfEnv):
     def __init__(self, **kwargs):
-        super().__init__(TiagoRobot(), **kwargs)
+        super().__init__([TiagoRobot()], **kwargs)
 
     def check_initial_state(self, pos, vel):
         if (

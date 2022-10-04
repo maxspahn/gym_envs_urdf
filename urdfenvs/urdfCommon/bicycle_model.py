@@ -18,9 +18,9 @@ class BicycleModel(GenericRobot):
         observation with that position.
     """
 
-    def __init__(self, n: int, urdf_file: str):
+    def __init__(self, n: int, urdf_file: str, mode: str):
         """Constructor for bicyle model robot."""
-        super().__init__(n, urdf_file)
+        super().__init__(n, urdf_file, mode)
         self._wheel_radius: float = None
         self._spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15])
 
@@ -32,11 +32,11 @@ class BicycleModel(GenericRobot):
         """
         return self.n() + 1
 
-    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> None:
+    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None, base_pos: np.ndarray = None) -> None:
         if hasattr(self, "_robot"):
             p.resetSimulation()
         base_orientation = p.getQuaternionFromEuler([0, 0, pos[2]])
-        spawn_pos = self._spawn_offset + np.array([pos[0], pos[1], 0.0])
+        spawn_pos = self._spawn_offset + base_pos
         self._robot = p.loadURDF(
             fileName=self._urdf_file,
             basePosition=spawn_pos,
@@ -66,6 +66,15 @@ class BicycleModel(GenericRobot):
         self._limit_vel_j[0, 0:3] = np.array([-40., -40., -10.])
         self._limit_vel_j[1, 0:3] = np.array([40., 40., 10.])
         self.set_acceleration_limits()
+
+    def check_state(self, pos: np.ndarray, vel: np.ndarray) -> tuple:
+        """Filters state of the robot and returns a valid state."""
+
+        if not isinstance(pos, np.ndarray) or not pos.size == self.ns():
+            pos = np.zeros(self.ns())
+        if not isinstance(vel, np.ndarray) or not vel.size == self.ns():
+            vel = np.zeros(self.ns())
+        return pos, vel
 
     def get_observation_space(self) -> gym.spaces.Dict:
         """Gets the observation space for a bicycle model.

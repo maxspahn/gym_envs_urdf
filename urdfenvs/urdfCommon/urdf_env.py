@@ -458,6 +458,9 @@ class UrdfEnv(gym.Env):
         p.setPhysicsEngineParameter(
             fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
         )
+        if base_pos is None: 
+            base_pos = [0.0, 0.0, 0.0] * len(self._robots)
+
         for i, robot in enumerate(self._robots):
             pos, vel = robot.check_state(pos, vel)
             robot.reset(pos=pos, vel=vel, base_pos=base_pos[i])

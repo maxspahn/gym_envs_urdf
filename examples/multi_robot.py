@@ -1,17 +1,24 @@
 import gym
-import urdfenvs.generic_urdf_reacher
 import numpy as np
+from urdfenvs.generic_urdf_reacher.resources.generic_urdf_reacher import GenericUrdfReacher
+from urdfenvs.tiago_reacher.resources.tiago_robot import TiagoRobot
+from urdfenvs.prius.resources.prius import Prius
 
 goal = True
 obstacles = True
 
-
 def main():
-    urdf_files = ["pointRobot.urdf", "ur5.urdf", "ur5.urdf"]
+    robots = [
+        GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
+        # GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
+        # GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
+        TiagoRobot(mode="vel"),
+        Prius(mode="vel")
+    ]
 
     env = gym.make(
-        "generic-urdf-reacher-v0",
-        dt=0.01, urdf=urdf_files, render=True, mode=["vel", "acc", "tor"]
+        "urdf-env-v0",
+        dt=0.01, robots=robots, render=True
     )
     n = env.n()
     action = np.ones(n) * -0.2

@@ -20,9 +20,9 @@ class DifferentialDriveRobot(GenericRobot):
         observation with that position.
     """
 
-    def __init__(self, n: int, urdf_file: str):
+    def __init__(self, n: int, urdf_file: str, mode: str):
         """Constructor for differential drive robots."""
-        super().__init__(n, urdf_file)
+        super().__init__(n, urdf_file, mode)
         self._wheel_radius: float = None
         self._wheel_distance: float = None
         self._spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15])
@@ -52,12 +52,12 @@ class DifferentialDriveRobot(GenericRobot):
         aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
         return (ospace, aspace)
 
-    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> None:
+    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None, base_pos: np.ndarray = [0.0, 0.0, 0.0]) -> None:
         """ Reset simulation and add robot """
         if hasattr(self, "_robot"):
             p.resetSimulation()
         base_orientation = p.getQuaternionFromEuler([0, 0, pos[2]])
-        spawn_pos = self._spawn_offset + np.array([pos[0], pos[1], 0.0])
+        spawn_pos = self._spawn_offset + base_pos
         self._robot = p.loadURDF(
             fileName=self._urdf_file,
             basePosition=spawn_pos,
@@ -86,6 +86,15 @@ class DifferentialDriveRobot(GenericRobot):
         # set base velocity
         self.update_state()
         self._integrated_velocities = vel
+
+    def check_state(self, pos: np.ndarray, vel: np.ndarray) -> tuple:
+        """Filters state of the robot and returns a valid state."""
+
+        if not isinstance(pos, np.ndarray) or not pos.size == self.ns():
+            pos = np.zeros(self.ns())
+        if not isinstance(vel, np.ndarray) or not vel.size == self.ns():
+            vel = np.zeros(self.ns())
+        return pos, vel
 
     def read_limits(self) -> None:
         """ Set position, velocity, acceleration
