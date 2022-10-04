@@ -1,20 +1,15 @@
 import gym
 import urdfenvs.generic_urdf_reacher
 import numpy as np
+import os
 
-goal = False
-obstacles = False
-
-
-def main():
-    urdf_file = "ur5.urdf"
-
+def run_generic_holonomic(n_steps=1000, render=False, goal=True, obstacles=True):
+    urdf_file = os.path.dirname(os.path.abspath(__file__)) + "/ur5.urdf"
     env = gym.make(
-        "generic-urdf-reacher-vel-v0", dt=0.01, urdf=urdf_file, render=True
+        "generic-urdf-reacher-vel-v0", dt=0.01, urdf=urdf_file, render=render
     )
     n = env.n()
     action = np.ones(n) * -0.2
-    n_steps = 100000
     pos0 = np.zeros(n)
     pos0[1] = -0.0
     ob = env.reset(pos=pos0)
@@ -32,9 +27,12 @@ def main():
 
         env.add_obstacle(dynamicSphereObst2)
     print("Starting episode")
-    for i in range(n_steps):
+    history = []
+    for _ in range(n_steps):
         ob, _, _, _ = env.step(action)
+        history.append(ob)
+    return history
 
 
 if __name__ == "__main__":
-    main()
+    run_generic_holonomic(render=True)
