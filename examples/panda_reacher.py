@@ -2,17 +2,12 @@ import gym
 import urdfenvs.panda_reacher
 import numpy as np
 
-goal = False
-obstacles = False
-
-
-def main():
+def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
     gripper = True
     env = gym.make(
-        "panda-reacher-vel-v0", dt=0.01, render=True, gripper=gripper
+        "panda-reacher-vel-v0", dt=0.01, render=render, gripper=gripper
     )
     action = np.ones(9) * 0.0
-    n_steps = 100000
     ob = env.reset()
     print(f"Initial observation : {ob}")
     if goal:
@@ -28,6 +23,7 @@ def main():
 
         env.add_obstacle(dynamicSphereObst2)
     print("Starting episode")
+    history = []
     for i in range(n_steps):
         if (int(i / 70)) % 2 == 0:
             action[7] = -0.02
@@ -39,7 +35,9 @@ def main():
             ob, _, _, _ = env.step(action)
         else:
             ob, _, _, _ = env.step(action[0:7])
+        history.append(ob)
+    return history
 
 
 if __name__ == "__main__":
-    main()
+    run_panda(render=True)
