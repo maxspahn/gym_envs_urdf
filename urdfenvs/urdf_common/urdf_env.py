@@ -230,9 +230,9 @@ class UrdfEnv(gym.Env):
 
         # self.apply_action(action)
         for obst in self._obsts:
-            obst.updateBulletPosition(p, t=self.t())
+            obst.update_bullet_position(p, t=self.t())
         for goal in self._goals:
-            goal.updateBulletPosition(p, t=self.t())
+            goal.update_bullet_position(p, t=self.t())
         p.stepSimulation()
         ob = self._get_ob()
 
@@ -272,7 +272,7 @@ class UrdfEnv(gym.Env):
         """
         # add obstacle to environment
         self._obsts.append(obst)
-        obst.add2Bullet(p)
+        obst.add_to_bullet(p)
 
         # refresh observation space of robots sensors
 
@@ -301,7 +301,7 @@ class UrdfEnv(gym.Env):
         goal: Goal from MotionPlanningGoal
         """
         self._goals.append(goal)
-        goal.add2Bullet(p)
+        goal.add_to_bullet(p)
 
     def add_walls(
         self,

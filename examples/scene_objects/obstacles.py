@@ -5,41 +5,35 @@ from MotionPlanningEnv.dynamicSphereObstacle import DynamicSphereObstacle
 import os
 
 obst1Dict = {
-    "dim": 3,
     "type": "sphere",
     "geometry": {"position": [2.0, 2.0, 1.0], "radius": 1.0},
 }
-sphereObst1 = SphereObstacle(name="simpleSphere", contentDict=obst1Dict)
+sphereObst1 = SphereObstacle(name="simpleSphere", content_dict=obst1Dict)
 obst2Dict = {
-    "dim": 3,
     "type": "sphere",
     'movable': True,
     "geometry": {"position": [2.0, -0.0, 0.5], "radius": 0.2},
 }
-sphereObst2 = SphereObstacle(name="simpleSphere", contentDict=obst2Dict)
+sphereObst2 = SphereObstacle(name="simpleSphere", content_dict=obst2Dict)
 urdfObst1Dict = {
-    'dim': 3,
     'type': 'urdf',
     'geometry': {'position': [1.5, 0.0, 0.05]},
     'urdf': os.path.join(os.path.dirname(__file__), 'obstacle_data/duck.urdf'),
 }
-urdfObst1 = UrdfObstacle(name='duckUrdf', contentDict=urdfObst1Dict)
+urdfObst1 = UrdfObstacle(name='duckUrdf', content_dict=urdfObst1Dict)
 dynamicObst1Dict = {
-    "dim": 3,
     "type": "sphere",
     "geometry": {"trajectory": ['2.0 - 0.1 * t', '-0.0', '0.1'], "radius": 0.2},
 }
-dynamicSphereObst1 = DynamicSphereObstacle(name="simpleSphere", contentDict=dynamicObst1Dict)
+dynamicSphereObst1 = DynamicSphereObstacle(name="simpleSphere", content_dict=dynamicObst1Dict)
 dynamicObst2Dict = {
-    "dim": 3,
     "type": "analyticSphere",
     "geometry": {"trajectory": ['0.6', '0.5 - 0.1 * t', '0.8'], "radius": 0.2},
 }
-dynamicSphereObst2 = DynamicSphereObstacle(name="simpleSphere", contentDict=dynamicObst2Dict)
+dynamicSphereObst2 = DynamicSphereObstacle(name="simpleSphere", content_dict=dynamicObst2Dict)
 splineDict = {'degree': 2, 'controlPoints': [[0.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 0.0]], 'duration': 10}
 dynamicObst3Dict = {
-    "dim": 3,
     "type": "splineSphere",
     "geometry": {"trajectory": splineDict, "radius": 0.2},
 }
-dynamicSphereObst3 = DynamicSphereObstacle(name="simpleSphere", contentDict=dynamicObst3Dict)
+dynamicSphereObst3 = DynamicSphereObstacle(name="simpleSphere", content_dict=dynamicObst3Dict)
