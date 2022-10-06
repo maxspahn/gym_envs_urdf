@@ -1,10 +1,16 @@
 import gym
-from urdfenvs import iris
 import numpy as np
+from urdfenvs.robots.iris import IrisDrone
 
 
 def run_iris(n_steps=3000, render=False, goal=True, obstacles=True):
-    env = gym.make("iris-rotor-vel-v0", dt=0.01, render=render)
+    robots = [
+        IrisDrone(mode="vel"),
+    ]
+    env = gym.make(
+        "urdf-env-v0",
+        dt=0.01, robots=robots, render=render
+    )
     # set initial state [x, y, z, qx, qy, qz, qw]
     pos0 = np.array([-2.0, 0.0, 1.2, 0., 0.0, 0.0, 1.])
     ob = env.reset(pos=pos0)

@@ -1,10 +1,16 @@
 import gym
-import urdfenvs.dual_arm
 import numpy as np
+from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 
 
 def run_dual_arm(n_steps=5000, render=False, goal=True, obstacles=True):
-    env = gym.make("dual-arm-vel-v0", dt=0.01, render=render)
+    robots = [
+        GenericUrdfReacher(urdf="dual_arm.urdf", mode="vel"),
+    ]
+    env = gym.make(
+        "urdf-env-v0",
+        dt=0.01, robots=robots, render=render
+    )
     action = np.array([0.3, 0.0, 0.0, 0.0, 0.0])
     ob = env.reset()
     print(f"Initial observation : {ob}")

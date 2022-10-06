@@ -219,6 +219,7 @@ class DifferentialDriveRobot(GenericRobot):
 
     def apply_velocity_action(self, vels: np.ndarray) -> None:
         """Applies angular velocities to the arm joints."""
+        self.apply_base_velocity(vels) 
         for i in range(2, self._n):
             p.setJointMotorControl2(
                 self._robot,

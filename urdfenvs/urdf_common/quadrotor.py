@@ -39,7 +39,7 @@ class QuadrotorModel(GenericRobot):
         The angular velocity of the quadrotor in the world frame
     """
 
-    def __init__(self, n: int, urdf_file: str) -> None:
+    def __init__(self, n: int, urdf_file: str, mode: str) -> None:
         """Constructor for quadrotor model robot."""
         super().__init__(n, urdf_file)
         self._swawn_offset: np.ndarray = np.array(
@@ -62,7 +62,7 @@ class QuadrotorModel(GenericRobot):
         """
         return 6
 
-    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> None:
+    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None, base_pos: np.ndarray=np.array([0.0, 0.0, 0.0])) -> None:
         if hasattr(self, "_robot"):
             p.resetSimulation()
         base_orientation = pos[3:7]

@@ -1,12 +1,16 @@
 import gym
-import urdfenvs.generic_urdf_reacher
+from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 import numpy as np
 import os
 
 def run_generic_holonomic(n_steps=1000, render=False, goal=True, obstacles=True):
     urdf_file = os.path.dirname(os.path.abspath(__file__)) + "/ur5.urdf"
+    robots = [
+        GenericUrdfReacher(urdf=urdf_file, mode="vel"),
+    ]
     env = gym.make(
-        "generic-urdf-reacher-vel-v0", dt=0.01, urdf=urdf_file, render=render
+        "urdf-env-v0",
+        dt=0.01, robots=robots, render=render
     )
     n = env.n()
     action = np.ones(n) * -0.2

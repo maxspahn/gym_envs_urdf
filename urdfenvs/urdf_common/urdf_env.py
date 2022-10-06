@@ -432,16 +432,19 @@ class UrdfEnv(gym.Env):
                 "Adding an object while the simulation already started"
             )
 
-    def add_sensor(self, sensor: Sensor) -> None:
+    def add_sensor(self, sensor: Sensor, robot_ids: List) -> None:
         """Adds sensor to the robot.
 
         Adding a sensor requires an update to the observation space.
         This seems to require a conversion to dict and back to
         gym.spaces.Dict.
         """
-        for i, robot in enumerate(self._robots):
-            robot.add_sensor(sensor)
-            cur_dict = dict(self.observation_space[f'robot_{i}'].spaces)
+        for i in robot_ids:
+            self._robots[i].add_sensor(sensor)
+            if self.observation_space:
+                cur_dict = dict(self.observation_space[f'robot_{i}'].spaces)
+            else:
+                raise KeyError(f"Observation space for robot {i} has not been created. Add sensor after reset.")
             cur_dict[sensor.name()] = sensor.get_observation_space()
             self.observation_space[f'robot_{i}'] = gym.spaces.Dict(cur_dict)
 

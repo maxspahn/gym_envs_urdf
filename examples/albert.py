@@ -1,11 +1,17 @@
 import gym
-import urdfenvs.albert_reacher
 import numpy as np
+from urdfenvs.robots.albert import AlbertRobot
 import warnings
 
 
 def run_albert(n_steps=1000, render=False, goal=True, obstacles=True):
-    env = gym.make("albert-reacher-vel-v0", dt=0.01, render=render)
+    robots = [
+        AlbertRobot(mode="vel"),
+    ]
+    env = gym.make(
+        "urdf-env-v0",
+        dt=0.01, robots=robots, render=render
+    )
     action = np.zeros(9)
     action[0] = 0.2
     action[1] = 0.0

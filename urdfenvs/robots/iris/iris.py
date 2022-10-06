@@ -4,7 +4,7 @@ import numpy as np
 from urdfenvs.urdf_common.quadrotor import QuadrotorModel
 
 
-class IRIS(QuadrotorModel):
+class IrisDrone(QuadrotorModel):
     """IRIS model
 
     Attributes
@@ -15,7 +15,7 @@ class IRIS(QuadrotorModel):
 
     """
 
-    def __init__(self):
+    def __init__(self, mode: str):
         n = 4  # number of actuated joints
         urdf_file = os.path.join(os.path.dirname(__file__), 'iris.urdf')
         self._scaling: float = 1.0
@@ -25,7 +25,7 @@ class IRIS(QuadrotorModel):
         self._rotor_max_rpm = 2500
         self._rotor_min_rpm = 0
         self._spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.00047494])
-        super().__init__(n, urdf_file)
+        super().__init__(n, urdf_file, mode)
 
     def set_joint_names(self) -> None:
         """Set joint indices.
@@ -33,18 +33,15 @@ class IRIS(QuadrotorModel):
         - 2: back left, anticlockwise
         - 3: front left, clockwise
         - 4: back right, clockwise
-        
         Top-down view:
-        
         2      3
-          x  x          
+          x  x
             x   => front
-          x  x     
+          x  x
         4      1
-        
         """
         self._robot_joints = [1, 2, 3, 4]
-    
+
     def set_acceleration_limits(self):
         acc_limit = np.array([5.0, 5.0, 5.0])
         self._limit_acc_j[0, :] = -acc_limit
@@ -53,9 +50,9 @@ class IRIS(QuadrotorModel):
     def check_state(self, pos, vel):
         if (
             not isinstance(pos, np.ndarray)
-            or not pos.size == self._robot.n() + 3
+            or not pos.size == self.n() + 3
         ):
-            pos = np.zeros(self._robot.n() + 3)
+            pos = np.zeros(self.n() + 3)
         if not isinstance(vel, np.ndarray) or not vel.size == self._robot.n():
-            vel = np.zeros(self._robot.n())
+            vel = np.zeros(self.n())
         return pos, vel

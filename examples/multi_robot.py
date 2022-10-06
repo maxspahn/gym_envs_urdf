@@ -1,8 +1,8 @@
 import gym
 import numpy as np
-from urdfenvs.generic_urdf_reacher.resources.generic_urdf_reacher import GenericUrdfReacher
-from urdfenvs.tiago_reacher.resources.tiago_robot import TiagoRobot
-from urdfenvs.prius.resources.prius import Prius
+from urdfenvs.robots.tiago import TiagoRobot
+from urdfenvs.robots.generic_urdf import GenericUrdfReacher
+from urdfenvs.robots.prius import Prius
 
 goal = True
 obstacles = True
@@ -25,7 +25,11 @@ def main():
     n_steps = 100000
     pos0 = np.zeros(n)
     pos0[1] = -0.0
-    base_pos = np.array([[0.0, 1.0, 0.0], [0.0, -1.0, 0.0], [0.0, -2.0, 0.0]])
+    base_pos = np.array([
+        [0.0, 1.0, 0.0],
+        [0.0, -1.0, 0.0],
+        [0.0, -2.0, 0.0]
+        ])
     ob = env.reset(pos=pos0, base_pos=base_pos)
     print(f"Initial observation : {ob}")
     if goal:

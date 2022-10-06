@@ -1,19 +1,6 @@
 import pytest
 import warnings
 
-from albert import run_albert
-from boxer import run_boxer
-from dual_arm import run_dual_arm
-from generic_holonomic import run_generic_holonomic
-from iris import run_iris
-from panda_reacher import run_panda
-from mobile_reacher import run_mobile_reacher
-from n_link_urdf_reacher import run_n_link_reacher
-from prius import run_prius
-from point_robot import run_point_robot
-
-
-
 def blueprint_test(test_main):
     """
     Blueprint for environment tests.
@@ -32,31 +19,54 @@ def blueprint_test(test_main):
 
 
 def test_boxer_robot():
+    from boxer import run_boxer
     blueprint_test(run_boxer)
 
 def test_albert_robot():
+    from albert import run_albert
     blueprint_test(run_albert)
 
 def test_dual_arm_robot():
+    from dual_arm import run_dual_arm
     blueprint_test(run_dual_arm)
 
 def test_generic_holonomic_robot():
+    from generic_holonomic import run_generic_holonomic
     blueprint_test(run_generic_holonomic)
 
 def test_iris_robot():
+    from iris import run_iris
     blueprint_test(run_iris)
 
 def test_panda_robot():
+    from panda_reacher import run_panda
     blueprint_test(run_panda)
 
 def test_mobile_reacher_robot():
+    from mobile_reacher import run_mobile_reacher
     blueprint_test(run_mobile_reacher)
 
 def test_n_link_reacher_robot():
+    from n_link_urdf_reacher import run_n_link_reacher
     blueprint_test(run_n_link_reacher)
 
 def test_prius_robot():
+    from prius import run_prius
     blueprint_test(run_prius)
 
-def test_point_robot_robot():
+def test_point_robot():
+    from point_robot import run_point_robot
     blueprint_test(run_point_robot)
+
+def test_point_robot_with_lidar():
+    from point_robot_lidar_sensor import run_point_robot_with_lidar
+    blueprint_test(run_point_robot_with_lidar)
+
+def test_point_robot_with_obstacle_sensor():
+    from point_robot_obstacle_sensor import run_point_robot_with_obstacle_sensor
+    blueprint_test(run_point_robot_with_obstacle_sensor)
+
+def test_tiago_robot():
+    from tiago import run_tiago
+    blueprint_test(run_tiago)
+
