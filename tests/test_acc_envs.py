@@ -25,9 +25,10 @@ def pandaRobotEnv():
 @pytest.fixture
 def nLinkRobotEnv():
     from urdfenvs.robots.generic_urdf import GenericUrdfReacher
+    n = 1
     init_pos = np.array([0.0])
     init_vel = np.array([0.0])
-    robot = GenericUrdfReacher(urdf="nlink_1.urdf", mode="acc")
+    robot = GenericUrdfReacher(urdf=f"nlink_{n}.urdf", mode="acc")
     env = gym.make("urdf-env-v0", robots=[robot], render=False, dt=0.01)
     _ = env.reset(pos=init_pos, vel=init_vel)
     return (env, init_pos, init_vel)
