@@ -4,7 +4,7 @@ from urdfenvs.robots.tiago import TiagoRobot
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.robots.prius import Prius
 
-def run_multi_robot(n_steps=1000, render=False, obstacle=False, goal=False):
+def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
         # GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
@@ -46,4 +46,4 @@ def run_multi_robot(n_steps=1000, render=False, obstacle=False, goal=False):
 
 
 if __name__ == "__main__":
-    run_multi_robot(render=True)
+    run_multi_robot(render=True, obstacles=True, goal=True)
