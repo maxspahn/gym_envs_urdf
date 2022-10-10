@@ -4,10 +4,7 @@ from urdfenvs.robots.tiago import TiagoRobot
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.robots.prius import Prius
 
-goal = True
-obstacles = True
-
-def main():
+def run_multi_robot(n_steps=1000, render=False, obstacle=False, goal=False):
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
         # GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
@@ -22,7 +19,6 @@ def main():
     )
     n = env.n()
     action = np.ones(n) * -0.2
-    n_steps = 100000
     pos0 = np.zeros(n)
     pos0[1] = -0.0
     base_pos = np.array([
@@ -41,10 +37,13 @@ def main():
         env.add_obstacle(dynamicSphereObst2)
 
     print("Starting episode")
+    history = []
     for _ in range(n_steps):
         ob, _, _, _ = env.step(action)
-        print(ob)
+        history.append(ob)
+    env.close()
+    return history
 
 
 if __name__ == "__main__":
-    main()
+    run_multi_robot(render=True)

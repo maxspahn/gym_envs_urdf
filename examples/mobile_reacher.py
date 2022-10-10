@@ -27,6 +27,7 @@ def run_mobile_reacher(n_steps=1000, render=False, goal=True, obstacles=True):
             action[-2] = 0.01
         ob, _, _, _ = env.step(action)
         history.append(ob)
+    env.close()
     return history
 
 

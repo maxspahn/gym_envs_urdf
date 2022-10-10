@@ -35,6 +35,7 @@ def run_generic_holonomic(n_steps=1000, render=False, goal=True, obstacles=True)
     for _ in range(n_steps):
         ob, _, _, _ = env.step(action)
         history.append(ob)
+    env.close()
     return history
 
 

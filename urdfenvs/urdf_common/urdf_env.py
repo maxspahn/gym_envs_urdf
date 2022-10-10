@@ -188,12 +188,10 @@ class UrdfEnv(gym.Env):
         self._flatten_observation: bool = flatten_observation
         self._space_set = False
         if self._render:
-            cid = p.connect(p.SHARED_MEMORY)
-            if cid < 0:
-                cid = p.connect(p.GUI)
+            self._cid = p.connect(p.GUI)
             p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
         else:
-            p.connect(p.DIRECT)
+            self._cid = p.connect(p.DIRECT)
 
     def n(self) -> int:
         return sum([robot.n() for robot in self._robots])
@@ -233,7 +231,7 @@ class UrdfEnv(gym.Env):
             obst.update_bullet_position(p, t=self.t())
         for goal in self._goals:
             goal.update_bullet_position(p, t=self.t())
-        p.stepSimulation()
+        p.stepSimulation(self._cid)
         ob = self._get_ob()
 
         reward = 1.0
@@ -490,4 +488,4 @@ class UrdfEnv(gym.Env):
         time.sleep(self.dt())
 
     def close(self) -> None:
-        p.disconnect()
+        p.disconnect(self._cid)

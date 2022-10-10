@@ -36,6 +36,7 @@ def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
         else:
             ob, _, _, _ = env.step(action[0:7])
         history.append(ob)
+    env.close()
     return history
 
 

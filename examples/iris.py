@@ -24,6 +24,7 @@ def run_iris(n_steps=3000, render=False, goal=True, obstacles=True):
             action += np.array([0, 1, 0, 1]) * -1
         ob, _, _, _ = env.step(action)
         history.append(ob)
+    env.close()
     return history
         
 

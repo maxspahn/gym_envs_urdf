@@ -48,7 +48,7 @@ class ObstacleSensor(Sensor):
         max_os_value = 1000
 
         for obj_id in range(2, p.getNumBodies()):
-            spaces_dict[str(obj_id)] = gym.spaces.Dict(
+            spaces_dict[f"obstacle_{obj_id-2}"] = gym.spaces.Dict(
                 {
                     "pose": gym.spaces.Dict(
                         {
@@ -100,7 +100,7 @@ class ObstacleSensor(Sensor):
             pos = p.getBasePositionAndOrientation(obj_id)
             vel = p.getBaseVelocity(obj_id)
 
-            observation[str(obj_id)] = {
+            observation[f"obstacle_{obj_id-2}"] = {
                 "pose": {
                     "position": np.array(pos[0]),
                     "orientation": np.array(pos[1])
