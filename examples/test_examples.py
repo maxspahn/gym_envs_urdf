@@ -72,5 +72,5 @@ def test_tiago_robot():
 
 def test_multi_robot():
     from multi_robot import run_multi_robot
-    blueprint_test(run_tiago)
+    blueprint_test(run_multi_robot)
 
