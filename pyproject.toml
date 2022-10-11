@@ -3,6 +3,16 @@ name = "urdfenvs"
 version = "0.3.0"
 description = "Simple simulation environment for robots, based on the urdf files."
 authors = ["Max Spahn <m.spahn@tudelft.nl>"]
+maintainers = [
+  "Max Spahn <m.spahn@tudelft.nl>",
+  "Chadi Salmi <c.salmi@tudelft.nl"
+]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+homepage = "https://maxspahn.github.io/gym_envs_urdf/"
+documentation = "https://maxspahn.github.io/gym_envs_urdf/"
+repository = "https://github.com/maxspahn/gym_envs_urdf"
+keywords = ["robotics", "motion-planning", "simulation"]
 
 [tool.poetry.dependencies]
 python = "^3.6.5, <3.10"

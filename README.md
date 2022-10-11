@@ -17,9 +17,9 @@ Reinforcement-Learning but rather to local motion planning in general.
   <td> Non-Holonomic Robot </td>
  </tr>
  <tr>
-  <td> <img src="/docs/source/img/pointRobot.gif" width="250" height="250"/> </td>
-  <td> <img src="/docs/source/img/pointRobotKeyboardInput.gif" width="250" height="250"/> </td>  
-  <td> <img src="/docs/source/img/boxerRobot.gif" width="250" height="250"/> </td>
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/pointRobot.gif" width="250" height="250"/> </td>
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/pointRobotKeyboardInput.gif" width="250" height="250"/> </td>  
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/boxerRobot.gif" width="250" height="250"/> </td>
  </tr>
 </table>
 
@@ -29,8 +29,8 @@ Reinforcement-Learning but rather to local motion planning in general.
   <td> Tiago Robot with Keyboard Input </td>
  </tr>
  <tr>
-  <td> <img src="/docs/source/img/tiago.gif" width="250" height="250"/> </td>
-  <td> <img src="/docs/source/img/tiagoKeyboardInput.gif" width="250" height="250"/> </td>
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/tiago.gif" width="250" height="250"/> </td>
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/tiagoKeyboardInput.gif" width="250" height="250"/> </td>
  </tr>
 </table>
 
@@ -40,8 +40,8 @@ Reinforcement-Learning but rather to local motion planning in general.
   <td> Albert Robot </td>
   </tr>
  <tr>
-  <td> <img src="/docs/source/img/panda.gif" width="250" height="250"/> </td>
-  <td> <img src="/docs/source/img/albert.gif" width="250" height="250"/> </td>
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/panda.gif" width="250" height="250"/> </td>
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/albert.gif" width="250" height="250"/> </td>
   </tr>
 </table>
 
