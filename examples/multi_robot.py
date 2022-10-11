@@ -1,13 +1,18 @@
 import gym
-from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 import numpy as np
-import os
+from urdfenvs.robots.tiago import TiagoRobot
+from urdfenvs.robots.generic_urdf import GenericUrdfReacher
+from urdfenvs.robots.prius import Prius
 
-def run_generic_holonomic(n_steps=1000, render=False, goal=True, obstacles=True):
-    urdf_file = os.path.dirname(os.path.abspath(__file__)) + "/ur5.urdf"
+def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
     robots = [
-        GenericUrdfReacher(urdf=urdf_file, mode="vel"),
+        GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
+        # GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
+        # GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
+        TiagoRobot(mode="vel"),
+        Prius(mode="vel")
     ]
+
     env = gym.make(
         "urdf-env-v0",
         dt=0.01, robots=robots, render=render
@@ -16,7 +21,12 @@ def run_generic_holonomic(n_steps=1000, render=False, goal=True, obstacles=True)
     action = np.ones(n) * -0.2
     pos0 = np.zeros(n)
     pos0[1] = -0.0
-    ob = env.reset(pos=pos0)
+    base_pos = np.array([
+        [0.0, 1.0, 0.0],
+        [0.0, -1.0, 0.0],
+        [0.0, -2.0, 0.0]
+        ])
+    ob = env.reset(pos=pos0, base_pos=base_pos)
     print(f"Initial observation : {ob}")
     if goal:
         from examples.scene_objects.goal import dynamicGoal
@@ -24,12 +34,8 @@ def run_generic_holonomic(n_steps=1000, render=False, goal=True, obstacles=True)
 
     if obstacles:
         from examples.scene_objects.obstacles import dynamicSphereObst2
-        env.add_goal(dynamicGoal)
-
-    if obstacles:
-        from examples.scene_objects.obstacles import dynamicSphereObst2
-
         env.add_obstacle(dynamicSphereObst2)
+
     print("Starting episode")
     history = []
     for _ in range(n_steps):
@@ -40,4 +46,4 @@ def run_generic_holonomic(n_steps=1000, render=False, goal=True, obstacles=True)
 
 
 if __name__ == "__main__":
-    run_generic_holonomic(render=True)
+    run_multi_robot(render=True, obstacles=True, goal=True)

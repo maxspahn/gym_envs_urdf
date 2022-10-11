@@ -1,10 +1,16 @@
 import gym
-import urdfenvs.prius
+from urdfenvs.robots.prius import Prius
 import numpy as np
 
 
 def run_prius(n_steps=1000, render=False, goal=True, obstacles=True):
-    env = gym.make("prius-vel-v0", dt=0.01, render=render)
+    robots = [
+        Prius(mode="vel"),
+    ]
+    env = gym.make(
+        "urdf-env-v0",
+        dt=0.01, robots=robots, render=render
+    )
     action = np.array([1.1, 0.1])
     pos0 = np.array([-1.0, 0.2, -0.0])
     ob = env.reset(pos=pos0)
@@ -12,9 +18,10 @@ def run_prius(n_steps=1000, render=False, goal=True, obstacles=True):
     history = []
     for i in range(n_steps):
         ob, _, _, _ = env.step(action)
-        if ob['steering'] > 0.2:
+        if ob['robot_0']['steering'] > 0.2:
             action[1] = 0
         history.append(ob)
+    env.close()
     return history
 
 if __name__ == "__main__":

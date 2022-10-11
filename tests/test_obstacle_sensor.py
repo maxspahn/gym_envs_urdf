@@ -4,93 +4,113 @@ import pytest
 
 from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
 from examples.scene_objects.obstacles import sphereObst1, urdfObst1, dynamicSphereObst3
-import urdfenvs.point_robot_urdf
+from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 
 
-@pytest.fixture
-def pointRobotEnv():
-    import urdfenvs.point_robot_urdf
-
-    env = gym.make("pointRobotUrdf-vel-v0", render=False, dt=0.01)
-    _ = env.reset()
-    return env
-
-
-def test_staticObstacle(pointRobotEnv):
-    pointRobotEnv.add_obstacle(sphereObst1)
-
+def test_staticObstacle():
+    robots = [
+        GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
+    ]
+    env = gym.make(
+        "urdf-env-v0",
+        dt=0.01, robots=robots, render=False
+    )
     # add sensor
+    env.reset()
+    env.add_obstacle(sphereObst1)
     sensor = ObstacleSensor()
-    pointRobotEnv.add_sensor(sensor)
-    action = np.random.random(pointRobotEnv.n())
-    ob, _, _, _ = pointRobotEnv.step(action)
-    assert "obstacleSensor" in ob
-    assert "2" in ob["obstacleSensor"]
-    assert isinstance(ob["obstacleSensor"]["2"]["pose"]["position"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["twist"]["linear"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["pose"]["orientation"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["twist"]["angular"], np.ndarray)
+    env.add_sensor(sensor, [0])
+    action = np.random.random(env.n())
+    ob, _, _, _ = env.step(action)
+    print(ob['robot_0']['obstacleSensor'])
+    assert "obstacleSensor" in ob['robot_0']
+    assert "obstacle_0" in ob['robot_0']["obstacleSensor"]
+    assert isinstance(ob['robot_0']["obstacleSensor"]["obstacle_0"]["pose"]["position"], np.ndarray)
+    assert isinstance(ob['robot_0']["obstacleSensor"]["obstacle_0"]["twist"]["linear"], np.ndarray)
+    assert isinstance(ob['robot_0']["obstacleSensor"]["obstacle_0"]["pose"]["orientation"], np.ndarray)
+    assert isinstance(ob['robot_0']["obstacleSensor"]["obstacle_0"]["twist"]["angular"], np.ndarray)
     np.testing.assert_array_almost_equal(
-        ob["obstacleSensor"]["2"]["pose"]["position"],
-        sphereObst1.position(t=pointRobotEnv.t()),
+        ob['robot_0']["obstacleSensor"]["obstacle_0"]["pose"]["position"],
+        sphereObst1.position(t=env.t()),
         decimal=2,
     )
+    env.close()
 
 
-def test_dynamicObstacle(pointRobotEnv):
-    pointRobotEnv.add_obstacle(dynamicSphereObst3)
-
-    # add sensor
-    sensor = ObstacleSensor()
-    pointRobotEnv.add_sensor(sensor)
-    action = np.random.random(pointRobotEnv.n())
-    ob, _, _, _ = pointRobotEnv.step(action)
-    assert "obstacleSensor" in ob
-    assert "2" in ob["obstacleSensor"]
-    assert isinstance(ob["obstacleSensor"]["2"]["pose"]["position"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["twist"]["linear"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["pose"]["orientation"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["twist"]["angular"], np.ndarray)
-    np.testing.assert_array_almost_equal(
-        ob["obstacleSensor"]["2"]["pose"]["position"],
-        dynamicSphereObst3.position(t=pointRobotEnv.t()),
-        decimal=2,
+def test_dynamicObstacle():
+    robots = [
+        GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
+    ]
+    env = gym.make(
+        "urdf-env-v0",
+        dt=0.01, robots=robots, render=False
     )
 
+    # add sensor
+    env.reset()
+    env.add_obstacle(dynamicSphereObst3)
+    sensor = ObstacleSensor()
+    env.add_sensor(sensor, [0])
+    action = np.random.random(env.n())
+    ob, _, _, _ = env.step(action)
+    assert "obstacleSensor" in ob['robot_0']
+    assert "obstacle_0" in ob['robot_0']["obstacleSensor"]
+    assert isinstance(ob['robot_0']["obstacleSensor"]["obstacle_0"]["pose"]["position"], np.ndarray)
+    assert isinstance(ob['robot_0']["obstacleSensor"]["obstacle_0"]["twist"]["linear"], np.ndarray)
+    assert isinstance(ob['robot_0']["obstacleSensor"]["obstacle_0"]["pose"]["orientation"], np.ndarray)
+    assert isinstance(ob['robot_0']["obstacleSensor"]["obstacle_0"]["twist"]["angular"], np.ndarray)
+    np.testing.assert_array_almost_equal(
+        ob['robot_0']["obstacleSensor"]["obstacle_0"]["pose"]["position"],
+        dynamicSphereObst3.position(t=env.t()),
+        decimal=2,
+    )
+    env.close()
 
-def test_shape_observation_space(pointRobotEnv):
+
+def test_shape_observation_space():
+    robots = [
+        GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
+    ]
+    env = gym.make(
+        "urdf-env-v0",
+        dt=0.01, robots=robots, render=False
+    )
     # add obstacle and sensor
-    pointRobotEnv.add_obstacle(sphereObst1)
+    env.reset()
+    env.add_obstacle(dynamicSphereObst3)
     sensor = ObstacleSensor()
-    pointRobotEnv.add_sensor(sensor)
-    action = np.random.random(pointRobotEnv.n())
-    ob, _, _, _ = pointRobotEnv.step(action)
+    env.add_sensor(sensor, [0])
+    action = np.random.random(env.n())
+    ob, _, _, _ = env.step(action)
+    print(ob['robot_0']['obstacleSensor'])
 
-    assert ob["obstacleSensor"]["2"]["pose"]["position"].shape == (3, )
-    assert ob["obstacleSensor"]["2"]["pose"]["orientation"].shape == (4, )
-    assert ob["obstacleSensor"]["2"]["twist"]["linear"].shape == (3, )
-    assert ob["obstacleSensor"]["2"]["twist"]["angular"].shape == (3, )
+    assert ob['robot_0']["obstacleSensor"]["obstacle_0"]["pose"]["position"].shape == (3, )
+    assert ob['robot_0']["obstacleSensor"]["obstacle_0"]["pose"]["orientation"].shape == (4, )
+    assert ob['robot_0']["obstacleSensor"]["obstacle_0"]["twist"]["linear"].shape == (3, )
+    assert ob['robot_0']["obstacleSensor"]["obstacle_0"]["twist"]["angular"].shape == (3, )
+    env.close()
 
 
 @pytest.mark.skip(
     reason="Fails due to different position in pybullet and obstacle from motion planning scene"
 )
-def test_urdfObstacle(pointRobotEnv):
+def test_urdfObstacle(env):
     # add sensor
     sensor = ObstacleSensor()
-    pointRobotEnv.add_sensor(sensor)
+    env.add_sensor(sensor, [0])
     # change order
-    pointRobotEnv.add_obstacle(urdfObst1)
-    action = np.random.random(pointRobotEnv.n())
-    ob, _, _, _ = pointRobotEnv.step(action)
-    assert "obstacleSensor" in ob
-    assert "2" in ob["obstacleSensor"]
-    assert isinstance(ob["obstacleSensor"]["2"]["pose"]["position"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["twist"]["linear"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["pose"]["orientation"], np.ndarray)
-    assert isinstance(ob["obstacleSensor"]["2"]["twist"]["angular"], np.ndarray)
+    env.add_obstacle(urdfObst1)
+    action = np.random.random(env.n())
+    ob, _, _, _ = env.step(action)
+    assert "obstacleSensor" in ob['robot_0']
+    assert "2" in ob['robot_0']["obstacleSensor"]
+    assert isinstance(ob['robot_0']["obstacleSensor"]["2"]["pose"]["position"], np.ndarray)
+    assert isinstance(ob['robot_0']["obstacleSensor"]["2"]["twist"]["linear"], np.ndarray)
+    assert isinstance(ob['robot_0']["obstacleSensor"]["2"]["pose"]["orientation"], np.ndarray)
+    assert isinstance(ob['robot_0']["obstacleSensor"]["2"]["twist"]["angular"], np.ndarray)
     np.testing.assert_array_almost_equal(
-        ob["obstacleSensor"]["pose"]["position"],
-        dynamicSphereObst3.position(t=pointRobotEnv.t()),
+        ob['robot_0']["obstacleSensor"]["pose"]["position"],
+        dynamicSphereObst3.position(t=env.t()),
         decimal=2,
     )
+    env.close()
