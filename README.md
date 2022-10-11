@@ -17,9 +17,9 @@ Reinforcement-Learning but rather to local motion planning in general.
   <td> Non-Holonomic Robot </td>
  </tr>
  <tr>
-  <td> <img src="/docs/source/img/pointRobot.gif" width="250" height="250"/> </td>
-  <td> <img src="/docs/source/img/pointRobotKeyboardInput.gif" width="250" height="250"/> </td>  
-  <td> <img src="/docs/source/img/boxerRobot.gif" width="250" height="250"/> </td>
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/pointRobot.gif" width="250" height="250"/> </td>
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/pointRobotKeyboardInput.gif" width="250" height="250"/> </td>  
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/boxerRobot.gif" width="250" height="250"/> </td>
  </tr>
 </table>
 
@@ -29,8 +29,8 @@ Reinforcement-Learning but rather to local motion planning in general.
   <td> Tiago Robot with Keyboard Input </td>
  </tr>
  <tr>
-  <td> <img src="/docs/source/img/tiago.gif" width="250" height="250"/> </td>
-  <td> <img src="/docs/source/img/tiagoKeyboardInput.gif" width="250" height="250"/> </td>
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/tiago.gif" width="250" height="250"/> </td>
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/tiagoKeyboardInput.gif" width="250" height="250"/> </td>
  </tr>
 </table>
 
@@ -40,8 +40,8 @@ Reinforcement-Learning but rather to local motion planning in general.
   <td> Albert Robot </td>
   </tr>
  <tr>
-  <td> <img src="/docs/source/img/panda.gif" width="250" height="250"/> </td>
-  <td> <img src="/docs/source/img/albert.gif" width="250" height="250"/> </td>
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/panda.gif" width="250" height="250"/> </td>
+  <td> <img src="https://raw.githubusercontent.com/maxspahn/gym_envs_urdf/master/docs/source/img/albert.gif" width="250" height="250"/> </td>
   </tr>
 </table>
 
@@ -105,10 +105,10 @@ You can test those examples using the following (if you use poetry, make
 sure to enter the virtual environment first with `poetry shell`)
 
 ``` {.sourceCode .python}
-python3 pointRobot.py
+python3 point_robot.py
 ```
 
-Replace pointRobot.py with the name of the script you want to run.
+Replace point_robot.py with the name of the script you want to run.
 
 Use environments
 ----------------
@@ -122,7 +122,7 @@ environments rely mostly on three functions
 -   `gym.step(action)` to step one time step in the environment.
 
 For example, in
-[examples/pointRobot.py](https://github.com/maxspahn/gym_envs_urdf/blob/master/examples/pointRobot.py),
+[examples/point_robot.py](https://github.com/maxspahn/gym_envs_urdf/blob/master/examples/point_robot.py),
 you can find the following syntax to `make`, `reset` and `step` the
 environment.
 
@@ -140,4 +140,4 @@ from gym import envs
 print(envs.registry.all())
 ```
 
-Go ahead and explore all the examples you can finde there.
+Go ahead and explore all the examples you can find there.

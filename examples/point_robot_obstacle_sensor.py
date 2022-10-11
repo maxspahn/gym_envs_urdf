@@ -1,5 +1,5 @@
 import gym
-import urdfenvs.point_robot_urdf
+from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
 from examples.scene_objects.obstacles import (
     sphereObst1,
@@ -9,12 +9,15 @@ from examples.scene_objects.obstacles import (
 import numpy as np
 
 
-def main():
-    env = gym.make("pointRobotUrdf-vel-v0", dt=0.05, render=True)
-
+def run_point_robot_with_obstacle_sensor(n_steps=1000, render=False, obstacles=True, goal=True):
+    robots = [
+        GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
+    ]
+    env = gym.make(
+        "urdf-env-v0",
+        dt=0.01, robots=robots, render=render
+    )
     defaultAction = np.array([0.1, 0.0, 0.0])
-    n_episodes = 1
-    n_steps = 100000
     pos0 = np.array([1.0, 0.1, 0.0])
     vel0 = np.array([1.0, 0.0, 0.0])
     ob = env.reset(pos=pos0, vel=vel0)
@@ -27,19 +30,18 @@ def main():
 
     # add sensor
     sensor = ObstacleSensor()
-    env.add_sensor(sensor)
+    env.add_sensor(sensor, [0])
 
-    for e in range(n_episodes):
-
-        print("Starting episode")
-        t = 0
-        for i in range(n_steps):
-            t += env.dt()
-            action = defaultAction
-            ob, reward, done, info = env.step(action)
-            # In observations, information about obstacles is stored in ob['obstacleSensor']
-            print(ob["obstacleSensor"])
+    history = []
+    for _ in range(n_steps):
+        action = defaultAction
+        ob, reward, done, info = env.step(action)
+        # In observations, information about obstacles is stored in ob['obstacleSensor']
+        print(ob['robot_0']["obstacleSensor"])
+        history.append(ob)
+    env.close()
+    return history
 
 
 if __name__ == "__main__":
-    main()
+    run_point_robot_with_obstacle_sensor(render=True)

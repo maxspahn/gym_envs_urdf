@@ -2,3 +2,4 @@ urdfEnvs.egg-info/
 dist
 *.swp
 .vscode
+**/*.pyc

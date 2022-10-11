@@ -1,5 +1,5 @@
 import gym
-import urdfenvs.tiago_reacher
+from urdfenvs.robots.tiago import TiagoRobot
 
 from multiprocessing import Process, Pipe
 import numpy as np
@@ -7,9 +7,14 @@ from urdfenvs.keyboard_input.keyboard_input_responder import Responder
 from pynput.keyboard import Key
 
 
-def main(conn):
-    env = gym.make("tiago-reacher-vel-v0", dt=0.05, render=True)
-    n_steps = 1000
+def run_tiago_keyboard(conn, n_steps=10000, render=True):
+    robots = [
+        TiagoRobot(mode="vel"),
+    ]
+    env = gym.make(
+        "urdf-env-v0",
+        dt=0.01, robots=robots, render=render
+    )
     ob = env.reset()
     print(f"Initial observation : {ob}")
 
@@ -35,7 +40,7 @@ if __name__ == "__main__":
     parent_conn, child_conn = Pipe()
 
     # create parent process
-    p = Process(target=main, args=(parent_conn,))
+    p = Process(target=run_tiago_keyboard, args=(parent_conn,))
 
     # create Responder object
     responder = Responder(child_conn)
