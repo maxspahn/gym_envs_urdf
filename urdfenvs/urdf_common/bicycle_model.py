@@ -72,8 +72,8 @@ class BicycleModel(GenericRobot):
 
         if not isinstance(pos, np.ndarray) or not pos.size == self.ns():
             pos = np.zeros(self.ns())
-        if not isinstance(vel, np.ndarray) or not vel.size == self.ns():
-            vel = np.zeros(self.ns())
+        if not isinstance(vel, np.ndarray) or not vel.size == self.n():
+            vel = np.zeros(self.n())
         return pos, vel
 
     def get_observation_space(self) -> gym.spaces.Dict:
@@ -134,13 +134,11 @@ class BicycleModel(GenericRobot):
                 targetVelocity=vels[0] / (self._wheel_radius * self._scaling),
             )
 
-    def apply_acceleration_action(self, accs: np.ndarray) -> None:
-        print("Acceleration action is not available for prius.")
-        pass
+    def apply_acceleration_action(self, accs: np.ndarray, dt: float) -> None:
+        raise NotImplementedError("Acceleration action is not available for prius.")
 
     def apply_torque_action(self, torques: np.ndarray) -> None:
-        print("Torque action is not available for prius.")
-        pass
+        raise NotImplementedError("Torque action is not available for prius.")
 
     def correct_base_orientation(self, pos_base: np.ndarray) -> np.ndarray:
         """Corrects base orientation by -pi.

@@ -92,8 +92,8 @@ class DifferentialDriveRobot(GenericRobot):
 
         if not isinstance(pos, np.ndarray) or not pos.size == self.ns():
             pos = np.zeros(self.ns())
-        if not isinstance(vel, np.ndarray) or not vel.size == self.ns():
-            vel = np.zeros(self.ns())
+        if not isinstance(vel, np.ndarray) or not vel.size == self.n():
+            vel = np.zeros(self.n())
         return pos, vel
 
     def read_limits(self) -> None:
