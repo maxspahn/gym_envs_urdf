@@ -85,27 +85,31 @@ class BicycleModel(GenericRobot):
         """
         return gym.spaces.Dict(
             {
-                "x": gym.spaces.Box(
-                    low=self._limit_pos_j[0, :],
-                    high=self._limit_pos_j[1, :],
-                    dtype=np.float64,
-                ),
-                "steering": gym.spaces.Box(
-                    low=self._limit_pos_steering[0],
-                    high=self._limit_pos_steering[1],
-                    shape=(1,),
-                    dtype=np.float64,
-                ),
-                "xdot": gym.spaces.Box(
-                    low=self._limit_vel_j[0, :],
-                    high=self._limit_vel_j[1, :],
-                    dtype=np.float64,
-                ),
-                "vel": gym.spaces.Box(
-                    low=self._limit_vel_forward_j[0, :],
-                    high=self._limit_vel_forward_j[1, :],
-                    dtype=np.float64,
-                ),
+                "joint_state": gym.spaces.Dict(
+                    {
+                        "position": gym.spaces.Box(
+                            low=self._limit_pos_j[0, :],
+                            high=self._limit_pos_j[1, :],
+                            dtype=np.float64,
+                        ),
+                        "steering": gym.spaces.Box(
+                            low=self._limit_pos_steering[0],
+                            high=self._limit_pos_steering[1],
+                            shape=(1,),
+                            dtype=np.float64,
+                        ),
+                        "velocity": gym.spaces.Box(
+                            low=self._limit_vel_j[0, :],
+                            high=self._limit_vel_j[1, :],
+                            dtype=np.float64,
+                        ),
+                        "forward_velocity": gym.spaces.Box(
+                            low=self._limit_vel_forward_j[0, :],
+                            high=self._limit_vel_forward_j[1, :],
+                            dtype=np.float64,
+                        ),
+                    }
+                )
             }
         )
 
@@ -189,8 +193,10 @@ class BicycleModel(GenericRobot):
         pos, _, _, _ = p.getJointState(self._robot, self._steering_joints[1])
         steering_pos = np.array([pos])
         self.state = {
-            "x": pos_base,
-            "vel": vel,
-            "xdot": vel_base,
-            "steering": steering_pos,
+            "joint_state": {
+                "position": pos_base,
+                "forward_velocity": vel,
+                "velocity": vel_base,
+                "steering": steering_pos,
+            }
         }

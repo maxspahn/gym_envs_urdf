@@ -115,21 +115,20 @@ def test_allDifferentialDrive(allDifferentialDriveEnvs):
         np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['velocity'][3:], action[2:], decimal=2)
         env.close()
 
-@pytest.mark.skip(reason="Gym.spaces checks for joint_state, but this is not applicable to bicyclemodel")
 def test_allBicycleModel(allBicycleModelEnvs):
     for setup in allBicycleModelEnvs:
         env = gym.make("urdf-env-v0", robots=[setup[0]], render=False, dt=0.01)
         ob = env.reset(pos=setup[1], vel=setup[2])
         action = np.random.random(env.n()) * 0.1
-        np.testing.assert_array_almost_equal(ob['robot_0']['x'], setup[1], decimal=2)
+        np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['position'], setup[1], decimal=2)
         ob, _, _, _ = env.step(action)
         assert isinstance(ob['robot_0'], dict)
-        assert isinstance(ob['robot_0']['x'], np.ndarray)
-        assert isinstance(ob['robot_0']['xdot'], np.ndarray)
-        assert isinstance(ob['robot_0']['vel'], np.ndarray)
-        assert ob['robot_0']['x'].size == env.n() + 1
-        assert ob['robot_0']['xdot'].size == env.n() + 1
-        assert ob['robot_0']['vel'].size == 2
-        np.testing.assert_array_almost_equal(ob['robot_0']['vel'][0:1], action[0:1], decimal=2)
-        np.testing.assert_array_almost_equal(ob['robot_0']['xdot'][3:], action[2:], decimal=2)
+        assert isinstance(ob['robot_0']['joint_state']['position'], np.ndarray)
+        assert isinstance(ob['robot_0']['joint_state']['velocity'], np.ndarray)
+        assert isinstance(ob['robot_0']['joint_state']['forward_velocity'], np.ndarray)
+        assert ob['robot_0']['joint_state']['position'].size == env.n() + 1
+        assert ob['robot_0']['joint_state']['velocity'].size == env.n() + 1
+        assert ob['robot_0']['joint_state']['forward_velocity'].size == 2
+        np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['forward_velocity'][0:1], action[0:1], decimal=2)
+        np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['velocity'][3:], action[2:], decimal=2)
         env.close()
