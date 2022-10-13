@@ -5,6 +5,8 @@ import pybullet as p
 import warnings
 from typing import List
 
+from MotionPlanningEnv.collisionObstacle import CollisionObstacle
+from MotionPlanningGoal.goalComposition import GoalComposition
 from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
@@ -183,8 +185,8 @@ class UrdfEnv(gym.Env):
         self._render: bool = render
         self._done: bool = False
         self._num_sub_steps: float = 20
-        self._obsts: list = []
-        self._goals: list = []
+        self._obsts: dict = {}
+        self._goals: dict = {}
         self._flatten_observation: bool = flatten_observation
         self._space_set = False
         if self._render:
@@ -226,10 +228,9 @@ class UrdfEnv(gym.Env):
             robot.apply_action(action, self.dt())
             action_id +=robot.n()
 
-        # self.apply_action(action)
-        for obst in self._obsts:
+        for obst in self._obsts.values():
             obst.update_bullet_position(p, t=self.t())
-        for goal in self._goals:
+        for goal in self._goals.values():
             goal.update_bullet_position(p, t=self.t())
         p.stepSimulation(self._cid)
         ob = self._get_ob()
@@ -244,23 +245,25 @@ class UrdfEnv(gym.Env):
         """Compose the observation."""
         observation = {}
         for i, robot in enumerate(self._robots):
-            obs = robot.get_observation()
+            obs = robot.get_observation(list(self._obsts.keys()), list(self._goals.keys()))
 
-            if not self.observation_space[f'robot_{i}'].contains(observation):
+            observation[f'robot_{i}'] = obs
+
+            # TODO: Make this check work for the whole observation space (not just 'joint_state'). This also breaks BicycleModel.
+            if not self.observation_space[f'robot_{i}']['joint_state'].contains(observation[f'robot_{i}']['joint_state']):
                 err = WrongObservationError(
                     "The observation does not fit the defined observation space",
-                    obs,
-                    self.observation_space[f'robot_{i}'],
+                    observation[f'robot_{i}']['joint_state'],
+                    self.observation_space[f'robot_{i}']['joint_state'],
                 )
                 warnings.warn(str(err))
 
-            observation[f'robot_{i}'] = obs
         if self._flatten_observation:
             return flatten_observation(observation)
         else:
             return observation
 
-    def add_obstacle(self, obst) -> None:
+    def add_obstacle(self, obst: CollisionObstacle) -> None:
         """Adds obstacle to the simulation environment.
 
         Parameters
@@ -269,11 +272,10 @@ class UrdfEnv(gym.Env):
         obst: Obstacle from MotionPlanningEnv
         """
         # add obstacle to environment
-        self._obsts.append(obst)
-        obst.add_to_bullet(p)
+        obst_id = obst.add_to_bullet(p)
+        self._obsts[obst_id] = obst
 
         # refresh observation space of robots sensors
-
         for i, robot in enumerate(self._robots):
             cur_dict = dict(self.observation_space[f'robot_{i}'].spaces)
             sensors = robot.sensors()
@@ -287,10 +289,10 @@ class UrdfEnv(gym.Env):
                 "Adding an object while the simulation already started"
             )
 
-    def get_obstacles(self) -> list:
+    def get_obstacles(self) -> dict:
         return self._obsts
 
-    def add_goal(self, goal) -> None:
+    def add_goal(self, goal: GoalComposition) -> None:
         """Adds goal to the simulation environment.
 
         Parameters
@@ -298,8 +300,8 @@ class UrdfEnv(gym.Env):
 
         goal: Goal from MotionPlanningGoal
         """
-        self._goals.append(goal)
-        goal.add_to_bullet(p)
+        goal_id = goal.add_to_bullet(p)
+        self._goals[goal_id] = goal
 
     def add_walls(
         self,

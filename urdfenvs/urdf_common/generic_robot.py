@@ -5,6 +5,7 @@ import numpy as np
 from urdfpy import URDF
 from urdfenvs.sensors.sensor import Sensor
 from enum import Enum
+from typing import List
 
 class ControlMode(Enum):
     torque = 'tor'
@@ -24,7 +25,7 @@ class GenericRobot(ABC):
         urdf_file: str : Full path to urdf file
         """
         self._urdf_file: str = urdf_file
-        self._sensors = []
+        self._sensors: List[Sensor] = []
         self._urdf_robot = URDF.load(self._urdf_file)
         self._mode = ControlMode(mode)
         if n > 0:
@@ -213,17 +214,17 @@ class GenericRobot(ABC):
         """
         pass
 
-    def update_sensing(self) -> None:
+    def sense(self, obst_ids: List[int], goal_ids: List[int]) -> None:
         """Updates the sensing of the robot's sensors."""
         self.sensor_observation = {}
         for sensor in self._sensors:
-            self.sensor_observation[sensor.name()] = sensor.sense(self._robot)
+            self.sensor_observation.update(sensor.sense(self._robot, obst_ids, goal_ids))
 
-    def get_observation(self) -> dict:
+    def get_observation(self, obst_ids: List[int], goal_ids: List[int]) -> dict:
         """Updates all observation and concatenate joint states and sensor
         observation."""
         self.update_state()
-        self.update_sensing()
+        self.sense(obst_ids, goal_ids)
         return {**self.state, **self.sensor_observation}
 
     def add_sensor(self, sensor: Sensor) -> int:
