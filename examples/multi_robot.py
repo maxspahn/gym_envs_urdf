@@ -8,9 +8,9 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
         # GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
-        # GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
+        GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
         TiagoRobot(mode="vel"),
-        Prius(mode="vel")
+        # Prius(mode="vel")
     ]
 
     env = gym.make(

@@ -35,7 +35,6 @@ def run_point_robot_with_lidar(n_steps=1000, render=False, obstacles=True, goal=
     history = []
     for _ in range(n_steps):
         ob, _, _, _ = env.step(action)
-        print(ob['robot_0']['lidarSensor'])
         history.append(ob)
     env.close()
     return history

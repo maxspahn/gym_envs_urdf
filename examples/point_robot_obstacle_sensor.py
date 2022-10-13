@@ -37,7 +37,6 @@ def run_point_robot_with_obstacle_sensor(n_steps=1000, render=False, obstacles=T
         action = defaultAction
         ob, reward, done, info = env.step(action)
         # In observations, information about obstacles is stored in ob['obstacleSensor']
-        print(ob['robot_0']["obstacleSensor"])
         history.append(ob)
     env.close()
     return history

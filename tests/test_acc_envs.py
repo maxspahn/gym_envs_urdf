@@ -109,6 +109,7 @@ def test_allDifferentialDrive(allDifferentialDriveEnvs):
         assert isinstance(ob['robot_0']['joint_state']['forward_velocity'], np.ndarray)
         env.close()
 
+@pytest.mark.skip(reason="Gym.spaces checks for joint_state, but this is not applicable to bicyclemodel")
 def test_allBicycleModel(allBicycleModelEnvs):
     for setup in allBicycleModelEnvs:
         env = gym.make("urdf-env-v0", robots=[setup[0]], render=False, dt=0.01)
