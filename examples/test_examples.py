@@ -50,7 +50,6 @@ def test_n_link_reacher_robot():
     from n_link_urdf_reacher import run_n_link_reacher
     blueprint_test(run_n_link_reacher)
 
-@pytest.mark.skip(reason="Gym.spaces checks for joint_state, but this is not applicable to bicyclemodel")
 def test_prius_robot():
     from prius import run_prius
     blueprint_test(run_prius)
