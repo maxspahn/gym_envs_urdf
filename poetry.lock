@@ -861,7 +861,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "trimesh"
-version = "3.15.3"
+version = "3.15.4"
 description = "Import, export, process, analyze and view triangular meshes."
 category = "main"
 optional = false
@@ -871,9 +871,9 @@ python-versions = "*"
 numpy = "*"
 
 [package.extras]
-all = ["rtree", "sympy", "python-fcl", "setuptools", "chardet", "xxhash", "requests", "msgpack", "pillow", "scikit-image", "networkx", "svg.path", "psutil", "shapely", "glooey", "jsonschema", "meshio", "colorlog", "lxml", "pycollada", "pyglet", "mapbox-earcut", "xatlas", "scipy"]
-easy = ["rtree", "shapely", "mapbox-earcut", "sympy", "requests", "jsonschema", "setuptools", "pycollada", "colorlog", "chardet", "svg.path", "lxml", "xxhash", "msgpack", "pyglet", "pillow", "networkx", "scipy"]
-test = ["coveralls", "pytest", "pyinstrument", "pytest-cov", "ezdxf"]
+all = ["jsonschema", "networkx", "setuptools", "rtree", "lxml", "chardet", "shapely", "xxhash", "scikit-image", "pycollada", "mapbox-earcut", "python-fcl", "meshio", "pyglet", "scipy", "sympy", "colorlog", "xatlas", "msgpack", "pillow", "requests", "svg.path", "psutil", "glooey"]
+easy = ["svg.path", "jsonschema", "networkx", "setuptools", "rtree", "lxml", "chardet", "shapely", "scipy", "sympy", "xxhash", "pycollada", "mapbox-earcut", "colorlog", "msgpack", "pillow", "requests", "pyglet"]
+test = ["pytest-cov", "ezdxf", "pyinstrument", "pytest", "coveralls"]
 
 [[package]]
 name = "typing-extensions"
@@ -938,7 +938,7 @@ scenes = ["motion-planning-scenes"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.5, <3.10"
-content-hash = "bcb84387783530bf4ad0e3ac946256355bbb1ea6c18e93771d8889e85cc01f17"
+content-hash = "d8394d634e6c80e80c8507338bc97ed654396a13d793b4aeaed115474dd59ace"
 
 [metadata.files]
 alabaster = [
@@ -1289,8 +1289,8 @@ matplotlib = [
     {file = "matplotlib-3.3.4.tar.gz", hash = "sha256:3e477db76c22929e4c6876c44f88d790aacdf3c3f8f3a90cb1975c0bf37825b0"},
 ]
 motion-planning-scenes = [
-    {file = "motion_planning_scenes-0.3.0-py3-none-any.whl", hash = "sha256:ca81b7fe3b78dba796041b2c97b080e290c6c9b98ebfd7c1f7f55ced9baa9a41"},
-    {file = "motion_planning_scenes-0.3.0.tar.gz", hash = "sha256:e9da38c36327d2a91fad1b47f41cecad9f35fa064c5d4847a33b23d737d48109"},
+    {file = "motion_planning_scenes-0.3.4-py3-none-any.whl", hash = "sha256:e8c258f0c1cc52722a29509a089f66ac2c85938c0f3326cd100071d7a00e70b1"},
+    {file = "motion_planning_scenes-0.3.4.tar.gz", hash = "sha256:44179c55fa466d35dcec7189e5b7b39efb40098bac4db68484e54cb9b316ec1a"},
 ]
 multiprocess = [
     {file = "multiprocess-0.70.12.2-cp27-cp27m-macosx_10_12_x86_64.whl", hash = "sha256:35d41e410ca2a32977a483ae1f40f86b193b45cecf85567c2fae402fb8bf172e"},
@@ -1628,8 +1628,8 @@ toml = [
     {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
 ]
 trimesh = [
-    {file = "trimesh-3.15.3-py3-none-any.whl", hash = "sha256:ee74d5a69b3195181dc1c8ba0bd8d360c113e82ed46907b3e9d45b054d55393a"},
-    {file = "trimesh-3.15.3.tar.gz", hash = "sha256:c2fa316574a53d61227f03f819d820e30b158c31a6e4dce16998c0519f3ce992"},
+    {file = "trimesh-3.15.4-py3-none-any.whl", hash = "sha256:b405b79a3e266a0ec6152c74853570c2bc9d2a3d787d2bba0ad0f483d229d6f8"},
+    {file = "trimesh-3.15.4.tar.gz", hash = "sha256:0fd8609da5fd61d62f600a48739201da11f22522459bd4e089ae4a970339e91c"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.1.1-py3-none-any.whl", hash = "sha256:21c85e0fe4b9a155d0799430b0ad741cdce7e359660ccbd8b530613e8df88ce2"},
