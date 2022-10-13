@@ -86,7 +86,7 @@ class ObstacleSensor(Sensor):
 
         return spaces_dict
 
-    def sense(self, robot):
+    def sense(self, robot, *args):
         """
         Sense the exact position of all the objects.
 
