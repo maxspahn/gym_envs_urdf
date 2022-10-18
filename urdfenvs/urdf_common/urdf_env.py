@@ -448,7 +448,12 @@ class UrdfEnv(gym.Env):
             cur_dict[sensor.name()] = sensor.get_observation_space()
             self.observation_space[f'robot_{i}'] = gym.spaces.Dict(cur_dict)
 
-    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None, base_pos: np.ndarray = None) -> dict:
+    def reset(
+            self, pos: np.ndarray = None,
+            vel: np.ndarray = None,
+            mount_position: np.ndarray = None
+            mount_orientation: np.ndarray = None
+        ) -> dict:
         """Resets the simulation and the robot.
 
         Parameters
@@ -456,12 +461,18 @@ class UrdfEnv(gym.Env):
 
         pos: np.ndarray: Initial joint positions of the robot
         vel: np.ndarray: Initial joint velocities of the robot
+        mount_position: np.ndarray:
+            Mounting position for the robot.  
+            This is ignored for mobile robots.
+        mount_orientation: np.ndarray:
+            Mounting position for the robot.  
+            This is ignored for mobile robots.
         """
         self._t = 0.0
         p.setPhysicsEngineParameter(
             fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
         )
-        if base_pos is None: 
+        if base_pos is None:
             default_base = [0.0, 0.0, 0.0]
             if len(self._robots) == 1:
                 base_pos = [default_base]
