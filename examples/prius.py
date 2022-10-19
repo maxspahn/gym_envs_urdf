@@ -12,7 +12,7 @@ def run_prius(n_steps=1000, render=False, goal=True, obstacles=True):
         dt=0.01, robots=robots, render=render
     )
     action = np.array([1.1, 0.1])
-    pos0 = np.array([-1.0, 0.2, -0.0])
+    pos0 = np.array([-1.0, 0.2, -1.0])
     ob = env.reset(pos=pos0)
     print(f"Initial observation : {ob}")
     history = []

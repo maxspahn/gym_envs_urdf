@@ -1,6 +1,7 @@
 import pybullet as p
 import gym
 import numpy as np
+import logging
 
 from urdfenvs.urdf_common.generic_robot import GenericRobot
 
@@ -52,15 +53,25 @@ class DifferentialDriveRobot(GenericRobot):
         aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
         return (ospace, aspace)
 
-    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None, base_pos: np.ndarray = [0.0, 0.0, 0.0]) -> None:
+    def reset(
+            self,
+            pos: np.ndarray,
+            vel: np.ndarray,
+            mount_position: np.ndarray,
+            mount_orientation: np.ndarray,) -> None:
         """ Reset simulation and add robot """
+        logging.warning(
+            "The argument 'mount_position' and 'mount_orientation' are \
+ignored for differential drive robots."
+        )
         if hasattr(self, "_robot"):
             p.resetSimulation()
         base_orientation = p.getQuaternionFromEuler([0, 0, pos[2]])
-        spawn_pos = self._spawn_offset + base_pos
+        spawn_position = self._spawn_offset
+        spawn_position[0:2] += pos[0:2]
         self._robot = p.loadURDF(
             fileName=self._urdf_file,
-            basePosition=spawn_pos,
+            basePosition=spawn_position,
             baseOrientation=base_orientation,
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
