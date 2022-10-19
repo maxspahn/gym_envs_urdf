@@ -4,6 +4,9 @@
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <robot name="jackal">
+  <material name="red">
+    <color rgba="0.8 0.0 0.0 1.0"/>
+  </material>
   <material name="dark_grey">
     <color rgba="0.2 0.2 0.2 1.0"/>
   </material>
@@ -230,6 +233,20 @@
     <parent link="mid_mount"/>
     <child link="front_mount"/>
     <origin xyz="0.12 0 0"/>
+  </joint>
+  <link name="ee_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+  <joint name="ee_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.2 0 0"/>
+    <parent link="base_link"/>
+    <child link="ee_link"/>
   </joint>
 </robot>
 
