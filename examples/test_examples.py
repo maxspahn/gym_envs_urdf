@@ -22,6 +22,10 @@ def test_boxer_robot():
     from boxer import run_boxer
     blueprint_test(run_boxer)
 
+def test_jackal_robot():
+    from jackal import run_jackal
+    blueprint_test(run_jackal)
+
 def test_albert_robot():
     from albert import run_albert
     blueprint_test(run_albert)

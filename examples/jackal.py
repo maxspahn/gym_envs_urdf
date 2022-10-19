@@ -3,7 +3,7 @@ from urdfenvs.robots.jackal import JackalRobot
 import numpy as np
 
 
-def run_boxer(n_steps=1000, render=False, goal=True, obstacles=True):
+def run_jackal(n_steps=1000, render=False, goal=True, obstacles=True):
     robots = [
         JackalRobot(mode="vel"),
     ]
@@ -26,4 +26,4 @@ def run_boxer(n_steps=1000, render=False, goal=True, obstacles=True):
 
 
 if __name__ == "__main__":
-    run_boxer(render=True, n_steps=1000000)
+    run_jackal(render=True, n_steps=1000)
