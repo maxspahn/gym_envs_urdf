@@ -44,6 +44,14 @@ def boxerRobotEnv():
     return (robot, init_pos, init_vel)
 
 @pytest.fixture
+def jackal_robot_env():
+    from urdfenvs.robots.jackal import JackalRobot
+    init_pos = np.array([0.0, 0.0, 0.0])
+    init_vel = np.array([0.0, 0.0])
+    robot = JackalRobot(mode="acc")
+    return (robot, init_pos, init_vel)
+
+@pytest.fixture
 def tiagoReacherEnv():
     from urdfenvs.robots.tiago import TiagoRobot
     init_pos = np.zeros(20)
@@ -76,7 +84,7 @@ def allEnvs(pointRobotEnv, pandaRobotEnv, nLinkRobotEnv, dualArmEnv):
     return list(locals().values())
 
 @pytest.fixture
-def allDifferentialDriveEnvs(boxerRobotEnv, tiagoReacherEnv, albertReacherEnv):
+def allDifferentialDriveEnvs(boxerRobotEnv, jackal_robot_env, tiagoReacherEnv, albertReacherEnv):
     return list(locals().values())
 
 @pytest.fixture
