@@ -39,14 +39,28 @@ class GenericRobot(ABC):
     def n(self) -> int:
         return self._n
 
+    def ns(self) -> int:
+        return self.n()
+
     @abstractmethod
-    def reset(self, pos: np.ndarray, vel: np.ndarray) -> None:
+    def reset(
+            self,
+            pos: np.ndarray,
+            vel: np.ndarray,
+            mount_position: np.ndarray,
+            mount_orientation: np.ndarray,) -> None:
         """Resets the robot to an initial state.
 
         Parameters
         ----------
-        pos: np.ndarray : Initial joint positions
-        vel: np.ndarray : Initial joint velocities
+        pos: np.ndarray:
+            Initial joint positions
+        vel: np.ndarray:
+            Initial joint velocities
+        mount_position: np.ndarray:
+            Mounting position
+        mount_orientation: np.ndarray:
+            Mounting orientation
 
         """
         pass

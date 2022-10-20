@@ -8,12 +8,19 @@ from urdfenvs.urdf_common.generic_robot import GenericRobot
 class HolonomicRobot(GenericRobot):
     """Generic holonomic robot."""
 
-    def reset(self, pos: np.ndarray, vel: np.ndarray, base_pos: np.ndarray=np.array([0.0, 0.0, 0.0])) -> None:
+    def reset(
+            self,
+            pos: np.ndarray,
+            vel: np.ndarray,
+            mount_position: np.ndarray,
+            mount_orientation: np.ndarray,) -> None:
+
         if hasattr(self, "_robot"):
             p.resetSimulation()
         self._robot = p.loadURDF(
             fileName=self._urdf_file,
-            basePosition=base_pos,
+            basePosition=mount_position.tolist(),
+            baseOrientation=mount_orientation.tolist(),
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
         )
         self.set_joint_names()

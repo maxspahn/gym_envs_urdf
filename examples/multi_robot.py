@@ -1,16 +1,17 @@
 import gym
 import numpy as np
-from urdfenvs.robots.tiago import TiagoRobot
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
-from urdfenvs.robots.prius import Prius
+from urdfenvs.robots.jackal import JackalRobot
+from urdfenvs.robots.boxer import BoxerRobot
 
 def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
-        # GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
         GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
-        TiagoRobot(mode="vel"),
-        # Prius(mode="vel")
+        JackalRobot(mode='vel'),
+        JackalRobot(mode='vel'),
+        JackalRobot(mode='vel'),
+        BoxerRobot(mode='vel'),
     ]
 
     env = gym.make(
@@ -21,12 +22,18 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
     action = np.ones(n) * -0.2
     pos0 = np.zeros(n)
     pos0[1] = -0.0
-    base_pos = np.array([
-        [0.0, 1.0, 0.0],
-        [0.0, -1.0, 0.0],
-        [0.0, -2.0, 0.0]
-        ])
-    ob = env.reset(pos=pos0, base_pos=base_pos)
+    ns_per_robot = env.ns_per_robot()
+    n_per_robot = env.n_per_robot()
+    initial_positions = np.array([np.zeros(n) for n in ns_per_robot])
+    for i in range(len(initial_positions)):
+        if ns_per_robot[i] != n_per_robot[i]:
+            initial_positions[i][0:2] = np.array([0.0, i])
+    mount_positions = np.array(
+        [
+            np.array([0.0, i, 0.0]) for i in range(len(ns_per_robot))
+        ]
+    )
+    ob = env.reset(pos=initial_positions,mount_positions=mount_positions)
     print(f"Initial observation : {ob}")
     if goal:
         from examples.scene_objects.goal import dynamicGoal

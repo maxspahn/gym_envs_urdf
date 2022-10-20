@@ -196,7 +196,13 @@ class UrdfEnv(gym.Env):
             self._cid = p.connect(p.DIRECT)
 
     def n(self) -> int:
-        return sum([robot.n() for robot in self._robots])
+        return sum(self.n_per_robot())
+
+    def n_per_robot(self) -> list:
+        return [robot.n() for robot in self._robots]
+
+    def ns_per_robot(self) -> list:
+        return [robot.ns() for robot in self._robots]
 
     def dt(self) -> float:
         return self._dt
@@ -448,29 +454,53 @@ class UrdfEnv(gym.Env):
             cur_dict[sensor.name()] = sensor.get_observation_space()
             self.observation_space[f'robot_{i}'] = gym.spaces.Dict(cur_dict)
 
-    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None, base_pos: np.ndarray = None) -> dict:
+    def reset(
+            self,
+            pos: np.ndarray = None,
+            vel: np.ndarray = None,
+            mount_positions: np.ndarray = None,
+            mount_orientations: np.ndarray = None,
+        ) -> dict:
         """Resets the simulation and the robot.
 
         Parameters
         ----------
 
-        pos: np.ndarray: Initial joint positions of the robot
-        vel: np.ndarray: Initial joint velocities of the robot
+        pos: np.ndarray:
+            Initial joint positions of the robots
+        vel: np.ndarray: 
+            Initial joint velocities of the robots
+        mount_position: np.ndarray:
+            Mounting position for the robots  
+            This is ignored for mobile robots
+        mount_orientation: np.ndarray:
+            Mounting position for the robots  
+            This is ignored for mobile robots
         """
         self._t = 0.0
         p.setPhysicsEngineParameter(
             fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
         )
-        if base_pos is None: 
-            default_base = [0.0, 0.0, 0.0]
-            if len(self._robots) == 1:
-                base_pos = [default_base]
-            else:
-                base_pos = default_base* len(self._robots)
-
+        if mount_positions is None:
+            mount_positions = np.tile(np.zeros(3), (len(self._robots), 1))
+        if mount_orientations is None:
+            mount_orientations = np.tile(np.array([0.0, 0.0, 0.0, 1.0]), (len(self._robots), 1))
+        if pos is None:
+            pos = np.tile(None, len(self._robots))
+        if vel is None:
+            vel = np.tile(None, len(self._robots))
+        if len(pos.shape) == 1 and len(self._robots) == 1:
+            pos = np.tile(pos, (1, 1))
+        if len(vel.shape) == 1 and len(self._robots) == 1:
+            vel = np.tile(vel, (1, 1))
         for i, robot in enumerate(self._robots):
-            pos, vel = robot.check_state(pos, vel)
-            robot.reset(pos=pos, vel=vel, base_pos=base_pos[i])
+            checked_position, checked_velocity= robot.check_state(pos[i], vel[i])
+            robot.reset(
+                pos=checked_position,
+                vel=checked_velocity,
+                mount_position=mount_positions[i],
+                mount_orientation=mount_orientations[i],
+            )
         if not self._space_set:
             self.set_spaces()
             self._space_set = True
