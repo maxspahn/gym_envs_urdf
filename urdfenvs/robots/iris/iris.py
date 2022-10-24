@@ -47,12 +47,3 @@ class IrisDrone(QuadrotorModel):
         self._limit_acc_j[0, :] = -acc_limit
         self._limit_acc_j[1, :] = acc_limit
 
-    def check_state(self, pos, vel):
-        if (
-            not isinstance(pos, np.ndarray)
-            or not pos.size == self.n() + 3
-        ):
-            pos = np.zeros(self.n() + 3)
-        if not isinstance(vel, np.ndarray) or not vel.size == self._robot.n():
-            vel = np.zeros(self.n())
-        return pos, vel

@@ -59,7 +59,7 @@ class Lidar(Sensor):
             dtype=np.float64,
         )
 
-    def sense(self, robot):
+    def sense(self, robot, *args):
         """Sense the distance toward the next object with the Lidar."""
         link_state = p.getLinkState(robot, self._link_id)
         lidar_position = link_state[0]
@@ -77,5 +77,5 @@ class Lidar(Sensor):
             )[0:2]
             self._distances[i] = np.linalg.norm(self._rel_positions[2 * i: 2 * i +2])
         if self._raw_data:
-            return self._distances
-        return self._rel_positions
+            return {'rays': self._distances}
+        return {'rays': self._rel_positions}

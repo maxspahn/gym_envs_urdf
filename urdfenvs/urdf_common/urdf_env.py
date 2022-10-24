@@ -5,6 +5,8 @@ import pybullet as p
 import warnings
 from typing import List
 
+from MotionPlanningEnv.collisionObstacle import CollisionObstacle
+from MotionPlanningGoal.goalComposition import GoalComposition
 from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
@@ -183,8 +185,8 @@ class UrdfEnv(gym.Env):
         self._render: bool = render
         self._done: bool = False
         self._num_sub_steps: float = 20
-        self._obsts: list = []
-        self._goals: list = []
+        self._obsts: dict = {}
+        self._goals: dict = {}
         self._flatten_observation: bool = flatten_observation
         self._space_set = False
         if self._render:
@@ -194,7 +196,13 @@ class UrdfEnv(gym.Env):
             self._cid = p.connect(p.DIRECT)
 
     def n(self) -> int:
-        return sum([robot.n() for robot in self._robots])
+        return sum(self.n_per_robot())
+
+    def n_per_robot(self) -> list:
+        return [robot.n() for robot in self._robots]
+
+    def ns_per_robot(self) -> list:
+        return [robot.ns() for robot in self._robots]
 
     def dt(self) -> float:
         return self._dt
@@ -226,10 +234,9 @@ class UrdfEnv(gym.Env):
             robot.apply_action(action, self.dt())
             action_id +=robot.n()
 
-        # self.apply_action(action)
-        for obst in self._obsts:
+        for obst in self._obsts.values():
             obst.update_bullet_position(p, t=self.t())
-        for goal in self._goals:
+        for goal in self._goals.values():
             goal.update_bullet_position(p, t=self.t())
         p.stepSimulation(self._cid)
         ob = self._get_ob()
@@ -244,23 +251,25 @@ class UrdfEnv(gym.Env):
         """Compose the observation."""
         observation = {}
         for i, robot in enumerate(self._robots):
-            obs = robot.get_observation()
+            obs = robot.get_observation(list(self._obsts.keys()), list(self._goals.keys()))
 
-            if not self.observation_space[f'robot_{i}'].contains(observation):
+            observation[f'robot_{i}'] = obs
+
+            # TODO: Make this check work for the whole observation space (not just 'joint_state'). This also breaks BicycleModel.
+            if not self.observation_space[f'robot_{i}']['joint_state'].contains(observation[f'robot_{i}']['joint_state']):
                 err = WrongObservationError(
                     "The observation does not fit the defined observation space",
-                    obs,
-                    self.observation_space[f'robot_{i}'],
+                    observation[f'robot_{i}']['joint_state'],
+                    self.observation_space[f'robot_{i}']['joint_state'],
                 )
                 warnings.warn(str(err))
 
-            observation[f'robot_{i}'] = obs
         if self._flatten_observation:
             return flatten_observation(observation)
         else:
             return observation
 
-    def add_obstacle(self, obst) -> None:
+    def add_obstacle(self, obst: CollisionObstacle) -> None:
         """Adds obstacle to the simulation environment.
 
         Parameters
@@ -269,11 +278,10 @@ class UrdfEnv(gym.Env):
         obst: Obstacle from MotionPlanningEnv
         """
         # add obstacle to environment
-        self._obsts.append(obst)
-        obst.add_to_bullet(p)
+        obst_id = obst.add_to_bullet(p)
+        self._obsts[obst_id] = obst
 
         # refresh observation space of robots sensors
-
         for i, robot in enumerate(self._robots):
             cur_dict = dict(self.observation_space[f'robot_{i}'].spaces)
             sensors = robot.sensors()
@@ -287,10 +295,10 @@ class UrdfEnv(gym.Env):
                 "Adding an object while the simulation already started"
             )
 
-    def get_obstacles(self) -> list:
+    def get_obstacles(self) -> dict:
         return self._obsts
 
-    def add_goal(self, goal) -> None:
+    def add_goal(self, goal: GoalComposition) -> None:
         """Adds goal to the simulation environment.
 
         Parameters
@@ -298,8 +306,8 @@ class UrdfEnv(gym.Env):
 
         goal: Goal from MotionPlanningGoal
         """
-        self._goals.append(goal)
-        goal.add_to_bullet(p)
+        goal_id = goal.add_to_bullet(p)
+        self._goals[goal_id] = goal
 
     def add_walls(
         self,
@@ -446,29 +454,53 @@ class UrdfEnv(gym.Env):
             cur_dict[sensor.name()] = sensor.get_observation_space()
             self.observation_space[f'robot_{i}'] = gym.spaces.Dict(cur_dict)
 
-    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None, base_pos: np.ndarray = None) -> dict:
+    def reset(
+            self,
+            pos: np.ndarray = None,
+            vel: np.ndarray = None,
+            mount_positions: np.ndarray = None,
+            mount_orientations: np.ndarray = None,
+        ) -> dict:
         """Resets the simulation and the robot.
 
         Parameters
         ----------
 
-        pos: np.ndarray: Initial joint positions of the robot
-        vel: np.ndarray: Initial joint velocities of the robot
+        pos: np.ndarray:
+            Initial joint positions of the robots
+        vel: np.ndarray: 
+            Initial joint velocities of the robots
+        mount_position: np.ndarray:
+            Mounting position for the robots  
+            This is ignored for mobile robots
+        mount_orientation: np.ndarray:
+            Mounting position for the robots  
+            This is ignored for mobile robots
         """
         self._t = 0.0
         p.setPhysicsEngineParameter(
             fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
         )
-        if base_pos is None: 
-            default_base = [0.0, 0.0, 0.0]
-            if len(self._robots) == 1:
-                base_pos = [default_base]
-            else:
-                base_pos = default_base* len(self._robots)
-
+        if mount_positions is None:
+            mount_positions = np.tile(np.zeros(3), (len(self._robots), 1))
+        if mount_orientations is None:
+            mount_orientations = np.tile(np.array([0.0, 0.0, 0.0, 1.0]), (len(self._robots), 1))
+        if pos is None:
+            pos = np.tile(None, len(self._robots))
+        if vel is None:
+            vel = np.tile(None, len(self._robots))
+        if len(pos.shape) == 1 and len(self._robots) == 1:
+            pos = np.tile(pos, (1, 1))
+        if len(vel.shape) == 1 and len(self._robots) == 1:
+            vel = np.tile(vel, (1, 1))
         for i, robot in enumerate(self._robots):
-            pos, vel = robot.check_state(pos, vel)
-            robot.reset(pos=pos, vel=vel, base_pos=base_pos[i])
+            checked_position, checked_velocity= robot.check_state(pos[i], vel[i])
+            robot.reset(
+                pos=checked_position,
+                vel=checked_velocity,
+                mount_position=mount_positions[i],
+                mount_orientation=mount_orientations[i],
+            )
         if not self._space_set:
             self.set_spaces()
             self._space_set = True

@@ -1,6 +1,7 @@
 import pybullet as p
 import gym
 import numpy as np
+import logging
 
 
 from urdfenvs.urdf_common.generic_robot import GenericRobot
@@ -62,7 +63,17 @@ class QuadrotorModel(GenericRobot):
         """
         return 6
 
-    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None, base_pos: np.ndarray=np.array([0.0, 0.0, 0.0])) -> None:
+    def reset(
+            self,
+            pos: np.ndarray,
+            vel: np.ndarray,
+            mount_position: np.ndarray,
+            mount_orientation: np.ndarray,) -> None:
+        """ Reset simulation and add robot """
+        logging.warning(
+            "The argument 'mount_position' and 'mount_orientation' are \
+ignored for drones."
+        )
         if hasattr(self, "_robot"):
             p.resetSimulation()
         base_orientation = pos[3:7]
@@ -87,6 +98,18 @@ class QuadrotorModel(GenericRobot):
             )
         # set base velocity
         self.update_state()
+
+    def check_state(self, pos: np.ndarray, vel: np.ndarray) -> tuple:
+        """Filters state of the robot and returns a valid state."""
+
+        if (
+            not isinstance(pos, np.ndarray)
+            or not pos.size == self.n() + 3
+        ):
+            pos = np.zeros(self.n() + 3)
+        if not isinstance(vel, np.ndarray) or not vel.size == self.n():
+            vel = np.zeros(self.n())
+        return pos, vel
 
     def read_limits(self) -> None:
         self._limit_pos_j = np.zeros((2, self.ns() + 1))

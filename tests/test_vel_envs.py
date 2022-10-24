@@ -37,6 +37,14 @@ def boxerRobotEnv():
     return (robot, init_pos, init_vel)
 
 @pytest.fixture
+def jackal_robot_env():
+    from urdfenvs.robots.jackal import JackalRobot
+    init_pos = np.array([0.0, 0.0, 0.0])
+    init_vel = np.array([0.0, 0.0])
+    robot = JackalRobot(mode="vel")
+    return (robot, init_pos, init_vel)
+
+@pytest.fixture
 def tiagoReacherEnv():
     from urdfenvs.robots.tiago import TiagoRobot
     init_pos = np.zeros(20)
@@ -77,7 +85,7 @@ def allEnvs(pointRobotEnv, pandaRobotEnv, nLinkRobotEnv, dualArmEnv):
     return list(locals().values())
 
 @pytest.fixture
-def allDifferentialDriveEnvs(boxerRobotEnv, tiagoReacherEnv, albertReacherEnv):
+def allDifferentialDriveEnvs(boxerRobotEnv, jackal_robot_env, tiagoReacherEnv, albertReacherEnv):
     return list(locals().values())
 
 @pytest.fixture
@@ -120,15 +128,15 @@ def test_allBicycleModel(allBicycleModelEnvs):
         env = gym.make("urdf-env-v0", robots=[setup[0]], render=False, dt=0.01)
         ob = env.reset(pos=setup[1], vel=setup[2])
         action = np.random.random(env.n()) * 0.1
-        np.testing.assert_array_almost_equal(ob['robot_0']['x'], setup[1], decimal=2)
+        np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['position'], setup[1], decimal=2)
         ob, _, _, _ = env.step(action)
         assert isinstance(ob['robot_0'], dict)
-        assert isinstance(ob['robot_0']['x'], np.ndarray)
-        assert isinstance(ob['robot_0']['xdot'], np.ndarray)
-        assert isinstance(ob['robot_0']['vel'], np.ndarray)
-        assert ob['robot_0']['x'].size == env.n() + 1
-        assert ob['robot_0']['xdot'].size == env.n() + 1
-        assert ob['robot_0']['vel'].size == 2
-        np.testing.assert_array_almost_equal(ob['robot_0']['vel'][0:1], action[0:1], decimal=2)
-        np.testing.assert_array_almost_equal(ob['robot_0']['xdot'][3:], action[2:], decimal=2)
+        assert isinstance(ob['robot_0']['joint_state']['position'], np.ndarray)
+        assert isinstance(ob['robot_0']['joint_state']['velocity'], np.ndarray)
+        assert isinstance(ob['robot_0']['joint_state']['forward_velocity'], np.ndarray)
+        assert ob['robot_0']['joint_state']['position'].size == env.n() + 1
+        assert ob['robot_0']['joint_state']['velocity'].size == env.n() + 1
+        assert ob['robot_0']['joint_state']['forward_velocity'].size == 2
+        np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['forward_velocity'][0:1], action[0:1], decimal=2)
+        np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['velocity'][3:], action[2:], decimal=2)
         env.close()
