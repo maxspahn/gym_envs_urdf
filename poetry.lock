@@ -663,7 +663,7 @@ six = ">=1.10.0"
 
 [[package]]
 name = "pytz"
-version = "2022.4"
+version = "2022.5"
 description = "World timezone definitions, modern and historical"
 category = "dev"
 optional = false
@@ -861,7 +861,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "trimesh"
-version = "3.15.4"
+version = "3.15.5"
 description = "Import, export, process, analyze and view triangular meshes."
 category = "main"
 optional = false
@@ -871,9 +871,9 @@ python-versions = "*"
 numpy = "*"
 
 [package.extras]
-all = ["jsonschema", "networkx", "setuptools", "rtree", "lxml", "chardet", "shapely", "xxhash", "scikit-image", "pycollada", "mapbox-earcut", "python-fcl", "meshio", "pyglet", "scipy", "sympy", "colorlog", "xatlas", "msgpack", "pillow", "requests", "svg.path", "psutil", "glooey"]
-easy = ["svg.path", "jsonschema", "networkx", "setuptools", "rtree", "lxml", "chardet", "shapely", "scipy", "sympy", "xxhash", "pycollada", "mapbox-earcut", "colorlog", "msgpack", "pillow", "requests", "pyglet"]
-test = ["pytest-cov", "ezdxf", "pyinstrument", "pytest", "coveralls"]
+all = ["pillow", "requests", "svg.path", "meshio", "xxhash", "sympy", "xatlas", "colorlog", "python-fcl", "glooey", "chardet", "psutil", "msgpack", "shapely", "mapbox-earcut", "scipy", "scikit-image", "pyglet", "networkx", "rtree", "pycollada", "lxml", "setuptools", "jsonschema"]
+easy = ["pillow", "requests", "chardet", "msgpack", "xxhash", "setuptools", "shapely", "sympy", "jsonschema", "mapbox-earcut", "pyglet", "networkx", "rtree", "pycollada", "lxml", "colorlog", "svg.path", "scipy"]
+test = ["pyinstrument", "pytest", "coveralls", "pytest-cov", "ezdxf"]
 
 [[package]]
 name = "typing-extensions"
@@ -1510,8 +1510,8 @@ python-xlib = [
     {file = "python_xlib-0.31-py2.py3-none-any.whl", hash = "sha256:1ec6ce0de73d9e6592ead666779a5732b384e5b8fb1f1886bd0a81cafa477759"},
 ]
 pytz = [
-    {file = "pytz-2022.4-py2.py3-none-any.whl", hash = "sha256:2c0784747071402c6e99f0bafdb7da0fa22645f06554c7ae06bf6358897e9c91"},
-    {file = "pytz-2022.4.tar.gz", hash = "sha256:48ce799d83b6f8aab2020e369b627446696619e79645419610b9facd909b3174"},
+    {file = "pytz-2022.5-py2.py3-none-any.whl", hash = "sha256:335ab46900b1465e714b4fda4963d87363264eb662aab5e65da039c25f1f5b22"},
+    {file = "pytz-2022.5.tar.gz", hash = "sha256:c4d88f472f54d615e9cd582a5004d1e5f624854a6a27a6211591c251f22a6914"},
 ]
 pyyaml = [
     {file = "PyYAML-6.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:d4db7c7aef085872ef65a8fd7d6d09a14ae91f691dec3e87ee5ee0539d516f53"},
@@ -1628,8 +1628,8 @@ toml = [
     {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
 ]
 trimesh = [
-    {file = "trimesh-3.15.4-py3-none-any.whl", hash = "sha256:b405b79a3e266a0ec6152c74853570c2bc9d2a3d787d2bba0ad0f483d229d6f8"},
-    {file = "trimesh-3.15.4.tar.gz", hash = "sha256:0fd8609da5fd61d62f600a48739201da11f22522459bd4e089ae4a970339e91c"},
+    {file = "trimesh-3.15.5-py3-none-any.whl", hash = "sha256:22c3d6708c287dc454c65c86b8546a80f75e7f3866ef56c84446239132d9642f"},
+    {file = "trimesh-3.15.5.tar.gz", hash = "sha256:8f3404b2b0b0481f8e63d5c69b3b64bdb3366734f899492e62f3bce9e77a5d47"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.1.1-py3-none-any.whl", hash = "sha256:21c85e0fe4b9a155d0799430b0ad741cdce7e359660ccbd8b530613e8df88ce2"},
