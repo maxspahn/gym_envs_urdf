@@ -87,6 +87,8 @@ ignored for differential drive robots."
                 controlMode=p.VELOCITY_CONTROL,
                 force=0.0,
             )
+        for i in self._castor_joints:
+            p.changeDynamics(self._robot, i, lateralFriction=0)
         for i in range(2, self._n):
             p.resetJointState(
                 self._robot,
