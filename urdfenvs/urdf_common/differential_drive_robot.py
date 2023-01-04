@@ -21,11 +21,12 @@ class DifferentialDriveRobot(GenericRobot):
         observation with that position.
     """
 
-    def __init__(self, n: int, urdf_file: str, mode: str):
+    def __init__(self, n: int, urdf_file: str, mode: str, number_actuated_axes: int=1):
         """Constructor for differential drive robots."""
         super().__init__(n, urdf_file, mode)
         self._wheel_radius: float = None
         self._wheel_distance: float = None
+        self._number_actuated_axes: int = number_actuated_axes
         self._spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15])
 
 
@@ -87,6 +88,8 @@ ignored for differential drive robots."
                 controlMode=p.VELOCITY_CONTROL,
                 force=0.0,
             )
+        for i in self._castor_joints:
+            p.changeDynamics(self._robot, i, lateralFriction=0)
         for i in range(2, self._n):
             p.resetJointState(
                 self._robot,
@@ -202,13 +205,14 @@ ignored for differential drive robots."
 
     def apply_velocity_action_wheels(self, vels: np.ndarray) -> None:
         """Applies angular velocities to the wheels."""
-        for i in range(2):
-            p.setJointMotorControl2(
-                self._robot,
-                self._robot_joints[i],
-                controlMode=p.VELOCITY_CONTROL,
-                targetVelocity=vels[i],
-            )
+        for axis in range(self._number_actuated_axes):
+            for i in range(2):
+                p.setJointMotorControl2(
+                    self._robot,
+                    self._robot_joints[axis * 2 + i],
+                    controlMode=p.VELOCITY_CONTROL,
+                    targetVelocity=vels[i],
+                )
 
     def apply_base_velocity(self, vels: np.ndarray) -> None:
         """Applies forward and angular velocity to the base.
