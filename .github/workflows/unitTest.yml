@@ -4,12 +4,10 @@ name: Testing urdf environments
 
 # Controls when the workflow will run
 on: 
-  push:
-    branches:
-      - master
   pull_request:
     branches:
       - develop
+      - master
 
 jobs:
   basic:
