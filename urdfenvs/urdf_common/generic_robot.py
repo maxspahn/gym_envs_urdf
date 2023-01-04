@@ -2,7 +2,7 @@ import pybullet as p
 from abc import ABC, abstractmethod
 import gym
 import numpy as np
-from urdfpy import URDF
+import yourdfpy
 from urdfenvs.sensors.sensor import Sensor
 from enum import Enum
 from typing import List
@@ -26,12 +26,12 @@ class GenericRobot(ABC):
         """
         self._urdf_file: str = urdf_file
         self._sensors: List[Sensor] = []
-        self._urdf_robot = URDF.load(self._urdf_file)
+        self._urdf_robot = yourdfpy.urdf.URDF.load(self._urdf_file)
         self._mode = ControlMode(mode)
         if n > 0:
             self._n = n
         else:
-            self._n: int = len(self._urdf_robot._actuated_joints)
+            self._n: int = self._urdf_robot.num_actuated_joints
         self.set_joint_names()
         self.extract_joint_ids()
         self.read_limits()
@@ -92,8 +92,8 @@ class GenericRobot(ABC):
         if not hasattr(self, "_joint_names"):
             return
         self._urdf_joints = []
-        for i, joint in enumerate(self._urdf_robot.joints):
-            if joint.name in self._joint_names:
+        for i, joint_name in enumerate(self._urdf_robot.joint_names):
+            if joint_name in self._joint_names:
                 self._urdf_joints.append(i)
         if hasattr(self, "_robot"):
             self._robot_joints = []

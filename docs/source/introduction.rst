@@ -28,7 +28,6 @@ motion planning in general.
 Installation
 ============
 
-This package depends on casadi for dynamics generation and gym.
 Dependencies should be installed through pip or poetry, see below.
 
 Using pip, you can use
