@@ -39,14 +39,14 @@
       <inertia ixx="0.0013" ixy="0" ixz="0" iyy="0.0024" iyz="0" izz="0.0013"/>
     </inertial>
   </link>
-  <joint name="front_left_wheel_castor" type="continuous">
+  <joint name="front_left_wheel" type="continuous">
     <parent link="chassis_link"/>
     <child link="front_left_wheel_link"/>
     <origin rpy="0 0 0" xyz="0.131 0.187795 0.0345"/>
     <axis xyz="0 1 0"/>
+    <limit effort="10000" velocity="1000"/>
+    <dynamics damping="1.0"/>
   </joint>
-  <!-- In reality, Jackal has only two motors, one per side. However, it's more
-         straightforward for Gazebo to simulate as if there's an actuator per wheel. -->
   <link name="front_right_wheel_link">
     <visual>
       <origin rpy="1.57079632679 0 0" xyz="0 0 0"/>
@@ -67,11 +67,13 @@
       <inertia ixx="0.0013" ixy="0" ixz="0" iyy="0.0024" iyz="0" izz="0.0013"/>
     </inertial>
   </link>
-  <joint name="front_right_wheel_castor" type="continuous">
+  <joint name="front_right_wheel" type="continuous">
     <parent link="chassis_link"/>
     <child link="front_right_wheel_link"/>
     <origin rpy="0 0 0" xyz="0.131 -0.187795 0.0345"/>
     <axis xyz="0 1 0"/>
+    <limit effort="10000" velocity="1000"/>
+    <dynamics damping="1.0"/>
   </joint>
   <!-- In reality, Jackal has only two motors, one per side. However, it's more
          straightforward for Gazebo to simulate as if there's an actuator per wheel. -->
