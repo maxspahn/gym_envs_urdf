@@ -69,7 +69,7 @@ ignored for bicycle models."
         self._limit_tor_j = np.zeros((2, self.n()))
         self._limit_acc_j = np.zeros((2, self.n()))
         self._limit_pos_steering = np.zeros(2)
-        joint = self._urdf_robot.joints[self._steering_joints[1] - 1]
+        joint = self._urdf_robot.robot.joints[self._steering_joints[1] - 1]
         self._limit_pos_steering[0] = joint.limit.lower - 0.1
         self._limit_pos_steering[1] = joint.limit.upper + 0.1
         self._limit_vel_forward_j = np.array([[-40., -10.], [40., 10.]])
