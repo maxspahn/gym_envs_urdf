@@ -151,7 +151,7 @@
     <visual>
       <origin rpy="0.0 0 0" xyz="0 0 0"/>
       <geometry>
-        <sphere radius='0.12'/>
+        <sphere radius='0.20'/>
       </geometry>
       <material name="transparent_red"/>
     </visual>
@@ -165,7 +165,7 @@
     <visual>
       <origin rpy="0.0 0 0" xyz="0 0 0"/>
       <geometry>
-        <sphere radius='0.12'/>
+        <sphere radius='0.20'/>
       </geometry>
       <material name="transparent_red"/>
     </visual>
@@ -237,7 +237,7 @@
     <child link="lidar_sensor_link"/>
     <origin rpy="0 0 0" xyz="0 0 0.1"/>
   </joint>
-  <joint name="feature_link_joint" type='fixed'>
+  <joint name="front_link_joint" type='fixed'>
     <parent link="base_link"/>
     <child link="front_link"/>
     <origin rpy="0 0 0" xyz="0.31 0.0 0.05"/>
