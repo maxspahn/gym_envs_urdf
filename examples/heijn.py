@@ -10,7 +10,7 @@ def run_point_robot(n_steps=1000, render=False, goal=True, obstacles=True):
         "urdf-env-v0",
         dt=0.01, robots=robots, render=render
     )
-    action = np.array([0.1, 0.0, 1.0])
+    action = np.array([0.1, 0.0, 0.0])
     pos0 = np.array([1.0, 0.1, 0.0])
     vel0 = np.array([1.0, 0.0, 0.0])
     ob = env.reset(pos=pos0, vel=vel0)

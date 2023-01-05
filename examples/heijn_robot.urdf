@@ -12,6 +12,12 @@
   <material name="red">
       <color rgba="0.8 0 0.0 1"/>
   </material>
+  <material name="darkgrey">
+      <color rgba="0.502 0.502 0.502 1.0"/>
+  </material>
+  <material name="lightgrey">
+      <color rgba="0.402 0.402 0.402 0.9"/>
+  </material>
   <link name="world"/>
   <link name="base_link_x">
     <inertial>
@@ -36,17 +42,18 @@
     <collision>
       <origin rpy="0.0 0 0" xyz="0 0 0"/>
       <geometry>
-          <cylinder length="0.1" radius="0.2"/>
+        <box size='0.61 0.33 0.13'/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0.0 0 0" xyz="0 0 0"/>
       <geometry>
-          <cylinder length="0.1" radius="0.2"/>
+        <box size='0.61 0.33 0.13'/>
       </geometry>
+      <material name="lightgrey"/>
     </visual>
   </link>
-  <link name="lidar_link">
+  <link name="pole_link">
     <inertial>
       <mass value="100.0"/>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -55,15 +62,35 @@
     <collision>
       <origin rpy="0.0 0 0" xyz="0 0 0"/>
       <geometry>
-          <cylinder length="0.1" radius="0.02"/>
+          <cylinder length="0.43" radius="0.02"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0.0 0 0" xyz="0 0 0"/>
       <geometry>
-          <cylinder length="0.1" radius="0.02"/>
+          <cylinder length="0.43" radius="0.02"/>
       </geometry>
-      <material name="blue"/>
+      <material name="darkgrey"/>
+    </visual>
+  </link>
+  <link name="platform_link">
+    <inertial>
+      <mass value="100.0"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <collision>
+      <origin rpy="0.0 0 0" xyz="0 0 0"/>
+      <geometry>
+          <cylinder length="0.05" radius="0.05"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.0 0 0" xyz="0 0 0"/>
+      <geometry>
+          <cylinder length="0.05" radius="0.05"/>
+      </geometry>
+      <material name="darkgrey"/>
     </visual>
   </link>
   <link name="feature_link">
@@ -110,13 +137,18 @@
     <axis xyz="0 0 1"/>
     <limit effort="87" lower="-5" upper="5" velocity="2.1750"/>
   </joint>
-  <joint name="robot_lidar" type="fixed">
+  <joint name="robot_pole_joint" type="fixed">
     <parent link="base_link"/>
-    <child link="lidar_link"/>
+    <child link="pole_link"/>
     <origin rpy="0 0 0" xyz="0 0 0.1"/>
   </joint>
+  <joint name="platform_joint" type="fixed">
+    <parent link="pole_link"/>
+    <child link="platform_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0.2"/>
+  </joint>
   <joint name="lidar_sensor_joint" type="fixed">
-    <parent link="lidar_link"/>
+    <parent link="platform_link"/>
     <child link="lidar_sensor_link"/>
     <origin rpy="0 0 0" xyz="0 0 0.1"/>
   </joint>
