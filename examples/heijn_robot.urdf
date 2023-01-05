@@ -92,22 +92,16 @@
       <material name="darkgrey"/>
     </visual>
   </link>
-  <link name="feature_link">
+  <link name="front_link">
     <inertial>
-      <mass value="1.0"/>
+      <mass value="0.01"/>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
     </inertial>
-    <collision>
-      <origin rpy="0.0 0 0" xyz="0 0 0"/>
-      <geometry>
-          <cylinder length="0.001" radius="0.02"/>
-      </geometry>
-    </collision>
     <visual>
       <origin rpy="0.0 0 0" xyz="0 0 0"/>
       <geometry>
-          <cylinder length="0.001" radius="0.02"/>
+          <sphere radius="0.02"/>
       </geometry>
       <material name="red"/>
     </visual>
@@ -245,8 +239,8 @@
   </joint>
   <joint name="feature_link_joint" type='fixed'>
     <parent link="base_link"/>
-    <child link="feature_link"/>
-    <origin rpy="0 0 0" xyz="0 0.1 0.0505"/>
+    <child link="front_link"/>
+    <origin rpy="0 0 0" xyz="0.31 0.0 0.05"/>
   </joint>
   <joint name="collision_front_right_joint" type='fixed'>
     <parent link="base_link"/>
