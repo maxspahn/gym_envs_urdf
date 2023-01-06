@@ -4,7 +4,7 @@ import os
 
 
 class GenericUrdfReacher(HolonomicRobot):
-    def __init__(self, urdf, mode):
+    def __init__(self, physics_engine, urdf, mode):
         self._urdf = urdf
 
         # search for urdf in package if not found in cwd
@@ -19,7 +19,7 @@ class GenericUrdfReacher(HolonomicRobot):
                 raise Exception(f"the request urdf {self._urdf} can not be found")
             self._urdf = urdf
 
-        super().__init__(-1, self._urdf, mode=mode)
+        super().__init__(physics_engine, -1, self._urdf, mode=mode)
 
     def set_joint_names(self):
         # TODO Replace it with a automated extraction

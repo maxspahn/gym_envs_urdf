@@ -1,7 +1,6 @@
 import gym
 import time
 import numpy as np
-import pybullet as p
 import warnings
 from typing import List
 
@@ -10,6 +9,8 @@ from MotionPlanningGoal.goalComposition import GoalComposition
 from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
+from urdfenvs.urdf_common.bullet_physics_engine import BulletPhysicsEngine
+from urdfenvs.urdf_common.physics_engine import PhysicsEngine
 
 
 class WrongObservationError(Exception):
@@ -163,8 +164,12 @@ class UrdfEnv(gym.Env):
     """Generic urdf-environment for OpenAI-Gym"""
 
     def __init__(
-        self, robots: List[GenericRobot], flatten_observation: bool = False,
-        render: bool = False, dt: float = 0.01
+            self,
+            physics_engine : PhysicsEngine,
+            robots: List[GenericRobot],
+            flatten_observation: bool = False,
+            render: bool = False,
+            dt: float = 0.01
     ) -> None:
         """Constructor for environment.
 
@@ -189,12 +194,7 @@ class UrdfEnv(gym.Env):
         self._goals: dict = {}
         self._flatten_observation: bool = flatten_observation
         self._space_set = False
-        if self._render:
-            self._cid = p.connect(p.GUI)
-            p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
-        else:
-            self._cid = p.connect(p.DIRECT)
-
+        self._physics_engine = physics_engine
     def n(self) -> int:
         return sum(self.n_per_robot())
 
@@ -235,10 +235,10 @@ class UrdfEnv(gym.Env):
             action_id +=robot.n()
 
         for obst in self._obsts.values():
-            obst.update_bullet_position(p, t=self.t())
+            self._physics_engine.update_obstacle(obst, self.t())
         for goal in self._goals.values():
-            goal.update_bullet_position(p, t=self.t())
-        p.stepSimulation(self._cid)
+            self._physics_engine.update_obstacle(goal, self.t())
+        self._physics_engine.step()
         ob = self._get_ob()
 
         reward = 1.0
@@ -278,7 +278,7 @@ class UrdfEnv(gym.Env):
         obst: Obstacle from MotionPlanningEnv
         """
         # add obstacle to environment
-        obst_id = obst.add_to_bullet(p)
+        obst_id = self._physics_engine.add_obstacle(obst)
         self._obsts[obst_id] = obst
 
         # refresh observation space of robots sensors
@@ -306,7 +306,7 @@ class UrdfEnv(gym.Env):
 
         goal: Goal from MotionPlanningGoal
         """
-        goal_id = goal.add_to_bullet(p)
+        goal_id = self._physics_engine.add_goal(goal)
         self._goals[goal_id] = goal
 
     def add_walls(
@@ -369,6 +369,7 @@ class UrdfEnv(gym.Env):
         place_height: float
             z_position of the center of mass
         """
+        import pybullet as p
         if poses_2d is None:
             poses_2d = [[-2, 2, 0]]
         # convert list to numpy array
@@ -478,9 +479,7 @@ class UrdfEnv(gym.Env):
             This is ignored for mobile robots
         """
         self._t = 0.0
-        p.setPhysicsEngineParameter(
-            fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
-        )
+        self._physics_engine.configure(self._dt, self._num_sub_steps)
         if mount_positions is None:
             mount_positions = np.tile(np.zeros(3), (len(self._robots), 1))
         if mount_orientations is None:
@@ -505,8 +504,7 @@ class UrdfEnv(gym.Env):
             self.set_spaces()
             self._space_set = True
         self.plane = Plane()
-        p.setGravity(0, 0, -10.0)
-        p.stepSimulation()
+        self._physics_engine.step()
         return self._get_ob()
 
     def render(self) -> None:
@@ -520,4 +518,4 @@ class UrdfEnv(gym.Env):
         time.sleep(self.dt())
 
     def close(self) -> None:
-        p.disconnect(self._cid)
+        self._physics_engine.close()

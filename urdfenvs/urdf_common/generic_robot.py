@@ -1,4 +1,3 @@
-import pybullet as p
 from abc import ABC, abstractmethod
 import gym
 import numpy as np
@@ -6,6 +5,8 @@ import yourdfpy
 from urdfenvs.sensors.sensor import Sensor
 from enum import Enum
 from typing import List
+
+from urdfenvs.urdf_common.physics_engine import PhysicsEngine
 
 class ControlMode(Enum):
     torque = 'tor'
@@ -15,7 +16,7 @@ class ControlMode(Enum):
 class GenericRobot(ABC):
     """GenericRobot."""
 
-    def __init__(self, n: int, urdf_file: str, mode=ControlMode.velocity):
+    def __init__(self, physics_engine: PhysicsEngine, n : int, urdf_file: str, mode=ControlMode.velocity):
         """Constructor for generic robot.
 
         Parameters
@@ -34,6 +35,7 @@ class GenericRobot(ABC):
             self._n: int = self._urdf_robot.num_actuated_joints
         self.set_joint_names()
         self.extract_joint_ids()
+        self._physics_engine = physics_engine
         self.read_limits()
 
     def n(self) -> int:
@@ -96,20 +98,7 @@ class GenericRobot(ABC):
             if joint_name in self._joint_names:
                 self._urdf_joints.append(i)
         if hasattr(self, "_robot"):
-            self._robot_joints = []
-            self._castor_joints = []
-            num_joints = p.getNumJoints(self._robot)
-            for name in self._joint_names:
-                for i in range(num_joints):
-                    joint_info = p.getJointInfo(self._robot, i)
-                    joint_name = joint_info[1].decode("UTF-8")
-                    if joint_name == name:
-                        self._robot_joints.append(i)
-                for i in range(num_joints):
-                    joint_info = p.getJointInfo(self._robot, i)
-                    joint_name = joint_info[1].decode("UTF-8")
-                    if "castor" in joint_name:
-                        self._castor_joints.append(i)
+            self._robot_joints, self._castor_joints = self._physics_engine.extract_relevant_joint_ids(self._joint_names, self._robot)
 
 
     def get_observation_space(self) -> gym.spaces.Dict:
@@ -170,21 +159,7 @@ class GenericRobot(ABC):
         return (ospace, aspace)
 
     def disable_velocity_control(self):
-        """Disables velocity control for all controlled joints.
-
-        By default, pybullet uses velocity control. This has to be disabled if
-        torques should be directly controlled.  See
-        func:`~urdfenvs.urdfCommon.generic_robot.generic_rob
-        ot.apply_torque_action`
-        """
-        self._friction = 0.0
-        for i in range(self._n):
-            p.setJointMotorControl2(
-                self._robot,
-                jointIndex=self._robot_joints[i],
-                controlMode=p.VELOCITY_CONTROL,
-                force=self._friction,
-            )
+        self._physics_engine.disable_velocity_control(self._robot, self._robot_joints)
 
     @abstractmethod
     def apply_torque_action(self, torques) -> None:
