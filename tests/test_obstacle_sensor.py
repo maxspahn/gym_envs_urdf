@@ -5,8 +5,8 @@ from urdfenvs.sensors.full_sensor import FullSensor
 from urdfenvs.sensors.lidar import Lidar
 
 from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
-from examples.scene_objects.obstacles import sphereObst1, urdfObst1, dynamicSphereObst3
-from examples.scene_objects.goal import goal1
+from urdfenvs.scene_examples.obstacles import sphereObst1, urdfObst1, dynamicSphereObst3
+from urdfenvs.scene_examples.goal import goal1
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 
 def test_full_sensor():
