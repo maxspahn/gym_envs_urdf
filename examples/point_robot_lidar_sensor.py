@@ -21,7 +21,7 @@ def run_point_robot_with_lidar(n_steps=1000, render=False, obstacles=True, goal=
     print(f"Initial observation : {ob}")
     env.add_walls()
     if obstacles:
-        from examples.scene_objects.obstacles import (
+        from urdfenvs.scene_examples.obstacles import (
             sphereObst1,
             sphereObst2,
             urdfObst1,

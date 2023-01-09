@@ -36,11 +36,11 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
     ob = env.reset(pos=initial_positions,mount_positions=mount_positions)
     print(f"Initial observation : {ob}")
     if goal:
-        from examples.scene_objects.goal import dynamicGoal
+        from urdfenvs.scene_examples.goal import dynamicGoal
         env.add_goal(dynamicGoal)
 
     if obstacles:
-        from examples.scene_objects.obstacles import dynamicSphereObst2
+        from urdfenvs.scene_examples.obstacles import dynamicSphereObst2
         env.add_obstacle(dynamicSphereObst2)
 
     print("Starting episode")

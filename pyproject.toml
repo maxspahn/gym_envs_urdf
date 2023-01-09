@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "urdfenvs"
-version = "0.4.1"
+version = "0.4.2"
 description = "Simple simulation environment for robots, based on the urdf files."
 authors = ["Max Spahn <m.spahn@tudelft.nl>"]
 maintainers = [
@@ -18,7 +18,7 @@ keywords = ["robotics", "motion-planning", "simulation"]
 python = "^3.6.5, <3.10"
 pybullet = "^3.2.1"
 gym = "^0.21.0"
-numpy = "^1.19.0"
+numpy = "^1.19,<1.24"
 urdfpy = "^0.0.22"
 pynput = {version = "^1.7.6", optional = true}
 multiprocess = {version = "^0.70.12", optional = true}

@@ -17,7 +17,7 @@ def run_point_robot(n_steps=1000, render=False, goal=True, obstacles=True):
     print(f"Initial observation : {ob}")
     env.add_walls()
     if obstacles:
-        from examples.scene_objects.obstacles import (
+        from urdfenvs.scene_examples.obstacles import (
             sphereObst1,
             sphereObst2,
             urdfObst1,
@@ -29,7 +29,7 @@ def run_point_robot(n_steps=1000, render=False, goal=True, obstacles=True):
         env.add_obstacle(urdfObst1)
         env.add_obstacle(dynamicSphereObst3)
     if goal:
-        from examples.scene_objects.goal import splineGoal
+        from urdfenvs.scene_examples.goal import splineGoal
 
         env.add_goal(splineGoal)
     history = []
