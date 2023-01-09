@@ -3,19 +3,22 @@ import numpy as np
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.robots.jackal import JackalRobot
 from urdfenvs.robots.boxer import BoxerRobot
+from urdfenvs.urdf_common.bullet_physics_engine import BulletPhysicsEngine
 
 def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
+    physics_engine = BulletPhysicsEngine(render)
     robots = [
-        GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
-        GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
-        JackalRobot(mode='vel'),
-        JackalRobot(mode='vel'),
-        JackalRobot(mode='vel'),
-        BoxerRobot(mode='vel'),
+        GenericUrdfReacher(physics_engine, urdf="pointRobot.urdf", mode="vel"),
+        GenericUrdfReacher(physics_engine, urdf="ur5.urdf", mode="acc"),
+        JackalRobot(physics_engine, mode='vel'),
+        JackalRobot(physics_engine, mode='vel'),
+        JackalRobot(physics_engine, mode='vel'),
+        BoxerRobot(physics_engine, mode='vel'),
     ]
 
     env = gym.make(
         "urdf-env-v0",
+        physics_engine=physics_engine,
         dt=0.01, robots=robots, render=render
     )
     n = env.n()

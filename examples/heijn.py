@@ -1,13 +1,16 @@
 import gym
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
+from urdfenvs.urdf_common.bullet_physics_engine import BulletPhysicsEngine
 import numpy as np
 
-def run_point_robot(n_steps=1000, render=False, goal=True, obstacles=True):
+def run_heijn_robot(n_steps=1000, render=False, goal=True, obstacles=True):
+    physics_engine = BulletPhysicsEngine(render)
     robots = [
-        GenericUrdfReacher(urdf="heijn_robot.urdf", mode="vel"),
+        GenericUrdfReacher(physics_engine, urdf="heijn_robot.urdf", mode="vel"),
     ]
     env = gym.make(
         "urdf-env-v0",
+        physics_engine=physics_engine,
         dt=0.01, robots=robots, render=render
     )
     action = np.array([0.1, 0.0, 0.01])
@@ -17,7 +20,7 @@ def run_point_robot(n_steps=1000, render=False, goal=True, obstacles=True):
     print(f"Initial observation : {ob}")
     env.add_walls()
     if obstacles:
-        from examples.scene_objects.obstacles import (
+        from urdfenvs.scene_examples.obstacles import (
             sphereObst1,
             sphereObst2,
             dynamicSphereObst3,
@@ -27,7 +30,7 @@ def run_point_robot(n_steps=1000, render=False, goal=True, obstacles=True):
         env.add_obstacle(sphereObst2)
         env.add_obstacle(dynamicSphereObst3)
     if goal:
-        from examples.scene_objects.goal import splineGoal
+        from urdfenvs.scene_examples.goal import splineGoal
 
         env.add_goal(splineGoal)
     history = []
@@ -39,4 +42,4 @@ def run_point_robot(n_steps=1000, render=False, goal=True, obstacles=True):
 
 
 if __name__ == "__main__":
-    run_point_robot(render=True)
+    run_heijn_robot(render=True)

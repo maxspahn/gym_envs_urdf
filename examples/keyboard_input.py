@@ -1,5 +1,6 @@
 import gym
 from urdfenvs.robots.tiago import TiagoRobot
+from urdfenvs.urdf_common.bullet_physics_engine import BulletPhysicsEngine
 
 from multiprocessing import Process, Pipe
 import numpy as np
@@ -8,11 +9,13 @@ from pynput.keyboard import Key
 
 
 def run_tiago_keyboard(conn, n_steps=10000, render=True):
+    physics_engine = BulletPhysicsEngine(render)
     robots = [
-        TiagoRobot(mode="vel"),
+        TiagoRobot(physics_engine, mode="vel"),
     ]
     env = gym.make(
         "urdf-env-v0",
+        physics_engine=physics_engine,
         dt=0.01, robots=robots, render=render
     )
     ob = env.reset()

@@ -1,4 +1,3 @@
-import pybullet as p
 import gym
 import numpy as np
 
@@ -16,22 +15,11 @@ class HolonomicRobot(GenericRobot):
             mount_orientation: np.ndarray,) -> None:
 
         if hasattr(self, "_robot"):
-            p.resetSimulation()
-        self._robot = p.loadURDF(
-            fileName=self._urdf_file,
-            basePosition=mount_position.tolist(),
-            baseOrientation=mount_orientation.tolist(),
-            flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
-        )
+            self._physics_engine.reset_simulation()
+        self._robot = self._physics_engine.load_urdf(self._urdf_file, mount_position, mount_orientation)
         self.set_joint_names()
         self.extract_joint_ids()
-        for i in range(self._n):
-            p.resetJointState(
-                self._robot,
-                self._robot_joints[i],
-                pos[i],
-                targetVelocity=vel[i],
-            )
+        self._physics_engine.set_initial_joint_states(self._robot, self._robot_joints, pos, vel)
         self.update_state()
         self._integrated_velocities = vel
 
@@ -84,22 +72,10 @@ class HolonomicRobot(GenericRobot):
         )
 
     def apply_torque_action(self, torques: np.ndarray) -> None:
-        for i in range(self._n):
-            p.setJointMotorControl2(
-                self._robot,
-                self._robot_joints[i],
-                controlMode=p.TORQUE_CONTROL,
-                force=torques[i],
-            )
+        self._physics_engine.apply_torque_action(torques, self._robot, self._robot_joints)
 
     def apply_velocity_action(self, vels: np.ndarray) -> None:
-        for i in range(self._n):
-            p.setJointMotorControl2(
-                self._robot,
-                self._robot_joints[i],
-                controlMode=p.VELOCITY_CONTROL,
-                targetVelocity=vels[i],
-            )
+        self._physics_engine.apply_velocity_action(vels, self._robot, self._robot_joints)
 
     def apply_acceleration_action(self, accs: np.ndarray, dt: float) -> None:
         self._integrated_velocities += dt * accs
@@ -120,14 +96,8 @@ class HolonomicRobot(GenericRobot):
        """
 
         # Get Joint Configurations
-        joint_pos_list = []
-        joint_vel_list = []
-        for i in range(self._n):
-            pos, vel, _, _ = p.getJointState(self._robot, self._robot_joints[i])
-            joint_pos_list.append(pos)
-            joint_vel_list.append(vel)
-        joint_pos = np.array(joint_pos_list)
-        joint_vel = np.array(joint_vel_list)
+
+        joint_pos, joint_vel = self._physics_engine.joint_states(self._robot, self._robot_joints)
 
         # Concatenate position, orientation, velocity
         self.state = {"joint_state": {"position": joint_pos,

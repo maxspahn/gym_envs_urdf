@@ -6,7 +6,6 @@ from typing import List
 
 from MotionPlanningEnv.collisionObstacle import CollisionObstacle
 from MotionPlanningGoal.goalComposition import GoalComposition
-from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
 from urdfenvs.urdf_common.bullet_physics_engine import BulletPhysicsEngine
@@ -503,7 +502,6 @@ class UrdfEnv(gym.Env):
         if not self._space_set:
             self.set_spaces()
             self._space_set = True
-        self.plane = Plane()
         self._physics_engine.step()
         return self._get_ob()
 

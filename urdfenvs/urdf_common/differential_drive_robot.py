@@ -1,9 +1,10 @@
-import pybullet as p
 import gym
 import numpy as np
 import logging
 
 from urdfenvs.urdf_common.generic_robot import GenericRobot
+from urdfenvs.urdf_common.physics_engine import PhysicsEngine
+from urdfenvs.urdf_common.utils import euler_to_quat
 
 
 class DifferentialDriveRobot(GenericRobot):
@@ -21,9 +22,9 @@ class DifferentialDriveRobot(GenericRobot):
         observation with that position.
     """
 
-    def __init__(self, n: int, urdf_file: str, mode: str, number_actuated_axes: int=1):
+    def __init__(self, physics_engine: PhysicsEngine, n: int, urdf_file: str, mode: str, number_actuated_axes: int=1):
         """Constructor for differential drive robots."""
-        super().__init__(n, urdf_file, mode)
+        super().__init__(physics_engine, n, urdf_file, mode)
         self._wheel_radius: float = None
         self._wheel_distance: float = None
         self._number_actuated_axes: int = number_actuated_axes
@@ -66,37 +67,18 @@ class DifferentialDriveRobot(GenericRobot):
 ignored for differential drive robots."
         )
         if hasattr(self, "_robot"):
-            p.resetSimulation()
-        base_orientation = p.getQuaternionFromEuler([0, 0, pos[2]])
+            self._physics_engine.reset_simulation()
+        base_orientation = euler_to_quat(0, 0, pos[0])
         spawn_position = self._spawn_offset
         spawn_position[0:2] += pos[0:2]
-        self._robot = p.loadURDF(
-            fileName=self._urdf_file,
-            basePosition=spawn_position,
-            baseOrientation=base_orientation,
-            flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
-        )
+        self._robot = self._physics_engine.load_urdf(self._urdf_file, spawn_position, base_orientation)
         self.set_joint_names()
         self.extract_joint_ids()
         self.read_limits()
-        # Joint indices as found by p.getJointInfo()
-        # set castor wheel friction to zero
-        for i in self._castor_joints:
-            p.setJointMotorControl2(
-                self._robot,
-                jointIndex=i,
-                controlMode=p.VELOCITY_CONTROL,
-                force=0.0,
-            )
-        for i in self._castor_joints:
-            p.changeDynamics(self._robot, i, lateralFriction=0)
-        for i in range(2, self._n):
-            p.resetJointState(
-                self._robot,
-                self._robot_joints[i],
-                pos[i + 1],
-                targetVelocity=vel[i],
-            )
+        self._physics_engine.disable_velocity_control(self._robot, self._castor_joints)
+        self._physics_engine.disable_lateral_friction(self._robot, self._castor_joints)
+        self._physics_engine.set_initial_joint_states(self._robot, self._robot_joints[2:], pos[3:], vel[2:])
+
         # set base velocity
         self.update_state()
         self._integrated_velocities = vel
@@ -174,13 +156,7 @@ ignored for differential drive robots."
 
         Torque control is not available for the base at the moment.
         """
-        for i in range(2, self._n):
-            p.setJointMotorControl2(
-                self._robot,
-                self._robot_joints[i],
-                controlMode=p.TORQUE_CONTROL,
-                force=torques[i],
-            )
+        self._physics_engine.apply_torque_action(self._robot, self._robot_joints[2:], torques[2:])
 
     def apply_acceleration_action(self, accs: np.ndarray, dt: float) -> None:
         """Applies acceleration action to the robot.
@@ -206,13 +182,11 @@ ignored for differential drive robots."
     def apply_velocity_action_wheels(self, vels: np.ndarray) -> None:
         """Applies angular velocities to the wheels."""
         for axis in range(self._number_actuated_axes):
-            for i in range(2):
-                p.setJointMotorControl2(
-                    self._robot,
-                    self._robot_joints[axis * 2 + i],
-                    controlMode=p.VELOCITY_CONTROL,
-                    targetVelocity=vels[i],
-                )
+            self._physics_engine.apply_velocity_action(
+                vels[0:2],
+                self._robot,
+                self._robot_joints[axis * 2:axis * 2 + 2],
+            )
 
     def apply_base_velocity(self, vels: np.ndarray) -> None:
         """Applies forward and angular velocity to the base.
@@ -235,13 +209,11 @@ ignored for differential drive robots."
     def apply_velocity_action(self, vels: np.ndarray) -> None:
         """Applies angular velocities to the arm joints."""
         self.apply_base_velocity(vels) 
-        for i in range(2, self._n):
-            p.setJointMotorControl2(
-                self._robot,
-                self._robot_joints[i],
-                controlMode=p.VELOCITY_CONTROL,
-                targetVelocity=vels[i],
-            )
+        self._physics_engine.apply_velocity_action(
+            vels[2:],
+            self._robot,
+            self._robot_joints[2:],
+        )
 
     def correct_base_orientation(self, pos_base: np.ndarray) -> np.ndarray:
         """Corrects base orientation by -pi.
@@ -277,21 +249,10 @@ ignored for differential drive robots."
         `forward_velocity`: float
             forward velocity in robot frame
         """
-        # base position
-        link_state = p.getLinkState(self._robot, 0, computeLinkVelocity=0)
-        pos_base = np.array(
-            [
-                link_state[0][0],
-                link_state[0][1],
-                p.getEulerFromQuaternion(link_state[1])[2],
-            ]
-        )
-        # make sure that the rotation is within -pi and pi
-        self.correct_base_orientation(pos_base)
-        # wheel velocities
-        vel_wheels = p.getJointStates(self._robot, self._robot_joints)
-        v_right = vel_wheels[0][1]
-        v_left = vel_wheels[1][1]
+
+        base_position, wheel_velocity= self._physics_engine.get_base_state(self._robot, self._robot_joints, self.correct_base_orientation)
+        v_right = wheel_velocity[0]
+        v_left = wheel_velocity[1]
         # simple dynamics model to compute the forward and angular velocity
         forward_velocity = 0.5 * (v_right + v_left) * self._wheel_radius
         angular_velocity = (
@@ -299,25 +260,18 @@ ignored for differential drive robots."
         )
 
         jacobi_nonholonomic = np.array(
-            [[np.cos(pos_base[2]), 0], [np.sin(pos_base[2]), 0], [0, 1]]
+            [[np.cos(base_position[2]), 0], [np.sin(base_position[2]), 0], [0, 1]]
         )
         velocity_base = np.dot(
             jacobi_nonholonomic, np.array([forward_velocity, angular_velocity])
         )
 
         # joint configurations for holonomic joints
-        joint_pos_list = []
-        joint_vel_list = []
-        for i in range(2, self._n):
-            pos, vel, _, _ = p.getJointState(self._robot, self._robot_joints[i])
-            joint_pos_list.append(pos)
-            joint_vel_list.append(vel)
-        joint_pos = np.array(joint_pos_list)
-        joint_vel = np.array(joint_vel_list)
+        joint_pos, joint_vel = self._physics_engine.joint_states(self._robot, self._robot_joints[2*self._number_actuated_axes:])
 
         self.state = {
             "joint_state": {
-                "position": np.concatenate((pos_base, joint_pos)),
+                "position": np.concatenate((base_position, joint_pos)),
                 "velocity": np.concatenate((velocity_base, joint_vel)),
                 "forward_velocity": np.array([forward_velocity]),
             }

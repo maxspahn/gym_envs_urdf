@@ -58,7 +58,11 @@ def test_prius_robot():
     from prius import run_prius
     blueprint_test(run_prius)
 
-def test_point_robot():
+def test_heijn_robo():
+    from heijn import run_heijn_robot
+    blueprint_test(run_heijn_robot)
+
+def test_point_robo():
     from point_robot import run_point_robot
     blueprint_test(run_point_robot)
 

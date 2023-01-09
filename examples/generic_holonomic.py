@@ -1,15 +1,19 @@
 import gym
-from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 import numpy as np
 import os
 
+from urdfenvs.robots.generic_urdf import GenericUrdfReacher
+from urdfenvs.urdf_common.bullet_physics_engine import BulletPhysicsEngine
+
 def run_generic_holonomic(n_steps=1000, render=False, goal=True, obstacles=True):
     urdf_file = os.path.dirname(os.path.abspath(__file__)) + "/ur5.urdf"
+    physics_engine = BulletPhysicsEngine(render)
     robots = [
-        GenericUrdfReacher(urdf=urdf_file, mode="vel"),
+        GenericUrdfReacher(physics_engine, urdf=urdf_file, mode="vel"),
     ]
     env = gym.make(
         "urdf-env-v0",
+        physics_engine=physics_engine,
         dt=0.01, robots=robots, render=render
     )
     n = env.n()

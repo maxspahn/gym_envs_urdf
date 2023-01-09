@@ -1,9 +1,9 @@
-import pybullet as p
 import gym
 import numpy as np
 import logging
 
 from urdfenvs.urdf_common.generic_robot import GenericRobot
+from urdfenvs.urdf_common.utils import euler_to_quat
 
 
 class BicycleModel(GenericRobot):
@@ -19,9 +19,9 @@ class BicycleModel(GenericRobot):
         observation with that position.
     """
 
-    def __init__(self, n: int, urdf_file: str, mode: str):
+    def __init__(self, physics_engine, n: int, urdf_file: str, mode: str):
         """Constructor for bicyle model robot."""
-        super().__init__(n, urdf_file, mode)
+        super().__init__(physics_engine, n, urdf_file, mode)
         self._wheel_radius: float = None
         self._spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15])
 
@@ -45,16 +45,15 @@ class BicycleModel(GenericRobot):
 ignored for bicycle models."
         )
         if hasattr(self, "_robot"):
-            p.resetSimulation()
-        base_orientation = p.getQuaternionFromEuler([0, 0, pos[2]])
+            self._physics_engine.reset_simulation()
+        base_orientation = euler_to_quat(0, 0, pos[0])
         spawn_position = self._spawn_offset
         spawn_position[0:2] += pos[0:2]
-        self._robot = p.loadURDF(
-            fileName=self._urdf_file,
-            basePosition=spawn_position,
-            baseOrientation=base_orientation,
-            flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
-            globalScaling=self._scaling,
+        self._robot = self._physics_engine.load_urdf(
+            self._urdf_file,
+            spawn_position,
+            base_orientation,
+            scaling=self._scaling,
         )
         self.set_joint_names()
         self.extract_joint_ids()
@@ -127,28 +126,26 @@ ignored for bicycle models."
 
     def apply_velocity_action(self, vels: np.ndarray) -> None:
         """Applies velocities to steering and forward motion."""
-        p.setJointMotorControl2(
+        self._physics_engine.apply_velocity_action(
+            vels[1:2],
+            self._robot, 
+            self._steering_joints[1:2],
+        )
+        pos_wheel_right, _ = self._physics_engine.joint_states(
             self._robot,
-            self._steering_joints[1],
-            controlMode=p.VELOCITY_CONTROL,
-            targetVelocity=vels[1],
+            self._steering_joints[1:2]
         )
-        pos_wheel_right, _, _, _ = p.getJointState(
-            self._robot, self._steering_joints[1]
-        )
-        p.setJointMotorControl2(
+        self._physics_engine.apply_position_action(
+            pos_wheel_right,
             self._robot,
-            self._steering_joints[0],
-            controlMode=p.POSITION_CONTROL,
-            targetPosition=pos_wheel_right,
+            self._steering_joints[0:1],
         )
-        for joint in self._forward_joints:
-            p.setJointMotorControl2(
-                self._robot,
-                joint,
-                controlMode=p.VELOCITY_CONTROL,
-                targetVelocity=vels[0] / (self._wheel_radius * self._scaling),
-            )
+        forward_velocity = vels[0] / (self._wheel_radius * self._scaling)
+        self._physics_engine.apply_velocity_action(
+            np.array([forward_velocity, forward_velocity]),
+            self._robot,
+            self._forward_joints,
+        )
 
     def apply_acceleration_action(self, accs: np.ndarray, dt: float) -> None:
         raise NotImplementedError("Acceleration action is not available for prius.")
@@ -180,35 +177,28 @@ ignored for bicycle models."
         the sterring behind the key steering.
         """
         # base position
-        link_state = p.getLinkState(self._robot, 0, computeLinkVelocity=1)
-        pos_base = np.array(
-            [
-                link_state[0][0],
-                link_state[0][1],
-                p.getEulerFromQuaternion(link_state[1])[2],
-            ]
-        )
-        self.correct_base_orientation(pos_base)
-        vel_base = np.array(
-            [link_state[6][0], link_state[6][1], link_state[7][2]]
-        )
-        # wheel velocities
-        vel_wheels = p.getJointStates(self._robot, self._forward_joints[2:4])
-        v_right = vel_wheels[0][1]
-        v_left = vel_wheels[1][1]
-        vel = np.array(
+
+        base_position, wheel_velocity= self._physics_engine.get_base_state(self._robot, self._robot_joints, self.correct_base_orientation)
+        v_right = wheel_velocity[0]
+        v_left = wheel_velocity[1]
+        # simple dynamics model to compute the forward and angular velocity
+        vel_base = self._physics_engine.get_link_state(self._robot, 0)[7][2]
+        velocity_base = np.array(
             [
                 0.5 * (v_right + v_left) * self._scaling * self._wheel_radius,
-                vel_base[2],
+                vel_base,
             ]
         )
-        pos, _, _, _ = p.getJointState(self._robot, self._steering_joints[1])
-        steering_pos = np.array([pos])
+
+        # joint configurations for holonomic joints
+        steering_pos, _= self._physics_engine.joint_states(self._robot, self._steering_joints[1:2])
+
+
         self.state = {
             "joint_state": {
-                "position": pos_base,
-                "forward_velocity": vel,
-                "velocity": vel_base,
+                "position": base_position,
+                "forward_velocity": velocity_base,
+                "velocity": velocity_base,
                 "steering": steering_pos,
             }
         }

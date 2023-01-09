@@ -1,4 +1,3 @@
-import pybullet as p
 import gym
 import numpy as np
 import logging
@@ -40,9 +39,9 @@ class QuadrotorModel(GenericRobot):
         The angular velocity of the quadrotor in the world frame
     """
 
-    def __init__(self, n: int, urdf_file: str, mode: str) -> None:
+    def __init__(self, physics_engine, n: int, urdf_file: str, mode: str) -> None:
         """Constructor for quadrotor model robot."""
-        super().__init__(n, urdf_file)
+        super().__init__(physics_engine, n, urdf_file)
         self._swawn_offset: np.ndarray = np.array(
             [0.0, 0.0, 0.15])  # TODO: check this value
 
@@ -75,27 +74,20 @@ class QuadrotorModel(GenericRobot):
 ignored for drones."
         )
         if hasattr(self, "_robot"):
-            p.resetSimulation()
+            self._physics_engine.reset_simulation()
         base_orientation = pos[3:7]
         spawn_pos = self._spawn_offset + np.array([pos[0], pos[1], pos[2]])
-        self._robot = p.loadURDF(
-            fileName=self._urdf_file,
-            basePosition=spawn_pos,
-            baseOrientation=base_orientation,
-            flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
-            globalScaling=self._scaling,
-        )
+        self._robot = self._physics_engine.load_urdf(self._urdf_file, spawn_pos, base_orientation)
 
         self.set_joint_names()
         self.extract_joint_ids()
         self.read_limits()
-        for i in range(self.n()):
-            p.resetJointState(
-                self._robot,
-                self._robot_joints[i],
-                0,
-                targetVelocity=vel[i],
-            )
+        self._physics_engine.set_initial_joint_states(
+            self._robot,
+            self._robot_joints,
+            np.zeros_like(vel),
+            vel,
+        )
         # set base velocity
         self.update_state()
 
@@ -170,13 +162,11 @@ ignored for drones."
         """Applies the propeller speed action to the quadrotor.
         """
         direction = np.array([1, 1, -1, -1])
-        for i in range(4):
-            p.setJointMotorControl2(
+        self._physics_engine.apply_velocity_action(
+                vels[0:4] * direction[0:4],
                 self._robot,
-                self._robot_joints[i],
-                controlMode=p.VELOCITY_CONTROL,
-                targetVelocity=vels[i] * direction[i],
-            )
+                self._robot_joints[0:4],
+        )
         self._rotor_velocity = vels.astype('float32')
 
         self.apply_thrust(vels)
@@ -214,16 +204,12 @@ ignored for drones."
                                [k, -k,  k, -k]])
         u = torque_mat @ thrusts
         torque = u[1:]
-        for i in range(4):
-            p.applyExternalForce(self._robot,
-                                 self._robot_joints[i],
-                                 posObj=[0, 0, 0],
-                                 forceObj=[0, 0, thrusts[i]],
-                                 flags=p.LINK_FRAME)
-        p.applyExternalTorque(self._robot,
-                              0,
-                              torqueObj=torque,
-                              flags=p.LINK_FRAME)
+        self._physics_engine.apply_thrust(
+                self._robot,
+                self._robot_joints[0:4],
+                thrusts[0:4]
+        )
+        self._physics_engine.apply_external_torques(self._robot, torque)
 
     def apply_drag_effect(self, rate: np.ndarray) -> None:
         """PyBullet implementation of a drag model
@@ -257,7 +243,8 @@ ignored for drones."
         `w`: angular_velocity, np.array([dr, dp, dy])
         """
         # base position
-        link_state = p.getLinkState(self._robot, 0, computeLinkVelocity=1)
+        link_state = self._physics_engine.get_link_state(self._robot, 0)
+
         self._pos = np.array(
             [link_state[0][0], link_state[0][1], link_state[0][2]], dtype=np.float32
         )

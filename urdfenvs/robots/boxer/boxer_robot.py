@@ -1,13 +1,14 @@
 import os
 import numpy as np
 from urdfenvs.urdf_common.differential_drive_robot import DifferentialDriveRobot
+from urdfenvs.urdf_common.physics_engine import PhysicsEngine
 
 
 class BoxerRobot(DifferentialDriveRobot):
-    def __init__(self, mode: str):
+    def __init__(self, physics_engine: PhysicsEngine, mode: str):
         n = 2
         urdf_file = os.path.join(os.path.dirname(__file__), "boxer.urdf")
-        super().__init__(n, urdf_file, mode)
+        super().__init__(physics_engine, n, urdf_file, mode)
         self._wheel_radius = 0.08
         self._wheel_distance = 0.494
 

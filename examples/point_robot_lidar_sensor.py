@@ -1,15 +1,18 @@
 import gym
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.sensors.lidar import Lidar
+from urdfenvs.urdf_common.bullet_physics_engine import BulletPhysicsEngine
 import numpy as np
 
 
 def run_point_robot_with_lidar(n_steps=1000, render=False, obstacles=True, goal=True):
+    physics_engine = BulletPhysicsEngine(render)
     robots = [
-        GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
+        GenericUrdfReacher(physics_engine=physics_engine, urdf="pointRobot.urdf", mode="vel"),
     ]
     env = gym.make(
         "urdf-env-v0",
+        physics_engine=physics_engine,
         dt=0.01, robots=robots, render=render
     )
     action = np.array([0.1, 0.0, 0.0])

@@ -4,10 +4,10 @@ from urdfenvs.urdf_common.differential_drive_robot import DifferentialDriveRobot
 
 
 class TiagoRobot(DifferentialDriveRobot):
-    def __init__(self, mode: str):
+    def __init__(self, physics_engine, mode: str):
         n = 19
         urdf_file = os.path.join(os.path.dirname(__file__), "tiago_dual.urdf")
-        super().__init__(n, urdf_file, mode)
+        super().__init__(physics_engine, n, urdf_file, mode)
         self._wheel_radius = 0.1
         self._wheel_distance = 0.4044
         self._spawn_offset = np.array([-0.1764081, 0.0, 0.1])

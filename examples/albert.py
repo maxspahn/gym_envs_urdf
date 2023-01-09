@@ -1,15 +1,18 @@
 import gym
 import numpy as np
 from urdfenvs.robots.albert import AlbertRobot
+from urdfenvs.urdf_common.bullet_physics_engine import BulletPhysicsEngine
 import warnings
 
 
 def run_albert(n_steps=1000, render=False, goal=True, obstacles=True):
+    physics_engine = BulletPhysicsEngine(render)
     robots = [
-        AlbertRobot(mode="vel"),
+        AlbertRobot(physics_engine, mode="vel"),
     ]
     env = gym.make(
         "urdf-env-v0",
+        physics_engine=physics_engine,
         dt=0.01, robots=robots, render=render
     )
     action = np.zeros(9)

@@ -2,13 +2,17 @@ import gym
 from urdfenvs.robots.jackal import JackalRobot
 import numpy as np
 
+from urdfenvs.urdf_common.bullet_physics_engine import BulletPhysicsEngine
+
 
 def run_jackal(n_steps=1000, render=False, goal=True, obstacles=True):
+    physics_engine = BulletPhysicsEngine(render)
     robots = [
-        JackalRobot(mode="vel"),
+        JackalRobot(physics_engine, mode="vel"),
     ]
     env = gym.make(
         "urdf-env-v0",
+        physics_engine=physics_engine,
         dt=0.01, robots=robots, render=render
     )
     action = np.array([1.0, 0.50])

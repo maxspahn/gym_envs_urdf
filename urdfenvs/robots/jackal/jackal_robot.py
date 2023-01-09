@@ -4,10 +4,10 @@ from urdfenvs.urdf_common.differential_drive_robot import DifferentialDriveRobot
 
 
 class JackalRobot(DifferentialDriveRobot):
-    def __init__(self, mode: str):
+    def __init__(self, physics_engine, mode: str):
         n = 2
         urdf_file = os.path.join(os.path.dirname(__file__), "jackal.urdf")
-        super().__init__(n, urdf_file, mode, number_actuated_axes=2)
+        super().__init__(physics_engine, n, urdf_file, mode, number_actuated_axes=2)
         self._wheel_radius = 0.098
         self._wheel_distance = 2 * 0.187795 + 0.08
 
