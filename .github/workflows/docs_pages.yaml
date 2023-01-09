@@ -8,7 +8,6 @@ on:
 jobs:
   build-docs:
     runs-on: ubuntu-latest
-
     steps:
       #----------------------------------------------
       #       check-out repo and set-up python
@@ -54,17 +53,17 @@ jobs:
       #              build documentation
       #----------------------------------------------
       # Runs a set of commands using the runners shell
-    - name: Build documentation
-      run: |
-        mkdir gh-pages
-        touch gh-pages/.nojekyll
-        cd docs/
-        poetry run sphinx-build -b html ./source _build
-        cp -r _build/* ../gh-pages/        
+      - name: Build documentation
+        run: |
+          mkdir gh-pages
+          touch gh-pages/.nojekyll
+          cd docs/
+          poetry run sphinx-build -b html ./source _build
+          cp -r _build/* ../gh-pages/        
 
-    - name: Deploy documentation
-      if: ${{ github.event_name == 'push' }}
-      uses: JamesIves/github-pages-deploy-action@4.1.4
-      with:
-        branch: gh-pages
-        folder: gh-pages
+      - name: Deploy documentation
+        if: ${{ github.event_name == 'push' }}
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: gh-pages
+          folder: gh-pages
