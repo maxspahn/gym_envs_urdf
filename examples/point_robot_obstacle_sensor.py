@@ -1,7 +1,7 @@
 import gym
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
-from examples.scene_objects.obstacles import (
+from urdfenvs.scene_examples.obstacles import (
     sphereObst1,
     urdfObst1,
     dynamicSphereObst3,
