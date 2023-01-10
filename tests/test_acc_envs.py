@@ -76,7 +76,7 @@ def priusEnv():
     from urdfenvs.robots.prius import Prius
     initPos = np.zeros(3)
     initVel = np.zeros(2)
-    robot = Prius(mode="vel")
+    robot = Prius(mode="acc")
     return (robot, initPos, initVel)
 
 @pytest.fixture
