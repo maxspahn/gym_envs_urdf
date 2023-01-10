@@ -11,8 +11,7 @@ def run_n_link_reacher(n_steps=1000, render=False, goal=True, obstacles=True):
     ]
     env = gym.make(
         "urdf-env-v0",
-        physics_engine=physics_engine,
-        dt=0.01, robots=robots, render=render
+        dt=0.01, robots=robots,
     )
     n = env.n()
     action = np.ones(n) * 0.1

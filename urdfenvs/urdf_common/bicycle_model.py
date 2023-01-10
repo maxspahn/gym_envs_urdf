@@ -178,15 +178,19 @@ ignored for bicycle models."
         """
         # base position
 
-        base_position, wheel_velocity= self._physics_engine.get_base_state(self._robot, self._robot_joints, self.correct_base_orientation)
+        base_position, _ = self._physics_engine.get_base_state(self._robot, self._robot_joints, self.correct_base_orientation)
+        _, wheel_velocity = self._physics_engine.joint_states(self._robot, self._forward_joints[2:4])
         v_right = wheel_velocity[0]
         v_left = wheel_velocity[1]
         # simple dynamics model to compute the forward and angular velocity
-        vel_base = self._physics_engine.get_link_state(self._robot, 0)[7][2]
+        base_state = self._physics_engine.get_link_state(self._robot, 0)
         velocity_base = np.array(
+            [base_state[6][0], base_state[6][1], base_state[7][2]]
+        )
+        forward_velocity = np.array(
             [
                 0.5 * (v_right + v_left) * self._scaling * self._wheel_radius,
-                vel_base,
+                velocity_base[2],
             ]
         )
 
@@ -197,7 +201,7 @@ ignored for bicycle models."
         self.state = {
             "joint_state": {
                 "position": base_position,
-                "forward_velocity": velocity_base,
+                "forward_velocity": forward_velocity,
                 "velocity": velocity_base,
                 "steering": steering_pos,
             }

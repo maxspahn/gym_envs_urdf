@@ -8,14 +8,17 @@ from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
 from urdfenvs.scene_examples.obstacles import sphereObst1, urdfObst1, dynamicSphereObst3
 from urdfenvs.scene_examples.goal import goal1
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
+from urdfenvs.urdf_common.bullet_physics_engine import BulletPhysicsEngine
+
 
 def test_full_sensor():
+    physics_engine=BulletPhysicsEngine(False)
     robots = [
-        GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
+        GenericUrdfReacher(physics_engine, urdf="pointRobot.urdf", mode="vel"),
     ]
     env = gym.make(
         "urdf-env-v0",
-        dt=0.01, robots=robots, render=False
+        dt=0.01, robots=robots
     )
     # add sensor
     env.reset()
@@ -55,12 +58,13 @@ def test_full_sensor():
     env.close()
 
 def test_staticObstacle():
+    physics_engine=BulletPhysicsEngine(False)
     robots = [
-        GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
+        GenericUrdfReacher(physics_engine, urdf="pointRobot.urdf", mode="vel"),
     ]
     env = gym.make(
         "urdf-env-v0",
-        dt=0.01, robots=robots, render=False
+        dt=0.01, robots=robots
     )
     # add sensor
     env.reset()
@@ -84,12 +88,13 @@ def test_staticObstacle():
 
 
 def test_dynamicObstacle():
+    physics_engine = BulletPhysicsEngine(False)
     robots = [
-        GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
+        GenericUrdfReacher(physics_engine, urdf="pointRobot.urdf", mode="vel"),
     ]
     env = gym.make(
         "urdf-env-v0",
-        dt=0.01, robots=robots, render=False
+        dt=0.01, robots=robots
     )
 
     # add sensor
@@ -114,12 +119,13 @@ def test_dynamicObstacle():
 
 
 def test_shape_observation_space():
+    physics_engine = BulletPhysicsEngine(False)
     robots = [
-        GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
+        GenericUrdfReacher(physics_engine, urdf="pointRobot.urdf", mode="vel"),
     ]
     env = gym.make(
         "urdf-env-v0",
-        dt=0.01, robots=robots, render=False
+        dt=0.01, robots=robots
     )
     # add obstacle and sensor
     env.reset()

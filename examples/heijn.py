@@ -10,8 +10,7 @@ def run_heijn_robot(n_steps=1000, render=False, goal=True, obstacles=True):
     ]
     env = gym.make(
         "urdf-env-v0",
-        physics_engine=physics_engine,
-        dt=0.01, robots=robots, render=render
+        dt=0.01, robots=robots
     )
     action = np.array([0.1, 0.0, 0.01])
     pos0 = np.array([1.0, 0.1, 0.0])

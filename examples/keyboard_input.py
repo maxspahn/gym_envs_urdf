@@ -15,8 +15,7 @@ def run_tiago_keyboard(conn, n_steps=10000, render=True):
     ]
     env = gym.make(
         "urdf-env-v0",
-        physics_engine=physics_engine,
-        dt=0.01, robots=robots, render=render
+        dt=0.01, robots=robots,
     )
     ob = env.reset()
     print(f"Initial observation : {ob}")

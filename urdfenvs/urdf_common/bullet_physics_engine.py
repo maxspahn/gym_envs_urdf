@@ -6,11 +6,13 @@ from urdfenvs.urdf_common.physics_engine import PhysicsEngine
 
 class BulletPhysicsEngine(PhysicsEngine):
     def __init__(self, render: bool):
+        super().__init__(render)
         if render:
             self._cid = pybullet.connect(pybullet.GUI)
             pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, 0)
         else:
             self._cid = pybullet.connect(pybullet.DIRECT)
+
 
     def configure(self, dt: float, num_sub_steps: int):
         pybullet.setPhysicsEngineParameter(

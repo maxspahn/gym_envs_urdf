@@ -17,8 +17,7 @@ def run_point_robot_with_obstacle_sensor(n_steps=1000, render=False, obstacles=T
     ]
     env = gym.make(
         "urdf-env-v0",
-        physics_engine=physics_engine,
-        dt=0.01, robots=robots, render=render
+        dt=0.01, robots=robots,
     )
     defaultAction = np.array([0.1, 0.0, 0.0])
     pos0 = np.array([1.0, 0.1, 0.0])

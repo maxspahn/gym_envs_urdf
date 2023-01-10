@@ -11,8 +11,7 @@ def run_iris(n_steps=3000, render=False, goal=True, obstacles=True):
     ]
     env = gym.make(
         "urdf-env-v0",
-        physics_engine=physics_engine,
-        dt=0.01, robots=robots, render=render
+        dt=0.01, robots=robots,
     )
     # set initial state [x, y, z, qx, qy, qz, qw]
     pos0 = np.array([-2.0, 0.0, 1.2, 0., 0.0, 0.0, 1.])

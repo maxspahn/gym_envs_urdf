@@ -18,8 +18,7 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
 
     env = gym.make(
         "urdf-env-v0",
-        physics_engine=physics_engine,
-        dt=0.01, robots=robots, render=render
+        dt=0.01, robots=robots,
     )
     n = env.n()
     action = np.ones(n) * -0.2

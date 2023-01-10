@@ -12,8 +12,7 @@ def run_albert(n_steps=1000, render=False, goal=True, obstacles=True):
     ]
     env = gym.make(
         "urdf-env-v0",
-        physics_engine=physics_engine,
-        dt=0.01, robots=robots, render=render
+        dt=0.01, robots=robots
     )
     action = np.zeros(9)
     action[0] = 0.2

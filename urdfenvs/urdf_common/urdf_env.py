@@ -164,10 +164,8 @@ class UrdfEnv(gym.Env):
 
     def __init__(
             self,
-            physics_engine : PhysicsEngine,
             robots: List[GenericRobot],
             flatten_observation: bool = False,
-            render: bool = False,
             dt: float = 0.01
     ) -> None:
         """Constructor for environment.
@@ -186,14 +184,14 @@ class UrdfEnv(gym.Env):
         self._dt: float = dt
         self._t: float = 0.0
         self._robots: List[GenericRobot] = robots
-        self._render: bool = render
+        self._render: bool = robots[0]._physics_engine._render
         self._done: bool = False
         self._num_sub_steps: float = 20
         self._obsts: dict = {}
         self._goals: dict = {}
         self._flatten_observation: bool = flatten_observation
         self._space_set = False
-        self._physics_engine = physics_engine
+        self._physics_engine = robots[0]._physics_engine
     def n(self) -> int:
         return sum(self.n_per_robot())
 
