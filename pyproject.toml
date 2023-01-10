@@ -17,15 +17,14 @@ keywords = ["robotics", "motion-planning", "simulation"]
 [tool.poetry.dependencies]
 python = "^3.8"
 pybullet = "^3.2.1"
-gym = "^0.21.0"
 numpy = "^1.19,<1.24"
 yourdfpy = "^0.0.52"
+gym = "^0.22"
+motion-planning-scenes = "^0.4.0"
 pynput = {version = "^1.7.6", optional = true}
 multiprocess = {version = "^0.70.12", optional = true}
-motion-planning-scenes = {version = "^0.4.0", optional = true}
 
 [tool.poetry.extras]
-scenes = ["motion-planning-scenes"]
 keyboard = ["pynput", "multiprocess"]
 
 [tool.poetry.group.dev.dependencies]
