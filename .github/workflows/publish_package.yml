@@ -28,7 +28,7 @@ jobs:
           virtualenvs-in-project: true
           installer-parallel: true
       - name: Bump version
-        run: poetry version
+        run: poetry version minor
       - name: Build and publish to pypi
         uses: JRubics/poetry-publish@v1.15
         with:
