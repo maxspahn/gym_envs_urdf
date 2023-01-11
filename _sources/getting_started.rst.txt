@@ -81,7 +81,6 @@ Inside the virtual environment you can access all the examples.
 Installing dependencies
 -----------------------
 
-This package depends on casadi for dynamics generation and gym.
 Dependencies should be installed through pip or poetry, see below.
 
 Using pip, you can use
