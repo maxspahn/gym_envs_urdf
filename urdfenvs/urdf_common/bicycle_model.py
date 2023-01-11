@@ -61,7 +61,7 @@ ignored for bicycle models."
         self.read_limits()
         # set base velocity
         self.update_state()
-        self._integrated_velocities = vel
+        self._integrated_forward_velocity = vel[0]
 
     def read_limits(self) -> None:
         self._limit_pos_j = np.zeros((2, self.ns()))
@@ -69,7 +69,7 @@ ignored for bicycle models."
         self._limit_tor_j = np.zeros((2, self.n()))
         self._limit_acc_j = np.zeros((2, self.n()))
         self._limit_pos_steering = np.zeros(2)
-        joint = self._urdf_robot.joints[self._steering_joints[1] - 1]
+        joint = self._urdf_robot.robot.joints[self._steering_joints[1] - 1]
         self._limit_pos_steering[0] = joint.limit.lower - 0.1
         self._limit_pos_steering[1] = joint.limit.upper + 0.1
         self._limit_vel_forward_j = np.array([[-40., -10.], [40., 10.]])
@@ -151,7 +151,15 @@ ignored for bicycle models."
             )
 
     def apply_acceleration_action(self, accs: np.ndarray, dt: float) -> None:
-        raise NotImplementedError("Acceleration action is not available for prius.")
+        """Applies acceleration action to the robot.
+
+        The acceleration action relies on integration of the velocity signal
+        and applies velocities at the end. The integrated velocities are
+        clipped to avoid very large velocities.
+        """
+        self._integrated_forward_velocity += dt * accs[0]
+        actions = np.array([self._integrated_forward_velocity, accs[1]])
+        self.apply_velocity_action(actions)
 
     def apply_torque_action(self, torques: np.ndarray) -> None:
         raise NotImplementedError("Torque action is not available for prius.")

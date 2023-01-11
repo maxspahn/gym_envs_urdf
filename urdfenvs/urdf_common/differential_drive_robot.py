@@ -118,7 +118,7 @@ ignored for differential drive robots."
         self._limit_tor_j = np.zeros((2, self.n()))
         self._limit_acc_j = np.zeros((2, self.n()))
         for i in range(self.n()):
-            joint = self._urdf_robot.joints[self._urdf_joints[i]]
+            joint = self._urdf_robot.robot.joints[self._urdf_joints[i]]
             self._limit_tor_j[0, i] = -joint.limit.effort
             self._limit_tor_j[1, i] = joint.limit.effort
             if i >= 2:

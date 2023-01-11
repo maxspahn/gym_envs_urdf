@@ -19,7 +19,7 @@ dynamicGoalDict = {
     "indices": [0, 1, 2],
     "parent_link": 0,
     "child_link": 3,
-    "trajectory": ["0.5", "0.2 + 0.2 * ca.sin(0.3 * t)", "0.4"],
+    "trajectory": ["0.5", "0.2 + 0.2 * sp.sin(0.3 * t)", "0.4"],
     "epsilon": 0.08,
     "type": "analyticSubGoal",
 }

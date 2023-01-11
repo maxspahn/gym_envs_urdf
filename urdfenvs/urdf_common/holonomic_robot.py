@@ -45,7 +45,7 @@ class HolonomicRobot(GenericRobot):
         self._limit_tor_j = np.zeros((2, self._n))
         self._limit_acc_j = np.zeros((2, self._n))
         for i, j in enumerate(self._urdf_joints):
-            joint = self._urdf_robot.joints[j]
+            joint = self._urdf_robot.robot.joints[j]
             self._limit_pos_j[0, i] = joint.limit.lower
             self._limit_pos_j[1, i] = joint.limit.upper
             self._limit_vel_j[0, i] = -joint.limit.velocity
