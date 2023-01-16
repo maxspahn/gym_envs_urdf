@@ -1,5 +1,5 @@
-from MotionPlanningGoal.staticSubGoal import StaticSubGoal
-from MotionPlanningGoal.dynamicSubGoal import DynamicSubGoal
+from mpscenes.goals.static_sub_goal import StaticSubGoal
+from mpscenes.goals.dynamic_sub_goal import DynamicSubGoal
 
 goal1Dict = {
     "weight": 1.0,
