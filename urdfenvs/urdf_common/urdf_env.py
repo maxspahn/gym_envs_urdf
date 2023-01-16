@@ -1,9 +1,11 @@
 import gym
 import time
+import deprecation
 import numpy as np
 import pybullet as p
 import warnings
 from typing import List
+from urdfenvs import __version__
 
 from mpscenes.obstacles.collision_obstacle import CollisionObstacle
 from mpscenes.goals.goal_composition import GoalComposition
@@ -310,6 +312,9 @@ class UrdfEnv(gym.Env):
         goal_id = goal.add_to_bullet(p)
         self._goals[goal_id] = goal
 
+    @deprecation.deprecated(deprecated_in="0.4.3",
+                        current_version=__version__,
+                        details="Use the explicit obstacle box from mpscenes function instead")
     def add_walls(
         self,
         dim=np.array([0.2, 8, 0.5]),

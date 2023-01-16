@@ -186,6 +186,21 @@ colorama = {version = "*", markers = "sys_platform == \"win32\""}
 development = ["black", "flake8", "mypy", "pytest", "types-colorama"]
 
 [[package]]
+name = "deprecation"
+version = "2.1.0"
+description = "A library to handle automated deprecations"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "deprecation-2.1.0-py2.py3-none-any.whl", hash = "sha256:a10811591210e1fb0e768a8c25517cabeabcba6f0bf96564f8ff45189f90b14a"},
+    {file = "deprecation-2.1.0.tar.gz", hash = "sha256:72b3bde64e5d778694b0cf68178aed03d15e15477116add3fb773e581f9518ff"},
+]
+
+[package.dependencies]
+packaging = "*"
+
+[[package]]
 name = "dill"
 version = "0.3.6"
 description = "serialize all of python"
@@ -889,7 +904,7 @@ PyYAML = ">=5.1.0"
 name = "packaging"
 version = "23.0"
 description = "Core utilities for Python packages"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2159,4 +2174,4 @@ keyboard = ["pynput", "multiprocess"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "f4ae8188a53a4a890f749f092be5d44f1e8a6c9e561565542806d6f31a1888d7"
+content-hash = "56a1d3e12107689787d21ce1fa3069c9c26ba393687358d3ce2e8ca8e1896efa"
