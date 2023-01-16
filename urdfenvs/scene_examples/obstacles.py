@@ -1,6 +1,6 @@
-from MotionPlanningEnv.sphereObstacle import SphereObstacle
-from MotionPlanningEnv.urdfObstacle import UrdfObstacle
-from MotionPlanningEnv.dynamicSphereObstacle import DynamicSphereObstacle
+from mpscenes.obstacles.sphere_obstacle import SphereObstacle
+from mpscenes.obstacles.dynamic_sphere_obstacle import DynamicSphereObstacle
+from mpscenes.obstacles.urdf_obstacle import UrdfObstacle
 
 import os
 

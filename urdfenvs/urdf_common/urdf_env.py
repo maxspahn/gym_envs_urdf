@@ -5,8 +5,9 @@ import pybullet as p
 import warnings
 from typing import List
 
-from MotionPlanningEnv.collisionObstacle import CollisionObstacle
-from MotionPlanningGoal.goalComposition import GoalComposition
+from mpscenes.obstacles.collision_obstacle import CollisionObstacle
+from mpscenes.goals.goal_composition import GoalComposition
+
 from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
@@ -275,7 +276,7 @@ class UrdfEnv(gym.Env):
         Parameters
         ----------
 
-        obst: Obstacle from MotionPlanningEnv
+        obst: Obstacle from mpscenes
         """
         # add obstacle to environment
         obst_id = obst.add_to_bullet(p)
@@ -304,7 +305,7 @@ class UrdfEnv(gym.Env):
         Parameters
         ----------
 
-        goal: Goal from MotionPlanningGoal
+        goal: Goal from mpscenes
         """
         goal_id = goal.add_to_bullet(p)
         self._goals[goal_id] = goal
