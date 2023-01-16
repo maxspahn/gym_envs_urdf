@@ -1,6 +1,7 @@
 from mpscenes.obstacles.sphere_obstacle import SphereObstacle
 from mpscenes.obstacles.dynamic_sphere_obstacle import DynamicSphereObstacle
 from mpscenes.obstacles.urdf_obstacle import UrdfObstacle
+from mpscenes.obstacles.box_obstacle import BoxObstacle
 
 import os
 
@@ -47,3 +48,33 @@ dynamicObst3Dict = {
 dynamicSphereObst3 = DynamicSphereObstacle(
     name="simpleSphere", content_dict=dynamicObst3Dict
 )
+
+wall_length = 10
+wall_obstacles_dicts = [
+    {
+        'type': 'box', 
+         'geometry': {
+             'position': [wall_length/2.0, 0.0, 0.4], 'width': wall_length, 'height': 0.8, 'length': 0.1
+        }
+    },
+    {
+        'type': 'box', 
+         'geometry': {
+             'position': [0.0, wall_length/2.0, 0.4], 'width': 0.1, 'height': 0.8, 'length': wall_length
+        }
+    },
+    {
+        'type': 'box', 
+         'geometry': {
+             'position': [0.0, -wall_length/2.0, 0.4], 'width': 0.1, 'height': 0.8, 'length': wall_length
+        }
+    },
+    {
+        'type': 'box', 
+         'geometry': {
+             'position': [-wall_length/2.0, 0.0, 0.4], 'width': wall_length, 'height': 0.8, 'length': 0.1
+        }
+    },
+]
+
+wall_obstacles = [BoxObstacle(name=f"wall_{i}", content_dict=obst_dict) for i, obst_dict in enumerate(wall_obstacles_dicts)]
