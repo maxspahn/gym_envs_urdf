@@ -68,13 +68,9 @@ class Lidar(Sensor):
         alpha = np.arcsin(link_state[1][2]) * 2
         gamma = np.arccos(link_state[1][3]) * 2
         for i, theta in enumerate(self._thetas):
-            ray_end = np.array(ray_start) + self._ray_length * np.array(
-                [np.cos(theta + alpha), np.sin(theta + gamma), 0.0]
-            )
+            ray_end = np.array(ray_start) + self._ray_length * np.array([np.cos(theta + alpha), np.sin(theta + gamma), 0.0])
             lidar = p.rayTest(ray_start, ray_end)
-            self._rel_positions[2 * i : 2 * i + 2] = (
-                np.array(lidar[0][3]) - np.array(ray_start)
-            )[0:2]
+            self._rel_positions[2 * i : 2 * i + 2] = lidar[0][2] * self._ray_length * np.array([np.cos(theta + alpha), np.sin(theta + gamma)])
             self._distances[i] = np.linalg.norm(self._rel_positions[2 * i: 2 * i +2])
         if self._raw_data:
             return self._distances

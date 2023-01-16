@@ -1,6 +1,7 @@
 from MotionPlanningEnv.sphereObstacle import SphereObstacle
 from MotionPlanningEnv.urdfObstacle import UrdfObstacle
 from MotionPlanningEnv.dynamicSphereObstacle import DynamicSphereObstacle
+from MotionPlanningEnv.cylinderObstacle import CylinderObstacle
 
 import os
 
@@ -37,3 +38,8 @@ dynamicObst3Dict = {
     "geometry": {"trajectory": splineDict, "radius": 0.2},
 }
 dynamicSphereObst3 = DynamicSphereObstacle(name="simpleSphere", content_dict=dynamicObst3Dict)
+cylinder1Dict = {
+    "type": "cylinder",
+    "geometry": {"position": [-2.0, -2.0, 1.0], "radius": 0.5, "height": 2.0},
+}
+cylinderObst1 = CylinderObstacle(name="simpleCylinder", content_dict=cylinder1Dict)
