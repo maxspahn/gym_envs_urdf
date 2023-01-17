@@ -1,7 +1,7 @@
 import gym
 import numpy as np
 from urdfenvs.scene_examples.obstacles import (
-    spherObst1,
+    sphereObst1,
     sphereObst2,
     urdfObst1,
     dynamicSphereObst3,
