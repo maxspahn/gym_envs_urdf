@@ -1,8 +1,9 @@
 import gym
+import numpy as np
+from urdfenvs.scene_examples.obstacles import *
+
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.sensors.lidar import Lidar
-import numpy as np
-
 
 def run_point_robot_with_lidar(n_steps=1000, render=False, obstacles=True, goal=True):
     robots = [
@@ -22,15 +23,9 @@ def run_point_robot_with_lidar(n_steps=1000, render=False, obstacles=True, goal=
     # Setup for showing LiDAR detections 
     body_ids = None
     print(f"Initial observation : {ob}")
-    env.add_walls()
+    for wall in wall_obstacles:
+        env.add_obstacle(wall)
     if obstacles:
-        from urdfenvs.scene_examples.obstacles import (
-            sphereObst1,
-            sphereObst2,
-            urdfObst1,
-            dynamicSphereObst3,
-        )
-
         env.add_obstacle(sphereObst1)
         env.add_obstacle(sphereObst2)
         env.add_obstacle(urdfObst1)
