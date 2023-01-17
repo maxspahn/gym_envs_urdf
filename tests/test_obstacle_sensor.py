@@ -27,34 +27,34 @@ def test_full_sensor():
     env.add_goal(goal1)
     action = np.random.random(env.n())
     ob, _, _, _ = env.step(action)
-    ob = ob['robot_0']
-    assert "obstacles" in ob
-    assert "goals" in ob
-    assert "rays" in ob
-    assert isinstance(ob["obstacles"], list)
-    assert isinstance(ob["obstacles"][0], list)
-    assert isinstance(ob["obstacles"][0][0], np.ndarray)
-    assert isinstance(ob["goals"], list)
-    assert isinstance(ob["goals"][0][0], np.ndarray)
-    assert isinstance(ob["rays"], np.ndarray)
+    full_sensor_ob = ob['robot_0']['FullSensor']
+    lidar_sensor_ob = ob['robot_0']['LidarSensor']
+    assert "obstacles" in full_sensor_ob.keys()
+    assert "goals" in full_sensor_ob
+    assert isinstance(full_sensor_ob["obstacles"], list)
+    assert isinstance(full_sensor_ob["obstacles"][0], list)
+    assert isinstance(full_sensor_ob["obstacles"][0][0], np.ndarray)
+    assert isinstance(full_sensor_ob["goals"], list)
+    assert isinstance(full_sensor_ob["goals"][0][0], np.ndarray)
+    assert isinstance(lidar_sensor_ob, np.ndarray)
     np.testing.assert_array_almost_equal(
-        ob["obstacles"][0][0],
+        full_sensor_ob["obstacles"][0][0],
         sphereObst1.position(t=env.t()),
         decimal=2,
     )
     np.testing.assert_array_almost_equal(
-        ob["goals"][0][0],
+        full_sensor_ob["goals"][0][0],
         goal1.position(t=env.t()),
         decimal=2,
     )
     np.testing.assert_array_almost_equal(
-        ob["obstacles"][0][1],
+        full_sensor_ob["obstacles"][0][1],
         sphereObst1.radius(),
         decimal=2,
     )
     env.close()
 
-def test_staticObstacle():
+def test_static_obstacle():
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
     ]
@@ -69,7 +69,7 @@ def test_staticObstacle():
     env.add_sensor(sensor, [0])
     action = np.random.random(env.n())
     ob, _, _, _ = env.step(action)
-    ob = ob['robot_0']
+    ob = ob['robot_0']['ObstacleSensor']
     assert "obstacle_0" in ob
     assert isinstance(ob["obstacle_0"]["pose"]["position"], np.ndarray)
     assert isinstance(ob["obstacle_0"]["twist"]["linear"], np.ndarray)
@@ -99,7 +99,7 @@ def test_dynamicObstacle():
     env.add_sensor(sensor, [0])
     action = np.random.random(env.n())
     ob, _, _, _ = env.step(action)
-    ob = ob['robot_0']
+    ob = ob['robot_0']['ObstacleSensor']
     assert "obstacle_0" in ob
     assert isinstance(ob["obstacle_0"]["pose"]["position"], np.ndarray)
     assert isinstance(ob["obstacle_0"]["twist"]["linear"], np.ndarray)
@@ -128,7 +128,7 @@ def test_shape_observation_space():
     env.add_sensor(sensor, [0])
     action = np.random.random(env.n())
     ob, _, _, _ = env.step(action)
-    ob = ob['robot_0']
+    ob = ob['robot_0']['ObstacleSensor']
     assert ob["obstacle_0"]["pose"]["position"].shape == (3, )
     assert ob["obstacle_0"]["pose"]["orientation"].shape == (4, )
     assert ob["obstacle_0"]["twist"]["linear"].shape == (3, )

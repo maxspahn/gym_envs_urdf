@@ -1,4 +1,5 @@
 """Abstract class for sensor."""
+from typing import List
 from abc import abstractmethod
 
 
@@ -24,5 +25,5 @@ class Sensor(object):
         pass
 
     @abstractmethod
-    def sense(self, robot):
+    def sense(self, robot, obst_ids: List[int], goal_ids: List[int]):
         pass

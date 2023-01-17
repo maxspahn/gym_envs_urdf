@@ -118,7 +118,7 @@
   <joint name="lidar_sensor_joint" type="fixed">
     <parent link="lidar_link"/>
     <child link="lidar_sensor_link"/>
-    <origin rpy="0 0 0" xyz="0 0 0.1"/>
+    <origin rpy="0 0 0" xyz="0 0 0.0"/>
   </joint>
   <joint name="feature_link_joint" type='fixed'>
     <parent link="base_link"/>
