@@ -5,7 +5,6 @@ import gym
 from typing import List
 
 from urdfenvs.sensors.sensor import Sensor
-from urdfenvs.urdf_common.generic_robot import GenericRobot
 
 
 class Lidar(Sensor):
@@ -44,7 +43,9 @@ class Lidar(Sensor):
         ]
         self._rel_positions = np.zeros(2 * nb_rays)
         self._distances = np.zeros(nb_rays)
-        self._sphere_ids = [-1, ] * self._nb_rays
+        self._sphere_ids = [
+            -1,
+        ] * self._nb_rays
 
     def get_observation_size(self):
         """Getter for the dimension of the observation space."""
@@ -71,10 +72,18 @@ class Lidar(Sensor):
         alpha = np.arcsin(link_state[1][2]) * 2
         gamma = np.arccos(link_state[1][3]) * 2
         for i, theta in enumerate(self._thetas):
-            ray_end = np.array(ray_start) + self._ray_length * np.array([np.cos(theta + alpha), np.sin(theta + gamma), 0.0])
+            ray_end = np.array(ray_start) + self._ray_length * np.array(
+                [np.cos(theta + alpha), np.sin(theta + gamma), 0.0]
+            )
             lidar = p.rayTest(ray_start, ray_end)
-            self._rel_positions[2 * i : 2 * i + 2] = lidar[0][2] * self._ray_length * np.array([np.cos(theta + alpha), np.sin(theta + gamma)])
-            self._distances[i] = np.linalg.norm(self._rel_positions[2 * i: 2 * i +2])
+            self._rel_positions[2 * i : 2 * i + 2] = (
+                lidar[0][2]
+                * self._ray_length
+                * np.array([np.cos(theta + alpha), np.sin(theta + gamma)])
+            )
+            self._distances[i] = np.linalg.norm(
+                self._rel_positions[2 * i : 2 * i + 2]
+            )
         self.update_lidar_spheres(lidar_position)
         if self._raw_data:
             return self._distances
@@ -83,10 +92,10 @@ class Lidar(Sensor):
     def init_lidar_spheres(self, lidar_position):
         """
         Initialize the Lidar spheres to visualize the sensing in bullet.
-        The visual spheres are initialized once and then update in the 
+        The visual spheres are initialized once and then update in the
         update function. The relative positions are augmented by a third
         column to have a full position, including the z-coordinate.
-        
+
         Parameters
         ------------
         lidar_position : np.ndarray
@@ -94,9 +103,9 @@ class Lidar(Sensor):
         """
         q = lidar_position
         q_obs = self._rel_positions.reshape(self._nb_rays, 2)
-        q_obs = np.append(q_obs, np.zeros((self._nb_rays, 1)), axis = 1)
+        q_obs = np.append(q_obs, np.zeros((self._nb_rays, 1)), axis=1)
         shape_id_sphere = p.createVisualShape(
-            p.GEOM_SPHERE, radius=0.05, rgbaColor=[0.0,0.0,0.0,0.8]
+            p.GEOM_SPHERE, radius=0.05, rgbaColor=[0.0, 0.0, 0.0, 0.8]
         )
         for ray_id in range(self._nb_rays):
             body_id_sphere = p.createMultiBody(
@@ -104,7 +113,7 @@ class Lidar(Sensor):
                 baseCollisionShapeIndex=-1,
                 baseVisualShapeIndex=shape_id_sphere,
                 basePosition=q + q_obs[ray_id],
-                )
+            )
             self._sphere_ids[ray_id] = body_id_sphere
 
     def update_lidar_spheres(self, lidar_position):
@@ -123,10 +132,8 @@ class Lidar(Sensor):
         q = lidar_position
         # Reshape and add z-values to the sensor data.
         q_obs = self._rel_positions.reshape(self._nb_rays, 2)
-        q_obs = np.append(q_obs, np.zeros((self._nb_rays, 1)), axis = 1)
+        q_obs = np.append(q_obs, np.zeros((self._nb_rays, 1)), axis=1)
         for ray_id in range(self._nb_rays):
             p.resetBasePositionAndOrientation(
-                int(self._sphere_ids[ray_id]),
-                q + q_obs[ray_id],
-                [0, 0, 0, 1]
+                int(self._sphere_ids[ray_id]), q + q_obs[ray_id], [0, 0, 0, 1]
             )
