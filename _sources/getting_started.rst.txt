@@ -30,13 +30,22 @@ This is the guide to quickle get going with urdf gym environments.
 Pre-requisites
 --------------
 
-- Python >3.6, <3.10
+- Python >=3.8
 - pip3
 - git 
 
+Installation from pypi
+-----------------------
 
-Installation
-------------
+The package is uploaded to pypi so you can install it using
+
+.. code:: bash
+
+   pip3 install urdfenvs
+
+
+Installation from source
+-------------------------
 
 You first have to download the repository
 
@@ -95,7 +104,7 @@ Using poetry
 
     poetry install -E <options>
 
-Options are ``keyboard`` and ``scenes``.
+Options are ``keyboard``.
 
 
 Examples
