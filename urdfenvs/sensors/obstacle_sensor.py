@@ -24,7 +24,7 @@ class ObstacleSensor(Sensor):
     """
 
     def __init__(self):
-        super().__init__("obstacleSensor")
+        super().__init__("ObstacleSensor")
         self._observation = np.zeros(self.get_observation_size())
 
     def get_obserrvation_size(self):

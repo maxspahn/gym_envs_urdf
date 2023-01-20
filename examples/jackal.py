@@ -2,6 +2,7 @@ import gym
 from urdfenvs.robots.jackal import JackalRobot
 import numpy as np
 
+from urdfenvs.scene_examples.obstacles import wall_obstacles
 
 def run_jackal(n_steps=1000, render=False, goal=True, obstacles=True):
     robots = [
@@ -15,7 +16,8 @@ def run_jackal(n_steps=1000, render=False, goal=True, obstacles=True):
     pos0 = np.array([1.0, 0.2, -1.0])
     ob = env.reset(pos=pos0)
     print(f"Initial observation : {ob}")
-    env.add_walls()
+    for wall in wall_obstacles:
+        env.add_obstacle(wall)
     print("Starting episode")
     history = []
     for _ in range(n_steps):
