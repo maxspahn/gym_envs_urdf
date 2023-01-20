@@ -6,7 +6,7 @@ name: Publishing package to pypi with patch.
 on: 
   push:
     branches:
-      - main
+      - master
 
 jobs:
   publish_patch:

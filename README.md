@@ -7,14 +7,41 @@ deploy. Although, we used the OpenAI-Gym framing, these environments are
 not necessarly restricted to Reinforcement-Learning but rather to local
 motion planning in general.
 
-+\-\-\-\-\-\-\--+\-\-\-\-\-\-\--+\-\-\-\-\-\-\--+ \|
-![img1](img/pointRobot.gif) \| ![img2](img/pointRobotKeyboardInput.gif)
-\| ![img3](img/boxerRobot.gif) \|
-+\-\-\-\-\-\-\--+\-\-\-\-\-\-\--+\-\-\-\-\-\-\--+
-+\-\-\-\-\-\-\--+\-\-\-\-\-\-\--+\-\-\-\-\-\-\--+ \|
-![img4](img/tiagoKeyboardInput.gif) \| ![img5](img/panda.gif) \|
-![img6](img/albert.gif) \|
-+\-\-\-\-\-\-\--+\-\-\-\-\-\-\--+\-\-\-\-\-\-\--+
+
+<table>
+ <tr>
+  <td> Point Robot </td>
+  <td> Point Robot with Keyboard Input </td>
+  <td> Non-Holonomic Robot </td>
+ </tr>
+ <tr>
+  <td> <img src="/docs/source/img/pointRobot.gif" width="250" height="250"/> </td>
+  <td> <img src="/docs/source/img/pointRobotKeyboardInput.gif" width="250" height="250"/> </td>  
+  <td> <img src="/docs/source/img/boxerRobot.gif" width="250" height="250"/> </td>
+ </tr>
+</table>
+
+<table>
+ <tr>
+  <td> Tiago Robot </td>
+  <td> Tiago Robot with Keyboard Input </td>
+ </tr>
+ <tr>
+  <td> <img src="/docs/source/img/tiago.gif" width="250" height="250"/> </td>
+  <td> <img src="/docs/source/img/tiagoKeyboardInput.gif" width="250" height="250"/> </td>
+ </tr>
+</table>
+
+<table>
+ <tr>
+  <td> Panda Robot </td>
+  <td> Albert Robot </td>
+  </tr>
+ <tr>
+  <td> <img src="/docs/source/img/panda.gif" width="250" height="250"/> </td>
+  <td> <img src="/docs/source/img/albert.gif" width="250" height="250"/> </td>
+  </tr>
+</table>
 
 Getting started
 ===============
