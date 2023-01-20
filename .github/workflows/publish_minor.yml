@@ -1,26 +1,24 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Publishing package to pypi.
+name: Publishing package to pypi with minor change.
 
 # Controls when the workflow will run
 on: 
-  push:
-    branches:
-      - master
+  pull_request:
+    types: [closed]
+    branches: 
+      - main
 
 jobs:
-  publish:
+  publish_minor:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - name: Set up python
+      - name: Setup up python
         id: setup-python
         uses: actions/setup-python@v2
-        with:
+        with: 
           python-version: 3.8
-      #----------------------------------------------
-      #  -----  install & configure poetry  -----
-      #----------------------------------------------
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
@@ -29,8 +27,17 @@ jobs:
           installer-parallel: true
       - name: Bump version
         run: poetry version minor
+      - name: push version increase
+        run: |
+          git pull
+          git add pyproject.toml
+          git add poetry.lock
+          git config --global user.name 'GitHub Actions'
+          git config --global user.name 'maxspahn@users.noreply.github.com'
+          git commit -m "Bumps version number."
+          git push
       - name: Build and publish to pypi
-        uses: JRubics/poetry-publish@v1.15
+        uses: JRubics/poetry-publish@v1.13
         with:
-          python_version : "3.8.10"
+          python_version: "3.8"
           pypi_token: ${{ secrets.PYPI_TOKEN }}
