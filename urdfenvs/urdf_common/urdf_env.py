@@ -4,11 +4,12 @@ import deprecation
 import numpy as np
 import pybullet as p
 import warnings
-from typing import List
+from typing import List, Union
 from urdfenvs import __version__
 
 from mpscenes.obstacles.collision_obstacle import CollisionObstacle
 from mpscenes.goals.goal_composition import GoalComposition
+from mpscenes.goals.sub_goal import SubGoal
 
 from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
@@ -301,7 +302,7 @@ class UrdfEnv(gym.Env):
     def get_obstacles(self) -> dict:
         return self._obsts
 
-    def add_goal(self, goal: GoalComposition) -> None:
+    def add_goal(self, goal: Union[GoalComposition, SubGoal]) -> None:
         """Adds goal to the simulation environment.
 
         Parameters
@@ -309,8 +310,13 @@ class UrdfEnv(gym.Env):
 
         goal: Goal from mpscenes
         """
-        goal_id = goal.add_to_bullet(p)
-        self._goals[goal_id] = goal
+        if isinstance(goal, GoalComposition):
+            for sub_goal in goal.sub_goals():
+                goal_id = sub_goal.add_to_bullet(p)
+                self._goals[goal_id] = goal
+        else:
+            goal_id = goal.add_to_bullet(p)
+            self._goals[goal_id] = goal
 
     @deprecation.deprecated(deprecated_in="0.4.3",
                         current_version=__version__,
