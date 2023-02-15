@@ -214,6 +214,19 @@ class UrdfEnv(gym.Env):
     def t(self) -> float:
         return self._t
 
+    def reconfigure_camera(
+            self,
+            camera_distance: float,
+            camera_yaw: float,
+            camera_pitch: float,
+            camera_target_position: list) -> None:
+        p.resetDebugVisualizerCamera(
+            cameraDistance=camera_distance,
+            cameraYaw=camera_yaw,
+            cameraPitch=camera_pitch,
+            cameraTargetPosition=camera_target_position,
+        )
+
     def start_video_recording(self, file_name: str) -> None:
         if self._render:
             p.startStateLogging(p.STATE_LOGGING_VIDEO_MP4, file_name)
