@@ -71,10 +71,7 @@ Optional: Installation with poetry
 ------------------------------------
 
 If you want to use `poetry <https://python-poetry.org/docs/>`_, you have to install it
-first. See their webpage for instructions `docs <https://python-poetry.org/docs/>`_. Once
-poetry is installed, you can install the virtual environment with the following commands.
-Note that during the first installation ``poetry update`` takes up to 300 secs.
-
+first. See their webpage for instructions `docs <https://python-poetry.org/docs/>`_.
 .. code:: bash
 
     poetry install
@@ -102,7 +99,7 @@ Using poetry
 
 .. code:: bash
 
-    poetry install -E <options>
+    poetry install --with <options>
 
 Options are ``keyboard``.
 
