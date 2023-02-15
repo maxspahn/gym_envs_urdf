@@ -1,5 +1,6 @@
 from mpscenes.goals.static_sub_goal import StaticSubGoal
 from mpscenes.goals.dynamic_sub_goal import DynamicSubGoal
+from mpscenes.goals.goal_composition import GoalComposition
 
 goal1Dict = {
     "weight": 1.0,
@@ -40,3 +41,19 @@ splineGoalDict = {
     "type": "splineSubGoal",
 }
 splineGoal = DynamicSubGoal(name="goal3", content_dict=splineGoalDict)
+goal_composition_dict = {
+    'subGoal0': {
+        "weight": 1.0,
+        "is_primary_goal": True,
+        "indices": [0, 1, 2],
+        "parent_link": 0,
+        "child_link": 3,
+        "desired_position": [1, 0, 0.1],
+        "epsilon": 0.02,
+        "type": "staticSubGoal",
+    }
+}
+goal_composition = GoalComposition(
+    name="goal_composition",
+    content_dict=goal_composition_dict
+)
