@@ -4,6 +4,7 @@ import deprecation
 import numpy as np
 import pybullet as p
 import warnings
+import logging
 from typing import List, Union
 from urdfenvs import __version__
 
@@ -213,6 +214,39 @@ class UrdfEnv(gym.Env):
 
     def t(self) -> float:
         return self._t
+
+    def get_camera_configuration(self) -> tuple:
+        full_camera_configuration = p.getDebugVisualizerCamera()
+        camera_yaw = full_camera_configuration[8]
+        camera_pitch = full_camera_configuration[9]
+        camera_distance = full_camera_configuration[10]
+        camera_target_position = full_camera_configuration[11]
+        return (camera_distance, camera_yaw, camera_pitch, camera_target_position)
+
+    def reconfigure_camera(
+            self,
+            camera_distance: float,
+            camera_yaw: float,
+            camera_pitch: float,
+            camera_target_position: tuple) -> None:
+        p.resetDebugVisualizerCamera(
+            cameraDistance=camera_distance,
+            cameraYaw=camera_yaw,
+            cameraPitch=camera_pitch,
+            cameraTargetPosition=camera_target_position,
+        )
+
+    def start_video_recording(self, file_name: str) -> None:
+        if self._render:
+            p.startStateLogging(p.STATE_LOGGING_VIDEO_MP4, file_name)
+        else:
+            logging.warning(
+                "Video recording requires rendering to be active."
+            )
+
+    def stop_video_recording(self) -> None:
+        if self._render:
+            p.stopStateLogging()
 
     def set_spaces(self) -> None:
         """Set observation and action space."""
