@@ -810,14 +810,14 @@ tests = ["pytest (>=4.6)"]
 
 [[package]]
 name = "mpscenes"
-version = "0.1.2"
+version = "0.3.0"
 description = "Generic motion planning scenes, including goals and obstacles."
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "mpscenes-0.1.2-py3-none-any.whl", hash = "sha256:e0dad26edbde6c503ae5ac96bb0341c4ce9141d7c9deb88a5c5a4c0bae5c53ee"},
-    {file = "mpscenes-0.1.2.tar.gz", hash = "sha256:57ae9ac01b8861cadab1111954e7af19c4bcceb44f8626d9895cf3f43525c1bd"},
+    {file = "mpscenes-0.3.0-py3-none-any.whl", hash = "sha256:e65463f75706af0e958d7291b217ae6d19b078f4d72221eab5c3d043cf4c6349"},
+    {file = "mpscenes-0.3.0.tar.gz", hash = "sha256:b27648263f2f6d7bc17db6d14f981043564e07866a9776810c4c03a9fe7a8616"},
 ]
 
 [package.dependencies]
@@ -2254,4 +2254,4 @@ keyboard = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "98794773422cf7e0adf8d6cacab40752f7251453f2b606705419987faf6ea623"
+content-hash = "3a4f5f2b38587d955ad92c695681332fd0f4d9c811e5464cc02a7e836f458ee7"
