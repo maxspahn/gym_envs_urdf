@@ -214,12 +214,20 @@ class UrdfEnv(gym.Env):
     def t(self) -> float:
         return self._t
 
+    def get_camera_configuration(self) -> tuple:
+        full_camera_configuration = p.getDebugVisualizerCamera()
+        camera_yaw = full_camera_configuration[8]
+        camera_pitch = full_camera_configuration[9]
+        camera_distance = full_camera_configuration[10]
+        camera_target_position = full_camera_configuration[11]
+        return (camera_distance, camera_yaw, camera_pitch, camera_target_position)
+
     def reconfigure_camera(
             self,
             camera_distance: float,
             camera_yaw: float,
             camera_pitch: float,
-            camera_target_position: list) -> None:
+            camera_target_position: tuple) -> None:
         p.resetDebugVisualizerCamera(
             cameraDistance=camera_distance,
             cameraYaw=camera_yaw,
