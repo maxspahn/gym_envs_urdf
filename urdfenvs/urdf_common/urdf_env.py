@@ -4,11 +4,12 @@ import deprecation
 import numpy as np
 import pybullet as p
 import warnings
-from typing import List
+from typing import List, Union
 from urdfenvs import __version__
 
 from mpscenes.obstacles.collision_obstacle import CollisionObstacle
 from mpscenes.goals.goal_composition import GoalComposition
+from mpscenes.goals.sub_goal import SubGoal
 
 from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
@@ -301,7 +302,7 @@ class UrdfEnv(gym.Env):
     def get_obstacles(self) -> dict:
         return self._obsts
 
-    def add_goal(self, goal) -> None:
+    def add_goal(self, goal: Union[GoalComposition, SubGoal]) -> None:
         """Adds goal to the simulation environment.
 
         Parameters
