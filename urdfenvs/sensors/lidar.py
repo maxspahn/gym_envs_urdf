@@ -63,7 +63,7 @@ class Lidar(Sensor):
             dtype=np.float64,
         )
 
-    def sense(self, robot, obst_ids: List[int], goal_ids: List[int]):
+    def sense(self, robot, obstacles: dict, goals: dict, t: float):
         """Sense the distance toward the next object with the Lidar."""
         link_state = p.getLinkState(robot, self._link_id)
         lidar_position = link_state[0]

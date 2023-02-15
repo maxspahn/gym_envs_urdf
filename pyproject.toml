@@ -22,8 +22,8 @@ yourdfpy = "^0.0.52"
 gym = "^0.22"
 pynput = {version = "^1.7.6", optional = true}
 multiprocess = {version = "^0.70.12", optional = true}
-mpscenes = "^0.1.2"
 deprecation = "^2.1.0"
+mpscenes = "^0.3.0"
 
 [tool.poetry.extras]
 keyboard = ["pynput", "multiprocess"]

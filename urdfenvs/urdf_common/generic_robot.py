@@ -228,18 +228,18 @@ class GenericRobot(ABC):
         """
         pass
 
-    def sense(self, obst_ids: List[int], goal_ids: List[int]) -> None:
+    def sense(self, obstacles: dict, goals: dict, t: float) -> None:
         """Updates the sensing of the robot's sensors."""
         self.sensor_observation = {}
         for sensor in self._sensors:
-            self.sensor_observation[sensor.name()] = sensor.sense(self._robot, obst_ids, goal_ids)
+            self.sensor_observation[sensor.name()] = sensor.sense(self._robot, obstacles, goals, t)
             #self.sensor_observation.update(sensor.sense(self._robot, obst_ids, goal_ids))
 
-    def get_observation(self, obst_ids: List[int], goal_ids: List[int]) -> dict:
+    def get_observation(self, obstacles: dict, goals: dict, t: float) -> dict:
         """Updates all observation and concatenate joint states and sensor
         observation."""
         self.update_state()
-        self.sense(obst_ids, goal_ids)
+        self.sense(obstacles, goals, t)
         return {**self.state, **self.sensor_observation}
 
     def add_sensor(self, sensor: Sensor) -> int:

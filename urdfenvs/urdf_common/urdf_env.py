@@ -255,7 +255,7 @@ class UrdfEnv(gym.Env):
         """Compose the observation."""
         observation = {}
         for i, robot in enumerate(self._robots):
-            obs = robot.get_observation(list(self._obsts.keys()), list(self._goals.keys()))
+            obs = robot.get_observation(self._obsts, self._goals, self.t())
 
             observation[f'robot_{i}'] = obs
 
