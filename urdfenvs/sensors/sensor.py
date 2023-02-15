@@ -25,5 +25,5 @@ class Sensor(object):
         pass
 
     @abstractmethod
-    def sense(self, robot, obst_ids: List[int], goal_ids: List[int]):
+    def sense(self, robot, obstacles: dict, goals: dict, t: float):
         pass

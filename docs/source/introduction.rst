@@ -40,9 +40,9 @@ Using poetry
 
 .. code:: bash
 
-    poetry install -E <options>
+    poetry install --with <options>
 
-Options are ``keyboard`` and ``scenes``.
+Options are ``keyboard``.
 
 Switching
 =========

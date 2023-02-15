@@ -4,11 +4,13 @@ import deprecation
 import numpy as np
 import pybullet as p
 import warnings
-from typing import List
+import logging
+from typing import List, Union
 from urdfenvs import __version__
 
 from mpscenes.obstacles.collision_obstacle import CollisionObstacle
 from mpscenes.goals.goal_composition import GoalComposition
+from mpscenes.goals.sub_goal import SubGoal
 
 from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
@@ -213,6 +215,39 @@ class UrdfEnv(gym.Env):
     def t(self) -> float:
         return self._t
 
+    def get_camera_configuration(self) -> tuple:
+        full_camera_configuration = p.getDebugVisualizerCamera()
+        camera_yaw = full_camera_configuration[8]
+        camera_pitch = full_camera_configuration[9]
+        camera_distance = full_camera_configuration[10]
+        camera_target_position = full_camera_configuration[11]
+        return (camera_distance, camera_yaw, camera_pitch, camera_target_position)
+
+    def reconfigure_camera(
+            self,
+            camera_distance: float,
+            camera_yaw: float,
+            camera_pitch: float,
+            camera_target_position: tuple) -> None:
+        p.resetDebugVisualizerCamera(
+            cameraDistance=camera_distance,
+            cameraYaw=camera_yaw,
+            cameraPitch=camera_pitch,
+            cameraTargetPosition=camera_target_position,
+        )
+
+    def start_video_recording(self, file_name: str) -> None:
+        if self._render:
+            p.startStateLogging(p.STATE_LOGGING_VIDEO_MP4, file_name)
+        else:
+            logging.warning(
+                "Video recording requires rendering to be active."
+            )
+
+    def stop_video_recording(self) -> None:
+        if self._render:
+            p.stopStateLogging()
+
     def set_spaces(self) -> None:
         """Set observation and action space."""
         self.observation_space = {}
@@ -254,7 +289,7 @@ class UrdfEnv(gym.Env):
         """Compose the observation."""
         observation = {}
         for i, robot in enumerate(self._robots):
-            obs = robot.get_observation(list(self._obsts.keys()), list(self._goals.keys()))
+            obs = robot.get_observation(self._obsts, self._goals, self.t())
 
             observation[f'robot_{i}'] = obs
 
@@ -301,7 +336,7 @@ class UrdfEnv(gym.Env):
     def get_obstacles(self) -> dict:
         return self._obsts
 
-    def add_goal(self, goal: GoalComposition) -> None:
+    def add_goal(self, goal: Union[GoalComposition, SubGoal]) -> None:
         """Adds goal to the simulation environment.
 
         Parameters
@@ -309,8 +344,13 @@ class UrdfEnv(gym.Env):
 
         goal: Goal from mpscenes
         """
-        goal_id = goal.add_to_bullet(p)
-        self._goals[goal_id] = goal
+        if isinstance(goal, GoalComposition):
+            for sub_goal in goal.sub_goals():
+                goal_id = sub_goal.add_to_bullet(p)
+                self._goals[goal_id] = goal
+        else:
+            goal_id = goal.add_to_bullet(p)
+            self._goals[goal_id] = goal
 
     @deprecation.deprecated(deprecated_in="0.4.3",
                         current_version=__version__,

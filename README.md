@@ -122,7 +122,7 @@ pip3 install '.[options]'
 Using poetry
 
 ``` {.sourceCode .bash}
-poetry install -E <options>
+poetry install --with <options>
 ```
 
 Options are `keyboard`.
