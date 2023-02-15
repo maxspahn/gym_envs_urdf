@@ -26,27 +26,18 @@ class FullSensor(Sensor):
             dtype=np.float64,
         )
 
-    def sense(self, robot, obst_ids: List[int], goal_ids: List[int]):
+    def sense(self, robot, obstacles: dict, goals: dict, t: float):
         sensor_observation = {"goals": [], "obstacles": []}
 
         exact_observations = []
-        for obst_id in obst_ids:
+        for obst_id, obstacle in obstacles.items():
             exact_observation = []
-
-            if 'position' in self._obstacle_mask:
-                position, orientation = p.getBasePositionAndOrientation(obst_id)
-                exact_observation.append(np.array(position))
-
-            if 'velocity' in self._obstacle_mask:
-                linear, angular = p.getBaseVelocity(obst_id)
-                exact_observation.append(np.array(linear))
-
-            if 'radius' in self._obstacle_mask:
-                shape_data = p.getCollisionShapeData(obst_id, -1)[0]
-                assert shape_data[2] == p.GEOM_SPHERE
-
-                exact_observation.append(float(shape_data[3][0]))
-
+            for mask_item in self._obstacle_mask:
+                try:
+                    value = getattr(obstacle, mask_item)(t=t)
+                except TypeError:
+                    value = getattr(obstacle, mask_item)()
+                exact_observation.append(np.array(value))
             exact_observations.append(exact_observation)
 
         noisy_observations = []
@@ -60,17 +51,14 @@ class FullSensor(Sensor):
 
 
         exact_observations = []
-        for goal_id in goal_ids:
+        for goal_id, goal in goals.items():
             exact_observation = []
-
-            if 'position' in self._goal_mask:
-                position, orientation = p.getBasePositionAndOrientation(goal_id)
-                exact_observation.append(np.array(position))
-
-            if 'velocity' in self._goal_mask:
-                linear, angular = p.getBaseVelocity(goal_id)
-                exact_observation.append(np.array(linear))
-
+            for mask_item in self._goal_mask:
+                try:
+                    value = getattr(goal, mask_item)(t=t)
+                except TypeError:
+                    value = getattr(goal, mask_item)()
+                exact_observation.append(np.array(value))
             exact_observations.append(exact_observation)
 
         noisy_observations = []
