@@ -4,6 +4,7 @@ import deprecation
 import numpy as np
 import pybullet as p
 import warnings
+import logging
 from typing import List
 from urdfenvs import __version__
 
@@ -212,6 +213,18 @@ class UrdfEnv(gym.Env):
 
     def t(self) -> float:
         return self._t
+
+    def start_video_recording(self, file_name: str) -> None:
+        if self._render:
+            p.startStateLogging(p.STATE_LOGGING_VIDEO_MP4, file_name)
+        else:
+            logging.warning(
+                "Video recording requires rendering to be active."
+            )
+
+    def stop_video_recording(self) -> None:
+        if self._render:
+            p.stopStateLogging()
 
     def set_spaces(self) -> None:
         """Set observation and action space."""
