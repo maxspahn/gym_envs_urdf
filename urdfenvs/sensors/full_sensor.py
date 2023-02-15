@@ -33,10 +33,17 @@ class FullSensor(Sensor):
         for obst_id, obstacle in obstacles.items():
             exact_observation = []
             for mask_item in self._obstacle_mask:
-                try:
-                    value = getattr(obstacle, mask_item)(t=t)
-                except TypeError:
-                    value = getattr(obstacle, mask_item)()
+                if mask_item == 'position':
+                    value, _ = p.getBasePositionAndOrientation(obst_id)
+
+                elif mask_item == 'velocity':
+                    value, _ = p.getBaseVelocity(obst_id)
+
+                else:
+                    try:
+                        value = getattr(obstacle, mask_item)(t=t)
+                    except TypeError:
+                        value = getattr(obstacle, mask_item)()
                 exact_observation.append(np.array(value))
             exact_observations.append(exact_observation)
 
@@ -54,10 +61,16 @@ class FullSensor(Sensor):
         for goal_id, goal in goals.items():
             exact_observation = []
             for mask_item in self._goal_mask:
-                try:
-                    value = getattr(goal, mask_item)(t=t)
-                except TypeError:
-                    value = getattr(goal, mask_item)()
+                if mask_item == 'position':
+                    value, _ = p.getBasePositionAndOrientation(goal_id)
+
+                elif mask_item == 'velocity':
+                    value, _ = p.getBaseVelocity(goal_id)
+                else:
+                    try:
+                        value = getattr(goal, mask_item)(t=t)
+                    except TypeError:
+                        value = getattr(goal, mask_item)()
                 exact_observation.append(np.array(value))
             exact_observations.append(exact_observation)
 
