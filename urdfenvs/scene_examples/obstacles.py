@@ -48,6 +48,18 @@ dynamicObst3Dict = {
 dynamicSphereObst3 = DynamicSphereObstacle(
     name="simpleSphere", content_dict=dynamicObst3Dict
 )
+movable_obstacle_dict = {
+    'type': 'box',
+    'geometry': {
+        'position' : [1.0, 1.0, 1.0],
+        'width': 0.5,
+        'height': 0.5,
+        'length': 0.5,
+    },
+    'movable': True
+}
+movable_obstacle = BoxObstacle(name="movable_box", content_dict=movable_obstacle_dict)
+
 
 wall_length = 10
 wall_obstacles_dicts = [
