@@ -307,6 +307,8 @@ class UrdfEnv(gym.Env):
 
     def update_obstacles(self):
         for obst_id, obst in self._obsts.items():
+            if obst.movable():
+                continue
             try:
                 pos = obst.position(t=self.t()).tolist()
                 vel = obst.velocity(t=self.t()).tolist()
@@ -343,6 +345,7 @@ class UrdfEnv(gym.Env):
                 obst.type(),
                 obst.size(),
                 position=obst.position(),
+                movable=obst.movable(),
             )
         self._obsts[obst_id] = obst
 
@@ -371,12 +374,11 @@ class UrdfEnv(gym.Env):
         collision_shape = -1
         base_position = goal.position().tolist()
         base_orientation = [0, 0, 0, 1]
-        mass = 0
 
         assert isinstance(base_position, list)
         assert isinstance(base_orientation, list)
         bullet_id = p.createMultiBody(
-            mass,
+            0,
             collision_shape,
             visual_shape_id,
             base_position,
@@ -408,12 +410,14 @@ class UrdfEnv(gym.Env):
         self,
         shape_type: str,
         size: list,
-        mass: float = 0,
+        movable: bool = False,
         orientation: list = (0, 0, 0, 1),
         position: list = (0, 0, 1),
         scaling: float = 1.0,
         urdf: str = None,
     ) -> int:
+
+        mass = float(movable)
         if shape_type in ["sphere", "splineSphere", "analyticSphere"]:
             shape_id = p.createCollisionShape(p.GEOM_SPHERE, radius=size[0])
             visual_shape_id = p.createVisualShape(
@@ -461,11 +465,11 @@ class UrdfEnv(gym.Env):
             )
             return -1
         bullet_id = p.createMultiBody(
-            mass,
-            shape_id,
-            visual_shape_id,
-            position,
-            orientation,
+            baseMass=mass,
+            baseCollisionShapeIndex=shape_id,
+            baseVisualShapeIndex=visual_shape_id,
+            basePosition=position,
+            baseOrientation=orientation,
         )
         return bullet_id
 

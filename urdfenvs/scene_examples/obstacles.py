@@ -51,10 +51,10 @@ dynamicSphereObst3 = DynamicSphereObstacle(
 movable_obstacle_dict = {
     'type': 'box',
     'geometry': {
-        'position' : [1.0, 1.0, 1.0],
-        'width': 0.5,
-        'height': 0.5,
-        'length': 0.5,
+        'position' : [2.0, 0.0, 2.0],
+        'width': 0.2,
+        'height': 0.2,
+        'length': 0.2,
     },
     'movable': True
 }
