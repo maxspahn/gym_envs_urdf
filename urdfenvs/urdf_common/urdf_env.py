@@ -1,12 +1,10 @@
 import gym
 import time
-import deprecation
 import numpy as np
 import pybullet as p
 import warnings
 import logging
 from typing import List, Union
-from urdfenvs import __version__
 
 from mpscenes.obstacles.collision_obstacle import CollisionObstacle
 from mpscenes.goals.goal_composition import GoalComposition
@@ -272,10 +270,8 @@ class UrdfEnv(gym.Env):
             robot.apply_action(action, self.dt())
             action_id +=robot.n()
 
-        for obst in self._obsts.values():
-            obst.update_bullet_position(p, t=self.t())
-        for goal in self._goals.values():
-            goal.update_bullet_position(p, t=self.t())
+        self.update_obstacles()
+        self.update_goals()
         p.stepSimulation(self._cid)
         ob = self._get_ob()
 
@@ -307,6 +303,30 @@ class UrdfEnv(gym.Env):
         else:
             return observation
 
+    def update_obstacles(self):
+        for obst_id, obst in self._obsts.items():
+            if obst.movable():
+                continue
+            try:
+                pos = obst.position(t=self.t()).tolist()
+                vel = obst.velocity(t=self.t()).tolist()
+                ori = [0, 0, 0, 1]
+                p.resetBasePositionAndOrientation(obst_id, pos, ori)
+                p.resetBaseVelocity(obst_id, linearVelocity=vel)
+            except Exception:
+                continue
+
+    def update_goals(self):
+        for goal_id, goal in self._goals.items():
+            try:
+                pos = goal.position(t=self.t()).tolist()
+                vel = goal.velocity(t=self.t()).tolist()
+                ori = [0, 0, 0, 1]
+                p.resetBasePositionAndOrientation(goal_id, pos, ori)
+                p.resetBaseVelocity(goal_id, linearVelocity=vel)
+            except Exception:
+                continue
+
     def add_obstacle(self, obst: CollisionObstacle) -> None:
         """Adds obstacle to the simulation environment.
 
@@ -316,7 +336,15 @@ class UrdfEnv(gym.Env):
         obst: Obstacle from mpscenes
         """
         # add obstacle to environment
-        obst_id = obst.add_to_bullet(p)
+        if obst.type() == 'urdf':
+            obst_id = self.add_shape(obst.type(), obst.size(), urdf=obst.urdf())
+        else:
+            obst_id = self.add_shape(
+                obst.type(),
+                obst.size(),
+                position=obst.position(),
+                movable=obst.movable(),
+            )
         self._obsts[obst_id] = obst
 
         # refresh observation space of robots sensors
@@ -336,6 +364,26 @@ class UrdfEnv(gym.Env):
     def get_obstacles(self) -> dict:
         return self._obsts
 
+    def add_sub_goal(self, goal: SubGoal) -> int:
+        rgba_color = [0.0, 1.0, 0.0, 0.3]
+        visual_shape_id = p.createVisualShape(
+            p.GEOM_SPHERE, rgbaColor=rgba_color, radius=goal.epsilon()
+        )
+        collision_shape = -1
+        base_position = goal.position().tolist()
+        base_orientation = [0, 0, 0, 1]
+
+        assert isinstance(base_position, list)
+        assert isinstance(base_orientation, list)
+        bullet_id = p.createMultiBody(
+            0,
+            collision_shape,
+            visual_shape_id,
+            base_position,
+            base_orientation,
+        )
+        return bullet_id
+
     def add_goal(self, goal: Union[GoalComposition, SubGoal]) -> None:
         """Adds goal to the simulation environment.
 
@@ -346,143 +394,80 @@ class UrdfEnv(gym.Env):
         """
         if isinstance(goal, GoalComposition):
             for sub_goal in goal.sub_goals():
-                goal_id = sub_goal.add_to_bullet(p)
+                goal_id = self.add_sub_goal(sub_goal)
                 self._goals[goal_id] = goal
         else:
-            goal_id = goal.add_to_bullet(p)
+            goal_id = self.add_sub_goal(goal)
             self._goals[goal_id] = goal
 
-    @deprecation.deprecated(deprecated_in="0.4.3",
-                        current_version=__version__,
-                        details="Use the explicit obstacle box from mpscenes function instead")
-    def add_walls(
-        self,
-        dim=np.array([0.2, 8, 0.5]),
-        poses_2d=None,
-    ) -> None:
-        """
-        Adds walls to the simulation environment.
-
-        Parameters
-        ----------
-
-        dim = [width, length, height]
-        poses_2d = [[x_position, y_position, orientation], ...]
-        """
-        if poses_2d is None:
-            poses_2d = [
-                [-4, 0.1, 0],
-                [4, -0.1, 0],
-                [0.1, 4, 0.5 * np.pi],
-                [-0.1, -4, 0.5 * np.pi],
-            ]
-        self.add_shapes(
-            shape_type="GEOM_BOX", dim=dim, mass=0, poses_2d=poses_2d
-        )
-
-    def add_shapes(
+    def add_shape(
         self,
         shape_type: str,
-        dim=None,
-        mass: float = 0,
-        poses_2d: list = None,
-        place_height=None,
-    ) -> None:
-        """
-        Adds a shape to the simulation environment.
+        size: list,
+        movable: bool = False,
+        orientation: list = (0, 0, 0, 1),
+        position: list = (0, 0, 1),
+        scaling: float = 1.0,
+        urdf: str = None,
+    ) -> int:
 
-        Parameters
-        ----------
-
-        shape_type: str
-            options are:
-                "GEOM_SPHERE",
-                "GEOM_BOX",
-                "GEOM_CYLINDER",
-                "GEOM_CAPSULE"
-            .
-        dim: np.ndarray or list
-            dimensions for the shape, dependent on the shape_type:
-                GEOM_SPHERE,    dim=[radius]
-                GEOM_BOX,       dim=[width, length, height]
-                GEOM_CYLINDER,  dim=[radius, length]
-                GEOM_CAPSULE,   dim=[radius, length]
-        mass: float
-            objects mass (default = 0 : fixed shape)
-        poses_2d: list
-            poses where the shape should be placed. Each element
-            must be of form [x_position, y_position, orientation]
-        place_height: float
-            z_position of the center of mass
-        """
-        if poses_2d is None:
-            poses_2d = [[-2, 2, 0]]
-        # convert list to numpy array
-        if isinstance(dim, list):
-            dim = np.array(dim)
-
-        # create collisionShape
-        if shape_type == "GEOM_SPHERE":
-            # check dimensions
-            dim = filter_shape_dim(
-                dim, "GEOM_SPHERE", 1, default=np.array([0.5])
+        mass = float(movable)
+        if shape_type in ["sphere", "splineSphere", "analyticSphere"]:
+            shape_id = p.createCollisionShape(p.GEOM_SPHERE, radius=size[0])
+            visual_shape_id = p.createVisualShape(
+                p.GEOM_SPHERE,
+                rgbaColor=[1.0, 0.0, 0.0, 1.0],
+                specularColor=[1.0, 0.5, 0.5],
+                radius=size[0]
             )
-            shape_id = p.createCollisionShape(p.GEOM_SPHERE, radius=dim[0])
-            default_height = dim[0]
 
-        elif shape_type == "GEOM_BOX":
-            if dim is not None:
-                dim = 0.5 * dim
-            # check dimensions
-            dim = filter_shape_dim(
-                dim, "GEOM_BOX", 3, default=np.array([0.5, 0.5, 0.5])
+        elif shape_type == "box":
+            half_extens = [s/2 for s in size]
+            position = [position[i] - size[i] for i in range(3)]
+            shape_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=half_extens)
+            visual_shape_id = p.createVisualShape(
+                p.GEOM_BOX,
+                rgbaColor=[1.0, 0.0, 0.0, 1.0],
+                specularColor=[1.0, 0.5, 0.5],
+                halfExtents=half_extens
             )
-            shape_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=dim)
-            default_height = dim[2]
 
-        elif shape_type == "GEOM_CYLINDER":
-            # check dimensions
-            dim = filter_shape_dim(
-                dim, "GEOM_CYLINDER", 2, default=np.array([0.5, 1.0])
-            )
+        elif shape_type == "cylinder":
             shape_id = p.createCollisionShape(
-                p.GEOM_CYLINDER, radius=dim[0], height=dim[1]
+                p.GEOM_CYLINDER, radius=size[0], height=size[1]
             )
-            default_height = 0.5 * dim[1]
 
-        elif shape_type == "GEOM_CAPSULE":
-            # check dimensions
-            dim = filter_shape_dim(
-                dim, "GEOM_CAPSULE", 2, default=np.array([0.5, 1.0])
-            )
+        elif shape_type == "capsule":
             shape_id = p.createCollisionShape(
-                p.GEOM_CAPSULE, radius=dim[0], height=dim[1]
+                p.GEOM_CAPSULE, radius=size[0], height=size[1]
             )
-            default_height = dim[0] + 0.5 * dim[1]
-
+            visual_shape_id = p.createVisualShape(
+                p.GEOM_CAPSULE,
+                rgbaColor=[1.0, 0.0, 0.0, 1.0],
+                specularColor=[1.0, 0.5, 0.5],
+                radius=size[0],
+                height=size[1],
+            )
+        elif shape_type == "urdf":
+            shape_id = p.loadURDF(
+                fileName=urdf,
+                basePosition=position,
+                globalScaling=scaling
+            )
+            return shape_id
         else:
             warnings.warn(
                 "Unknown shape type: {shape_type}, aborting..."
             )
-            return
-
-        if place_height is None:
-            place_height = default_height
-
-        # place the shape at poses_2d
-        for pose in poses_2d:
-            p.createMultiBody(
-                baseMass=mass,
-                baseCollisionShapeIndex=shape_id,
-                baseVisualShapeIndex=-1,
-                basePosition=[pose[0], pose[1], place_height],
-                baseOrientation=p.getQuaternionFromEuler([0, 0, pose[2]]),
-            )
-
-        if self._t != 0.0:
-            warnings.warn(
-                "Adding an object while the simulation already started"
-            )
+            return -1
+        bullet_id = p.createMultiBody(
+            baseMass=mass,
+            baseCollisionShapeIndex=shape_id,
+            baseVisualShapeIndex=visual_shape_id,
+            basePosition=position,
+            baseOrientation=orientation,
+        )
+        return bullet_id
 
     def add_sensor(self, sensor: Sensor, robot_ids: List) -> None:
         """Adds sensor to the robot.

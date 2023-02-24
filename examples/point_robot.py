@@ -22,7 +22,7 @@ def run_point_robot(n_steps=1000, render=False, goal=True, obstacles=True):
         env.add_obstacle(wall)
     if obstacles:
         env.add_obstacle(sphereObst1)
-        env.add_obstacle(sphereObst2)
+        env.add_obstacle(movable_obstacle)
         env.add_obstacle(urdfObst1)
         env.add_obstacle(dynamicSphereObst3)
     if goal:
