@@ -428,12 +428,14 @@ class UrdfEnv(gym.Env):
             )
 
         elif shape_type == "box":
-            shape_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=size)
+            half_extens = [s/2 for s in size]
+            position = [position[i] - size[i] for i in range(3)]
+            shape_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=half_extens)
             visual_shape_id = p.createVisualShape(
                 p.GEOM_BOX,
                 rgbaColor=[1.0, 0.0, 0.0, 1.0],
                 specularColor=[1.0, 0.5, 0.5],
-                halfExtents=size
+                halfExtents=half_extens
             )
 
         elif shape_type == "cylinder":
