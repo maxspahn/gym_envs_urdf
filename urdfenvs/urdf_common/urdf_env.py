@@ -373,7 +373,7 @@ class UrdfEnv(gym.Env):
         base_position = [0, ] * 3
         for index in range(3):
             if index in goal.indices():
-                base_position[index] = goal.position()[0]
+                base_position[index] = goal.position()[index]
 
         base_orientation = [0, 0, 0, 1]
 
