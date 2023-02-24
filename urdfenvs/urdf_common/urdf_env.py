@@ -281,11 +281,11 @@ class UrdfEnv(gym.Env):
             self.render()
         return ob, reward, self._done, {}
 
-    def _get_ob(self) -> dict:
+    def _get_ob(self, sense: bool = True) -> dict:
         """Compose the observation."""
         observation = {}
         for i, robot in enumerate(self._robots):
-            obs = robot.get_observation(self._obsts, self._goals, self.t())
+            obs = robot.get_observation(self._obsts, self._goals, self.t(), sense=sense)
 
             observation[f'robot_{i}'] = obs
 
@@ -538,7 +538,7 @@ class UrdfEnv(gym.Env):
         self.plane = Plane()
         p.setGravity(0, 0, -10.0)
         p.stepSimulation()
-        return self._get_ob()
+        return self._get_ob(sense=False)
 
     def render(self) -> None:
         """Rendering the simulation environment.
