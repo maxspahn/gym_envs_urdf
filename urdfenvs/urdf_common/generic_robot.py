@@ -235,15 +235,12 @@ class GenericRobot(ABC):
             self.sensor_observation[sensor.name()] = sensor.sense(self._robot, obstacles, goals, t)
             #self.sensor_observation.update(sensor.sense(self._robot, obst_ids, goal_ids))
 
-    def get_observation(self, obstacles: dict, goals: dict, t: float, sense: bool=True) -> dict:
+    def get_observation(self, obstacles: dict, goals: dict, t: float) -> dict:
         """Updates all observation and concatenate joint states and sensor
         observation."""
         self.update_state()
-        if sense:
-            self.sense(obstacles, goals, t)
-            return {**self.state, **self.sensor_observation}
-        else:
-            return self.state
+        self.sense(obstacles, goals, t)
+        return {**self.state, **self.sensor_observation}
 
     def add_sensor(self, sensor: Sensor) -> int:
         """Adds sensor to the robot."""
