@@ -1,12 +1,10 @@
 import gym
 import time
-import deprecation
 import numpy as np
 import pybullet as p
 import warnings
 import logging
 from typing import List, Union
-from urdfenvs import __version__
 
 from mpscenes.obstacles.collision_obstacle import CollisionObstacle
 from mpscenes.goals.goal_composition import GoalComposition
@@ -384,10 +382,6 @@ class UrdfEnv(gym.Env):
             base_position,
             base_orientation,
         )
-
-        if goal.angle():
-            for i in range(3):
-                self.add_axis_component(pybullet, i, position)
         return bullet_id
 
     def add_goal(self, goal: Union[GoalComposition, SubGoal]) -> None:
