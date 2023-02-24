@@ -22,6 +22,7 @@ class HolonomicRobot(GenericRobot):
             basePosition=mount_position.tolist(),
             baseOrientation=mount_orientation.tolist(),
             flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT,
+            useFixedBase=True,
         )
         self.set_joint_names()
         self.extract_joint_ids()
