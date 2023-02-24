@@ -370,7 +370,11 @@ class UrdfEnv(gym.Env):
             p.GEOM_SPHERE, rgbaColor=rgba_color, radius=goal.epsilon()
         )
         collision_shape = -1
-        base_position = goal.position().tolist()
+        base_position = [0, ] * 3
+        for index in range(3):
+            if index in goal.indices():
+                base_position[index] = goal.position()[0]
+
         base_orientation = [0, 0, 0, 1]
 
         assert isinstance(base_position, list)
