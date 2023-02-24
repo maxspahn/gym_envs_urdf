@@ -538,6 +538,8 @@ class UrdfEnv(gym.Env):
         self.plane = Plane()
         p.setGravity(0, 0, -10.0)
         p.stepSimulation()
+        self._obsts = {}
+        self._goals = {}
         return self._get_ob()
 
     def render(self) -> None:
