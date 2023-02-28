@@ -1,11 +1,11 @@
 import gym
 import numpy as np
 import pytest
-import urdfenvs.urdf_common
+from urdfenvs.robots.generic_urdf import GenericUrdfReacher
+from urdfenvs.robots.generic_urdf import GenericDiffDriveRobot
 
 @pytest.fixture
 def pointRobotEnv():
-    from urdfenvs.robots.generic_urdf import GenericUrdfReacher
     init_pos = np.array([0.0, -1.0, 0.0])
     init_vel = np.array([-1.0, 0.0, 0.0])
     robot = GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel")
@@ -13,7 +13,6 @@ def pointRobotEnv():
 
 @pytest.fixture
 def pandaRobotEnv():
-    from urdfenvs.robots.generic_urdf import GenericUrdfReacher
     init_pos = np.array([0.0, 0.0, 0.0, -1.875, 0.0, 1.5, 0.0])
     init_vel = np.array([0.0, 0.0, 1.0, 0.0, 0.0, 0.2, 0.0])
     robot = GenericUrdfReacher(urdf="panda.urdf", mode="vel")
@@ -21,7 +20,6 @@ def pandaRobotEnv():
 
 @pytest.fixture
 def nLinkRobotEnv():
-    from urdfenvs.robots.generic_urdf import GenericUrdfReacher
     n = 1
     init_pos = np.array([0.0])
     init_vel = np.array([0.0])
@@ -30,38 +28,77 @@ def nLinkRobotEnv():
 
 @pytest.fixture
 def boxerRobotEnv():
-    from urdfenvs.robots.boxer import BoxerRobot
     init_pos = np.array([0.0, 0.0, 0.0])
     init_vel = np.array([0.0, 0.0])
-    robot = BoxerRobot(mode="vel")
+    robot = GenericDiffDriveRobot(
+        urdf="boxer.urdf",
+        mode="vel",
+        actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
+        castor_wheels=["rotacastor_right_joint", "rotacastor_left_joint"],
+        wheel_radius = 0.08,
+        wheel_distance = 0.494,
+    )
     return (robot, init_pos, init_vel)
 
 @pytest.fixture
 def jackal_robot_env():
-    from urdfenvs.robots.jackal import JackalRobot
     init_pos = np.array([0.0, 0.0, 0.0])
     init_vel = np.array([0.0, 0.0])
-    robot = JackalRobot(mode="vel")
+    robot = GenericDiffDriveRobot(
+        urdf="jackal.urdf",
+        mode="vel",
+        actuated_wheels=[
+            "rear_right_wheel",
+            "rear_left_wheel",
+            "front_right_wheel",
+            "front_left_wheel",
+        ],
+        castor_wheels=[],
+        wheel_radius = 0.098,
+        wheel_distance = 2 * 0.187795 + 0.08,
+    )
     return (robot, init_pos, init_vel)
 
 @pytest.fixture
 def tiagoReacherEnv():
-    from urdfenvs.robots.tiago import TiagoRobot
-    init_pos = np.zeros(20)
+    init_pos = np.zeros(24)
     init_pos[3] = 0.1
-    init_vel = np.zeros(19)
-    robot = TiagoRobot(mode="vel")
+    init_vel = np.zeros(23)
+    robot = GenericDiffDriveRobot(
+        urdf="tiago_dual.urdf",
+        mode="vel",
+        actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
+        castor_wheels=[
+            "caster_front_right_2_joint",
+            "caster_front_left_2_joint",
+            "caster_back_right_2_joint",
+            "caster_back_left_2_joint",
+        ],
+        not_actuated_joints=[
+            "suspension_right_joint",
+            "suspension_left_joint",
+        ],
+        wheel_radius = 0.1,
+        wheel_distance = 0.4044,
+        spawn_offset = np.array([-0.1764081, 0.0, 0.1]),
+    )
     return (robot, init_pos, init_vel)
 
 @pytest.fixture
 def albertReacherEnv():
-    from urdfenvs.robots.albert import AlbertRobot
-    init_pos = np.zeros(10)
+    init_pos = np.zeros(12)
     init_pos[6] = -1.501
     init_pos[8] = 1.8675
     init_pos[9] = -np.pi/4
-    init_vel = np.zeros(9)
-    robot = AlbertRobot(mode="vel")
+    init_vel = np.zeros(11)
+    robot = GenericDiffDriveRobot(
+        urdf="albert.urdf",
+        mode="vel",
+        actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
+        castor_wheels=["rotacastor_right_joint", "rotacastor_left_joint"],
+        wheel_radius = 0.08,
+        wheel_distance = 0.494,
+    )
     return (robot, init_pos, init_vel)
 
 @pytest.fixture

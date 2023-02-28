@@ -5,21 +5,7 @@ import os
 
 class GenericUrdfReacher(HolonomicRobot):
     def __init__(self, urdf, mode):
-        self._urdf = urdf
-
-        # search for urdf in package if not found in cwd
-        if not os.path.exists(urdf):
-            root_dir = os.path.dirname(os.path.abspath(__file__))
-            urdf = None
-            for root, _, files in os.walk(root_dir):
-                for file in files:
-                    if file == self._urdf:
-                        urdf = os.path.join(root, file)
-            if urdf is None:
-                raise Exception(f"the request urdf {self._urdf} can not be found")
-            self._urdf = urdf
-
-        super().__init__(-1, self._urdf, mode=mode)
+        super().__init__(-1, urdf, mode=mode)
 
     def set_joint_names(self):
         # TODO Replace it with a automated extraction

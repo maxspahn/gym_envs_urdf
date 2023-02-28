@@ -1,17 +1,49 @@
 import gym
 import numpy as np
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
-from urdfenvs.robots.jackal import JackalRobot
-from urdfenvs.robots.boxer import BoxerRobot
+from urdfenvs.robots.generic_urdf import GenericDiffDriveRobot
 
 def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
+    jackal_1 = GenericDiffDriveRobot(
+        urdf="jackal.urdf",
+        mode="vel",
+        actuated_wheels=[
+            "rear_right_wheel",
+            "rear_left_wheel",
+            "front_right_wheel",
+            "front_left_wheel",
+        ],
+        castor_wheels=[],
+        wheel_radius = 0.098,
+        wheel_distance = 2 * 0.187795 + 0.08,
+    )
+    jackal_2 = GenericDiffDriveRobot(
+        urdf="jackal.urdf",
+        mode="vel",
+        actuated_wheels=[
+            "rear_right_wheel",
+            "rear_left_wheel",
+            "front_right_wheel",
+            "front_left_wheel",
+        ],
+        castor_wheels=[],
+        wheel_radius = 0.098,
+        wheel_distance = 2 * 0.187795 + 0.08,
+    )
+    boxer = GenericDiffDriveRobot(
+        urdf="boxer.urdf",
+        mode="vel",
+        actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
+        castor_wheels=["rotacastor_right_joint", "rotacastor_left_joint"],
+        wheel_radius = 0.08,
+        wheel_distance = 0.494,
+    )
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
         GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
-        JackalRobot(mode='vel'),
-        JackalRobot(mode='vel'),
-        JackalRobot(mode='vel'),
-        BoxerRobot(mode='vel'),
+        jackal_1,
+        jackal_2,
+        boxer,
     ]
 
     env = gym.make(

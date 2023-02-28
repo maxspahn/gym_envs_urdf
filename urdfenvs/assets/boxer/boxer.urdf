@@ -175,13 +175,6 @@
   </joint>
   <!-- Base link with no geometry or inertia, because KDL needs it
 to be that way. -->
-  <link name="base_link_ori">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.001"/>
-      <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.2" iyz="0" izz="0.2"/>
-    </inertial>
-  </link>
   <link name="base_link">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -207,11 +200,6 @@ to be that way. -->
     <origin rpy="0 0 0" xyz="0 -0.4 0"/>
     <parent link="base_link"/>
     <child link="ee_link"/>
-  </joint>
-  <joint name="base_add_orientation" type="fixed">
-    <origin rpy="0 0 1.57079" xyz="0.0 0 0"/>
-    <parent link="base_link_ori"/>
-    <child link="base_link"/>
   </joint>
   <!-- end for simulation -->
 </robot>
