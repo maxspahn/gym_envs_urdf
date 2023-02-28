@@ -13,7 +13,7 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
             "front_right_wheel",
             "front_left_wheel",
         ],
-        actuated_joints=[],
+        castor_wheels=[],
         wheel_radius = 0.098,
         wheel_distance = 2 * 0.187795 + 0.08,
     )
@@ -26,7 +26,7 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
             "front_right_wheel",
             "front_left_wheel",
         ],
-        actuated_joints=[],
+        castor_wheels=[],
         wheel_radius = 0.098,
         wheel_distance = 2 * 0.187795 + 0.08,
     )
@@ -34,7 +34,7 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
         urdf="boxer.urdf",
         mode="vel",
         actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
-        actuated_joints=[],
+        castor_wheels=["rotacastor_right_joint", "rotacastor_left_joint"],
         wheel_radius = 0.08,
         wheel_distance = 0.494,
     )

@@ -1,9 +1,10 @@
+import logging
+from typing import List
 import pybullet as p
 import gym
 import numpy as np
-import logging
 
-from urdfenvs.urdf_common.generic_robot import GenericRobot
+from urdfenvs.urdf_common.generic_robot import ControlMode, GenericRobot
 
 
 class DifferentialDriveRobot(GenericRobot):
@@ -20,25 +21,33 @@ class DifferentialDriveRobot(GenericRobot):
         The offset by which the initial position must be shifted to align
         observation with that position.
     """
-    _wheel_radius: float
-    _wheel_distance: float
-    _spawn_offset: np.ndarray
-    _number_actuated_axes: int
-
     def __init__(
             self,
             n: int,
             urdf_file: str,
-            mode: str,
-            number_actuated_axes: int=1,
-            spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15])
+            mode: ControlMode,
+            actuated_wheels: List[str],
+            castor_wheels: List[str],
+            wheel_radius: float,
+            wheel_distance: float,
+            spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15]),
+            not_actuated_joints: List[str] = []
     ):
         """Constructor for differential drive robots."""
-        super().__init__(n, urdf_file, mode)
-        self._number_actuated_axes = number_actuated_axes
+        self._number_actuated_axes = int(len(actuated_wheels)/2)
         self._spawn_offset = spawn_offset
+        self._castor_wheels = castor_wheels
+        self._actuated_wheels = actuated_wheels
+        self._wheel_radius = wheel_radius
+        self._wheel_distance = wheel_distance
+        self._not_actuated_joints = not_actuated_joints
+        super().__init__(n, urdf_file, mode)
 
-
+    def set_degrees_of_freedom(self, n):
+        if n > 0:
+            self._n = n
+        else:
+            self._n: int = self._urdf_robot.num_actuated_joints - len(self._actuated_wheels) - len(self._castor_wheels) - len(self._not_actuated_joints) + 2
     def ns(self) -> int:
         """Returns the number of degrees of freedom.
 
@@ -331,3 +340,4 @@ ignored for differential drive robots."
                 "forward_velocity": np.array([forward_velocity]),
             }
         }
+

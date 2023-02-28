@@ -16,6 +16,7 @@ class ControlMode(Enum):
 
 class GenericRobot(ABC):
     """GenericRobot."""
+    _castor_wheels = []
 
     def __init__(self, n: int, urdf_file: str, mode=ControlMode.velocity):
         """Constructor for generic robot.
@@ -42,13 +43,16 @@ class GenericRobot(ABC):
         self._sensors: List[Sensor] = []
         self._urdf_robot = yourdfpy.urdf.URDF.load(self._urdf_file)
         self._mode = ControlMode(mode)
+        self.set_degrees_of_freedom(n)
+        self.set_joint_names()
+        self.extract_joint_ids()
+        self.read_limits()
+
+    def set_degrees_of_freedom(self, n):
         if n > 0:
             self._n = n
         else:
             self._n: int = self._urdf_robot.num_actuated_joints
-        self.set_joint_names()
-        self.extract_joint_ids()
-        self.read_limits()
 
     def n(self) -> int:
         return self._n
@@ -109,8 +113,6 @@ class GenericRobot(ABC):
         for i, joint_name in enumerate(self._urdf_robot.joint_names):
             if joint_name in self._joint_names:
                 self._urdf_joints.append(i)
-            else:
-                print(joint_name)
         if hasattr(self, "_robot"):
             self._robot_joints = []
             self._castor_joints = []
@@ -124,7 +126,7 @@ class GenericRobot(ABC):
                 for i in range(num_joints):
                     joint_info = p.getJointInfo(self._robot, i)
                     joint_name = joint_info[1].decode("UTF-8")
-                    if "castor" in joint_name:
+                    if joint_name in self._castor_wheels:
                         self._castor_joints.append(i)
 
 

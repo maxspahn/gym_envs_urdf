@@ -11,7 +11,7 @@ def run_boxer(n_steps=1000, render=False, goal=True, obstacles=True):
             urdf="boxer.urdf",
             mode="vel",
             actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
-            actuated_joints=[],
+            castor_wheels=["rotacastor_right_joint", "rotacastor_left_joint"],
             wheel_radius = 0.08,
             wheel_distance = 0.494,
         ),

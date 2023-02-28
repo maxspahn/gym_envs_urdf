@@ -23,7 +23,17 @@ def run_tiago(n_steps=1000, render=False, goal=True, obstacles=True):
             urdf="tiago_dual.urdf",
             mode="vel",
             actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
-            actuated_joints=actuated_joints, wheel_radius = 0.1,
+            castor_wheels=[
+                "caster_front_right_2_joint",
+                "caster_front_left_2_joint",
+                "caster_back_right_2_joint",
+                "caster_back_left_2_joint",
+            ],
+            not_actuated_joints=[
+                "suspension_right_joint",
+                "suspension_left_joint",
+            ],
+            wheel_radius = 0.1,
             wheel_distance = 0.4044,
             spawn_offset = np.array([-0.1764081, 0.0, 0.1]),
         ),
@@ -35,12 +45,10 @@ def run_tiago(n_steps=1000, render=False, goal=True, obstacles=True):
     action = np.zeros(env.n())
     action[0:2] = np.array([0.2, 0.02])
     action[5] = 0.0 # left arm shoulder
-    action[12] = 0.6 # right arm shoulder
-    pos0 = np.zeros(20)
-    pos0[0] = -1.7597e-1
-    pos0[3] = 0.1
-    vel0 = np.zeros(19)
-    ob = env.reset(pos=pos0, vel=vel0)
+    action[14] = 0.0 # right arm shoulder
+    action[22] = 0.5 # finger joint
+    vel0 = np.zeros(env.n())
+    ob = env.reset()
     print("base: ", ob['robot_0']["joint_state"]["position"][0:3])
     print("torso: ", ob['robot_0']["joint_state"]["position"][3])
     print("head: ", ob['robot_0']["joint_state"]["position"][4:6])

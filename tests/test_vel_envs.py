@@ -34,7 +34,7 @@ def boxerRobotEnv():
         urdf="boxer.urdf",
         mode="vel",
         actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
-        actuated_joints=[],
+        castor_wheels=["rotacastor_right_joint", "rotacastor_left_joint"],
         wheel_radius = 0.08,
         wheel_distance = 0.494,
     )
@@ -53,7 +53,7 @@ def jackal_robot_env():
             "front_right_wheel",
             "front_left_wheel",
         ],
-        actuated_joints=[],
+        castor_wheels=[],
         wheel_radius = 0.098,
         wheel_distance = 2 * 0.187795 + 0.08,
     )
@@ -61,27 +61,24 @@ def jackal_robot_env():
 
 @pytest.fixture
 def tiagoReacherEnv():
-    init_pos = np.zeros(20)
+    init_pos = np.zeros(24)
     init_pos[3] = 0.1
-    init_vel = np.zeros(19)
-    torso_joint_name = ["torso_lift_joint"]
-    head_joint_names = ["head_" + str(i) + "_joint" for i in range(1, 3)]
-    arm_right_joint_names = ["arm_right_" + str(i) +
-                                "_joint" for i in range(1, 8)]
-    arm_left_joint_names = ["arm_left_" + str(i) +
-                                "_joint" for i in range(1, 8)]
-    actuated_joints = (
-        torso_joint_name
-        + head_joint_names
-        + arm_left_joint_names
-        + arm_right_joint_names
-    )
-
+    init_vel = np.zeros(23)
     robot = GenericDiffDriveRobot(
         urdf="tiago_dual.urdf",
         mode="vel",
         actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
-        actuated_joints=actuated_joints, wheel_radius = 0.1,
+        castor_wheels=[
+            "caster_front_right_2_joint",
+            "caster_front_left_2_joint",
+            "caster_back_right_2_joint",
+            "caster_back_left_2_joint",
+        ],
+        not_actuated_joints=[
+            "suspension_right_joint",
+            "suspension_left_joint",
+        ],
+        wheel_radius = 0.1,
         wheel_distance = 0.4044,
         spawn_offset = np.array([-0.1764081, 0.0, 0.1]),
     )
@@ -89,16 +86,16 @@ def tiagoReacherEnv():
 
 @pytest.fixture
 def albertReacherEnv():
-    init_pos = np.zeros(10)
+    init_pos = np.zeros(12)
     init_pos[6] = -1.501
     init_pos[8] = 1.8675
     init_pos[9] = -np.pi/4
-    init_vel = np.zeros(9)
+    init_vel = np.zeros(11)
     robot = GenericDiffDriveRobot(
         urdf="albert.urdf",
         mode="vel",
         actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
-        actuated_joints=[f"mmrobot_joint{i}" for i in range(1, 8)],
+        castor_wheels=["rotacastor_right_joint", "rotacastor_left_joint"],
         wheel_radius = 0.08,
         wheel_distance = 0.494,
     )

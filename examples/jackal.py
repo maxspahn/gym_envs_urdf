@@ -15,7 +15,7 @@ def run_jackal(n_steps=1000, render=False, goal=True, obstacles=True):
                 "front_right_wheel",
                 "front_left_wheel",
             ],
-            actuated_joints=[],
+            castor_wheels=[],
             wheel_radius = 0.098,
             wheel_distance = 2 * 0.187795 + 0.08,
         ),
