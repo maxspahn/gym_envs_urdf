@@ -1,11 +1,13 @@
-import pybullet as p
+import os
+from enum import Enum
 from abc import ABC, abstractmethod
+from typing import List
+import pybullet as p
 import gym
 import numpy as np
 import yourdfpy
+import urdfenvs
 from urdfenvs.sensors.sensor import Sensor
-from enum import Enum
-from typing import List
 
 class ControlMode(Enum):
     torque = 'tor'
@@ -24,7 +26,19 @@ class GenericRobot(ABC):
         n: int : Degrees of freedom of the robot
         urdf_file: str : Full path to urdf file
         """
-        self._urdf_file: str = urdf_file
+        # search for urdf in package if not found in cwd
+        if not os.path.exists(urdf_file):
+            asset_dir = urdfenvs.__path__[0] + "/assets"
+            asset_urdf = None
+            for root, _, files in os.walk(asset_dir):
+                for file in files:
+                    if file == urdf_file:
+                        asset_urdf = os.path.join(root, file)
+            if asset_urdf is None:
+                raise Exception(f"the request urdf {urdf_file} can not be found")
+            self._urdf_file = asset_urdf
+        else:
+            self._urdf_file = urdf_file
         self._sensors: List[Sensor] = []
         self._urdf_robot = yourdfpy.urdf.URDF.load(self._urdf_file)
         self._mode = ControlMode(mode)
@@ -95,6 +109,8 @@ class GenericRobot(ABC):
         for i, joint_name in enumerate(self._urdf_robot.joint_names):
             if joint_name in self._joint_names:
                 self._urdf_joints.append(i)
+            else:
+                print(joint_name)
         if hasattr(self, "_robot"):
             self._robot_joints = []
             self._castor_joints = []
