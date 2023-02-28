@@ -20,14 +20,23 @@ class DifferentialDriveRobot(GenericRobot):
         The offset by which the initial position must be shifted to align
         observation with that position.
     """
+    _wheel_radius: float
+    _wheel_distance: float
+    _spawn_offset: np.ndarray
+    _number_actuated_axes: int
 
-    def __init__(self, n: int, urdf_file: str, mode: str, number_actuated_axes: int=1):
+    def __init__(
+            self,
+            n: int,
+            urdf_file: str,
+            mode: str,
+            number_actuated_axes: int=1,
+            spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15])
+    ):
         """Constructor for differential drive robots."""
         super().__init__(n, urdf_file, mode)
-        self._wheel_radius: float = None
-        self._wheel_distance: float = None
-        self._number_actuated_axes: int = number_actuated_axes
-        self._spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15])
+        self._number_actuated_axes = number_actuated_axes
+        self._spawn_offset = spawn_offset
 
 
     def ns(self) -> int:
