@@ -1,12 +1,24 @@
 import gym
-from urdfenvs.robots.jackal import JackalRobot
 import numpy as np
 
 from urdfenvs.scene_examples.obstacles import wall_obstacles
+from urdfenvs.robots.generic_urdf.generic_diff_drive_robot import GenericDiffDriveRobot
 
 def run_jackal(n_steps=1000, render=False, goal=True, obstacles=True):
     robots = [
-        JackalRobot(mode="vel"),
+        GenericDiffDriveRobot(
+            urdf="jackal.urdf",
+            mode="vel",
+            actuated_wheels=[
+                "rear_right_wheel",
+                "rear_left_wheel",
+                "front_right_wheel",
+                "front_left_wheel",
+            ],
+            actuated_joints=[],
+            wheel_radius = 0.098,
+            wheel_distance = 2 * 0.187795 + 0.08,
+        ),
     ]
     env = gym.make(
         "urdf-env-v0",

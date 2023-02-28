@@ -2,12 +2,19 @@ import gym
 from urdfenvs.scene_examples.obstacles import wall_obstacles
 import numpy as np
 
-from urdfenvs.robots.boxer import BoxerRobot
+from urdfenvs.robots.generic_urdf.generic_diff_drive_robot import GenericDiffDriveRobot
 
 
 def run_boxer(n_steps=1000, render=False, goal=True, obstacles=True):
     robots = [
-        BoxerRobot(mode="vel"),
+        GenericDiffDriveRobot(
+            urdf="boxer.urdf",
+            mode="vel",
+            actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
+            actuated_joints=[],
+            wheel_radius = 0.08,
+            wheel_distance = 0.494,
+        ),
     ]
     env = gym.make(
         "urdf-env-v0",

@@ -1,12 +1,19 @@
+import warnings
 import gym
 import numpy as np
-from urdfenvs.robots.albert import AlbertRobot
-import warnings
+from urdfenvs.robots.generic_urdf.generic_diff_drive_robot import GenericDiffDriveRobot
 
 
 def run_albert(n_steps=1000, render=False, goal=True, obstacles=True):
     robots = [
-        AlbertRobot(mode="vel"),
+        GenericDiffDriveRobot(
+            urdf="albert.urdf",
+            mode="vel",
+            actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
+            actuated_joints=[f"mmrobot_joint{i}" for i in range(1, 8)],
+            wheel_radius = 0.08,
+            wheel_distance = 0.494,
+        ),
     ]
     env = gym.make(
         "urdf-env-v0",
