@@ -43,7 +43,7 @@ jobs:
         id: git-cliff
         with:
           config: cliff.toml
-          args: master..develop
+          args: origin/master..HEAD
         env:
           OUTPUT: CHANGELOG.md
       - name: Commit changelog
