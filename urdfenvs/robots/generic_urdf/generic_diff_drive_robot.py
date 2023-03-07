@@ -15,9 +15,19 @@ class GenericDiffDriveRobot(DifferentialDriveRobot):
             wheel_radius: float,
             wheel_distance: float,
             spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15]),
+            spawn_rotation: float = 0.0,
             not_actuated_joints: List[str] = [],
     ):
-        super().__init__(-1, urdf, mode, actuated_wheels, castor_wheels, wheel_radius, wheel_distance, spawn_offset=spawn_offset, not_actuated_joints=not_actuated_joints)
+        super().__init__(-1,
+            urdf,
+                         mode,
+                         actuated_wheels,
+                         castor_wheels,
+                         wheel_radius,
+                         wheel_distance,
+                         spawn_offset=spawn_offset,
+                         spawn_rotation=spawn_rotation,
+                         not_actuated_joints=not_actuated_joints)
 
     def set_joint_names(self):
         self._joint_names = []
