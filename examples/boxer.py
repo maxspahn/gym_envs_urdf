@@ -14,6 +14,7 @@ def run_boxer(n_steps=1000, render=False, goal=True, obstacles=True):
             castor_wheels=["rotacastor_right_joint", "rotacastor_left_joint"],
             wheel_radius = 0.08,
             wheel_distance = 0.494,
+            spawn_rotation=np.pi/2,
         ),
     ]
     env = gym.make(
@@ -21,7 +22,7 @@ def run_boxer(n_steps=1000, render=False, goal=True, obstacles=True):
         dt=0.01, robots=robots, render=render
     )
     action = np.array([0.6, 0.8])
-    pos0 = np.array([1.0, 0.2, -1.0])
+    pos0 = np.array([1.0, 0.2, 0.0])
     ob = env.reset(pos=pos0)
     print(f"Initial observation : {ob}")
     for wall in wall_obstacles:
@@ -30,6 +31,7 @@ def run_boxer(n_steps=1000, render=False, goal=True, obstacles=True):
     history = []
     for _ in range(n_steps):
         ob, _, _, _ = env.step(action)
+        print(ob['robot_0']['joint_state']['position'][2])
         history.append(ob)
     env.close()
     return history

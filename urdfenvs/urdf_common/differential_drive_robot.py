@@ -31,10 +31,12 @@ class DifferentialDriveRobot(GenericRobot):
             wheel_radius: float,
             wheel_distance: float,
             spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15]),
+            spawn_rotation: float = 0.0,
             not_actuated_joints: List[str] = []
     ):
         """Constructor for differential drive robots."""
         self._number_actuated_axes = int(len(actuated_wheels)/2)
+        self._spawn_rotation = spawn_rotation
         self._spawn_offset = spawn_offset
         self._castor_wheels = castor_wheels
         self._actuated_wheels = actuated_wheels
@@ -85,7 +87,7 @@ ignored for differential drive robots."
         )
         if hasattr(self, "_robot"):
             p.resetSimulation()
-        base_orientation = p.getQuaternionFromEuler([0, 0, pos[2]])
+        base_orientation = p.getQuaternionFromEuler([0, 0, self._spawn_rotation + pos[2]])
         spawn_position = self._spawn_offset
         spawn_position[0:2] += pos[0:2]
         self._robot = p.loadURDF(
@@ -269,6 +271,7 @@ ignored for differential drive robots."
         here. The function also makes sure that the orientation is always
         between -pi and pi.
         """
+        pos_base -= self._spawn_rotation
         if pos_base[2] < -np.pi:
             pos_base[2] += 2 * np.pi
         return pos_base
