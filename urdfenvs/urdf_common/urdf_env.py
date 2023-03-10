@@ -71,6 +71,7 @@ class UrdfEnv(gym.Env):
         self._robots: List[GenericRobot] = robots
         self._render: bool = render
         self._done: bool = False
+        self._info: dict = {}
         self._num_sub_steps: float = 20
         self._obsts: dict = {}
         self._goals: dict = {}
@@ -168,7 +169,8 @@ class UrdfEnv(gym.Env):
         # Feed action to the robot and get observation of robot's state
 
         if not self.action_space.contains(action):
-            raise WrongActionError(f"{action} not in {self.action_space}")
+            self._done = True
+            self._info = {'action_limits': f"{action} not in {self.action_space}"}
 
         action_id = 0
         for robot in self._robots:
@@ -185,7 +187,7 @@ class UrdfEnv(gym.Env):
 
         if self._render:
             self.render()
-        return ob, reward, self._done, {}
+        return ob, reward, self._done, self._info
 
     def _get_ob(self) -> dict:
         """Compose the observation."""
@@ -199,7 +201,11 @@ class UrdfEnv(gym.Env):
                 not self.observation_space.contains(observation)
                 and self._observation_checking
             ):
-                check_observation(self.observation_space, observation)
+                try:
+                    check_observation(self.observation_space, observation)
+                except WrongObservationError as e:
+                    self._done = True
+                    self._info = {'observation_limits': str(e)}
         return observation
 
     def update_obstacles(self):
