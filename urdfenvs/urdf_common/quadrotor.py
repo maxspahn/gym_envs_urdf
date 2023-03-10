@@ -166,11 +166,21 @@ ignored for drones."
             }
         )
 
+    def get_velocity_spaces(self) -> tuple:
+        """Get observation space and action space when using velocity
+        control."""
+        ospace = self.get_observation_space()
+        uu = self._limit_rotors_j[1, :]
+        ul = self._limit_rotors_j[0, :]
+        aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
+        return (ospace, aspace)
+
     def apply_velocity_action(self, vels: np.ndarray) -> None:
         """Applies the propeller speed action to the quadrotor.
         """
         direction = np.array([1, 1, -1, -1])
         for i in range(4):
+
             p.setJointMotorControl2(
                 self._robot,
                 self._robot_joints[i],
