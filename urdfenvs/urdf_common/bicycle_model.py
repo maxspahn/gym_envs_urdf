@@ -45,7 +45,7 @@ class BicycleModel(GenericRobot):
 ignored for bicycle models."
         )
         if hasattr(self, "_robot"):
-            p.resetSimulation()
+            p.removeBody(self._robot)
         base_orientation = p.getQuaternionFromEuler([0, 0, pos[2]])
         spawn_position = self._spawn_offset
         spawn_position[0:2] += pos[0:2]

@@ -86,7 +86,7 @@ class DifferentialDriveRobot(GenericRobot):
 ignored for differential drive robots."
         )
         if hasattr(self, "_robot"):
-            p.resetSimulation()
+            p.removeBody(self._robot)
         base_orientation = p.getQuaternionFromEuler([0, 0, self._spawn_rotation + pos[2]])
         spawn_position = self._spawn_offset
         spawn_position[0:2] += pos[0:2]

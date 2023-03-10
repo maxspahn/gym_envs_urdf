@@ -16,7 +16,7 @@ class HolonomicRobot(GenericRobot):
             mount_orientation: np.ndarray,) -> None:
 
         if hasattr(self, "_robot"):
-            p.resetSimulation()
+            p.removeBody(self._robot)
         self._robot = p.loadURDF(
             fileName=self._urdf_file,
             basePosition=mount_position.tolist(),

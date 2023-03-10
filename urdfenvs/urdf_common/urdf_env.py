@@ -16,157 +16,36 @@ from urdfenvs.urdf_common.generic_robot import GenericRobot
 
 
 class WrongObservationError(Exception):
-    """Exception when observation lays outside the defined observation space.
+    pass
 
-    This Exception is initiated when an the observation is not within the
-    defined observation space. The purpose of this exception is to give
-    the user better information about which specific part of the observation
-    caused the problem.
-    """
+def check_observation(obs, ob):
+    for key, value in ob.items():
+        if isinstance(value, dict):
+            check_observation(obs[key], value)
+        elif isinstance(value, np.ndarray):
+            if not obs[key].contains(value):
+                breakpoint()
+                s = f"key: {key}: {value} not in {obs[key]}"
+                if np.any(value < obs[key].low):
+                    index = np.where(value < obs[key].low)[0]
+                    value_at_index = value[index]
+                    s += f"\nAt index {index.tolist()}: {value_at_index} < {obs[key].low[index]}"
+                if np.any(value > obs[key].high):
+                    index = np.where(value > obs[key].high)[0]
+                    value_at_index = value[index]
+                    s += f"\nAt index {index.tolist()}: {value_at_index} > {obs[key].high[index]}"
 
-    def __init__(self, msg: str, observation: dict, observationSpace):
-        """Constructor for error message.
+                raise WrongObservationError(s)
+        else:
+            raise Exception("Observation checking failed for {key} {value}.")
 
-        Parameters
-        ----------
-
-        msg: Default error message
-        observation: Observation when mismatch occured
-        observationSpace: Observation space of environment
-        """
-        msg_ext = self.get_wrong_observation(observation, observationSpace)
-        super().__init__(msg + msg_ext)
-
-    def get_wrong_observation(self, o: dict, os) -> str:
-        """Detecting where the error occured.
-
-        Parameters
-        ----------
-
-        o: observation
-        os: observation space
-        """
-        msg_ext = ":\n"
-        msg_ext += self.check_dict(o, os)
-        return msg_ext
-
-    def check_dict(
-        self, o_dict: dict, os_dict, depth: int = 1, tabbing: str = ""
-    ) -> str:
-        """Checking correctness of dictionary observation.
-
-        This methods searches for the cause for wrong observation.
-        It loops over all keys in this dictionary and verifies whether
-        observation and observation spaces fit together. If this is not
-        the case, the concerned key is checked again. As the observation
-        might have nested dictionaries, this function is called
-        recursively.
-
-        Parameters
-        ----------
-
-        o_dict: observation dictionary
-        os_dict: observation space dictionary
-        depth: current depth of nesting
-        tabbing: tabbing for error message
-        """
-        msg_ext = ""
-        for key in o_dict.keys():
-            if not os_dict[key].contains(o_dict[key]):
-                if isinstance(o_dict[key], dict):
-                    msg_ext += tabbing + key + "\n"
-                    msg_ext += self.check_dict(
-                        o_dict[key],
-                        os_dict[key],
-                        depth=depth + 1,
-                        tabbing=tabbing + "\t",
-                    )
-                else:
-                    msg_ext += self.check_box(
-                        o_dict[key], os_dict[key], key, tabbing
-                    )
-        return msg_ext
-
-    def check_box(
-        self, o_box: np.ndarray, os_box, key: str, tabbing: str
-    ) -> str:
-        """Checks correctness of box observation.
-
-        This methods detects which value in the observation caused the
-        error to be raised. Then it updates the error message msg.
-
-        Parameters
-        ----------
-
-        o_box: observation box
-        os_box: observation space box
-        key: key of observation
-        tabbing: current tabbing for error message
-        """
-        msg_ext = tabbing + "Error in " + key + "\n"
-        if isinstance(o_box, float):
-            val = o_box
-            if val < os_box.low[0]:
-                msg_ext += f"{tabbing}\t{key}: {val} < {os_box.low[0]}\n"
-            elif val > os_box.high[0]:
-                msg_ext += f"{tabbing}\t{key}: {val} > {os_box.high[0]}\n"
-            return msg_ext
-
-        for i, val in enumerate(o_box):
-            if val < os_box.low[i]:
-                msg_ext += f"{tabbing}\t{key}[{i}]: {val} < {os_box.low[i]}\n"
-            elif val > os_box.high[i]:
-                msg_ext += f"{tabbing}\t{key}[{i}]: {val} > {os_box.high[i]}\n"
-        return msg_ext
-
-def flatten_observation(observation_dictonary: dict) -> np.ndarray:
-    observation_list = []
-    for val in observation_dictonary.values():
-        if isinstance(val, np.ndarray):
-            observation_list += val.tolist()
-        elif isinstance(val, dict):
-            observation_list += flatten_observation(val).tolist()
-    observation_array = np.array(observation_list)
-    return observation_array
-
-
-def filter_shape_dim(
-    dim: np.ndarray, shape_type: str, dim_len: int, default: np.ndarray
-) -> np.ndarray:
-    """
-    Checks and filters the dimension of a shape depending
-    on the shape, warns were necessary.
-
-    Parameters
-    ----------
-
-    dim: the dimension of the shape
-    shape_type: the shape type
-    dim_len: the number of dimensions should equal dim_len
-    default: fallback option for dim
-
-    """
-
-    # check dimensions
-    if isinstance(dim, np.ndarray) and np.size(dim) is dim_len:
-        pass
-    elif dim is None:
-        dim = default
-    else:
-        warnings.warn(
-            f"{shape_type} dimension should be of"
-            "type (np.ndarray, list) with shape = ({dim_len}, )\n"
-            " currently type(dim) = {type(dim)}. Aborting..."
-        )
-        return default
-    return dim
 
 
 class UrdfEnv(gym.Env):
     """Generic urdf-environment for OpenAI-Gym"""
 
     def __init__(
-        self, robots: List[GenericRobot], flatten_observation: bool = False,
+        self, robots: List[GenericRobot],
         render: bool = False, dt: float = 0.01
     ) -> None:
         """Constructor for environment.
@@ -190,13 +69,20 @@ class UrdfEnv(gym.Env):
         self._num_sub_steps: float = 20
         self._obsts: dict = {}
         self._goals: dict = {}
-        self._flatten_observation: bool = flatten_observation
         self._space_set = False
         if self._render:
             self._cid = p.connect(p.GUI)
             p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
         else:
             self._cid = p.connect(p.DIRECT)
+        p.setPhysicsEngineParameter(
+            fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
+        )
+        self.plane = Plane()
+        p.setGravity(0, 0, -10.0)
+        self._obsts = {}
+        self._goals = {}
+        self.set_spaces()
 
     def n(self) -> int:
         return sum(self.n_per_robot())
@@ -248,17 +134,24 @@ class UrdfEnv(gym.Env):
 
     def set_spaces(self) -> None:
         """Set observation and action space."""
-        self.observation_space = {}
-        self.action_space = {}
+        observation_space_as_dict = {}
+        action_space_as_dict = {}
 
         for i, robot in enumerate(self._robots):
             ( 
-                obs_space,
-                action_space
+                obs_space_robot_i,
+                action_space_robot_i
             ) = robot.get_spaces()
+            obs_space_robot_i = dict(obs_space_robot_i)
+            for sensor in robot._sensors:
+                obs_space_robot_i.update(sensor.get_observation_space(self._obsts, self._goals))
+            observation_space_as_dict[f'robot_{i}'] = gym.spaces.Dict(obs_space_robot_i)
+            action_space_as_dict[f'robot_{i}'] = action_space_robot_i
 
-            self.observation_space[f'robot_{i}'] = obs_space
-            self.action_space[f'robot_{i}'] = action_space
+
+        self.observation_space = gym.spaces.Dict(observation_space_as_dict)
+        self.action_space = gym.spaces.Dict(action_space_as_dict)
+
 
     def step(self, actions):
         self._t += self.dt()
@@ -288,7 +181,11 @@ class UrdfEnv(gym.Env):
             obs = robot.get_observation(self._obsts, self._goals, self.t())
 
             observation[f'robot_{i}'] = obs
+        if hasattr(self, 'observation_space'):
+            if not self.observation_space.contains(observation):
+                check_observation(self.observation_space, observation)
 
+            """
             # TODO: Make this check work for the whole observation space (not just 'joint_state'). This also breaks BicycleModel.
             if not self.observation_space[f'robot_{i}']['joint_state'].contains(observation[f'robot_{i}']['joint_state']):
                 err = WrongObservationError(
@@ -297,11 +194,9 @@ class UrdfEnv(gym.Env):
                     self.observation_space[f'robot_{i}']['joint_state'],
                 )
                 warnings.warn(str(err))
+            """
 
-        if self._flatten_observation:
-            return flatten_observation(observation)
-        else:
-            return observation
+        return observation
 
     def update_obstacles(self):
         for obst_id, obst in self._obsts.items():
@@ -346,20 +241,31 @@ class UrdfEnv(gym.Env):
                 movable=obst.movable(),
             )
         self._obsts[obst_id] = obst
-
-        # refresh observation space of robots sensors
-        for i, robot in enumerate(self._robots):
-            cur_dict = dict(self.observation_space[f'robot_{i}'].spaces)
-            sensors = robot.sensors()
-            for sensor in sensors:
-                cur_dict[sensor.name()] = sensor.get_observation_space()
-
-            self.observation_space[f'robot_{i}'] = gym.spaces.Dict(cur_dict)
-
         if self._t != 0.0:
             warnings.warn(
                 "Adding an object while the simulation already started"
             )
+
+    def reset_obstacles(self) -> None:
+        for obst_id, obstacle in self._obsts.items():
+            if obstacle.type() == 'urdf':
+                pos = obstacle.position()
+                vel = obstacle.position()
+            else:
+                pos = obstacle.position(t=0).tolist()
+                vel = obstacle.velocity(t=0).tolist()
+            ori = [0, 0, 0, 1]
+            p.resetBasePositionAndOrientation(obst_id, pos, ori)
+            p.resetBaseVelocity(obst_id, linearVelocity=vel)
+
+    def reset_goals(self) -> None:
+        for goal_id, goal in self._goals.items():
+            pos = goal.position(t=0).tolist()
+            vel = goal.velocity(t=0).tolist()
+            ori = [0, 0, 0, 1]
+            p.resetBasePositionAndOrientation(goal_id, pos, ori)
+            p.resetBaseVelocity(goal_id, linearVelocity=vel)
+
 
     def get_obstacles(self) -> dict:
         return self._obsts
@@ -476,18 +382,10 @@ class UrdfEnv(gym.Env):
     def add_sensor(self, sensor: Sensor, robot_ids: List) -> None:
         """Adds sensor to the robot.
 
-        Adding a sensor requires an update to the observation space.
-        This seems to require a conversion to dict and back to
-        gym.spaces.Dict.
+        Adding a sensor to the list of sensors.
         """
         for i in robot_ids:
             self._robots[i].add_sensor(sensor)
-            if self.observation_space:
-                cur_dict = dict(self.observation_space[f'robot_{i}'].spaces)
-            else:
-                raise KeyError(f"Observation space for robot {i} has not been created. Add sensor after reset.")
-            cur_dict[sensor.name()] = sensor.get_observation_space()
-            self.observation_space[f'robot_{i}'] = gym.spaces.Dict(cur_dict)
 
     def reset(
             self,
@@ -513,9 +411,6 @@ class UrdfEnv(gym.Env):
             This is ignored for mobile robots
         """
         self._t = 0.0
-        p.setPhysicsEngineParameter(
-            fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
-        )
         if mount_positions is None:
             mount_positions = np.tile(np.zeros(3), (len(self._robots), 1))
         if mount_orientations is None:
@@ -536,14 +431,8 @@ class UrdfEnv(gym.Env):
                 mount_position=mount_positions[i],
                 mount_orientation=mount_orientations[i],
             )
-        if not self._space_set:
-            self.set_spaces()
-            self._space_set = True
-        self.plane = Plane()
-        p.setGravity(0, 0, -10.0)
-        p.stepSimulation()
-        self._obsts = {}
-        self._goals = {}
+        self.reset_obstacles()
+        self.reset_goals()
         return self._get_ob()
 
     def render(self) -> None:

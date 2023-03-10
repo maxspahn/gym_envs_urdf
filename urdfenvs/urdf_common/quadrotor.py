@@ -75,7 +75,7 @@ class QuadrotorModel(GenericRobot):
 ignored for drones."
         )
         if hasattr(self, "_robot"):
-            p.resetSimulation()
+            p.removeBody(self._robot)
         base_orientation = pos[3:7]
         spawn_pos = self._spawn_offset + np.array([pos[0], pos[1], pos[2]])
         self._robot = p.loadURDF(
