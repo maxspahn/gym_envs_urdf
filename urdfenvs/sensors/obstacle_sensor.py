@@ -2,6 +2,7 @@ import numpy as np
 import pybullet as p
 import gym
 from urdfenvs.sensors.sensor import Sensor
+from urdfenvs import __version__
 
 
 class ObstacleSensor(Sensor):
@@ -22,7 +23,6 @@ class ObstacleSensor(Sensor):
         and angular velocity in cartesian format (x, y, z)
 
     """
-
     def __init__(self):
         super().__init__("ObstacleSensor")
         self._observation = np.zeros(self.get_observation_size())
@@ -37,7 +37,7 @@ class ObstacleSensor(Sensor):
             )
         return size
 
-    def get_observation_space(self):
+    def get_observation_space(self, obstacles: dict, goals: dict):
         """
         Create observation space, all observed objects should be inside the
         observation space.
@@ -84,7 +84,7 @@ class ObstacleSensor(Sensor):
                 }
             )
 
-        return spaces_dict
+        return gym.spaces.Dict({self._name: spaces_dict})
 
     def sense(self, robot, *args):
         """

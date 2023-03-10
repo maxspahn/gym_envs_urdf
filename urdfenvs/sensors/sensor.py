@@ -21,7 +21,7 @@ class Sensor(object):
         pass
 
     @abstractmethod
-    def get_observation_space(self):
+    def get_observation_space(self, obstacles: dict, goals: dict):
         pass
 
     @abstractmethod

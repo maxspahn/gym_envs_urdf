@@ -53,15 +53,16 @@ class Lidar(Sensor):
             return self._nb_rays
         return self._nb_rays * 2
 
-    def get_observation_space(self):
+    def get_observation_space(self, obstacles: dict, goals: dict):
         """Create observation space, all observations should be inside the
         observation space."""
-        return gym.spaces.Box(
-            -self._ray_length,
-            self._ray_length,
+        observation_space = gym.spaces.Box(
+            -self._ray_length-0.01,
+            self._ray_length+0.01,
             shape=(self.get_observation_size(),),
             dtype=np.float64,
         )
+        return gym.spaces.Dict({self._name: observation_space})
 
     def sense(self, robot, obstacles: dict, goals: dict, t: float):
         """Sense the distance toward the next object with the Lidar."""
