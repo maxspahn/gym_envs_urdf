@@ -18,6 +18,9 @@ from urdfenvs.urdf_common.generic_robot import GenericRobot
 class WrongObservationError(Exception):
     pass
 
+class WrongActionError(Exception):
+    pass
+
 
 def check_observation(obs, ob):
     for key, value in ob.items():
@@ -157,11 +160,15 @@ class UrdfEnv(gym.Env):
             action_space_as_dict[f"robot_{i}"] = action_space_robot_i
 
         self.observation_space = gym.spaces.Dict(observation_space_as_dict)
-        self.action_space = gym.spaces.Dict(action_space_as_dict)
+        action_space = gym.spaces.Dict(action_space_as_dict)
+        self.action_space = gym.spaces.flatten_space(action_space)
 
     def step(self, action):
         self._t += self.dt()
         # Feed action to the robot and get observation of robot's state
+
+        if not self.action_space.contains(action):
+            raise WrongActionError(f"{action} not in {self.action_space}")
 
         action_id = 0
         for robot in self._robots:
