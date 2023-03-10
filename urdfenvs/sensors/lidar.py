@@ -2,7 +2,6 @@
 import numpy as np
 import pybullet as p
 import gym
-from typing import List
 
 from urdfenvs.sensors.sensor import Sensor
 

@@ -18,6 +18,7 @@ from urdfenvs.urdf_common.generic_robot import GenericRobot
 class WrongObservationError(Exception):
     pass
 
+
 def check_observation(obs, ob):
     for key, value in ob.items():
         if isinstance(value, dict):
@@ -39,13 +40,15 @@ def check_observation(obs, ob):
             raise Exception("Observation checking failed for {key} {value}.")
 
 
-
 class UrdfEnv(gym.Env):
     """Generic urdf-environment for OpenAI-Gym"""
 
     def __init__(
-        self, robots: List[GenericRobot],
-        render: bool = False, dt: float = 0.01, observation_checking = True
+        self,
+        robots: List[GenericRobot],
+        render: bool = False,
+        dt: float = 0.01,
+        observation_checking=True,
     ) -> None:
         """Constructor for environment.
 
@@ -105,14 +108,20 @@ class UrdfEnv(gym.Env):
         camera_pitch = full_camera_configuration[9]
         camera_distance = full_camera_configuration[10]
         camera_target_position = full_camera_configuration[11]
-        return (camera_distance, camera_yaw, camera_pitch, camera_target_position)
+        return (
+            camera_distance,
+            camera_yaw,
+            camera_pitch,
+            camera_target_position,
+        )
 
     def reconfigure_camera(
-            self,
-            camera_distance: float,
-            camera_yaw: float,
-            camera_pitch: float,
-            camera_target_position: tuple) -> None:
+        self,
+        camera_distance: float,
+        camera_yaw: float,
+        camera_pitch: float,
+        camera_target_position: tuple,
+    ) -> None:
         p.resetDebugVisualizerCamera(
             cameraDistance=camera_distance,
             cameraYaw=camera_yaw,
@@ -124,9 +133,7 @@ class UrdfEnv(gym.Env):
         if self._render:
             p.startStateLogging(p.STATE_LOGGING_VIDEO_MP4, file_name)
         else:
-            logging.warning(
-                "Video recording requires rendering to be active."
-            )
+            logging.warning("Video recording requires rendering to be active.")
 
     def stop_video_recording(self) -> None:
         if self._render:
@@ -138,30 +145,29 @@ class UrdfEnv(gym.Env):
         action_space_as_dict = {}
 
         for i, robot in enumerate(self._robots):
-            ( 
-                obs_space_robot_i,
-                action_space_robot_i
-            ) = robot.get_spaces()
+            (obs_space_robot_i, action_space_robot_i) = robot.get_spaces()
             obs_space_robot_i = dict(obs_space_robot_i)
             for sensor in robot._sensors:
-                obs_space_robot_i.update(sensor.get_observation_space(self._obsts, self._goals))
-            observation_space_as_dict[f'robot_{i}'] = gym.spaces.Dict(obs_space_robot_i)
-            action_space_as_dict[f'robot_{i}'] = action_space_robot_i
-
+                obs_space_robot_i.update(
+                    sensor.get_observation_space(self._obsts, self._goals)
+                )
+            observation_space_as_dict[f"robot_{i}"] = gym.spaces.Dict(
+                obs_space_robot_i
+            )
+            action_space_as_dict[f"robot_{i}"] = action_space_robot_i
 
         self.observation_space = gym.spaces.Dict(observation_space_as_dict)
         self.action_space = gym.spaces.Dict(action_space_as_dict)
 
-
-    def step(self, actions):
+    def step(self, action):
         self._t += self.dt()
         # Feed action to the robot and get observation of robot's state
 
         action_id = 0
         for robot in self._robots:
-            action = actions[action_id:action_id+robot.n()]
+            action = action[action_id : action_id + robot.n()]
             robot.apply_action(action, self.dt())
-            action_id +=robot.n()
+            action_id += robot.n()
 
         self.update_obstacles()
         self.update_goals()
@@ -180,22 +186,13 @@ class UrdfEnv(gym.Env):
         for i, robot in enumerate(self._robots):
             obs = robot.get_observation(self._obsts, self._goals, self.t())
 
-            observation[f'robot_{i}'] = obs
-        if hasattr(self, 'observation_space'):
-            if not self.observation_space.contains(observation) and self._observation_checking:
+            observation[f"robot_{i}"] = obs
+        if hasattr(self, "observation_space"):
+            if (
+                not self.observation_space.contains(observation)
+                and self._observation_checking
+            ):
                 check_observation(self.observation_space, observation)
-
-            """
-            # TODO: Make this check work for the whole observation space (not just 'joint_state'). This also breaks BicycleModel.
-            if not self.observation_space[f'robot_{i}']['joint_state'].contains(observation[f'robot_{i}']['joint_state']):
-                err = WrongObservationError(
-                    "The observation does not fit the defined observation space",
-                    observation[f'robot_{i}']['joint_state'],
-                    self.observation_space[f'robot_{i}']['joint_state'],
-                )
-                warnings.warn(str(err))
-            """
-
         return observation
 
     def update_obstacles(self):
@@ -231,7 +228,7 @@ class UrdfEnv(gym.Env):
         obst: Obstacle from mpscenes
         """
         # add obstacle to environment
-        if obst.type() == 'urdf':
+        if obst.type() == "urdf":
             obst_id = self.add_shape(obst.type(), obst.size(), urdf=obst.urdf())
         else:
             obst_id = self.add_shape(
@@ -248,7 +245,7 @@ class UrdfEnv(gym.Env):
 
     def reset_obstacles(self) -> None:
         for obst_id, obstacle in self._obsts.items():
-            if obstacle.type() == 'urdf':
+            if obstacle.type() == "urdf":
                 pos = obstacle.position()
                 vel = obstacle.position()
             else:
@@ -266,7 +263,6 @@ class UrdfEnv(gym.Env):
             p.resetBasePositionAndOrientation(goal_id, pos, ori)
             p.resetBaseVelocity(goal_id, linearVelocity=vel)
 
-
     def get_obstacles(self) -> dict:
         return self._obsts
 
@@ -276,7 +272,9 @@ class UrdfEnv(gym.Env):
             p.GEOM_SPHERE, rgbaColor=rgba_color, radius=goal.epsilon()
         )
         collision_shape = -1
-        base_position = [0, ] * 3
+        base_position = [
+            0,
+        ] * 3
         for index in range(3):
             if index in goal.indices():
                 base_position[index] = goal.position()[index]
@@ -328,18 +326,20 @@ class UrdfEnv(gym.Env):
                 p.GEOM_SPHERE,
                 rgbaColor=[1.0, 0.0, 0.0, 1.0],
                 specularColor=[1.0, 0.5, 0.5],
-                radius=size[0]
+                radius=size[0],
             )
 
         elif shape_type == "box":
-            half_extens = [s/2 for s in size]
+            half_extens = [s / 2 for s in size]
             position = [position[i] - size[i] for i in range(3)]
-            shape_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=half_extens)
+            shape_id = p.createCollisionShape(
+                p.GEOM_BOX, halfExtents=half_extens
+            )
             visual_shape_id = p.createVisualShape(
                 p.GEOM_BOX,
                 rgbaColor=[1.0, 0.0, 0.0, 1.0],
                 specularColor=[1.0, 0.5, 0.5],
-                halfExtents=half_extens
+                halfExtents=half_extens,
             )
 
         elif shape_type == "cylinder":
@@ -360,15 +360,11 @@ class UrdfEnv(gym.Env):
             )
         elif shape_type == "urdf":
             shape_id = p.loadURDF(
-                fileName=urdf,
-                basePosition=position,
-                globalScaling=scaling
+                fileName=urdf, basePosition=position, globalScaling=scaling
             )
             return shape_id
         else:
-            warnings.warn(
-                "Unknown shape type: {shape_type}, aborting..."
-            )
+            warnings.warn("Unknown shape type: {shape_type}, aborting...")
             return -1
         bullet_id = p.createMultiBody(
             baseMass=mass,
@@ -388,12 +384,12 @@ class UrdfEnv(gym.Env):
             self._robots[i].add_sensor(sensor)
 
     def reset(
-            self,
-            pos: np.ndarray = None,
-            vel: np.ndarray = None,
-            mount_positions: np.ndarray = None,
-            mount_orientations: np.ndarray = None,
-        ) -> dict:
+        self,
+        pos: np.ndarray = None,
+        vel: np.ndarray = None,
+        mount_positions: np.ndarray = None,
+        mount_orientations: np.ndarray = None,
+    ) -> dict:
         """Resets the simulation and the robot.
 
         Parameters
@@ -401,20 +397,22 @@ class UrdfEnv(gym.Env):
 
         pos: np.ndarray:
             Initial joint positions of the robots
-        vel: np.ndarray: 
+        vel: np.ndarray:
             Initial joint velocities of the robots
         mount_position: np.ndarray:
-            Mounting position for the robots  
+            Mounting position for the robots
             This is ignored for mobile robots
         mount_orientation: np.ndarray:
-            Mounting position for the robots  
+            Mounting position for the robots
             This is ignored for mobile robots
         """
         self._t = 0.0
         if mount_positions is None:
             mount_positions = np.tile(np.zeros(3), (len(self._robots), 1))
         if mount_orientations is None:
-            mount_orientations = np.tile(np.array([0.0, 0.0, 0.0, 1.0]), (len(self._robots), 1))
+            mount_orientations = np.tile(
+                np.array([0.0, 0.0, 0.0, 1.0]), (len(self._robots), 1)
+            )
         if pos is None:
             pos = np.tile(None, len(self._robots))
         if vel is None:
@@ -424,7 +422,9 @@ class UrdfEnv(gym.Env):
         if len(vel.shape) == 1 and len(self._robots) == 1:
             vel = np.tile(vel, (1, 1))
         for i, robot in enumerate(self._robots):
-            checked_position, checked_velocity= robot.check_state(pos[i], vel[i])
+            checked_position, checked_velocity = robot.check_state(
+                pos[i], vel[i]
+            )
             robot.reset(
                 pos=checked_position,
                 vel=checked_velocity,
