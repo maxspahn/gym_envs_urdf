@@ -165,8 +165,8 @@ class UrdfEnv(gym.Env):
 
         action_id = 0
         for robot in self._robots:
-            action = action[action_id : action_id + robot.n()]
-            robot.apply_action(action, self.dt())
+            action_robot = action[action_id : action_id + robot.n()]
+            robot.apply_action(action_robot, self.dt())
             action_id += robot.n()
 
         self.update_obstacles()
