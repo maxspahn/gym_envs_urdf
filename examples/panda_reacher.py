@@ -11,7 +11,9 @@ def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
     ]
     env: UrdfEnv = gym.make(
         "urdf-env-v0",
-        dt=0.01, robots=robots, render=render
+        dt=0.01, robots=robots,
+        render=render,
+        observation_checking=False,
     )
     env.add_goal(dynamicGoal)
     env.add_obstacle(dynamicSphereObst2)

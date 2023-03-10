@@ -24,7 +24,6 @@ def check_observation(obs, ob):
             check_observation(obs[key], value)
         elif isinstance(value, np.ndarray):
             if not obs[key].contains(value):
-                breakpoint()
                 s = f"key: {key}: {value} not in {obs[key]}"
                 if np.any(value < obs[key].low):
                     index = np.where(value < obs[key].low)[0]
@@ -46,7 +45,7 @@ class UrdfEnv(gym.Env):
 
     def __init__(
         self, robots: List[GenericRobot],
-        render: bool = False, dt: float = 0.01
+        render: bool = False, dt: float = 0.01, observation_checking = True
     ) -> None:
         """Constructor for environment.
 
@@ -70,6 +69,7 @@ class UrdfEnv(gym.Env):
         self._obsts: dict = {}
         self._goals: dict = {}
         self._space_set = False
+        self._observation_checking = observation_checking
         if self._render:
             self._cid = p.connect(p.GUI)
             p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
@@ -182,7 +182,7 @@ class UrdfEnv(gym.Env):
 
             observation[f'robot_{i}'] = obs
         if hasattr(self, 'observation_space'):
-            if not self.observation_space.contains(observation):
+            if not self.observation_space.contains(observation) and self._observation_checking:
                 check_observation(self.observation_space, observation)
 
             """
