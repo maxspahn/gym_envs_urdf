@@ -147,7 +147,7 @@ def test_allDifferentialDrive(allDifferentialDriveEnvs):
     for setup in allDifferentialDriveEnvs:
         env = gym.make("urdf-env-v0", robots=[setup[0]], render=False, dt=0.01)
         ob = env.reset(pos=setup[1], vel=setup[2])
-        action = np.random.random(env.n()) * 0.1
+        action = np.random.random(env.n()) * 0.02
         np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['position'], setup[1], decimal=2)
         ob, _, _, _ = env.step(action)
         assert isinstance(ob['robot_0'], dict)
