@@ -45,7 +45,7 @@ class BicycleModel(GenericRobot):
 ignored for bicycle models."
         )
         if hasattr(self, "_robot"):
-            p.resetSimulation()
+            p.removeBody(self._robot)
         base_orientation = p.getQuaternionFromEuler([0, 0, pos[2]])
         spawn_position = self._spawn_offset
         spawn_position[0:2] += pos[0:2]
@@ -124,6 +124,15 @@ ignored for bicycle models."
                 )
             }
         )
+
+    def get_velocity_spaces(self) -> tuple:
+        """Get observation space and action space when using velocity
+        control."""
+        ospace = self.get_observation_space()
+        uu = self._limit_vel_forward_j[1, :]
+        ul = self._limit_vel_forward_j[0, :]
+        aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
+        return (ospace, aspace)
 
     def apply_velocity_action(self, vels: np.ndarray) -> None:
         """Applies velocities to steering and forward motion."""

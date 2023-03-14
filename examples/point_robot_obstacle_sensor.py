@@ -31,6 +31,7 @@ def run_point_robot_with_obstacle_sensor(n_steps=1000, render=False, obstacles=T
     # add sensor
     sensor = ObstacleSensor()
     env.add_sensor(sensor, [0])
+    env.set_spaces()
 
     history = []
     for _ in range(n_steps):

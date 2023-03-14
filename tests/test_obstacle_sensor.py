@@ -19,6 +19,7 @@ def test_static_obstacle():
     env.add_obstacle(sphereObst1)
     sensor = ObstacleSensor()
     env.add_sensor(sensor, [0])
+    env.set_spaces()
     action = np.random.random(env.n())
     ob, _, _, _ = env.step(action)
     ob = ob['robot_0']['ObstacleSensor']
@@ -49,6 +50,7 @@ def test_dynamicObstacle():
     env.add_obstacle(dynamicSphereObst3)
     sensor = ObstacleSensor()
     env.add_sensor(sensor, [0])
+    env.set_spaces()
     action = np.random.random(env.n())
     ob, _, _, _ = env.step(action)
     ob = ob['robot_0']['ObstacleSensor']
@@ -78,6 +80,7 @@ def test_shape_observation_space():
     env.add_obstacle(dynamicSphereObst3)
     sensor = ObstacleSensor()
     env.add_sensor(sensor, [0])
+    env.set_spaces()
     action = np.random.random(env.n())
     ob, _, _, _ = env.step(action)
     ob = ob['robot_0']['ObstacleSensor']
