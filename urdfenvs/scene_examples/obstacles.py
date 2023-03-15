@@ -56,7 +56,19 @@ movable_obstacle_dict = {
         'height': 0.2,
         'length': 0.2,
     },
-    'movable': True
+    'movable': True,
+    'high': {
+         'position' : [5.0, 5.0, 1.0],
+        'width': 0.2,
+        'height': 0.2,
+        'length': 0.2,
+    },
+    'low': {
+        'position' : [0.0, 0.0, 0.5],
+        'width': 0.2,
+        'height': 0.2,
+        'length': 0.2,
+    }
 }
 movable_obstacle = BoxObstacle(name="movable_box", content_dict=movable_obstacle_dict)
 
@@ -67,7 +79,7 @@ wall_obstacles_dicts = [
         'type': 'box', 
          'geometry': {
              'position': [wall_length/2.0, 0.0, 0.4], 'width': wall_length, 'height': 0.8, 'length': 0.1
-        }
+        },
     },
     {
         'type': 'box', 

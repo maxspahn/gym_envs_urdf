@@ -208,6 +208,31 @@ class UrdfEnv(gym.Env):
                     self._info = {'observation_limits': str(e)}
         return observation
 
+    def shuffle_obstacles(self) -> dict:
+        obstacle_dict = {}
+        for obst_id, obst in self._obsts.items():
+            obst.shuffle()
+            obstacle_dict[obst.name()] = obst.dict()
+        self.update_obstacles()
+        return obstacle_dict
+
+    def shuffle_goals(self) -> dict:
+        goal_dict = {}
+        for goal_id, goal in self._goals.items():
+            goal.shuffle()
+            goal_dict[goal.name()] = goal.dict()
+        self.update_goals()
+        return goal_dict
+
+    def empty_scene(self) -> None:
+        for goal_id  in self._goals.keys():
+            p.removeBody(goal_id)
+        self._goals = {}
+        for obst_id in self._obsts.keys():
+            print(obst_id)
+            p.removeBody(obst_id)
+        self._obsts = {}
+
     def update_obstacles(self):
         for obst_id, obst in self._obsts.items():
             if obst.movable():
