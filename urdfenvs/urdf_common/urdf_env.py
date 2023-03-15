@@ -229,7 +229,6 @@ class UrdfEnv(gym.Env):
             p.removeBody(goal_id)
         self._goals = {}
         for obst_id in self._obsts.keys():
-            print(obst_id)
             p.removeBody(obst_id)
         self._obsts = {}
 
