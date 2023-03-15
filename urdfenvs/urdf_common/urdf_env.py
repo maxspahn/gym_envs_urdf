@@ -40,7 +40,7 @@ def check_observation(obs, ob):
 
                 raise WrongObservationError(s)
         else:
-            raise Exception("Observation checking failed for {key} {value}.")
+            raise Exception(f"Observation checking failed for key:{key} value:{value}.")
 
 
 class UrdfEnv(gym.Env):
