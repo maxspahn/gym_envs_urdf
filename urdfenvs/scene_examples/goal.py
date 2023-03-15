@@ -9,8 +9,10 @@ goal1Dict = {
     "parent_link": 0,
     "child_link": 3,
     "desired_position": [1, 0, 0.1],
-    "epsilon": 0.02,
+    "epsilon": 0.2,
     "type": "staticSubGoal",
+    'high': [1, 1, 1],
+    'low': [0, 0, 0.5],
 }
 
 goal1 = StaticSubGoal(name="goal1", content_dict=goal1Dict)
