@@ -1,5 +1,8 @@
 import gym
 import time
+from mpscenes.goals.sub_goal_creator import StaticSubGoal
+from mpscenes.obstacles.sphere_obstacle import SphereObstacle
+import yaml
 import numpy as np
 import pybullet as p
 import warnings
@@ -9,6 +12,10 @@ from typing import List, Union
 from mpscenes.obstacles.collision_obstacle import CollisionObstacle
 from mpscenes.goals.goal_composition import GoalComposition
 from mpscenes.goals.sub_goal import SubGoal
+from mpscenes.obstacles.sphere_obstacle import SphereObstacle
+from mpscenes.obstacles.dynamic_sphere_obstacle import DynamicObstacle, DynamicSphereObstacle
+from mpscenes.obstacles.urdf_obstacle import UrdfObstacle
+from mpscenes.obstacles.box_obstacle import BoxObstacle
 
 from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
@@ -208,21 +215,48 @@ class UrdfEnv(gym.Env):
                     self._info = {'observation_limits': str(e)}
         return observation
 
-    def shuffle_obstacles(self) -> dict:
-        obstacle_dict = {}
+    def shuffle_obstacles(self) -> None:
         for obst_id, obst in self._obsts.items():
             obst.shuffle()
-            obstacle_dict[obst.name()] = obst.dict()
         self.update_obstacles()
-        return obstacle_dict
 
-    def shuffle_goals(self) -> dict:
-        goal_dict = {}
+    def shuffle_goals(self) -> None:
         for goal_id, goal in self._goals.items():
             goal.shuffle()
-            goal_dict[goal.name()] = goal.dict()
         self.update_goals()
-        return goal_dict
+
+    def asdict(self) -> dict:
+        environment_dict = {'goals': {}, 'obstacles': {}}
+        for i, (_, sub_goal) in enumerate(self._goals.items()):
+            environment_dict['goals'][i] = sub_goal.dict()
+        for i, (_, sub_obstacle) in enumerate(self._obsts.items()):
+            environment_dict['obstacles'][i] = sub_obstacle.dict()
+        return environment_dict
+
+    def save(self, file_name: str) -> None:
+        with open(file_name, 'w') as f:
+            yaml.dump(self.asdict(), f)
+
+    def from_file(self, file_name: str) -> None:
+        self.empty_scene()
+        with open(file_name, 'r') as f:
+            data = yaml.safe_load(f)
+        goals = data['goals']
+        obstacles = data['obstacles']
+        for goal_id, goal in goals.items():
+            if goal['type'] == 'staticSubGoal':
+                self.add_goal(StaticSubGoal(name=goal_id,content_dict=goal))
+        self.update_goals()
+        for obstacle_id, obstacle in obstacles.items():
+            if obstacle['type'] == 'sphere':
+                self.add_obstacle(SphereObstacle(name=obstacle_id,content_dict=obstacle))
+            elif obstacle['type'] == 'box':
+                self.add_obstacle(BoxObstacle(name=obstacle_id,content_dict=obstacle))
+            elif obstacle['type'] in ['splineSphere', 'analyticSphere']:
+                self.add_obstacle(DynamicSphereObstacle(name=obstacle_id,content_dict=obstacle))
+        self.update_obstacles()
+        breakpoint()
+
 
     def empty_scene(self) -> None:
         for goal_id  in self._goals.keys():

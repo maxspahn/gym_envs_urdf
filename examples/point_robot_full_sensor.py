@@ -32,16 +32,15 @@ def run_point_robot_with_obstacle_sensor(n_steps=10, render=False, obstacles=Tru
     sensor = FullSensor(['position'], ['position', 'size'], variance=0.0)
     env.add_sensor(sensor, [0])
     # Set spaces AFTER all components have been added.
-    env.set_spaces()
-    env = FlattenObservation(env)
     defaultAction = np.array([0.5, -0.2, 0.0])
     pos0 = np.array([1.0, 0.1, 0.0])
     vel0 = np.array([1.0, 0.0, 0.0])
     initial_observations = []
-    for _ in range(2):
+    for e in range(2):
+        env.from_file(f"env_{e}.yaml")
+        env.set_spaces()
+        env = FlattenObservation(env)
         ob = env.reset(pos=pos0, vel=vel0)
-        env.shuffle_goals()
-        env.shuffle_obstacles()
         initial_observations.append(ob)
         print(f"Initial observation : {ob}")
         #assert np.array_equal(initial_observations[0], ob)
@@ -57,4 +56,4 @@ def run_point_robot_with_obstacle_sensor(n_steps=10, render=False, obstacles=Tru
 
 
 if __name__ == "__main__":
-    run_point_robot_with_obstacle_sensor(render=True, n_steps=300)
+    run_point_robot_with_obstacle_sensor(render=True, n_steps=3)

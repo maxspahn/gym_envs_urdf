@@ -1,0 +1,77 @@
+goals:
+  0:
+    angle: null
+    child_link: 3
+    desired_position:
+    - 0.7896835836905035
+    - 0.7638800861571782
+    - 0.5985017886398898
+    epsilon: 0.2
+    high:
+    - 1.0
+    - 1.0
+    - 1.0
+    indices:
+    - 0
+    - 1
+    - 2
+    is_primary_goal: true
+    low:
+    - 0.0
+    - 0.0
+    - 0.5
+    parent_link: 0
+    type: staticSubGoal
+    weight: 1.0
+obstacles:
+  0:
+    geometry:
+      position:
+      - 0.2091219023824038
+      - -0.9304667684919814
+      - 0.1833467677377003
+      radius: 0.4125737855854794
+      trajectory:
+        controlPoints:
+        - - 0.0
+          - 1.0
+          - 1.0
+        - - 1.0
+          - 1.0
+          - 1.0
+        - - 1.0
+          - 1.0
+          - 0.0
+        degree: 2
+        duration: 10
+    high: null
+    low: null
+    movable: false
+    type: splineSphere
+  1:
+    geometry:
+      height: 0.2
+      length: 0.2
+      position:
+      - 1.996471747565585
+      - 0.5681412557468818
+      - 0.9446981399236374
+      width: 0.2
+    high:
+      height: 0.2
+      length: 0.2
+      position:
+      - 5.0
+      - 5.0
+      - 1.0
+      width: 0.2
+    low:
+      height: 0.2
+      length: 0.2
+      position:
+      - 0.0
+      - 0.0
+      - 0.5
+      width: 0.2
+    movable: true
+    type: box
