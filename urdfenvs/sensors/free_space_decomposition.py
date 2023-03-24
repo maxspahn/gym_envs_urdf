@@ -1,12 +1,9 @@
-"""Module for lidar sensor simulation."""
-import time
+"""Module for free space decomposition."""
 import numpy as np
 import pybullet as p
 import gym
 from typing import Callable, List
-import matplotlib.pyplot as plt
 
-from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.sensors.lidar import Lidar
 
 
@@ -40,7 +37,7 @@ class FreeSpaceDecompositionSensor(Lidar):
         observation space."""
         observation_space = {}
         for i in range(self._fsd._number_constraints):
-            observation_space[f'constraint_{i}'] = gym.spaces.Box(
+            observation_space[f"constraint_{i}"] = gym.spaces.Box(
                     -10,
                     10,
                     shape=(4,),
@@ -97,12 +94,12 @@ class HalfPlane(object):
         return self._constant
 
     def equation_by_variable(self, variable_name: str) -> Callable:
-        if variable_name == 'y':
+        if variable_name == "y":
             return lambda x: 1/self.normal()[1] * (-self.constant() - self.normal()[0] * x)
         return lambda y: 1/self.normal()[0] * (-self.constant() - self.normal()[1] * y)
 
     def get_points(self) -> np.ndarray:
-        my_fun = self.equation_by_variable('y')
+        my_fun = self.equation_by_variable("y")
         x = np.arange(0,2)*10-5
         y_values = my_fun(x)
         if np.any(np.isinf(y_values)):
@@ -158,11 +155,11 @@ class FreeSpaceDecomposition(object):
         constraint_dict = {}
         for i in range(self._number_constraints):
             if i < len(self._constraints):
-                constraint_dict[f'constraint_{i}'] = self._constraints[i].constraint()
+                constraint_dict[f"constraint_{i}"] = self._constraints[i].constraint()
             else:
                 point = self._position + np.array([100, 100, 0])
                 dummy_halfplane = HalfPlane(self._position, point)
-                constraint_dict[f'constraint_{i}'] = dummy_halfplane.constraint()
+                constraint_dict[f"constraint_{i}"] = dummy_halfplane.constraint()
         return constraint_dict
 
     def get_points(self):
