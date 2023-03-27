@@ -29,7 +29,7 @@ def run_point_robot_with_freespacedecomp(
         env.add_obstacle(sphereObst2)
         env.add_obstacle(dynamicSphereObst1)
     number_lidar_rays = 64
-    free_space_decomp  = FreeSpaceDecompositionSensor('mobile_joint_theta', nb_rays=number_lidar_rays, raw_data=False, plotting_interval=10, max_radius=10, number_constraints=10)
+    free_space_decomp  = FreeSpaceDecompositionSensor('mobile_joint_theta', nb_rays=number_lidar_rays, plotting_interval=100, max_radius=10, number_constraints=10)
     env.add_sensor(free_space_decomp, robot_ids=[0])
     env.set_spaces()
 
