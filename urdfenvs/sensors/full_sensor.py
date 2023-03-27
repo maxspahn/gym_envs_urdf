@@ -84,8 +84,8 @@ class FullSensor(Sensor):
                 )
             if "weight" in self._goal_mask:
                 observation_space_goal["weight"] = spaces.Box(
-                    low=0,
-                    high=10,
+                    low=np.array([0]),
+                    high=np.array([10]),
                     dtype=np.float32,
                 )
             if "is_primary_goal" in self._goal_mask:
