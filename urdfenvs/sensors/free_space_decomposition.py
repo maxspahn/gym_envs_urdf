@@ -14,13 +14,12 @@ class FreeSpaceDecompositionSensor(Lidar):
                  number_constraints: int= 10,
                  nb_rays: int=10,
                  ray_length: float=10.0,
-                 raw_data: bool=True,
                  angle_limits: np.ndarray = np.array([-np.pi, np.pi]),
                  plotting_interval: int=-1):
         super().__init__(link_name,
                          nb_rays=nb_rays,
                          ray_length=ray_length,
-                         raw_data=raw_data,
+                         raw_data=False,
                          angle_limits=angle_limits,
                         )
         self._name = "FreeSpaceDecompSensor"
