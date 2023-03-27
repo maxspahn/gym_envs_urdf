@@ -12,8 +12,8 @@ obst1Dict = {
 sphereObst1 = SphereObstacle(name="simpleSphere", content_dict=obst1Dict)
 obst2Dict = {
     "type": "sphere",
-    "movable": True,
-    "geometry": {"position": [2.0, -0.0, 0.5], "radius": 0.2},
+    "movable": False,
+    "geometry": {"position": [2.0, -0.0, 0.0], "radius": 0.2},
 }
 sphereObst2 = SphereObstacle(name="simpleSphere", content_dict=obst2Dict)
 urdfObst1Dict = {
@@ -80,24 +80,72 @@ wall_obstacles_dicts = [
          'geometry': {
              'position': [wall_length/2.0, 0.0, 0.4], 'width': wall_length, 'height': 0.8, 'length': 0.1
         },
+        'high': {
+            'position' : [wall_length/2.0, 0.0, 0.4],
+            'width': wall_length,
+            'height': 0.8,
+            'length': 0.1,
+        },
+        'low': {
+            'position' : [wall_length/2.0, 0.0, 0.4],
+            'width': wall_length,
+            'height': 0.8,
+            'length': 0.1,
+        },
     },
     {
         'type': 'box', 
          'geometry': {
              'position': [0.0, wall_length/2.0, 0.4], 'width': 0.1, 'height': 0.8, 'length': wall_length
-        }
+        },
+        'high': {
+            'position' : [0.0, wall_length/2.0, 0.4],
+            'width': 0.1,
+            'height': 0.8,
+            'length': wall_length,
+        },
+        'low': {
+            'position' : [0.0, wall_length/2.0, 0.4],
+            'width': 0.1,
+            'height': 0.8,
+            'length': wall_length,
+        },
     },
     {
         'type': 'box', 
          'geometry': {
              'position': [0.0, -wall_length/2.0, 0.4], 'width': 0.1, 'height': 0.8, 'length': wall_length
-        }
+        },
+        'high': {
+            'position' : [0.0, -wall_length/2.0, 0.4],
+            'width': 0.1,
+            'height': 0.8,
+            'length': wall_length,
+        },
+        'low': {
+            'position' : [0.0, -wall_length/2.0, 0.4],
+            'width': 0.1,
+            'height': 0.8,
+            'length': wall_length,
+        },
     },
     {
         'type': 'box', 
          'geometry': {
              'position': [-wall_length/2.0, 0.0, 0.4], 'width': wall_length, 'height': 0.8, 'length': 0.1
-        }
+        },
+        'high': {
+            'position' : [-wall_length/2.0, 0.0, 0.4],
+            'width': wall_length,
+            'height': 0.8,
+            'length': 0.1,
+        },
+        'low': {
+            'position' : [-wall_length/2.0, 0.0, 0.4],
+            'width': wall_length,
+            'height': 0.8,
+            'length': 0.1,
+        },
     },
 ]
 

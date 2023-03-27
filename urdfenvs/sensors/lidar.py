@@ -5,6 +5,9 @@ import gym
 
 from urdfenvs.sensors.sensor import Sensor
 
+class LinkIdNotFoundError(Exception):
+    pass
+
 
 class Lidar(Sensor):
     """
@@ -31,14 +34,24 @@ class Lidar(Sensor):
         Raw distance information for rays.
     """
 
-    def __init__(self, link_id, nb_rays=10, ray_length=10.0, raw_data=True):
+    def __init__(self,
+                 link_name,
+                 nb_rays=10,
+                 ray_length=10.0,
+                 raw_data=True,
+                 angle_limits: np.ndarray = np.array([-np.pi, np.pi]),
+                ):
         super().__init__("LidarSensor")
         self._nb_rays = nb_rays
         self._raw_data = raw_data
         self._ray_length = ray_length
-        self._link_id = link_id
+        self._link_name = link_name
+        self._link_id = None
+        if isinstance(link_name, int):
+            self._link_id = link_name
+        self._angle_limits = angle_limits
         self._thetas = [
-            i * 2 * np.pi / self._nb_rays for i in range(self._nb_rays)
+            angle_limits[0] + i * (angle_limits[1] - angle_limits[0]) / self._nb_rays for i in range(self._nb_rays)
         ]
         self._rel_positions = np.zeros(2 * nb_rays)
         self._distances = np.zeros(nb_rays)
@@ -63,23 +76,35 @@ class Lidar(Sensor):
         )
         return gym.spaces.Dict({self._name: observation_space})
 
+    def extract_link_id(self, robot):
+        number_links = p.getNumJoints(robot)
+        joint_names = []
+        for i in range(number_links):
+            joint_name = p.getJointInfo(robot, i)[1].decode("UTF-8")
+            joint_names.append(joint_name)
+            if joint_name == self._link_name:
+                self._link_id = i
+                return
+        raise LinkIdNotFoundError(f"Link with name {self._link_name} not found. Possible links are {joint_names}")
+
     def sense(self, robot, obstacles: dict, goals: dict, t: float):
         """Sense the distance toward the next object with the Lidar."""
+        if not self._link_id:
+            self.extract_link_id(robot)
         link_state = p.getLinkState(robot, self._link_id)
+            
         lidar_position = link_state[0]
         ray_start = lidar_position
-        # Alpha and gamma both are the angle of the robot rotated along the z-axis.
-        alpha = np.arcsin(link_state[1][2]) * 2
-        gamma = np.arccos(link_state[1][3]) * 2
+        yaw = p.getEulerFromQuaternion(link_state[1])[2]
         for i, theta in enumerate(self._thetas):
             ray_end = np.array(ray_start) + self._ray_length * np.array(
-                [np.cos(theta + alpha), np.sin(theta + gamma), 0.0]
+                [np.cos(theta + yaw), np.sin(theta + yaw), 0.0]
             )
             lidar = p.rayTest(ray_start, ray_end)
             self._rel_positions[2 * i : 2 * i + 2] = (
                 lidar[0][2]
                 * self._ray_length
-                * np.array([np.cos(theta + alpha), np.sin(theta + gamma)])
+                * np.array([np.cos(theta + yaw), np.sin(theta + yaw)])
             )
             self._distances[i] = np.linalg.norm(
                 self._rel_positions[2 * i : 2 * i + 2]

@@ -66,6 +66,10 @@ def test_point_robot_with_lidar():
     from point_robot_lidar_sensor import run_point_robot_with_lidar
     blueprint_test(run_point_robot_with_lidar)
 
+def test_point_robot_with_freespacedecomp():
+    from point_robot_free_space_decomp import run_point_robot_with_freespacedecomp
+    blueprint_test(run_point_robot_with_freespacedecomp)
+
 def test_point_robot_with_obstacle_sensor():
     from point_robot_obstacle_sensor import run_point_robot_with_obstacle_sensor
     blueprint_test(run_point_robot_with_obstacle_sensor)
