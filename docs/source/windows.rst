@@ -86,3 +86,23 @@ https://python-poetry.org/docs/. Open a powershell and paste
 Sometimes, ``py`` needs to be replaced with ``python``. You can find out
 which to use by simply typing both and see which one opens the python
 interpreter terminal.
+
+
+Windows Subsystem for Linux (WSL2 with vcXsrv)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Since the underlying physics engine used in this package is PyBullet, you will need to install a few additional Visual Studio packages to handle C++ code. This process is time-consuming and prone to future errors and faults. Since these Python packages are built and maintained on Linux machines, you won't get the intended performance inside Windows. It's possible (and common) to face weird issues and bugs. 
+
+WSL2 (Windows subsystem for Linux) is the middle-ground between installing Ubuntu and using this package on Windows. With WSL2, you can use a Linux terminal and GUI inside your Windows machine without interference and problems. Please note that WSL2 is not a virtual machine (VM). This feature is available in all versions of Windows 10 & 11 and is free. The primary difference between WSL1 and WSL2 is that WSL2 uses a virtual machine to provide a Linux kernel instead of translating system calls like WSL1. While WSL2 can run Linux commands, it doesn't include a graphical user interface (GUI). However, users can install and use a third-party software called vcXsrv to run Linux GUI applications on Windows.
+
+In order to use this feature, you need to enable virtualization technology in the BIOS, which varies from vendor to vendor. 
+
+We recommand following the installation processes written by Microsoft (https://learn.microsoft.com/en-us/windows/wsl/) and Ubuntu (https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-11-with-gui-support#5-install-and-use-a-gui-package). 
+
+Please note that in order to get full support of external GUIs of WSL2 inside Windows machine and don't face fatal errors, you have to install vcXsrv and configure your subsystem to use it. You can download and install this software from https://sourceforge.net/projects/vcxsrv/ and configure it based on information in this page https://aalonso.dev/blog/how-to-use-gui-apps-in-wsl2-forwarding-x-server-cdj. After successfull installation you should be able to run PyBullet, RVIZ, Gazebo, and else without any problems. 
+
+.. |img1| image:: img/wsl2.png
+
++--------+
+| |img1| |
++--------+
