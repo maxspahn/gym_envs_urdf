@@ -13,7 +13,7 @@ from mpscenes.goals.sub_goal import SubGoal
 from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
-from reward import Reward
+from urdfenvs.urdf_common.reward import Reward
 
 class WrongObservationError(Exception):
     pass

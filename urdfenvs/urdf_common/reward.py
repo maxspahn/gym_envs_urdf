@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from sensors.sensor import Sensor
+from urdfenvs.sensors.sensor import Sensor
 
 
 class Reward(ABC):
