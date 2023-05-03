@@ -42,6 +42,8 @@ class FullSensor(Sensor):
                     high=np.array([5, 5, 5]),
                     dtype=np.float32,
                 )
+            if 'type' in self._obstacle_mask:
+                observation_space_obstacle['type'] = spaces.Discrete(128)
             if "size" in self._obstacle_mask:
                 low_limit_size = [
                     0,
@@ -121,9 +123,12 @@ class FullSensor(Sensor):
                         value = getattr(obstacle, mask_item)()
                 if isinstance(value, float):
                     value = [value]
-                observation[mask_item] = np.random.normal(
-                    np.array(value), self._noise_variance
-                ).astype("float32")
+                if isinstance(value, str):
+                    observation[mask_item] = np.array([ord(c) for c in value])
+                else:
+                    observation[mask_item] = np.random.normal(
+                        np.array(value), self._noise_variance
+                    ).astype("float32")
             observations[obst_id] = observation
 
         if observations:
