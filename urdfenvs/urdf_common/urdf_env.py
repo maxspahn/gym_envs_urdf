@@ -27,6 +27,8 @@ def check_observation(obs, ob):
         if isinstance(value, dict):
             check_observation(obs[key], value)
         elif isinstance(value, np.ndarray):
+            if isinstance(obs[key], gym.spaces.Discrete):
+                continue
             if not obs[key].contains(value):
                 s = f"key: {key}: {value} not in {obs[key]}"
                 if np.any(value < obs[key].low):
