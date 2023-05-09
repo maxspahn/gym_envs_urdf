@@ -52,7 +52,6 @@ class UrdfEnv(gym.Env):
         render: bool = False,
         dt: float = 0.01,
         observation_checking=True,
-        reward: Reward = None
     ) -> None:
         """Constructor for environment.
 
@@ -78,7 +77,7 @@ class UrdfEnv(gym.Env):
         self._goals: dict = {}
         self._space_set = False
         self._observation_checking = observation_checking
-        self._reward = reward # The reward object.
+        self._reward_calculator = None
         self.sensors = []  # An empty list of sensors that will be filled in the set_spaces method.
         if self._render:
             self._cid = p.connect(p.GUI)
@@ -93,6 +92,9 @@ class UrdfEnv(gym.Env):
         self._obsts = {}
         self._goals = {}
         self.set_spaces()
+
+    def set_reward_calculator(self, reward_calculator: Reward) -> None:
+        self._reward_calculator = reward_calculator
 
     def n(self) -> int:
         return sum(self.n_per_robot())
@@ -192,8 +194,8 @@ class UrdfEnv(gym.Env):
 
         # Calculate the reward.
         # If there is no reward object, then the reward is 1.0.
-        if self._reward is not None:
-            reward = self._reward.calculateReward(sensors=self.sensors) 
+        if self._reward_calculator is not None:
+            reward = self._reward_calculator.calculateReward(ob) 
         else:
             reward = 1.0
         
