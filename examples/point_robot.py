@@ -25,6 +25,7 @@ def run_point_robot(n_steps=1000, render=False, goal=True, obstacles=True):
         env.add_obstacle(movable_obstacle)
         env.add_obstacle(urdfObst1)
         env.add_obstacle(dynamicSphereObst3)
+        env.add_obstacle(cylinder_obstacle)
     if goal:
         env.add_goal(splineGoal)
     history = []
