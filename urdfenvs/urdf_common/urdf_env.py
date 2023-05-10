@@ -385,6 +385,13 @@ class UrdfEnv(gym.Env):
             shape_id = p.createCollisionShape(
                 p.GEOM_CYLINDER, radius=size[0], height=size[1]
             )
+            visual_shape_id = p.createVisualShape(
+                p.GEOM_CYLINDER,
+                rgbaColor=[1.0, 0.0, 0.0, 1.0],
+                specularColor=[1.0, 0.5, 0.5],
+                radius=size[0],
+                length=size[1]
+            )
 
         elif shape_type == "capsule":
             shape_id = p.createCollisionShape(

@@ -2,6 +2,7 @@ from mpscenes.obstacles.sphere_obstacle import SphereObstacle
 from mpscenes.obstacles.dynamic_sphere_obstacle import DynamicSphereObstacle
 from mpscenes.obstacles.urdf_obstacle import UrdfObstacle
 from mpscenes.obstacles.box_obstacle import BoxObstacle
+from mpscenes.obstacles.cylinder_obstacle import CylinderObstacle
 
 import os
 
@@ -150,3 +151,17 @@ wall_obstacles_dicts = [
 ]
 
 wall_obstacles = [BoxObstacle(name=f"wall_{i}", content_dict=obst_dict) for i, obst_dict in enumerate(wall_obstacles_dicts)]
+
+cylinder_obstacle_dict = {
+    "type": "cylinder",
+    "movable": False,
+    "geometry": {
+        "position": [2.0, -3.0, 0.0],
+        "radius": 0.5,
+        "height": 2.0,
+    },
+}
+cylinder_obstacle = CylinderObstacle(
+    name="cylinder_obstacle",
+    content_dict=cylinder_obstacle_dict
+)
