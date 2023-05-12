@@ -491,6 +491,7 @@ class UrdfEnv(gym.Env):
         self._t = 0.0
         if mount_positions is None:
             mount_positions = np.tile(np.zeros(3), (len(self._robots), 1))
+        self.mount_positions = mount_positions
         if mount_orientations is None:
             mount_orientations = np.tile(
                 np.array([0.0, 0.0, 0.0, 1.0]), (len(self._robots), 1)
