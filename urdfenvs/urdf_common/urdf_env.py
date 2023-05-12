@@ -76,6 +76,7 @@ class UrdfEnv(gym.Env):
         self._info: dict = {}
         self._num_sub_steps: float = 20
         self._obsts: dict = {}
+        self._collision_links: dict = {}
         self._goals: dict = {}
         self._space_set = False
         self._observation_checking = observation_checking
@@ -90,6 +91,7 @@ class UrdfEnv(gym.Env):
         self.plane = Plane()
         p.setGravity(0, 0, -10.0)
         self._obsts = {}
+        self._collision_links = {}
         self._goals = {}
         self.set_spaces()
 
@@ -247,6 +249,17 @@ class UrdfEnv(gym.Env):
             except Exception:
                 continue
 
+    def update_collision_link(self, vis_pos, vis_ids):
+        for vis_id, vis in self._collision_links.items():
+            try:
+                pos = vis_pos[vis_ids.index(vis_id)]
+                vel = vis.velocity(t=self.t()).tolist()
+                ori = [0, 0, 0, 1]
+                p.resetBasePositionAndOrientation(vis_id, pos, ori)
+                p.resetBaseVelocity(vis_id, linearVelocity=vel)
+            except Exception:
+                continue
+
     def update_goals(self):
         for goal_id, goal in self._goals.items():
             try:
@@ -282,6 +295,7 @@ class UrdfEnv(gym.Env):
                 "Adding an object while the simulation already started"
             )
 
+
     def reset_obstacles(self) -> None:
         for obst_id, obstacle in self._obsts.items():
             if obstacle.type() == "urdf":
@@ -304,6 +318,28 @@ class UrdfEnv(gym.Env):
 
     def get_obstacles(self) -> dict:
         return self._obsts
+
+    def add_collision_link(self, obst) -> int:
+        rgba_color = [1.0, 1.0, 0.0, 0.3]
+        visual_shape_id = p.createVisualShape(
+            p.GEOM_SPHERE, rgbaColor=rgba_color, radius=obst.radius()
+        )
+        collision_shape = -1
+        base_position = list(obst.position())
+
+        base_orientation = [0, 0, 0, 1]
+
+        assert isinstance(base_position, list)
+        assert isinstance(base_orientation, list)
+        bullet_id = p.createMultiBody(
+            0,
+            collision_shape,
+            visual_shape_id,
+            base_position,
+            base_orientation,
+        )
+        self._collision_links[bullet_id] = obst
+        return bullet_id
 
     def add_sub_goal(self, goal: SubGoal) -> int:
         rgba_color = [0.0, 1.0, 0.0, 0.3]
