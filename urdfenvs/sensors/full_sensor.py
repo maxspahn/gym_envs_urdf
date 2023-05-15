@@ -44,8 +44,8 @@ class FullSensor(Sensor):
                 )
             if "radius" in self._obstacle_mask:
                 observation_space_obstacle["radius"] = spaces.Box(
-                    low=0,
-                    high=np.inf,
+                    low=np.array([0.0]),
+                    high=np.array([np.inf]),
                     dtype=np.float32,
                 )
             if 'type' in self._obstacle_mask:
