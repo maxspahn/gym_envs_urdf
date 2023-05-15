@@ -42,6 +42,12 @@ class FullSensor(Sensor):
                     high=np.array([5, 5, 5]),
                     dtype=np.float32,
                 )
+            if "radius" in self._obstacle_mask:
+                observation_space_obstacle["radius"] = spaces.Box(
+                    low=0,
+                    high=np.inf,
+                    dtype=np.float32,
+                )
             if 'type' in self._obstacle_mask:
                 observation_space_obstacle['type'] = spaces.Discrete(128)
             if "size" in self._obstacle_mask:
