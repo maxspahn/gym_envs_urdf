@@ -11,8 +11,8 @@ goal1Dict = {
     "desired_position": [1, 0, 0.1],
     "epsilon": 0.2,
     "type": "staticSubGoal",
-    'high': [1, 1, 1],
-    'low': [0, 0, 0.5],
+    'high': [3, 3, 0.1],
+    'low': [-3, -3, 0.1],
 }
 
 goal1 = StaticSubGoal(name="goal1", content_dict=goal1Dict)
