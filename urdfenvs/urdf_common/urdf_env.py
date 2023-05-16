@@ -76,6 +76,7 @@ class UrdfEnv(gym.Env):
         self._info: dict = {}
         self._num_sub_steps: float = 20
         self._obsts: dict = {}
+        self._collision_links: dict = {}
         self._goals: dict = {}
         self._space_set = False
         self._observation_checking = observation_checking
@@ -92,6 +93,7 @@ class UrdfEnv(gym.Env):
         self.plane = Plane()
         p.setGravity(0, 0, -10.0)
         self._obsts = {}
+        self._collision_links = {}
         self._goals = {}
         self.set_spaces()
 
@@ -191,6 +193,7 @@ class UrdfEnv(gym.Env):
 
         self.update_obstacles()
         self.update_goals()
+        self.update_collision_links()
         p.stepSimulation(self._cid)
         ob = self._get_ob()
 
@@ -261,6 +264,12 @@ class UrdfEnv(gym.Env):
             except Exception:
                 continue
 
+    def update_collision_links(self) -> None:
+        for visual_shape_id, info in self._collision_links.items():
+            link_position = p.getLinkState(info[0], info[1])[0]
+            ori = [0, 0, 0, 1]
+            p.resetBasePositionAndOrientation(visual_shape_id, link_position, ori)
+
     def update_goals(self):
         for goal_id, goal in self._goals.items():
             try:
@@ -296,6 +305,7 @@ class UrdfEnv(gym.Env):
                 "Adding an object while the simulation already started"
             )
 
+
     def reset_obstacles(self) -> None:
         for obst_id, obstacle in self._obsts.items():
             if obstacle.type() == "urdf":
@@ -318,6 +328,36 @@ class UrdfEnv(gym.Env):
 
     def get_obstacles(self) -> dict:
         return self._obsts
+
+    def add_collision_link(
+            self,
+            robot_index: int = 0,
+            link_index: int = 0,
+            shape_type: str = 'sphere',
+            size: list = None,
+            position: list = None
+            ) -> int:
+        if size is None:
+            size = [1.0]
+        if position is None:
+            position = [0, 0, 0]
+        rgba_color = [1.0, 1.0, 0.0, 0.3]
+        visual_shape_id = p.createVisualShape(
+            p.GEOM_SPHERE, rgbaColor=rgba_color, radius=size[0]
+        )
+        collision_shape = -1
+        base_position = position
+        base_orientation = [0, 0, 0, 1]
+
+        bullet_id = p.createMultiBody(
+            0,
+            collision_shape,
+            visual_shape_id,
+            base_position,
+            base_orientation,
+        )
+        self._collision_links[bullet_id] = (self._robots[robot_index]._robot, link_index)
+        return bullet_id
 
     def add_sub_goal(self, goal: SubGoal) -> int:
         rgba_color = [0.0, 1.0, 0.0, 0.3]
@@ -469,6 +509,7 @@ class UrdfEnv(gym.Env):
         self._t = 0.0
         if mount_positions is None:
             mount_positions = np.tile(np.zeros(3), (len(self._robots), 1))
+        self.mount_positions = mount_positions
         if mount_orientations is None:
             mount_orientations = np.tile(
                 np.array([0.0, 0.0, 0.0, 1.0]), (len(self._robots), 1)

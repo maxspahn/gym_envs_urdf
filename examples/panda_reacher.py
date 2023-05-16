@@ -20,6 +20,12 @@ def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
     env.set_spaces()
     action = np.ones(env.n()) * 0.1
     ob = env.reset()
+    env.add_collision_link(
+            robot_index=0,
+            link_index=2,
+            shape_type="sphere",
+            size=[0.1]
+    )
     print(f"Initial observation : {ob}")
     print("Starting episode")
     history = []
