@@ -184,6 +184,7 @@ class UrdfEnv(gym.Env):
 
         self.update_obstacles()
         self.update_goals()
+        self.update_collision_links()
         p.stepSimulation(self._cid)
         ob = self._get_ob()
 
@@ -249,16 +250,11 @@ class UrdfEnv(gym.Env):
             except Exception:
                 continue
 
-    def update_collision_link(self, vis_pos, vis_ids):
-        for vis_id, vis in self._collision_links.items():
-            try:
-                pos = vis_pos[vis_ids.index(vis_id)]
-                vel = vis.velocity(t=self.t()).tolist()
-                ori = [0, 0, 0, 1]
-                p.resetBasePositionAndOrientation(vis_id, pos, ori)
-                p.resetBaseVelocity(vis_id, linearVelocity=vel)
-            except Exception:
-                continue
+    def update_collision_links(self) -> None:
+        for visual_shape_id, info in self._collision_links.items():
+            link_position = p.getLinkState(info[0], info[1])[0]
+            ori = [0, 0, 0, 1]
+            p.resetBasePositionAndOrientation(visual_shape_id, link_position, ori)
 
     def update_goals(self):
         for goal_id, goal in self._goals.items():
@@ -319,18 +315,26 @@ class UrdfEnv(gym.Env):
     def get_obstacles(self) -> dict:
         return self._obsts
 
-    def add_collision_link(self, obst) -> int:
+    def add_collision_link(
+            self,
+            robot_index: int = 0,
+            link_index: int = 0,
+            shape_type: str = 'sphere',
+            size: list = None,
+            position: list = None
+            ) -> int:
+        if size is None:
+            size = [1.0]
+        if position is None:
+            position = [0, 0, 0]
         rgba_color = [1.0, 1.0, 0.0, 0.3]
         visual_shape_id = p.createVisualShape(
-            p.GEOM_SPHERE, rgbaColor=rgba_color, radius=obst.radius()
+            p.GEOM_SPHERE, rgbaColor=rgba_color, radius=size[0]
         )
         collision_shape = -1
-        base_position = list(obst.position())
-
+        base_position = position
         base_orientation = [0, 0, 0, 1]
 
-        assert isinstance(base_position, list)
-        assert isinstance(base_orientation, list)
         bullet_id = p.createMultiBody(
             0,
             collision_shape,
@@ -338,7 +342,7 @@ class UrdfEnv(gym.Env):
             base_position,
             base_orientation,
         )
-        self._collision_links[bullet_id] = obst
+        self._collision_links[bullet_id] = (self._robots[robot_index]._robot, link_index)
         return bullet_id
 
     def add_sub_goal(self, goal: SubGoal) -> int:
