@@ -13,7 +13,7 @@ from mpscenes.goals.sub_goal import SubGoal
 from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
-
+from urdfenvs.urdf_common.reward import Reward
 
 class WrongObservationError(Exception):
     pass
@@ -79,6 +79,8 @@ class UrdfEnv(gym.Env):
         self._goals: dict = {}
         self._space_set = False
         self._observation_checking = observation_checking
+        self._reward_calculator = None
+        self.sensors = []  # An empty list of sensors that will be filled in the set_spaces method.
         if self._render:
             self._cid = p.connect(p.GUI)
             p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
@@ -92,6 +94,9 @@ class UrdfEnv(gym.Env):
         self._obsts = {}
         self._goals = {}
         self.set_spaces()
+
+    def set_reward_calculator(self, reward_calculator: Reward) -> None:
+        self._reward_calculator = reward_calculator
 
     def n(self) -> int:
         return sum(self.n_per_robot())
@@ -154,6 +159,9 @@ class UrdfEnv(gym.Env):
             (obs_space_robot_i, action_space_robot_i) = robot.get_spaces()
             obs_space_robot_i = dict(obs_space_robot_i)
             for sensor in robot._sensors:
+                
+                self.sensors.append(sensor) # Add the sensor to the list of sensors.
+
                 obs_space_robot_i.update(
                     sensor.get_observation_space(self._obsts, self._goals)
                 )
@@ -174,6 +182,7 @@ class UrdfEnv(gym.Env):
             self._done = True
             self._info = {'action_limits': f"{action} not in {self.action_space}"}
 
+
         action_id = 0
         for robot in self._robots:
             action_robot = action[action_id : action_id + robot.n()]
@@ -185,8 +194,13 @@ class UrdfEnv(gym.Env):
         p.stepSimulation(self._cid)
         ob = self._get_ob()
 
-        reward = 1.0
-
+        # Calculate the reward.
+        # If there is no reward object, then the reward is 1.0.
+        if self._reward_calculator is not None:
+            reward = self._reward_calculator.calculateReward(ob) 
+        else:
+            reward = 1.0
+        
         if self._render:
             self.render()
         return ob, reward, self._done, self._info
