@@ -4,7 +4,7 @@ import numpy as np
 import pybullet as p
 import warnings
 import logging
-from typing import List, Union
+from typing import List, Union, Optional
 
 from mpscenes.obstacles.collision_obstacle import CollisionObstacle
 from mpscenes.goals.goal_composition import GoalComposition
@@ -14,6 +14,31 @@ from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
 from urdfenvs.urdf_common.reward import Reward
+
+def quaternion_to_rotation_matrix(quaternion: np.ndarray) -> np.ndarray:
+    # Normalize the quaternion if needed
+    quaternion /= np.linalg.norm(quaternion)
+
+    w, x, y, z = quaternion
+
+    rotation_matrix = np.array([
+        [1 - 2*y**2 - 2*z**2, 2*x*y - 2*w*z, 2*x*z + 2*w*y],
+        [2*x*y + 2*w*z, 1 - 2*x**2 - 2*z**2, 2*y*z - 2*w*x],
+        [2*x*z - 2*w*y, 2*y*z + 2*w*x, 1 - 2*x**2 - 2*y**2]
+    ])
+
+    return rotation_matrix
+
+def get_transformation_matrix(quaternion: np.ndarray, translation: np.ndarray) -> np.ndarray:
+    rotation = quaternion_to_rotation_matrix(quaternion)
+
+    transformation_matrix = np.eye(4)
+    transformation_matrix[:3, :3] = rotation
+    transformation_matrix[:3, 3] = translation
+
+    return transformation_matrix
+
+
 
 class WrongObservationError(Exception):
     pass
@@ -266,9 +291,12 @@ class UrdfEnv(gym.Env):
 
     def update_collision_links(self) -> None:
         for visual_shape_id, info in self._collision_links.items():
-            link_position = p.getLinkState(info[0], info[1])[0]
-            ori = [0, 0, 0, 1]
-            p.resetBasePositionAndOrientation(visual_shape_id, link_position, ori)
+            link_state = p.getLinkState(info[0], info[1])
+            link_position = link_state[0]
+            link_ori = np.array(link_state[1])
+            transformation_matrix = get_transformation_matrix(link_ori, link_position)
+            total_transformation = np.dot(transformation_matrix, info[2])
+            p.resetBasePositionAndOrientation(visual_shape_id, total_transformation[0:3, 3], [0, 0, 0, 1])
 
     def update_goals(self):
         for goal_id, goal in self._goals.items():
@@ -334,19 +362,19 @@ class UrdfEnv(gym.Env):
             robot_index: int = 0,
             link_index: int = 0,
             shape_type: str = 'sphere',
-            size: list = None,
-            position: list = None
+            size: Optional[List[float]] = None,
+            link_transformation: Optional[np.ndarray] = None,
             ) -> int:
         if size is None:
             size = [1.0]
-        if position is None:
-            position = [0, 0, 0]
+        if link_transformation is None:
+            link_transformation = np.identity(4)
         rgba_color = [1.0, 1.0, 0.0, 0.3]
         visual_shape_id = p.createVisualShape(
             p.GEOM_SPHERE, rgbaColor=rgba_color, radius=size[0]
         )
         collision_shape = -1
-        base_position = position
+        base_position = [0, 0, 0]
         base_orientation = [0, 0, 0, 1]
 
         bullet_id = p.createMultiBody(
@@ -356,7 +384,7 @@ class UrdfEnv(gym.Env):
             base_position,
             base_orientation,
         )
-        self._collision_links[bullet_id] = (self._robots[robot_index]._robot, link_index)
+        self._collision_links[bullet_id] = (self._robots[robot_index]._robot, link_index, link_transformation)
         return bullet_id
 
     def add_sub_goal(self, goal: SubGoal) -> int:
