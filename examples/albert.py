@@ -14,7 +14,8 @@ def run_albert(n_steps=1000, render=False, goal=True, obstacles=True):
             castor_wheels=["rotacastor_right_joint", "rotacastor_left_joint"],
             wheel_radius = 0.08,
             wheel_distance = 0.494,
-            spawn_rotation = np.pi/2,
+            spawn_rotation = 0,
+            facing_direction = '-y',
         ),
     ]
     env: UrdfEnv = gym.make(
