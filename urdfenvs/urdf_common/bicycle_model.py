@@ -102,23 +102,23 @@ ignored for bicycle models."
                         "position": gym.spaces.Box(
                             low=self._limit_pos_j[0, :],
                             high=self._limit_pos_j[1, :],
-                            dtype=np.float64,
+                            dtype=float,
                         ),
                         "steering": gym.spaces.Box(
                             low=self._limit_pos_steering[0],
                             high=self._limit_pos_steering[1],
                             shape=(1,),
-                            dtype=np.float64,
+                            dtype=float,
                         ),
                         "velocity": gym.spaces.Box(
                             low=self._limit_vel_j[0, :],
                             high=self._limit_vel_j[1, :],
-                            dtype=np.float64,
+                            dtype=float,
                         ),
                         "forward_velocity": gym.spaces.Box(
                             low=self._limit_vel_forward_j[0, :],
                             high=self._limit_vel_forward_j[1, :],
-                            dtype=np.float64,
+                            dtype=float,
                         ),
                     }
                 )
@@ -131,7 +131,7 @@ ignored for bicycle models."
         ospace = self.get_observation_space()
         uu = self._limit_vel_forward_j[1, :]
         ul = self._limit_vel_forward_j[0, :]
-        aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
+        aspace = gym.spaces.Box(low=ul, high=uu, dtype=float)
         return (ospace, aspace)
 
     def apply_velocity_action(self, vels: np.ndarray) -> None:

@@ -41,7 +41,7 @@ class SDFSensor(Sensor):
             0.0,
             10.0,
             shape=self.get_observation_size(),
-            dtype=np.float64,
+            dtype=float,
         )
         return gym.spaces.Dict({self._name: observation_space})
 
