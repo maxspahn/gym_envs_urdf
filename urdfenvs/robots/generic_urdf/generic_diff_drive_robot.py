@@ -16,6 +16,7 @@ class GenericDiffDriveRobot(DifferentialDriveRobot):
             wheel_distance: float,
             spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15]),
             spawn_rotation: float = 0.0,
+            facing_direction: str = 'x',
             not_actuated_joints: List[str] = [],
     ):
         super().__init__(-1,
@@ -27,6 +28,7 @@ class GenericDiffDriveRobot(DifferentialDriveRobot):
                          wheel_distance,
                          spawn_offset=spawn_offset,
                          spawn_rotation=spawn_rotation,
+                         facing_direction=facing_direction,
                          not_actuated_joints=not_actuated_joints)
 
     def set_joint_names(self):
