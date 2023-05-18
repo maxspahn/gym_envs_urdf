@@ -28,19 +28,19 @@ class FullSensor(Sensor):
                 observation_space_obstacle["position"] = spaces.Box(
                     low=np.array([-5, -5, -5]),
                     high=np.array([5, 5, 5]),
-                    dtype=np.float32,
+                    dtype=float,
                 )
             if "velocity" in self._obstacle_mask:
                 observation_space_obstacle["velocity"] = spaces.Box(
                     low=np.array([-5, -5, -5]),
                     high=np.array([5, 5, 5]),
-                    dtype=np.float32,
+                    dtype=float,
                 )
             if "acceleration" in self._obstacle_mask:
                 observation_space_obstacle["acceleration"] = spaces.Box(
                     low=np.array([-5, -5, -5]),
                     high=np.array([5, 5, 5]),
-                    dtype=np.float32,
+                    dtype=float,
                 )
             if 'type' in self._obstacle_mask:
                 observation_space_obstacle['type'] = spaces.Discrete(128)
@@ -54,7 +54,7 @@ class FullSensor(Sensor):
                 observation_space_obstacle["size"] = spaces.Box(
                     low=np.array(low_limit_size),
                     high=np.array(high_limit_size),
-                    dtype=np.float32,
+                    dtype=float,
                 )
             observation_space_obstacles[obst_id] = spaces.Dict(
                 observation_space_obstacle
@@ -70,25 +70,25 @@ class FullSensor(Sensor):
                 observation_space_goal["position"] = spaces.Box(
                     low=np.array([-5, -5, -5]),
                     high=np.array([5, 5, 5]),
-                    dtype=np.float32,
+                    dtype=float,
                 )
             if "velocity" in self._goal_mask:
                 observation_space_goal["velocity"] = spaces.Box(
                     low=np.array([-5, -5, -5]),
                     high=np.array([5, 5, 5]),
-                    dtype=np.float32,
+                    dtype=float,
                 )
             if "acceleration" in self._goal_mask:
                 observation_space_goal["acceleration"] = spaces.Box(
                     low=np.array([-5, -5, -5]),
                     high=np.array([5, 5, 5]),
-                    dtype=np.float32,
+                    dtype=float,
                 )
             if "weight" in self._goal_mask:
                 observation_space_goal["weight"] = spaces.Box(
                     low=np.array([0]),
                     high=np.array([10]),
-                    dtype=np.float32,
+                    dtype=float,
                 )
             if "is_primary_goal" in self._goal_mask:
                 observation_space_goal["is_primary_goal"] = spaces.Box(

@@ -76,7 +76,7 @@ class DifferentialDriveRobot(GenericRobot):
         ul = np.concatenate(
             (self._limit_vel_forward_j[0, :], self._limit_vel_j[0, 3:]), axis=0
         )
-        aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
+        aspace = gym.spaces.Box(low=ul, high=uu, dtype=float)
         return (ospace, aspace)
 
     def reset(
@@ -176,18 +176,18 @@ ignored for differential drive robots."
                         "position": gym.spaces.Box(
                             low=self._limit_pos_j[0, :],
                             high=self._limit_pos_j[1, :],
-                            dtype=np.float64,
+                            dtype=float,
                         ),
                         "velocity": gym.spaces.Box(
                             low=self._limit_vel_j[0, :],
                             high=self._limit_vel_j[1, :],
-                            dtype=np.float64,
+                            dtype=float,
                         ),
                         "forward_velocity": gym.spaces.Box(
                             low=np.array([self._limit_vel_forward_j[0][0]]),
                             high=np.array([self._limit_vel_forward_j[1][0]]),
                             shape=(1,),
-                            dtype=np.float64,
+                            dtype=float,
                         ),
                     }
                 )

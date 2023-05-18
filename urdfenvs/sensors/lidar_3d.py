@@ -79,7 +79,7 @@ class Lidar3D(Sensor):
             -self._ray_length-0.01,
             self._ray_length+0.01,
             shape=(self.get_observation_size(),),
-            dtype=np.float64,
+            dtype=float,
         )
         return gym.spaces.Dict({self._name: observation_space})
 
