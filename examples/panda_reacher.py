@@ -19,7 +19,7 @@ def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
     env.add_obstacle(dynamicSphereObst2)
     env.set_spaces()
     action = np.ones(env.n()) * 0.1
-    ob = env.reset()
+    ob, info= env.reset()
     env.add_collision_link(
             robot_index=0,
             link_index=5,

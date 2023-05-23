@@ -18,7 +18,7 @@ def run_generic_holonomic(n_steps=1000, render=False, goal=True, obstacles=True)
     pos0[1] = -0.0
     mount_positions = np.array([np.array([0.0, 0.0, 1.2])])
     mount_orientations = np.array([np.array([1.0, 0.2, 0.4, 0.0])])
-    ob = env.reset(pos=pos0, mount_positions=mount_positions, mount_orientations=mount_orientations)
+    ob, info= env.reset(pos=pos0, mount_positions=mount_positions, mount_orientations=mount_orientations)
     print(f"Initial observation : {ob}")
     if goal:
         from urdfenvs.scene_examples.goal import dynamicGoal

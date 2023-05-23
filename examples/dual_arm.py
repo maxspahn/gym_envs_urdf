@@ -12,7 +12,7 @@ def run_dual_arm(n_steps=5000, render=False, goal=True, obstacles=True):
         dt=0.01, robots=robots, render=render
     )
     action = np.array([0.3, 0.0, 0.0, 0.0, 0.0])
-    ob = env.reset()
+    ob, info= env.reset()
     print(f"Initial observation : {ob}")
     history = []
     for _ in range(n_steps):

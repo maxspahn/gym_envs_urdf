@@ -20,7 +20,7 @@ def run_point_robot_with_obstacle_sensor(n_steps=1000, render=False, obstacles=T
     defaultAction = np.array([0.1, 0.0, 0.0])
     pos0 = np.array([1.0, 0.1, 0.0])
     vel0 = np.array([1.0, 0.0, 0.0])
-    ob = env.reset(pos=pos0, vel=vel0)
+    ob, info= env.reset(pos=pos0, vel=vel0)
     print(f"Initial observation : {ob}")
 
     # add obstacles

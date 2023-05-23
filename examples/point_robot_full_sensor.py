@@ -34,7 +34,7 @@ def run_point_robot_with_obstacle_sensor(n_steps=10, render=False, obstacles=Tru
     vel0 = np.array([1.0, 0.0, 0.0])
     initial_observations = []
     for _ in range(2):
-        ob = env.reset(pos=pos0, vel=vel0)
+        ob, info= env.reset(pos=pos0, vel=vel0)
         env.shuffle_goals()
         env.shuffle_obstacles()
         initial_observations.append(ob)

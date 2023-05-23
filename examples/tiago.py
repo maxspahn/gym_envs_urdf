@@ -48,7 +48,7 @@ def run_tiago(n_steps=1000, render=False, goal=True, obstacles=True):
     action[14] = 0.0 # right arm shoulder
     action[22] = 0.01 # finger joint
     vel0 = np.zeros(env.n())
-    ob = env.reset()
+    ob, info= env.reset()
     print("base: ", ob['robot_0']["joint_state"]["position"][0:3])
     print("torso: ", ob['robot_0']["joint_state"]["position"][3])
     print("head: ", ob['robot_0']["joint_state"]["position"][4:6])

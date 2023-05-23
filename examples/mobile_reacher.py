@@ -15,7 +15,7 @@ def run_mobile_reacher(n_steps=1000, render=False, goal=True, obstacles=True):
     action[0] = 0.1
     action[5] = -0.0
     action[-1] = 3.5
-    ob = env.reset()
+    ob, info= env.reset()
     print(f"Initial observation : {ob}")
     history = []
     for i in range(n_steps):

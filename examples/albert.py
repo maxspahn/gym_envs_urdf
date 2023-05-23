@@ -26,7 +26,7 @@ def run_albert(n_steps=1000, render=False, goal=True, obstacles=True):
     action[0] = 0.2
     action[1] = 0.0
     action[5] = -0.1
-    ob = env.reset(
+    ob, info= env.reset(
         pos=np.array([0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.5, 0.0, 1.8, 0.5])
     )
     print(f"Initial observation : {ob}")

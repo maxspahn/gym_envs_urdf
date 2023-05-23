@@ -15,7 +15,7 @@ def run_tiago_keyboard(conn, n_steps=10000, render=True):
         "urdf-env-v0",
         dt=0.01, robots=robots, render=render
     )
-    ob = env.reset()
+    ob, info= env.reset()
     print(f"Initial observation : {ob}")
 
     # create zero input action

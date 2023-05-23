@@ -65,7 +65,7 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
             np.array([0.0, i, 0.0]) for i in range(len(ns_per_robot))
         ]
     )
-    ob = env.reset(pos=initial_positions,mount_positions=mount_positions)
+    ob, info= env.reset(pos=initial_positions,mount_positions=mount_positions)
     print(f"Initial observation : {ob}")
     if goal:
         from urdfenvs.scene_examples.goal import dynamicGoal

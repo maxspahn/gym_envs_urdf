@@ -58,7 +58,7 @@ def run_point_robot_with_sdf_sensor(n_steps=10, render=False, obstacles=True, go
     pos0 = np.array([0.0, 0.0, 0.0])
     vel0 = np.array([1.0, 0.0, 0.0])
     initial_observations = []
-    ob = env.reset(pos=pos0, vel=vel0)
+    ob, info= env.reset(pos=pos0, vel=vel0)
     initial_observations.append(ob)
     #print(f"Initial observation : {ob}")
     #assert np.array_equal(initial_observations[0], ob)

@@ -36,7 +36,7 @@ def run_point_robot_with_freespacedecomp(
     action = np.array([0.1, -0.2, 0.0])
     pos0 = np.array([1.0, 0.1, 0.0])
     vel0 = np.array([1.0, 0.0, 0.0])
-    ob = env.reset(pos=pos0, vel=vel0)
+    ob, info= env.reset(pos=pos0, vel=vel0)
     # Setup for showing LiDAR detections
     print(f"Initial observation : {ob}")
     history = []

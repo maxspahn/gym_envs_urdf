@@ -13,7 +13,7 @@ def run_iris(n_steps=3000, render=False, goal=True, obstacles=True):
     )
     # set initial state [x, y, z, qx, qy, qz, qw]
     pos0 = np.array([-2.0, 0.0, 1.2, 0., 0.0, 0.0, 1.])
-    ob = env.reset(pos=pos0)
+    ob, info= env.reset(pos=pos0)
     print(f"Initial observation : {ob}")
     history = []
     for i in range(n_steps):

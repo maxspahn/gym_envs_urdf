@@ -13,7 +13,7 @@ def run_n_link_reacher(n_steps=1000, render=False, goal=True, obstacles=True):
     )
     n = env.n()
     action = np.ones(n) * 0.1
-    ob = env.reset()
+    ob, info= env.reset()
     print(f"Initial observation : {ob}")
     history = []
     for _ in range(n_steps):

@@ -18,7 +18,7 @@ can find the following syntax to ``make``, ``reset`` and ``step`` the environmen
 .. code:: python
 
     env = gym.make('pointRobotUrdf-vel-v0', dt=0.05, render=True)
-    ob = env.reset(pos=pos0, vel=vel0)
+    ob, info= env.reset(pos=pos0, vel=vel0)
     ob, reward, done, info = env.step(action)
 
 The id-tag in the ``make`` command specifies the robot and the control type.
