@@ -19,7 +19,7 @@ python = "^3.8"
 pybullet = "^3.2.1"
 numpy = "^1.19,<1.24"
 yourdfpy = "^0.0.52"
-gym = "^0.26.0"
+gym = "^0.21.0"
 mpscenes = "^0.3.1"
 deprecation = "^2.1.0"
 
