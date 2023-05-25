@@ -517,7 +517,7 @@ class UrdfEnv(gym.Env):
         vel: np.ndarray = None,
         mount_positions: np.ndarray = None,
         mount_orientations: np.ndarray = None,
-    ) -> dict:
+    ) -> gym.spaces.Dict:
         """Resets the simulation and the robot.
 
         Parameters
@@ -562,7 +562,7 @@ class UrdfEnv(gym.Env):
             )
         self.reset_obstacles()
         self.reset_goals()
-        return self._get_ob(), self._info
+        return self._get_ob()
 
     def render(self) -> None:
         """Rendering the simulation environment.

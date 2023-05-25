@@ -71,4 +71,4 @@ env.shuffle_goals()
 
 env = FlattenObservation(env)
 
-check_env(env)
+check_env(env, warn=True)
