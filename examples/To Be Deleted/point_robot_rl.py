@@ -5,26 +5,8 @@ import os
 from gym.wrappers import FlattenObservation
 
 # Stable baselines 3
-''' 
-Stable baselines 3 has a build-in function called `check_env` that checks if the environment is compatible with the library. 
-It checks the following:
-    - Observation space
-    - Action space
-    - Reward range
-    - Whether the environment is vectorized or not
-    - Whether the environment uses a `Dict` or `Tuple` observation space
-    - Whether the environment uses a `Dict` or `Tuple` action space
-    - Whether the environment uses a `VecEnv` or not
-    - Whether the environment uses a `VecNormalize` wrapper or not
-    - Whether the environment uses a `FlattenObservation` wrapper or not
-    - Whether the environment uses a `FrameStack` wrapper or not
-    - Whether the environment uses a `TimeLimit` wrapper or not
-    - Whether the environment uses a `Monitor` wrapper or not
-    - Whether the environment uses a `VecFrameStack` wrapper or not
-    - Whether the environment uses a `VecTransposeImage` wrapper or not
-'''
-from stable_baselines3.common.env_checker import check_env
-
+from stable_baselines3 import DDPG, PPO, TD3
+from stable_baselines3.common.noise import NormalActionNoise
 
 # URDF Envs
 from urdfenvs.urdf_common.urdf_env import UrdfEnv
@@ -34,6 +16,20 @@ from urdfenvs.scene_examples.goal import goal1
 from urdfenvs.urdf_common.reward import Reward
 
 
+MODEL_NAME = 'TD3-001'
+MODEL_CLASS = TD3
+
+
+# models_dir = '/models/' + MODEL_NAME
+# logdir = '/logs'
+
+# if not os.path.exists(models_dir):
+#     os.makedirs(models_dir)
+
+# if not os.path.exists(logdir):
+#     os.makedirs(logdir)
+
+
 class InverseDistanceDenseReward(Reward):
     def calculateReward(self, observation: dict) -> float:
         goal = observation['robot_0']['FullSensor']['goals'][1]['position']
@@ -41,14 +37,13 @@ class InverseDistanceDenseReward(Reward):
         reward = 1.0/np.linalg.norm(goal-position)
         print(f'🏆 Reward is: {reward}')
         return reward
-    
-
 
 
 robots = [
     GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
-    ]
-env= UrdfEnv(
+]
+
+env = UrdfEnv(
     dt=0.01,
     robots=robots,
     render=False,
@@ -63,11 +58,28 @@ env.set_reward_calculator(InverseDistanceDenseReward())
 defaultAction = np.array([0.5, -0.0, 0.0])
 pos0 = np.array([0.0, 0.1, 0.0])
 vel0 = np.array([1.0, 0.0, 0.0])
-
 ob = env.reset(pos=pos0, vel=vel0)
 env.shuffle_goals()
 
 
 env = FlattenObservation(env)
 
-check_env(env, warn=True)
+
+n_actions = env.action_space.shape[-1]
+action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
+
+TIMESTEPS = 1000
+model = MODEL_CLASS(
+    "MlpPolicy", 
+    env,
+     action_noise=action_noise,
+    verbose=0, 
+    # tensorboard_log=logdir,
+        )
+model.learn(total_timesteps=TIMESTEPS, 
+            log_interval=10,
+            tb_log_name=MODEL_NAME, 
+            progress_bar=True, 
+        )
+# model.save(f"{MODEL_NAME}-model")
+print("🏁 Training complete!")
