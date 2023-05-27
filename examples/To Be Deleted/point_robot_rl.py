@@ -5,7 +5,7 @@ import os
 from gym.wrappers import FlattenObservation
 
 # Stable baselines 3
-from stable_baselines3 import DDPG, PPO, TD3
+from stable_baselines3 import PPO, TD3, SAC
 from stable_baselines3.common.noise import NormalActionNoise
 
 # URDF Envs
@@ -20,14 +20,14 @@ MODEL_NAME = 'TD3-001'
 MODEL_CLASS = TD3
 
 
-# models_dir = '/models/' + MODEL_NAME
-# logdir = '/logs'
+models_dir = 'models/' + MODEL_NAME
+logdir = 'logs'
 
-# if not os.path.exists(models_dir):
-#     os.makedirs(models_dir)
+if not os.path.exists(models_dir):
+    os.makedirs(models_dir)
 
-# if not os.path.exists(logdir):
-#     os.makedirs(logdir)
+if not os.path.exists(logdir):
+    os.makedirs(logdir)
 
 
 class InverseDistanceDenseReward(Reward):
@@ -35,7 +35,7 @@ class InverseDistanceDenseReward(Reward):
         goal = observation['robot_0']['FullSensor']['goals'][1]['position']
         position = observation['robot_0']['joint_state']['position']
         reward = 1.0/np.linalg.norm(goal-position)
-        print(f'🏆 Reward is: {reward}')
+        # print(f'🏆 Reward is: {reward}')
         return reward
 
 
@@ -64,22 +64,25 @@ env.shuffle_goals()
 
 env = FlattenObservation(env)
 
+print(f"🚀 Action Space Data Type: {env.action_space.sample().dtype}, Observation Space Data Type: {env.observation_space.sample().dtype}")
+
 
 n_actions = env.action_space.shape[-1]
 action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
 
-TIMESTEPS = 1000
+TIMESTEPS = 100000
 model = MODEL_CLASS(
     "MlpPolicy", 
     env,
-     action_noise=action_noise,
+    action_noise=action_noise,
     verbose=0, 
-    # tensorboard_log=logdir,
+    tensorboard_log=logdir,
+    policy_kwargs={"net_arch": [64, 64]},
         )
 model.learn(total_timesteps=TIMESTEPS, 
             log_interval=10,
             tb_log_name=MODEL_NAME, 
-            progress_bar=True, 
+            progress_bar=False, 
         )
 # model.save(f"{MODEL_NAME}-model")
 print("🏁 Training complete!")

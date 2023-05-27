@@ -67,7 +67,8 @@ vel0 = np.array([1.0, 0.0, 0.0])
 ob = env.reset(pos=pos0, vel=vel0)
 env.shuffle_goals()
 
-
 env = FlattenObservation(env)
 
+print("🏁 Check Env Started.")
 check_env(env, warn=True)
+print("🏁 Check Env Finished.")
