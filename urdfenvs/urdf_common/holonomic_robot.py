@@ -72,12 +72,12 @@ class HolonomicRobot(GenericRobot):
                     "position": gym.spaces.Box(
                         low=self._limit_pos_j[0, :],
                         high=self._limit_pos_j[1, :],
-                        dtype=np.float64,
+                        dtype=float,
                     ),
                     "velocity": gym.spaces.Box(
                         low=self._limit_vel_j[0, :],
                         high=self._limit_vel_j[1, :],
-                        dtype=np.float64,
+                        dtype=float,
                     ),
 
                 }),

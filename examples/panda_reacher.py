@@ -20,6 +20,21 @@ def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
     env.set_spaces()
     action = np.ones(env.n()) * 0.1
     ob = env.reset()
+    env.add_collision_link(
+            robot_index=0,
+            link_index=5,
+            shape_type="sphere",
+            size=[0.1]
+    )
+    link_transformation = np.identity(4)
+    link_transformation[0:3, 3] = np.array([0.0, 0.0, 0.05])
+    env.add_collision_link(
+            robot_index=0,
+            link_index=5,
+            shape_type="sphere",
+            size=[0.1],
+            link_transformation=link_transformation,
+    )
     print(f"Initial observation : {ob}")
     print("Starting episode")
     history = []

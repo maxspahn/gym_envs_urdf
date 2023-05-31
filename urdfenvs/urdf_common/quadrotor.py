@@ -46,13 +46,13 @@ class QuadrotorModel(GenericRobot):
         self._swawn_offset: np.ndarray = np.array(
             [0.0, 0.0, 0.15])  # TODO: check this value
 
-        self._pos = np.zeros(3,dtype=np.float32)
-        self._quat = np.array([0., 0., 0., 1.], dtype=np.float32)
-        self._vel = np.zeros(3, dtype=np.float32)
-        self._omega = np.zeros(3, dtype=np.float32)
-        self._rotor_velocity = np.zeros(4, dtype=np.float32)
-        self.state = {"joint_state": {"pose": np.zeros(7, dtype=np.float32), "velocity":
-            np.zeros(6, dtype=np.float32), "rotor_velocity": np.zeros(4, dtype=np.float32)}}
+        self._pos = np.zeros(3,dtype=float)
+        self._quat = np.array([0., 0., 0., 1.], dtype=float)
+        self._vel = np.zeros(3, dtype=float)
+        self._omega = np.zeros(3, dtype=float)
+        self._rotor_velocity = np.zeros(4, dtype=float)
+        self.state = {"joint_state": {"pose": np.zeros(7, dtype=float), "velocity":
+            np.zeros(6, dtype=float), "rotor_velocity": np.zeros(4, dtype=float)}}
 
     def ns(self) -> int:
         """Returns the number of degrees of freedom.
@@ -150,17 +150,17 @@ ignored for drones."
                     "pose": gym.spaces.Box(
                         low=self._limit_pos_j[0, :],
                         high=self._limit_pos_j[1, :],
-                        dtype=np.float32,
+                        dtype=float,
                     ),
                     "velocity": gym.spaces.Box(
                         low=self._limit_vel_j[0, :],
                         high=self._limit_vel_j[1, :],
-                        dtype=np.float32,
+                        dtype=float,
                     ),
                     "rotor_velocity": gym.spaces.Box(
                         low=self._limit_rotors_j[0,:],
                         high=self._limit_rotors_j[1,:],
-                        dtype=np.float32,
+                        dtype=float,
                     ),
                 }),
             }
@@ -172,7 +172,7 @@ ignored for drones."
         ospace = self.get_observation_space()
         uu = self._limit_rotors_j[1, :]
         ul = self._limit_rotors_j[0, :]
-        aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
+        aspace = gym.spaces.Box(low=ul, high=uu, dtype=float)
         return (ospace, aspace)
 
     def apply_velocity_action(self, vels: np.ndarray) -> None:
@@ -269,11 +269,11 @@ ignored for drones."
         # base position
         link_state = p.getLinkState(self._robot, 0, computeLinkVelocity=1)
         self._pos = np.array(
-            [link_state[0][0], link_state[0][1], link_state[0][2]], dtype=np.float32
+            [link_state[0][0], link_state[0][1], link_state[0][2]], dtype=float
         )
-        self._quat = np.array(link_state[1], dtype=np.float32)
-        self._vel = np.array(link_state[6], dtype=np.float32)
-        self._omega = np.array(link_state[7], dtype=np.float32)
+        self._quat = np.array(link_state[1], dtype=float)
+        self._vel = np.array(link_state[6], dtype=float)
+        self._omega = np.array(link_state[7], dtype=float)
 
         self.state['joint_state']['pose'] = np.concatenate((self._pos, self._quat))
         self.state['joint_state']['velocity'] = np.concatenate((self._vel, self._omega))

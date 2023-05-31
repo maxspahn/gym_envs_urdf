@@ -40,7 +40,7 @@ class FreeSpaceDecompositionSensor(Lidar):
                     -10,
                     10,
                     shape=(4,),
-                    dtype=np.float32,
+                    dtype=float,
                 )
         return gym.spaces.Dict({self._name: gym.spaces.Dict(observation_space)})
 

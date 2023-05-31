@@ -56,13 +56,13 @@ class ObstacleSensor(Sensor):
                                 low=min_os_value,
                                 high=max_os_value,
                                 shape=(3,),
-                                dtype=np.float64,
+                                dtype=float,
                             ),
                             "orientation": gym.spaces.Box(
                                 low=min_os_value,
                                 high=max_os_value,
                                 shape=(4,),
-                                dtype=np.float64,
+                                dtype=float,
                             )
                         }),
                     "twist": gym.spaces.Dict(
@@ -71,13 +71,13 @@ class ObstacleSensor(Sensor):
                                 low=min_os_value,
                                 high=max_os_value,
                                 shape=(3,),
-                                dtype=np.float64,
+                                dtype=float,
                             ),
                             "angular": gym.spaces.Box(
                                 low=min_os_value,
                                 high=max_os_value,
                                 shape=(3,),
-                                dtype=np.float64,
+                                dtype=float,
                             )
                         }
                     )

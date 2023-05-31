@@ -6,6 +6,9 @@ import numpy as np
 
 from urdfenvs.urdf_common.generic_robot import ControlMode, GenericRobot
 
+class FacingDirectionUndefinedError(Exception):
+    pass
+
 
 class DifferentialDriveRobot(GenericRobot):
     """Differential drive robot.
@@ -32,6 +35,7 @@ class DifferentialDriveRobot(GenericRobot):
             wheel_distance: float,
             spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15]),
             spawn_rotation: float = 0.0,
+            facing_direction: str = 'x',
             not_actuated_joints: List[str] = []
     ):
         """Constructor for differential drive robots."""
@@ -43,6 +47,7 @@ class DifferentialDriveRobot(GenericRobot):
         self._wheel_radius = wheel_radius
         self._wheel_distance = wheel_distance
         self._not_actuated_joints = not_actuated_joints
+        self._facing_direction = facing_direction
         super().__init__(n, urdf_file, mode)
 
     def set_degrees_of_freedom(self, n):
@@ -71,7 +76,7 @@ class DifferentialDriveRobot(GenericRobot):
         ul = np.concatenate(
             (self._limit_vel_forward_j[0, :], self._limit_vel_j[0, 3:]), axis=0
         )
-        aspace = gym.spaces.Box(low=ul, high=uu, dtype=np.float64)
+        aspace = gym.spaces.Box(low=ul, high=uu, dtype=float)
         return (ospace, aspace)
 
     def reset(
@@ -171,18 +176,18 @@ ignored for differential drive robots."
                         "position": gym.spaces.Box(
                             low=self._limit_pos_j[0, :],
                             high=self._limit_pos_j[1, :],
-                            dtype=np.float64,
+                            dtype=float,
                         ),
                         "velocity": gym.spaces.Box(
                             low=self._limit_vel_j[0, :],
                             high=self._limit_vel_j[1, :],
-                            dtype=np.float64,
+                            dtype=float,
                         ),
                         "forward_velocity": gym.spaces.Box(
                             low=np.array([self._limit_vel_forward_j[0][0]]),
                             high=np.array([self._limit_vel_forward_j[1][0]]),
                             shape=(1,),
-                            dtype=np.float64,
+                            dtype=float,
                         ),
                     }
                 )
@@ -319,9 +324,24 @@ ignored for differential drive robots."
             (v_right - v_left) * self._wheel_radius / self._wheel_distance
         )
 
-        jacobi_nonholonomic = np.array(
-            [[np.cos(pos_base[2]), 0], [np.sin(pos_base[2]), 0], [0, 1]]
-        )
+        if self._facing_direction == 'x':
+            jacobi_nonholonomic = np.array(
+                [[np.cos(pos_base[2]), 0], [np.sin(pos_base[2]), 0], [0, 1]]
+            )
+        elif self._facing_direction == '-x':
+            jacobi_nonholonomic = np.array(
+                [[-np.cos(pos_base[2]), 0], [-np.sin(pos_base[2]), 0], [0, 1]]
+            )
+        elif self._facing_direction == 'y':
+            jacobi_nonholonomic = np.array(
+                [[-np.sin(pos_base[2]), 0], [np.cos(pos_base[2]), 0], [0, 1]]
+            )
+        elif self._facing_direction == '-y':
+            jacobi_nonholonomic = np.array(
+                [[np.sin(pos_base[2]), 0], [-np.cos(pos_base[2]), 0], [0, 1]]
+            )
+        else:
+            raise FacingDirectionUndefinedError(f"Facing direction {self._facing_direction} undefined. Use 'x', '-x', 'y' or '-y'")
         velocity_base = np.dot(
             jacobi_nonholonomic, np.array([forward_velocity, angular_velocity])
         )
