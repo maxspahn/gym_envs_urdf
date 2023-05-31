@@ -9,6 +9,7 @@ import os
 obst1Dict = {
     "type": "sphere",
     "geometry": {"position": [2.0, 2.0, 1.0], "radius": 1.0},
+    "rgba": [0.3, 0.5, 0.6, 1.0],
 }
 sphereObst1 = SphereObstacle(name="simpleSphere", content_dict=obst1Dict)
 obst2Dict = {
@@ -160,6 +161,7 @@ cylinder_obstacle_dict = {
         "radius": 0.5,
         "height": 2.0,
     },
+    "rgba": [0.1, 0.3, 0.3, 1.0],
 }
 cylinder_obstacle = CylinderObstacle(
     name="cylinder_obstacle",

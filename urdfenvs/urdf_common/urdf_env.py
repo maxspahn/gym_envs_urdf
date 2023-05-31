@@ -273,6 +273,7 @@ class UrdfEnv(gym.Env):
             obst_id = self.add_shape(
                 obst.type(),
                 obst.size(),
+                obst.rgba().tolist(),
                 position=obst.position(),
                 movable=obst.movable(),
             )
@@ -351,6 +352,7 @@ class UrdfEnv(gym.Env):
         self,
         shape_type: str,
         size: list,
+        color: list = [0.0, 0.0, 0.0, 1.0],
         movable: bool = False,
         orientation: list = (0, 0, 0, 1),
         position: list = (0, 0, 1),
@@ -363,7 +365,7 @@ class UrdfEnv(gym.Env):
             shape_id = p.createCollisionShape(p.GEOM_SPHERE, radius=size[0])
             visual_shape_id = p.createVisualShape(
                 p.GEOM_SPHERE,
-                rgbaColor=[1.0, 0.0, 0.0, 1.0],
+                rgbaColor=color,
                 specularColor=[1.0, 0.5, 0.5],
                 radius=size[0],
             )
@@ -376,7 +378,7 @@ class UrdfEnv(gym.Env):
             )
             visual_shape_id = p.createVisualShape(
                 p.GEOM_BOX,
-                rgbaColor=[1.0, 0.0, 0.0, 1.0],
+                rgbaColor=color,
                 specularColor=[1.0, 0.5, 0.5],
                 halfExtents=half_extens,
             )
@@ -387,7 +389,7 @@ class UrdfEnv(gym.Env):
             )
             visual_shape_id = p.createVisualShape(
                 p.GEOM_CYLINDER,
-                rgbaColor=[1.0, 0.0, 0.0, 1.0],
+                rgbaColor=color,
                 specularColor=[1.0, 0.5, 0.5],
                 radius=size[0],
                 length=size[1]
@@ -399,7 +401,7 @@ class UrdfEnv(gym.Env):
             )
             visual_shape_id = p.createVisualShape(
                 p.GEOM_CAPSULE,
-                rgbaColor=[1.0, 0.0, 0.0, 1.0],
+                rgbaColor=color,
                 specularColor=[1.0, 0.5, 0.5],
                 radius=size[0],
                 height=size[1],

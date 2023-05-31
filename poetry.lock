@@ -800,26 +800,25 @@ tests = ["pytest (>=4.6)"]
 
 [[package]]
 name = "mpscenes"
-version = "0.3.1"
+version = "0.4.2"
 description = "Generic motion planning scenes, including goals and obstacles."
 category = "main"
 optional = false
-python-versions = ">=3.8,<4.0"
-files = [
-    {file = "mpscenes-0.3.1-py3-none-any.whl", hash = "sha256:42bbe6195cb2588f8e02adec0a51e12835a5c92ed6b3f7d3314ace5013296577"},
-    {file = "mpscenes-0.3.1.tar.gz", hash = "sha256:2874ee359505763d53b14e7e7b3ff04715fa143aac8a55a0a021324c299ac768"},
-]
+python-versions = "^3.8"
+files = []
+develop = true
 
 [package.dependencies]
-geomdl = ">=5.3.1,<6.0.0"
-numpy = ">=1.22.0,<2.0.0"
-omegaconf = ">=2.2.2,<3.0.0"
-pyquaternion = ">=0.9.9,<0.10.0"
-PyYAML = ">=6.0,<7.0"
-sympy = ">=1.7,<2.0"
+geomdl = "^5.3.1"
+numpy = "^1.22.0"
+omegaconf = "^2.2.2"
+pyquaternion = "^0.9.9"
+PyYAML = "^6.0"
+sympy = "^1.7"
 
-[package.extras]
-bullet = ["pybullet (>=3.2.3,<4.0.0)"]
+[package.source]
+type = "directory"
+url = "../motion_planning_scenes"
 
 [[package]]
 name = "multiprocess"
@@ -2195,4 +2194,4 @@ keyboard = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "13ffcc3324256a1e44f19c1eed2c5bdaf513ff6ca89d45d14d414993e6cc4cbc"
+content-hash = "bc5700452d0641bd8f5337e0b43eb5387259556e3deab59785c8dc80bb9179d8"
