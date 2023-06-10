@@ -32,6 +32,7 @@ from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.sensors.full_sensor import FullSensor
 from urdfenvs.scene_examples.goal import goal1
 from urdfenvs.urdf_common.reward import Reward
+from urdfenvs.wrappers.stable_baselines_float32_action_wrapper import StableBaselinesFloat32ActionWrapper
 
 
 class InverseDistanceDenseReward(Reward):
@@ -68,6 +69,8 @@ ob = env.reset(pos=pos0, vel=vel0)
 env.shuffle_goals()
 
 env = FlattenObservation(env)
+
+env = StableBaselinesFloat32ActionWrapper(env)
 
 print("🏁 Check Env Started.")
 check_env(env, warn=True)

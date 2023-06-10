@@ -5,8 +5,12 @@ import os
 from gym.wrappers import FlattenObservation
 
 # Stable baselines 3
-from stable_baselines3 import PPO, TD3, SAC
+import stable_baselines3
+from stable_baselines3 import TD3
 from stable_baselines3.common.noise import NormalActionNoise
+from stable_baselines3.td3 import MlpPolicy
+
+print(stable_baselines3.__version__)
 
 # URDF Envs
 from urdfenvs.urdf_common.urdf_env import UrdfEnv
@@ -14,10 +18,10 @@ from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.sensors.full_sensor import FullSensor
 from urdfenvs.scene_examples.goal import goal1
 from urdfenvs.urdf_common.reward import Reward
+from urdfenvs.wrappers.stable_baselines_float32_action_wrapper import StableBaselinesFloat32ActionWrapper
 
 
 MODEL_NAME = 'TD3-001'
-MODEL_CLASS = TD3
 
 
 models_dir = 'models/' + MODEL_NAME
@@ -61,18 +65,19 @@ vel0 = np.array([1.0, 0.0, 0.0])
 ob = env.reset(pos=pos0, vel=vel0)
 env.shuffle_goals()
 
-
 env = FlattenObservation(env)
 
-print(f"🚀 Action Space Data Type: {env.action_space.sample().dtype}, Observation Space Data Type: {env.observation_space.sample().dtype}")
+env = StableBaselinesFloat32ActionWrapper(env)
 
+print(f"🚀 Action Space Data Type: {env.action_space.sample().dtype}, Observation Space Data Type: {env.observation_space.sample().dtype}")
+print(type(env.action_space))
 
 n_actions = env.action_space.shape[-1]
 action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
 
 TIMESTEPS = 100000
-model = MODEL_CLASS(
-    "MlpPolicy", 
+model = TD3(
+    MlpPolicy, 
     env,
     action_noise=action_noise,
     verbose=0, 
