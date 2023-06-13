@@ -4,8 +4,8 @@ import os
 
 
 class GenericUrdfReacher(HolonomicRobot):
-    def __init__(self, urdf, mode):
-        super().__init__(-1, urdf, mode=mode)
+    def __init__(self, urdf, mode, dof=-1):
+        super().__init__(dof, urdf, mode=mode)
 
     def set_joint_names(self):
         # TODO Replace it with a automated extraction

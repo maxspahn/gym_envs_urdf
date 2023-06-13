@@ -14,6 +14,7 @@ from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
 from urdfenvs.urdf_common.reward import Reward
+from scipy.spatial.transform import Rotation
 
 def quaternion_to_rotation_matrix(quaternion: np.ndarray) -> np.ndarray:
     # Normalize the quaternion if needed
@@ -30,10 +31,11 @@ def quaternion_to_rotation_matrix(quaternion: np.ndarray) -> np.ndarray:
     return rotation_matrix
 
 def get_transformation_matrix(quaternion: np.ndarray, translation: np.ndarray) -> np.ndarray:
-    rotation = quaternion_to_rotation_matrix(quaternion)
+    rotation = Rotation.from_quat(quaternion)
+    rotation_matrix = rotation.as_matrix()
 
     transformation_matrix = np.eye(4)
-    transformation_matrix[:3, :3] = rotation
+    transformation_matrix[:3, :3] = rotation_matrix
     transformation_matrix[:3, 3] = translation
 
     return transformation_matrix
@@ -121,6 +123,7 @@ class UrdfEnv(gym.Env):
         self._collision_links = {}
         self._goals = {}
         self.set_spaces()
+
 
     def set_reward_calculator(self, reward_calculator: Reward) -> None:
         self._reward_calculator = reward_calculator
