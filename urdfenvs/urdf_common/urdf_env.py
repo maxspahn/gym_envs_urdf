@@ -15,12 +15,21 @@ from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
 from urdfenvs.urdf_common.reward import Reward
 
-def quaternion_to_rotation_matrix(quaternion: np.ndarray) -> np.ndarray:
+class InvalidQuaternionOrderError(Exception):
+    pass
+
+
+
+def quaternion_to_rotation_matrix(quaternion: np.ndarray, ordering: str = 'wxyz']) -> np.ndarray:
     # Normalize the quaternion if needed
     quaternion /= np.linalg.norm(quaternion)
 
-    w, x, y, z = quaternion
-
+    if ordering == 'wxyz':
+        w, x, y, z = quaternion
+    elif ordering == 'xyzw':
+        x, y, z, w = quaternion
+    else:
+        InvalidQuaternionOrderError(f"Order {ordering} is not permitted, options are 'xyzw', and 'wxyz'")
     rotation_matrix = np.array([
         [1 - 2*y**2 - 2*z**2, 2*x*y - 2*w*z, 2*x*z + 2*w*y],
         [2*x*y + 2*w*z, 1 - 2*x**2 - 2*z**2, 2*y*z - 2*w*x],
@@ -30,7 +39,7 @@ def quaternion_to_rotation_matrix(quaternion: np.ndarray) -> np.ndarray:
     return rotation_matrix
 
 def get_transformation_matrix(quaternion: np.ndarray, translation: np.ndarray) -> np.ndarray:
-    rotation = quaternion_to_rotation_matrix(quaternion)
+    rotation = quaternion_to_rotation_matrix(quaternion, ordering='xyzw')
 
     transformation_matrix = np.eye(4)
     transformation_matrix[:3, :3] = rotation
