@@ -119,6 +119,7 @@ class UrdfEnv(gym.Env):
         p.setGravity(0, 0, -10.0)
         self._obsts = {}
         self._collision_links = {}
+        self._collision_links_poses = {}
         self._goals = {}
         self.set_spaces()
 
@@ -289,6 +290,14 @@ class UrdfEnv(gym.Env):
             except Exception:
                 continue
 
+    def self_collision_links_poses(self, position_only: bool=False):
+        if position_only:
+            result_dict = {}
+            for key, value in self._collision_links_poses.items():
+                result_dict[key] = value[0:3, 3]
+            return result_dict
+        return self._collision_links_poses
+
     def update_collision_links(self) -> None:
         for visual_shape_id, info in self._collision_links.items():
             link_state = p.getLinkState(info[0], info[1])
@@ -296,6 +305,7 @@ class UrdfEnv(gym.Env):
             link_ori = np.array(link_state[1])
             transformation_matrix = get_transformation_matrix(link_ori, link_position)
             total_transformation = np.dot(transformation_matrix, info[2])
+            self._collision_links_poses[f"{info[3]}_{info[1]}"] = total_transformation
             p.resetBasePositionAndOrientation(visual_shape_id, total_transformation[0:3, 3], [0, 0, 0, 1])
 
     def update_goals(self):
@@ -385,7 +395,8 @@ class UrdfEnv(gym.Env):
             base_position,
             base_orientation,
         )
-        self._collision_links[bullet_id] = (self._robots[robot_index]._robot, link_index, link_transformation)
+        self._collision_links_poses[f"{robot_index}_{link_index}"] = None
+        self._collision_links[bullet_id] = (self._robots[robot_index]._robot, link_index, link_transformation, robot_index)
         return bullet_id
 
     def add_sub_goal(self, goal: SubGoal) -> int:
