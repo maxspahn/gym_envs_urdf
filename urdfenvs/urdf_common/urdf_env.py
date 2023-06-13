@@ -15,22 +15,40 @@ from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
 from urdfenvs.urdf_common.reward import Reward
 
-def quaternion_to_rotation_matrix(quaternion: np.ndarray) -> np.ndarray:
+
+class InvalidQuaternionOrderError(Exception):
+    pass
+
+
+def quaternion_to_rotation_matrix(
+    quaternion: np.ndarray, ordering: str = "wxyz"
+) -> np.ndarray:
     # Normalize the quaternion if needed
     quaternion /= np.linalg.norm(quaternion)
 
-    w, x, y, z = quaternion
-
-    rotation_matrix = np.array([
-        [1 - 2*y**2 - 2*z**2, 2*x*y - 2*w*z, 2*x*z + 2*w*y],
-        [2*x*y + 2*w*z, 1 - 2*x**2 - 2*z**2, 2*y*z - 2*w*x],
-        [2*x*z - 2*w*y, 2*y*z + 2*w*x, 1 - 2*x**2 - 2*y**2]
-    ])
+    if ordering == "wxyz":
+        w, x, y, z = quaternion
+    elif ordering == "xyzw":
+        x, y, z, w = quaternion
+    else:
+        InvalidQuaternionOrderError(
+            f"Order {ordering} is not permitted, options are 'xyzw', and 'wxyz'"
+        )
+    rotation_matrix = np.array(
+        [
+            [1 - 2 * y**2 - 2 * z**2, 2 * x * y - 2 * w * z, 2 * x * z + 2 * w * y],
+            [2 * x * y + 2 * w * z, 1 - 2 * x**2 - 2 * z**2, 2 * y * z - 2 * w * x],
+            [2 * x * z - 2 * w * y, 2 * y * z + 2 * w * x, 1 - 2 * x**2 - 2 * y**2],
+        ]
+    )
 
     return rotation_matrix
 
-def get_transformation_matrix(quaternion: np.ndarray, translation: np.ndarray) -> np.ndarray:
-    rotation = quaternion_to_rotation_matrix(quaternion)
+
+def get_transformation_matrix(
+    quaternion: np.ndarray, translation: np.ndarray
+) -> np.ndarray:
+    rotation = quaternion_to_rotation_matrix(quaternion, ordering="xyzw")
 
     transformation_matrix = np.eye(4)
     transformation_matrix[:3, :3] = rotation
@@ -39,9 +57,9 @@ def get_transformation_matrix(quaternion: np.ndarray, translation: np.ndarray) -
     return transformation_matrix
 
 
-
 class WrongObservationError(Exception):
     pass
+
 
 class WrongActionError(Exception):
     pass
@@ -119,7 +137,6 @@ class UrdfEnv(gym.Env):
         p.setGravity(0, 0, -10.0)
         self._obsts = {}
         self._collision_links = {}
-        self._collision_links_poses = {}
         self._goals = {}
         self.set_spaces()
 
@@ -187,15 +204,13 @@ class UrdfEnv(gym.Env):
             (obs_space_robot_i, action_space_robot_i) = robot.get_spaces()
             obs_space_robot_i = dict(obs_space_robot_i)
             for sensor in robot._sensors:
-                
-                self.sensors.append(sensor) # Add the sensor to the list of sensors.
+
+                self.sensors.append(sensor)  # Add the sensor to the list of sensors.
 
                 obs_space_robot_i.update(
                     sensor.get_observation_space(self._obsts, self._goals)
                 )
-            observation_space_as_dict[f"robot_{i}"] = gym.spaces.Dict(
-                obs_space_robot_i
-            )
+            observation_space_as_dict[f"robot_{i}"] = gym.spaces.Dict(obs_space_robot_i)
             action_space_as_dict[f"robot_{i}"] = action_space_robot_i
 
         self.observation_space = gym.spaces.Dict(observation_space_as_dict)
@@ -208,8 +223,7 @@ class UrdfEnv(gym.Env):
 
         if not self.action_space.contains(action):
             self._done = True
-            self._info = {'action_limits': f"{action} not in {self.action_space}"}
-
+            self._info = {"action_limits": f"{action} not in {self.action_space}"}
 
         action_id = 0
         for robot in self._robots:
@@ -226,10 +240,10 @@ class UrdfEnv(gym.Env):
         # Calculate the reward.
         # If there is no reward object, then the reward is 1.0.
         if self._reward_calculator is not None:
-            reward = self._reward_calculator.calculateReward(ob) 
+            reward = self._reward_calculator.calculateReward(ob)
         else:
             reward = 1.0
-        
+
         if self._render:
             self.render()
         return ob, reward, self._done, self._info
@@ -250,7 +264,7 @@ class UrdfEnv(gym.Env):
                     check_observation(self.observation_space, observation)
                 except WrongObservationError as e:
                     self._done = True
-                    self._info = {'observation_limits': str(e)}
+                    self._info = {"observation_limits": str(e)}
         return observation
 
     def shuffle_obstacles(self) -> dict:
@@ -270,7 +284,7 @@ class UrdfEnv(gym.Env):
         return goal_dict
 
     def empty_scene(self) -> None:
-        for goal_id  in self._goals.keys():
+        for goal_id in self._goals.keys():
             p.removeBody(goal_id)
         self._goals = {}
         for obst_id in self._obsts.keys():
@@ -290,14 +304,6 @@ class UrdfEnv(gym.Env):
             except Exception:
                 continue
 
-    def self_collision_links_poses(self, position_only: bool=False):
-        if position_only:
-            result_dict = {}
-            for key, value in self._collision_links_poses.items():
-                result_dict[key] = value[0:3, 3]
-            return result_dict
-        return self._collision_links_poses
-
     def update_collision_links(self) -> None:
         for visual_shape_id, info in self._collision_links.items():
             link_state = p.getLinkState(info[0], info[1])
@@ -305,8 +311,9 @@ class UrdfEnv(gym.Env):
             link_ori = np.array(link_state[1])
             transformation_matrix = get_transformation_matrix(link_ori, link_position)
             total_transformation = np.dot(transformation_matrix, info[2])
-            self._collision_links_poses[f"{info[3]}_{info[1]}"] = total_transformation
-            p.resetBasePositionAndOrientation(visual_shape_id, total_transformation[0:3, 3], [0, 0, 0, 1])
+            p.resetBasePositionAndOrientation(
+                visual_shape_id, total_transformation[0:3, 3], [0, 0, 0, 1]
+            )
 
     def update_goals(self):
         for goal_id, goal in self._goals.items():
@@ -340,10 +347,7 @@ class UrdfEnv(gym.Env):
             )
         self._obsts[obst_id] = obst
         if self._t != 0.0:
-            warnings.warn(
-                "Adding an object while the simulation already started"
-            )
-
+            warnings.warn("Adding an object while the simulation already started")
 
     def reset_obstacles(self) -> None:
         for obst_id, obstacle in self._obsts.items():
@@ -369,13 +373,13 @@ class UrdfEnv(gym.Env):
         return self._obsts
 
     def add_collision_link(
-            self,
-            robot_index: int = 0,
-            link_index: int = 0,
-            shape_type: str = 'sphere',
-            size: Optional[List[float]] = None,
-            link_transformation: Optional[np.ndarray] = None,
-            ) -> int:
+        self,
+        robot_index: int = 0,
+        link_index: int = 0,
+        shape_type: str = "sphere",
+        size: Optional[List[float]] = None,
+        link_transformation: Optional[np.ndarray] = None,
+    ) -> int:
         if size is None:
             size = [1.0]
         if link_transformation is None:
@@ -396,7 +400,12 @@ class UrdfEnv(gym.Env):
             base_orientation,
         )
         self._collision_links_poses[f"{robot_index}_{link_index}"] = None
-        self._collision_links[bullet_id] = (self._robots[robot_index]._robot, link_index, link_transformation, robot_index)
+        self._collision_links[bullet_id] = (
+		self._robots[robot_index]._robot,
+		link_index,
+		link_transformation,
+		robot_index
+	)
         return bullet_id
 
     def add_sub_goal(self, goal: SubGoal) -> int:
@@ -466,9 +475,7 @@ class UrdfEnv(gym.Env):
         elif shape_type == "box":
             half_extens = [s / 2 for s in size]
             position = [position[i] - size[i] for i in range(3)]
-            shape_id = p.createCollisionShape(
-                p.GEOM_BOX, halfExtents=half_extens
-            )
+            shape_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=half_extens)
             visual_shape_id = p.createVisualShape(
                 p.GEOM_BOX,
                 rgbaColor=color,
@@ -485,7 +492,7 @@ class UrdfEnv(gym.Env):
                 rgbaColor=color,
                 specularColor=[1.0, 0.5, 0.5],
                 radius=size[0],
-                length=size[1]
+                length=size[1],
             )
 
         elif shape_type == "capsule":
@@ -564,9 +571,7 @@ class UrdfEnv(gym.Env):
         if len(vel.shape) == 1 and len(self._robots) == 1:
             vel = np.tile(vel, (1, 1))
         for i, robot in enumerate(self._robots):
-            checked_position, checked_velocity = robot.check_state(
-                pos[i], vel[i]
-            )
+            checked_position, checked_velocity = robot.check_state(pos[i], vel[i])
             robot.reset(
                 pos=checked_position,
                 vel=checked_velocity,
