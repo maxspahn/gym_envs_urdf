@@ -20,7 +20,7 @@ class InvalidQuaternionOrderError(Exception):
 
 
 
-def quaternion_to_rotation_matrix(quaternion: np.ndarray, ordering: str = 'wxyz']) -> np.ndarray:
+def quaternion_to_rotation_matrix(quaternion: np.ndarray, ordering: str = 'wxyz') -> np.ndarray:
     # Normalize the quaternion if needed
     quaternion /= np.linalg.norm(quaternion)
 
