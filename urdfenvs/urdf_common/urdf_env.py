@@ -124,9 +124,7 @@ class UrdfEnv(gym.Env):
         self._space_set = False
         self._observation_checking = observation_checking
         self._reward_calculator = None
-        self.sensors = (
-            []
-        )  # An empty list of sensors that will be filled in the set_spaces method.
+        self.sensors = []  # An empty list of sensors that will be filled in the set_spaces method.
         if self._render:
             self._cid = p.connect(p.GUI)
             p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
@@ -138,6 +136,7 @@ class UrdfEnv(gym.Env):
         self.plane = Plane()
         p.setGravity(0, 0, -10.0)
         self._obsts = {}
+        self._collision_links_poses = {}
         self._collision_links = {}
         self._goals = {}
         self.set_spaces()
@@ -401,11 +400,13 @@ class UrdfEnv(gym.Env):
             base_position,
             base_orientation,
         )
+        self._collision_links_poses[f"{robot_index}_{link_index}"] = None
         self._collision_links[bullet_id] = (
-            self._robots[robot_index]._robot,
-            link_index,
-            link_transformation,
-        )
+		self._robots[robot_index]._robot,
+		link_index,
+		link_transformation,
+		robot_index
+	)
         return bullet_id
 
     def add_sub_goal(self, goal: SubGoal) -> int:
