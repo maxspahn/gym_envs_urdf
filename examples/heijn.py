@@ -28,7 +28,7 @@ def run_point_robot(n_steps=1000, render=False, goal=True, obstacles=True):
         env.add_goal(splineGoal)
     history = []
     for _ in range(n_steps):
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         history.append(ob)
     env.close()
     return history

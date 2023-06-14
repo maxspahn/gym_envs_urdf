@@ -16,7 +16,7 @@ def run_dual_arm(n_steps=5000, render=False, goal=True, obstacles=True):
     print(f"Initial observation : {ob}")
     history = []
     for _ in range(n_steps):
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         history.append(ob)
     env.close()
     return history

@@ -40,7 +40,7 @@ def run_point_robot_with_lidar(
     print(f"Initial observation : {ob}")
     history = []
     for _ in range(n_steps):
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         # Access the lidar observation
         #_ = ob["robot_0"]["LidarSensor"]
 

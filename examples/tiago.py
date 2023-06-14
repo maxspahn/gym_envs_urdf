@@ -48,7 +48,7 @@ def run_tiago(n_steps=1000, render=False, goal=True, obstacles=True):
     action[14] = 0.0 # right arm shoulder
     action[22] = 0.01 # finger joint
     vel0 = np.zeros(env.n())
-    ob = env.reset()
+    ob, *_ = env.reset()
     print("base: ", ob['robot_0']["joint_state"]["position"][0:3])
     print("torso: ", ob['robot_0']["joint_state"]["position"][3])
     print("head: ", ob['robot_0']["joint_state"]["position"][4:6])
@@ -57,11 +57,11 @@ def run_tiago(n_steps=1000, render=False, goal=True, obstacles=True):
     print("Starting episode")
     history = []
     for _ in range(n_steps):
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         history.append(ob)
     env.close()
     return history
 
 
 if __name__ == "__main__":
-    run_tiago(render=True)
+    run_tiago(render=False)

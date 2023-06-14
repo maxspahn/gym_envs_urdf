@@ -45,11 +45,11 @@ def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
         else:
             action[7] = 0.02
             action[8] = 0.02
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         history.append(ob)
     env.close()
     return history
 
 
 if __name__ == "__main__":
-    run_panda(render=True)
+    run_panda(render=False)

@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import numpy as np
 import pytest
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
@@ -131,10 +131,10 @@ def allBicycleModelEnvs(priusEnv):
 def test_all(allEnvs):
     for setup in allEnvs:
         env = gym.make("urdf-env-v0", robots=[setup[0]], render=False, dt=0.01)
-        ob = env.reset(pos=setup[1], vel=setup[2])
+        ob, _ = env.reset(pos=setup[1], vel=setup[2])
         action = np.random.random(env.n())
         np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['position'], setup[1], decimal=2)
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         assert isinstance(ob, dict)
         assert isinstance(ob['robot_0']['joint_state']['position'], np.ndarray)
         assert isinstance(ob['robot_0']['joint_state']['velocity'], np.ndarray)
@@ -144,10 +144,10 @@ def test_all(allEnvs):
 def test_allDifferentialDrive(allDifferentialDriveEnvs):
     for setup in allDifferentialDriveEnvs:
         env = gym.make("urdf-env-v0", robots=[setup[0]], render=False, dt=0.01)
-        ob = env.reset(pos=setup[1], vel=setup[2])
+        ob, _ = env.reset(pos=setup[1], vel=setup[2])
         action = np.random.random(env.n()) * 0.1
         np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['position'], setup[1], decimal=2)
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         assert isinstance(ob['robot_0'], dict)
         assert isinstance(ob['robot_0']['joint_state']['position'], np.ndarray)
         assert isinstance(ob['robot_0']['joint_state']['velocity'], np.ndarray)
@@ -157,10 +157,10 @@ def test_allDifferentialDrive(allDifferentialDriveEnvs):
 def test_allBicycleModel(allBicycleModelEnvs):
     for setup in allBicycleModelEnvs:
         env = gym.make("urdf-env-v0", robots=[setup[0]], render=False, dt=0.01)
-        ob = env.reset(pos=setup[1], vel=setup[2])
+        ob, _ = env.reset(pos=setup[1], vel=setup[2])
         action = np.random.random(env.n()) * 0.1
         np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['position'], setup[1], decimal=2)
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         assert isinstance(ob['robot_0'], dict)
         assert isinstance(ob['robot_0']['joint_state']['position'], np.ndarray)
         assert isinstance(ob['robot_0']['joint_state']['velocity'], np.ndarray)

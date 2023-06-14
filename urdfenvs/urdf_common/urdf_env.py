@@ -247,7 +247,9 @@ class UrdfEnv(gym.Env):
 
         if self._render:
             self.render()
-        return ob, reward, self._done, self._info
+        terminated = self._done
+        truncated = False
+        return ob, reward, terminated, truncated, self._info
 
     def _get_ob(self) -> dict:
         """Compose the observation."""
@@ -538,7 +540,7 @@ class UrdfEnv(gym.Env):
         vel: np.ndarray = None,
         mount_positions: np.ndarray = None,
         mount_orientations: np.ndarray = None,
-    ) -> dict:
+    ) -> tuple:
         """Resets the simulation and the robot.
 
         Parameters
@@ -581,7 +583,8 @@ class UrdfEnv(gym.Env):
             )
         self.reset_obstacles()
         self.reset_goals()
-        return self._get_ob()
+        info = {}
+        return self._get_ob(), info
 
     def render(self) -> None:
         """Rendering the simulation environment.

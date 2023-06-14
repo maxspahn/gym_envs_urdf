@@ -30,7 +30,7 @@ def run_boxer(n_steps=1000, render=False, goal=True, obstacles=True):
     print("Starting episode")
     history = []
     for _ in range(n_steps):
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         print(ob['robot_0']['joint_state']['velocity'][0:2])
         history.append(ob)
     env.close()
