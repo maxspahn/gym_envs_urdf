@@ -136,6 +136,7 @@ class UrdfEnv(gym.Env):
         self.plane = Plane()
         p.setGravity(0, 0, -10.0)
         self._obsts = {}
+        self._collision_links_poses = {}
         self._collision_links = {}
         self._goals = {}
         self.set_spaces()
