@@ -52,4 +52,4 @@ def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
 
 
 if __name__ == "__main__":
-    run_panda(render=False)
+    run_panda(render=True)

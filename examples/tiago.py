@@ -64,4 +64,4 @@ def run_tiago(n_steps=1000, render=False, goal=True, obstacles=True):
 
 
 if __name__ == "__main__":
-    run_tiago(render=False)
+    run_tiago(render=True)
