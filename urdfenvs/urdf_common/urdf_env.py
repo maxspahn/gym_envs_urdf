@@ -247,10 +247,15 @@ class UrdfEnv(gym.Env):
 
         if self._render:
             self.render()
-        terminated = self._done
-        truncated = False
-        return ob, reward, terminated, truncated, self._info
 
+        terminated = self._done
+        truncated = self._getTruncated()
+        return ob, reward, terminated, truncated, self._info
+    
+    def _getTruncated(self) -> bool:
+        # TODO: Implement Truncated. 
+        return False
+    
     def _get_ob(self) -> dict:
         """Compose the observation."""
         observation = {}
