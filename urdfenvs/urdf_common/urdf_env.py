@@ -536,6 +536,8 @@ class UrdfEnv(gym.Env):
 
     def reset(
         self,
+        seed = None, 
+        options = None,
         pos: np.ndarray = None,
         vel: np.ndarray = None,
         mount_positions: np.ndarray = None,
@@ -557,6 +559,7 @@ class UrdfEnv(gym.Env):
             Mounting position for the robots
             This is ignored for mobile robots
         """
+        super().reset(seed=seed, options=options)
         self._t = 0.0
         if mount_positions is None:
             mount_positions = np.tile(np.zeros(3), (len(self._robots), 1))
@@ -583,8 +586,7 @@ class UrdfEnv(gym.Env):
             )
         self.reset_obstacles()
         self.reset_goals()
-        info = {}
-        return self._get_ob(), info
+        return self._get_ob(), self._info
 
     def render(self) -> None:
         """Rendering the simulation environment.
