@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 from urdfenvs.robots.generic_urdf.generic_diff_drive_robot import GenericDiffDriveRobot
 import numpy as np
 

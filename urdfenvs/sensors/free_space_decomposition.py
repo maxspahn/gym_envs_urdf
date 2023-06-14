@@ -1,7 +1,7 @@
 """Module for free space decomposition."""
 import numpy as np
 import pybullet as p
-import gym
+import gymnasium as gym
 from typing import Callable, List
 
 from urdfenvs.sensors.lidar import Lidar

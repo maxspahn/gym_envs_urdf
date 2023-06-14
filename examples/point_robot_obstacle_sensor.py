@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
 from urdfenvs.scene_examples.obstacles import (

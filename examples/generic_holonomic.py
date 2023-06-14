@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 import numpy as np
 import os

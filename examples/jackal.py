@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import numpy as np
 
 from urdfenvs.scene_examples.obstacles import wall_obstacles

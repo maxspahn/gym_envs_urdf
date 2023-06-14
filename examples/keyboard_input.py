@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 from urdfenvs.robots.tiago import TiagoRobot
 
 from multiprocessing import Process, Pipe

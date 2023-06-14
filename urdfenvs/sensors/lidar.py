@@ -1,7 +1,7 @@
 """Module for lidar sensor simulation."""
 import numpy as np
 import pybullet as p
-import gym
+import gymnasium as gym
 
 from urdfenvs.sensors.sensor import Sensor
 

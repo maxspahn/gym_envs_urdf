@@ -1,6 +1,6 @@
 import numpy as np
 import pybullet as p
-import gym
+import gymnasium as gym
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs import __version__
 
