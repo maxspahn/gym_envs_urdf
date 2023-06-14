@@ -45,6 +45,7 @@ def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
         else:
             action[7] = 0.02
             action[8] = 0.02
+        collision_links_position: dict = env.collision_links_poses(position_only=True)
         ob, _, _, _ = env.step(action)
         history.append(ob)
     env.close()
