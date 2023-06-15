@@ -241,7 +241,7 @@ class UrdfEnv(gym.Env):
         # Calculate the reward.
         # If there is no reward object, then the reward is 1.0.
         if self._reward_calculator is not None:
-            reward = self._reward_calculator.calculateReward(ob)
+            reward = self._reward_calculator.calculate_reward(ob)
         else:
             reward = 1.0
 
@@ -249,10 +249,10 @@ class UrdfEnv(gym.Env):
             self.render()
 
         terminated = self._done
-        truncated = self._getTruncated()
+        truncated = self._get_truncated()
         return ob, reward, terminated, truncated, self._info
     
-    def _getTruncated(self) -> bool:
+    def _get_truncated(self) -> bool:
         # TODO: Implement Truncated. 
         return False
     

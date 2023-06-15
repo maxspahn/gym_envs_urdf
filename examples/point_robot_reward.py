@@ -10,7 +10,7 @@ N_STEPS=1000
 
 
 class InverseDistanceDenseReward(Reward):
-    def calculateReward(self, observation: dict) -> float:
+    def calculate_reward(self, observation: dict) -> float:
         goal = observation['robot_0']['FullSensor']['goals'][1]['position']
         position = observation['robot_0']['joint_state']['position']
         return 1.0/np.linalg.norm(goal-position)
