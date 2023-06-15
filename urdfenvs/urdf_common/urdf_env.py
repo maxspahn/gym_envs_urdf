@@ -541,8 +541,8 @@ class UrdfEnv(gym.Env):
 
     def reset(
         self,
-        seed = None, 
-        options = None,
+        seed: int = None, 
+        options: dict = None,
         pos: np.ndarray = None,
         vel: np.ndarray = None,
         mount_positions: np.ndarray = None,
