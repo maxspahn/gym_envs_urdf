@@ -314,7 +314,7 @@ class UrdfEnv(gym.Env):
             link_ori = np.array(link_state[1])
             transformation_matrix = get_transformation_matrix(link_ori, link_position)
             total_transformation = np.dot(transformation_matrix, info[2])
-            self._collision_links_poses[f"{info[3]}_{info[1]}"] = total_transformation
+            self._collision_links_poses[f"{info[3]}_{info[1]}_{info[4]}"] = total_transformation
             p.resetBasePositionAndOrientation(
                 visual_shape_id, total_transformation[0:3, 3], [0, 0, 0, 1]
             )
@@ -391,6 +391,7 @@ class UrdfEnv(gym.Env):
         self,
         robot_index: int = 0,
         link_index: int = 0,
+        sphere_on_link_index: int=0,
         shape_type: str = "sphere",
         size: Optional[List[float]] = None,
         link_transformation: Optional[np.ndarray] = None,
@@ -419,12 +420,13 @@ class UrdfEnv(gym.Env):
             link_index,
             link_transformation,
         )
-        self._collision_links_poses[f"{robot_index}_{link_index}"] = None
+        self._collision_links_poses[f"{robot_index}_{link_index}_{sphere_on_link_index}"] = None
         self._collision_links[bullet_id] = (
             self._robots[robot_index]._robot,
             link_index,
             link_transformation,
-            robot_index
+            robot_index,
+            sphere_on_link_index,
         )
         return bullet_id
 
