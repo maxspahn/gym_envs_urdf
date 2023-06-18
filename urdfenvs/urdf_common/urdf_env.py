@@ -120,11 +120,14 @@ class UrdfEnv(gym.Env):
         self._num_sub_steps: float = 20
         self._obsts: dict = {}
         self._collision_links: dict = {}
+        self._collision_links_poses: dict = {}
         self._goals: dict = {}
         self._space_set = False
         self._observation_checking = observation_checking
         self._reward_calculator = None
-        self.sensors = []  # An empty list of sensors that will be filled in the set_spaces method.
+        self.sensors = (
+            []
+        )  # An empty list of sensors that will be filled in the set_spaces method.
         if self._render:
             self._cid = p.connect(p.GUI)
             p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
@@ -136,7 +139,6 @@ class UrdfEnv(gym.Env):
         self.plane = Plane()
         p.setGravity(0, 0, -10.0)
         self._obsts = {}
-        self._collision_links_poses = {}
         self._collision_links = {}
         self._goals = {}
         self.set_spaces()
@@ -319,9 +321,21 @@ class UrdfEnv(gym.Env):
             link_ori = np.array(link_state[1])
             transformation_matrix = get_transformation_matrix(link_ori, link_position)
             total_transformation = np.dot(transformation_matrix, info[2])
+            self._collision_links_poses[f"{info[3]}_{info[1]}_{info[4]}"] = total_transformation
             p.resetBasePositionAndOrientation(
                 visual_shape_id, total_transformation[0:3, 3], [0, 0, 0, 1]
             )
+
+    def collision_links_poses(self, position_only: bool=False) -> dict:
+        if position_only:
+            result_dict = {}
+            for key, value in self._collision_links_poses.items():
+                if value is None:
+                    result_dict[key] = None
+                elif isinstance(value, np.ndarray):
+                    result_dict[key] = value[0:3, 3]
+            return result_dict
+        return self._collision_links_poses
 
     def update_goals(self):
         for goal_id, goal in self._goals.items():
@@ -384,6 +398,7 @@ class UrdfEnv(gym.Env):
         self,
         robot_index: int = 0,
         link_index: int = 0,
+        sphere_on_link_index: int=0,
         shape_type: str = "sphere",
         size: Optional[List[float]] = None,
         link_transformation: Optional[np.ndarray] = None,
@@ -407,13 +422,19 @@ class UrdfEnv(gym.Env):
             base_position,
             base_orientation,
         )
-        self._collision_links_poses[f"{robot_index}_{link_index}"] = None
         self._collision_links[bullet_id] = (
-		self._robots[robot_index]._robot,
-		link_index,
-		link_transformation,
-		robot_index
-	)
+            self._robots[robot_index]._robot,
+            link_index,
+            link_transformation,
+        )
+        self._collision_links_poses[f"{robot_index}_{link_index}_{sphere_on_link_index}"] = None
+        self._collision_links[bullet_id] = (
+            self._robots[robot_index]._robot,
+            link_index,
+            link_transformation,
+            robot_index,
+            sphere_on_link_index,
+        )
         return bullet_id
 
     def add_sub_goal(self, goal: SubGoal) -> int:
