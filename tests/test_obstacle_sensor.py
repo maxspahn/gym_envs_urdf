@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import numpy as np
 import pytest
 
@@ -21,7 +21,7 @@ def test_static_obstacle():
     env.add_sensor(sensor, [0])
     env.set_spaces()
     action = np.random.random(env.n())
-    ob, _, _, _ = env.step(action)
+    ob, *_ = env.step(action)
     ob = ob['robot_0']['ObstacleSensor']
     assert "obstacle_0" in ob
     assert isinstance(ob["obstacle_0"]["pose"]["position"], np.ndarray)
@@ -52,7 +52,7 @@ def test_dynamicObstacle():
     env.add_sensor(sensor, [0])
     env.set_spaces()
     action = np.random.random(env.n())
-    ob, _, _, _ = env.step(action)
+    ob, *_ = env.step(action)
     ob = ob['robot_0']['ObstacleSensor']
     assert "obstacle_0" in ob
     assert isinstance(ob["obstacle_0"]["pose"]["position"], np.ndarray)
@@ -82,7 +82,7 @@ def test_shape_observation_space():
     env.add_sensor(sensor, [0])
     env.set_spaces()
     action = np.random.random(env.n())
-    ob, _, _, _ = env.step(action)
+    ob, *_ = env.step(action)
     ob = ob['robot_0']['ObstacleSensor']
     assert ob["obstacle_0"]["pose"]["position"].shape == (3, )
     assert ob["obstacle_0"]["pose"]["orientation"].shape == (4, )
@@ -101,7 +101,7 @@ def test_urdfObstacle(env):
     # change order
     env.add_obstacle(urdfObst1)
     action = np.random.random(env.n())
-    ob, _, _, _ = env.step(action)
+    ob, *_ = env.step(action)
     assert "obstacleSensor" in ob['robot_0']
     assert "2" in ob['robot_0']["obstacleSensor"]
     assert isinstance(ob['robot_0']["obstacleSensor"]["2"]["pose"]["position"], np.ndarray)

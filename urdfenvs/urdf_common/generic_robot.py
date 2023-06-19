@@ -3,7 +3,7 @@ from enum import Enum
 from abc import ABC, abstractmethod
 from typing import List
 import pybullet as p
-import gym
+import gymnasium as gym
 import numpy as np
 import yourdfpy
 import urdfenvs

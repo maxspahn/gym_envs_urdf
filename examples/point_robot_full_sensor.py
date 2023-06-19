@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 from urdfenvs.urdf_common.urdf_env import UrdfEnv
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.sensors.full_sensor import FullSensor

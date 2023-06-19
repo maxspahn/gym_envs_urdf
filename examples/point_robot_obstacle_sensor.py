@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
 from urdfenvs.scene_examples.obstacles import (
@@ -36,7 +36,7 @@ def run_point_robot_with_obstacle_sensor(n_steps=1000, render=False, obstacles=T
     history = []
     for _ in range(n_steps):
         action = defaultAction
-        ob, reward, done, info = env.step(action)
+        ob, *_ = env.step(action)
         # In observations, information about obstacles is stored in ob['obstacleSensor']
         history.append(ob)
     env.close()

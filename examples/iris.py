@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import numpy as np
 from urdfenvs.robots.iris import IrisDrone
 
@@ -22,7 +22,7 @@ def run_iris(n_steps=3000, render=False, goal=True, obstacles=True):
             action += np.array([0, 1, 0, 1]) * 1
         if i > 248 and i < 298:
             action += np.array([0, 1, 0, 1]) * -1
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         history.append(ob)
     env.close()
     return history

@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import numpy as np
 import pytest
 from urdfenvs.sensors.full_sensor import FullSensor
@@ -31,7 +31,7 @@ def test_full_sensor():
     env.set_spaces()
     action = np.random.random(env.n())
     for _ in range(10):
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
     full_sensor_ob = ob['robot_0']['FullSensor']
     assert "obstacles" in full_sensor_ob.keys()
     assert "goals" in full_sensor_ob

@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import numpy as np
 
 from urdfenvs.scene_examples.obstacles import wall_obstacles
@@ -33,7 +33,7 @@ def run_jackal(n_steps=1000, render=False, goal=True, obstacles=True):
     print("Starting episode")
     history = []
     for _ in range(n_steps):
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         history.append(ob)
     env.close()
     return history

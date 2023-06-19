@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import numpy as np
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.robots.generic_urdf import GenericDiffDriveRobot
@@ -78,7 +78,7 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
     print("Starting episode")
     history = []
     for _ in range(n_steps):
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         history.append(ob)
     env.close()
     return history

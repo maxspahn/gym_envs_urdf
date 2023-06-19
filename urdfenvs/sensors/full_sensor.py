@@ -1,7 +1,7 @@
 from urdfenvs.sensors.sensor import Sensor
 import numpy as np
 import pybullet as p
-from gym import spaces
+from gymnasium import spaces
 
 
 class FullSensor(Sensor):

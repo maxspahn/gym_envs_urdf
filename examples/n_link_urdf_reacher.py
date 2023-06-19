@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 import numpy as np
 
@@ -17,7 +17,7 @@ def run_n_link_reacher(n_steps=1000, render=False, goal=True, obstacles=True):
     print(f"Initial observation : {ob}")
     history = []
     for _ in range(n_steps):
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         history.append(ob)
     env.close()
     return history

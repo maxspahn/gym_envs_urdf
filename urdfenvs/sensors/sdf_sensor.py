@@ -2,7 +2,7 @@
 from time import perf_counter
 import numpy as np
 import pybullet as p
-import gym
+import gymnasium as gym
 
 from urdfenvs.sensors.sensor import Sensor
 

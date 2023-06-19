@@ -1,4 +1,4 @@
-from gym.envs.registration import register
+from gymnasium import register
 from urdfenvs.urdf_common.urdf_env import UrdfEnv
 register(
     id='urdf-env-v0',

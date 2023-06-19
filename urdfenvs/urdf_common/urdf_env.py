@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import time
 import numpy as np
 import pybullet as p
@@ -243,14 +243,21 @@ class UrdfEnv(gym.Env):
         # Calculate the reward.
         # If there is no reward object, then the reward is 1.0.
         if self._reward_calculator is not None:
-            reward = self._reward_calculator.calculateReward(ob)
+            reward = self._reward_calculator.calculate_reward(ob)
         else:
             reward = 1.0
 
         if self._render:
             self.render()
-        return ob, reward, self._done, self._info
 
+        terminated = self._done
+        truncated = self._get_truncated()
+        return ob, reward, terminated, truncated, self._info
+    
+    def _get_truncated(self) -> bool:
+        # TODO: Implement Truncated. 
+        return False
+    
     def _get_ob(self) -> dict:
         """Compose the observation."""
         observation = {}
@@ -555,11 +562,13 @@ class UrdfEnv(gym.Env):
 
     def reset(
         self,
+        seed: int = None, 
+        options: dict = None,
         pos: np.ndarray = None,
         vel: np.ndarray = None,
         mount_positions: np.ndarray = None,
         mount_orientations: np.ndarray = None,
-    ) -> dict:
+    ) -> tuple:
         """Resets the simulation and the robot.
 
         Parameters
@@ -576,6 +585,7 @@ class UrdfEnv(gym.Env):
             Mounting position for the robots
             This is ignored for mobile robots
         """
+        super().reset(seed=seed, options=options)
         self._t = 0.0
         if mount_positions is None:
             mount_positions = np.tile(np.zeros(3), (len(self._robots), 1))
@@ -602,7 +612,7 @@ class UrdfEnv(gym.Env):
             )
         self.reset_obstacles()
         self.reset_goals()
-        return self._get_ob()
+        return self._get_ob(), self._info
 
     def render(self) -> None:
         """Rendering the simulation environment.

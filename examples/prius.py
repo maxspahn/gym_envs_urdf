@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 from urdfenvs.robots.prius import Prius
 import numpy as np
 
@@ -17,7 +17,7 @@ def run_prius(n_steps=1000, render=False, goal=True, obstacles=True):
     print(f"Initial observation : {ob}")
     history = []
     for i in range(n_steps):
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         if ob['robot_0']['joint_state']['steering'] > 0.2:
             action[1] = 0
         history.append(ob)

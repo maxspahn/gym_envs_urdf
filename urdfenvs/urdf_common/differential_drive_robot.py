@@ -1,7 +1,7 @@
 import logging
 from typing import List
 import pybullet as p
-import gym
+import gymnasium as gym
 import numpy as np
 
 from urdfenvs.urdf_common.generic_robot import ControlMode, GenericRobot

@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import numpy as np
 import pytest
 from urdfenvs.sensors.lidar import Lidar
@@ -24,7 +24,7 @@ def test_full_sensor():
     env.add_sensor(sensor, [0])
     env.set_spaces()
     action = np.random.random(env.n())
-    ob, _, _, _ = env.step(action)
+    ob, *_ = env.step(action)
     lidar_sensor_ob = ob['robot_0']['LidarSensor']
     assert isinstance(lidar_sensor_ob, np.ndarray)
     env.close()

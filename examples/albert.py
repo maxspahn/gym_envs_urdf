@@ -1,5 +1,5 @@
 import warnings
-import gym
+import gymnasium as gym
 import numpy as np
 from urdfenvs.robots.generic_urdf.generic_diff_drive_robot import GenericDiffDriveRobot
 from urdfenvs.urdf_common.urdf_env import UrdfEnv
@@ -32,7 +32,7 @@ def run_albert(n_steps=1000, render=False, goal=True, obstacles=True):
     print(f"Initial observation : {ob}")
     history = []
     for _ in range(n_steps):
-        ob, _, _, _ = env.step(action)
+        ob, *_ = env.step(action)
         history.append(ob)
     env.close()
     return history
