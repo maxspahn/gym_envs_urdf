@@ -76,37 +76,52 @@ def matrix_to_quaternion(matrix, ordering='wxyz') -> tuple:
 
     if trace > 0:
         # The quaternion calculation when the trace is positive
-        S = np.sqrt(trace + 1.0) * 2
-        w = 0.25 * S
-        x = (rotation_matrix[2, 1] - rotation_matrix[1, 2]) / S
-        y = (rotation_matrix[0, 2] - rotation_matrix[2, 0]) / S
-        z = (rotation_matrix[1, 0] - rotation_matrix[0, 1]) / S
+        s = np.sqrt(trace + 1.0) * 2
+        w = 0.25 * s
+        x = (rotation_matrix[2, 1] - rotation_matrix[1, 2]) / s
+        y = (rotation_matrix[0, 2] - rotation_matrix[2, 0]) / s
+        z = (rotation_matrix[1, 0] - rotation_matrix[0, 1]) / s
     elif (rotation_matrix[0, 0] > rotation_matrix[1, 1]) and (rotation_matrix[0, 0] > rotation_matrix[2, 2]):
         # The quaternion calculation when the trace is largest along x-axis
-        S = np.sqrt(1.0 + rotation_matrix[0, 0] - rotation_matrix[1, 1] - rotation_matrix[2, 2]) * 2
-        w = (rotation_matrix[2, 1] - rotation_matrix[1, 2]) / S
-        x = 0.25 * S
-        y = (rotation_matrix[0, 1] + rotation_matrix[1, 0]) / S
-        z = (rotation_matrix[0, 2] + rotation_matrix[2, 0]) / S
+        s = np.sqrt(
+                1.0
+                + rotation_matrix[0, 0]
+                - rotation_matrix[1, 1]
+                - rotation_matrix[2, 2]
+            ) * 2
+        w = (rotation_matrix[2, 1] - rotation_matrix[1, 2]) / s
+        x = 0.25 * s
+        y = (rotation_matrix[0, 1] + rotation_matrix[1, 0]) / s
+        z = (rotation_matrix[0, 2] + rotation_matrix[2, 0]) / s
     elif rotation_matrix[1, 1] > rotation_matrix[2, 2]:
         # The quaternion calculation when the trace is largest along y-axis
-        S = np.sqrt(1.0 + rotation_matrix[1, 1] - rotation_matrix[0, 0] - rotation_matrix[2, 2]) * 2
-        w = (rotation_matrix[0, 2] - rotation_matrix[2, 0]) / S
-        x = (rotation_matrix[0, 1] + rotation_matrix[1, 0]) / S
-        y = 0.25 * S
-        z = (rotation_matrix[1, 2] + rotation_matrix[2, 1]) / S
+        s = np.sqrt(
+                1.0
+                + rotation_matrix[1, 1]
+                - rotation_matrix[0, 0]
+                - rotation_matrix[2, 2]
+            ) * 2
+        w = (rotation_matrix[0, 2] - rotation_matrix[2, 0]) / s
+        x = (rotation_matrix[0, 1] + rotation_matrix[1, 0]) / s
+        y = 0.25 * s
+        z = (rotation_matrix[1, 2] + rotation_matrix[2, 1]) / s
     else:
         # The quaternion calculation when the trace is largest along z-axis
-        S = np.sqrt(1.0 + rotation_matrix[2, 2] - rotation_matrix[0, 0] - rotation_matrix[1, 1]) * 2
-        w = (rotation_matrix[1, 0] - rotation_matrix[0, 1]) / S
-        x = (rotation_matrix[0, 2] + rotation_matrix[2, 0]) / S
-        y = (rotation_matrix[1, 2] + rotation_matrix[2, 1]) / S
-        z = 0.25 * S
+        s = np.sqrt(
+                1.0
+                + rotation_matrix[2, 2]
+                - rotation_matrix[0, 0]
+                - rotation_matrix[1, 1]
+            ) * 2
+        w = (rotation_matrix[1, 0] - rotation_matrix[0, 1]) / s
+        x = (rotation_matrix[0, 2] + rotation_matrix[2, 0]) / s
+        y = (rotation_matrix[1, 2] + rotation_matrix[2, 1]) / s
+        z = 0.25 * s
 
     quaternion = np.array([1, 0, 0, 0])
-    if ordering == 'wxyz':
+    if ordering == "wxyz":
         quaternion = np.array([w, x, y, z])
-    elif ordering == 'xyzw':
+    elif ordering == "xyzw":
         quaternion = np.array([x, y, z, w])
     else:
         raise InvalidQuaternionOrderError(
