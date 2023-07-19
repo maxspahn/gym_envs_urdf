@@ -46,6 +46,10 @@ def test_panda_robot():
     from panda_reacher import run_panda
     blueprint_test(run_panda)
 
+def test_panda_capsules():
+    from panda_capsules import run_panda_capsules
+    blueprint_test(run_panda_capsules)
+
 def test_mobile_reacher_robot():
     from mobile_reacher import run_mobile_reacher
     blueprint_test(run_mobile_reacher)
