@@ -31,7 +31,7 @@ def quaternion_to_rotation_matrix(
     elif ordering == "xyzw":
         x, y, z, w = quaternion
     else:
-        InvalidQuaternionOrderError(
+        raise InvalidQuaternionOrderError(
             f"Order {ordering} is not permitted, options are 'xyzw', and 'wxyz'"
         )
     rotation_matrix = np.array(
@@ -55,6 +55,80 @@ def get_transformation_matrix(
     transformation_matrix[:3, 3] = translation
 
     return transformation_matrix
+
+def matrix_to_quaternion(matrix, ordering='wxyz') -> tuple:
+    """
+    Convert a 4x4 transformation matrix to a quaternion.
+
+    Parameters:
+        matrix (numpy.ndarray): The 4x4 transformation matrix.
+
+    Returns:
+        numpy.ndarray: The quaternion representation (w, x, y, z).
+    """
+
+    # Extract the rotation matrix from the transformation matrix
+    rotation_matrix = matrix[:3, :3]
+    translation = matrix[:3, 3]
+
+    # Calculate the trace of the rotation matrix
+    trace = np.trace(rotation_matrix)
+
+    if trace > 0:
+        # The quaternion calculation when the trace is positive
+        s = np.sqrt(trace + 1.0) * 2
+        w = 0.25 * s
+        x = (rotation_matrix[2, 1] - rotation_matrix[1, 2]) / s
+        y = (rotation_matrix[0, 2] - rotation_matrix[2, 0]) / s
+        z = (rotation_matrix[1, 0] - rotation_matrix[0, 1]) / s
+    elif (rotation_matrix[0, 0] > rotation_matrix[1, 1]) and (rotation_matrix[0, 0] > rotation_matrix[2, 2]):
+        # The quaternion calculation when the trace is largest along x-axis
+        s = np.sqrt(
+                1.0
+                + rotation_matrix[0, 0]
+                - rotation_matrix[1, 1]
+                - rotation_matrix[2, 2]
+            ) * 2
+        w = (rotation_matrix[2, 1] - rotation_matrix[1, 2]) / s
+        x = 0.25 * s
+        y = (rotation_matrix[0, 1] + rotation_matrix[1, 0]) / s
+        z = (rotation_matrix[0, 2] + rotation_matrix[2, 0]) / s
+    elif rotation_matrix[1, 1] > rotation_matrix[2, 2]:
+        # The quaternion calculation when the trace is largest along y-axis
+        s = np.sqrt(
+                1.0
+                + rotation_matrix[1, 1]
+                - rotation_matrix[0, 0]
+                - rotation_matrix[2, 2]
+            ) * 2
+        w = (rotation_matrix[0, 2] - rotation_matrix[2, 0]) / s
+        x = (rotation_matrix[0, 1] + rotation_matrix[1, 0]) / s
+        y = 0.25 * s
+        z = (rotation_matrix[1, 2] + rotation_matrix[2, 1]) / s
+    else:
+        # The quaternion calculation when the trace is largest along z-axis
+        s = np.sqrt(
+                1.0
+                + rotation_matrix[2, 2]
+                - rotation_matrix[0, 0]
+                - rotation_matrix[1, 1]
+            ) * 2
+        w = (rotation_matrix[1, 0] - rotation_matrix[0, 1]) / s
+        x = (rotation_matrix[0, 2] + rotation_matrix[2, 0]) / s
+        y = (rotation_matrix[1, 2] + rotation_matrix[2, 1]) / s
+        z = 0.25 * s
+
+    quaternion = np.array([1, 0, 0, 0])
+    if ordering == "wxyz":
+        quaternion = np.array([w, x, y, z])
+    elif ordering == "xyzw":
+        quaternion = np.array([x, y, z, w])
+    else:
+        raise InvalidQuaternionOrderError(
+            f"Order {ordering} is not permitted, options are 'xyzw', and 'wxyz'"
+        )
+
+    return translation, quaternion
 
 
 class WrongObservationError(Exception):
@@ -322,8 +396,9 @@ class UrdfEnv(gym.Env):
             transformation_matrix = get_transformation_matrix(link_ori, link_position)
             total_transformation = np.dot(transformation_matrix, info[2])
             self._collision_links_poses[f"{info[3]}_{info[1]}_{info[4]}"] = total_transformation
+            translation, rotation = matrix_to_quaternion(total_transformation, ordering='xyzw')
             p.resetBasePositionAndOrientation(
-                visual_shape_id, total_transformation[0:3, 3], [0, 0, 0, 1]
+                visual_shape_id, translation, rotation
             )
 
     def collision_links_poses(self, position_only: bool=False) -> dict:
@@ -408,20 +483,13 @@ class UrdfEnv(gym.Env):
         if link_transformation is None:
             link_transformation = np.identity(4)
         rgba_color = [1.0, 1.0, 0.0, 0.3]
-        visual_shape_id = p.createVisualShape(
-            p.GEOM_SPHERE, rgbaColor=rgba_color, radius=size[0]
-        )
-        collision_shape = -1
-        base_position = [0, 0, 0]
-        base_orientation = [0, 0, 0, 1]
+        bullet_id = self.add_shape(
+                shape_type,
+                size,
+                rgba_color,
+                with_collision_shape=False,
+            )
 
-        bullet_id = p.createMultiBody(
-            0,
-            collision_shape,
-            visual_shape_id,
-            base_position,
-            base_orientation,
-        )
         self._collision_links[bullet_id] = (
             self._robots[robot_index]._robot,
             link_index,
@@ -485,10 +553,11 @@ class UrdfEnv(gym.Env):
         size: list,
         color: list = [0.0, 0.0, 0.0, 1.0],
         movable: bool = False,
-        orientation: list = (0, 0, 0, 1),
-        position: list = (0, 0, 1),
+        orientation: tuple = (0, 0, 0, 1),
+        position: tuple = (0, 0, 0),
         scaling: float = 1.0,
         urdf: str = None,
+        with_collision_shape: bool = True,
     ) -> int:
 
         mass = float(movable)
@@ -526,14 +595,14 @@ class UrdfEnv(gym.Env):
 
         elif shape_type == "capsule":
             shape_id = p.createCollisionShape(
-                p.GEOM_CAPSULE, radius=size[0], height=size[1]
+                p.GEOM_CAPSULE, radius=size[0],height=size[1]
             )
             visual_shape_id = p.createVisualShape(
                 p.GEOM_CAPSULE,
                 rgbaColor=color,
                 specularColor=[1.0, 0.5, 0.5],
                 radius=size[0],
-                height=size[1],
+                length=size[1],
             )
         elif shape_type == "urdf":
             shape_id = p.loadURDF(
@@ -543,6 +612,8 @@ class UrdfEnv(gym.Env):
         else:
             warnings.warn("Unknown shape type: {shape_type}, aborting...")
             return -1
+        if not with_collision_shape:
+            shape_id = -1
         bullet_id = p.createMultiBody(
             baseMass=mass,
             baseCollisionShapeIndex=shape_id,

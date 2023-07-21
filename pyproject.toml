@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "urdfenvs"
-version = "0.8.0"
+version = "0.8.1"
 description = "Simple simulation environment for robots, based on the urdf files."
 authors = ["Max Spahn <m.spahn@tudelft.nl>"]
 maintainers = [

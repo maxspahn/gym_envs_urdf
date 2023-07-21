@@ -27,6 +27,7 @@ urdfObst1 = UrdfObstacle(name="duckUrdf", content_dict=urdfObst1Dict)
 dynamicObst1Dict = {
     "type": "sphere",
     "geometry": {"trajectory": ["2.0 - 0.1 * t", "-0.0", "0.1"], "radius": 0.2},
+    "movable": False,
 }
 dynamicSphereObst1 = DynamicSphereObstacle(
     name="simpleSphere", content_dict=dynamicObst1Dict
@@ -34,6 +35,7 @@ dynamicSphereObst1 = DynamicSphereObstacle(
 dynamicObst2Dict = {
     "type": "analyticSphere",
     "geometry": {"trajectory": ["0.6", "0.5 - 0.1 * t", "0.8"], "radius": 0.2},
+    "movable": False,
 }
 dynamicSphereObst2 = DynamicSphereObstacle(
     name="simpleSphere", content_dict=dynamicObst2Dict

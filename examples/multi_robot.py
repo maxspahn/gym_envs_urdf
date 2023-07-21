@@ -1,4 +1,5 @@
 import gymnasium as gym
+import os
 import numpy as np
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.robots.generic_urdf import GenericDiffDriveRobot
@@ -38,9 +39,10 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
         wheel_radius = 0.08,
         wheel_distance = 0.494,
     )
+    ur5_urdf_file = os.path.dirname(os.path.abspath(__file__)) + "/ur5.urdf"
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
-        GenericUrdfReacher(urdf="ur5.urdf", mode="acc"),
+        GenericUrdfReacher(urdf=ur5_urdf_file, mode="acc"),
         jackal_1,
         jackal_2,
         boxer,
