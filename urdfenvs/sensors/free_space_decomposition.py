@@ -37,8 +37,8 @@ class FreeSpaceDecompositionSensor(Lidar):
         observation_space = {}
         for i in range(self._fsd._number_constraints):
             observation_space[f"constraint_{i}"] = gym.spaces.Box(
-                    -10,
-                    10,
+                    -100,
+                    100,
                     shape=(4,),
                     dtype=float,
                 )
@@ -156,7 +156,7 @@ class FreeSpaceDecomposition(object):
             if i < len(self._constraints):
                 constraint_dict[f"constraint_{i}"] = self._constraints[i].constraint()
             else:
-                point = self._position + np.array([100, 100, 0])
+                point = self._position + np.array([20, 20, 0])
                 dummy_halfplane = HalfPlane(self._position, point)
                 constraint_dict[f"constraint_{i}"] = dummy_halfplane.constraint()
         return constraint_dict

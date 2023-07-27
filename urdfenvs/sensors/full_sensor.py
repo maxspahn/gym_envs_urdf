@@ -6,7 +6,7 @@ from gymnasium import spaces
 
 class FullSensor(Sensor):
     def __init__(
-        self, goal_mask: list, obstacle_mask: list, variance: int = 0.1
+        self, goal_mask: list, obstacle_mask: list, variance: float = 0.1
     ):
         self._obstacle_mask = obstacle_mask
         self._goal_mask = goal_mask
@@ -26,14 +26,14 @@ class FullSensor(Sensor):
             observation_space_obstacle = {}
             if "position" in self._obstacle_mask:
                 observation_space_obstacle["position"] = spaces.Box(
-                    low=np.array([-5, -5, -5]),
-                    high=np.array([5, 5, 5]),
+                    low=np.array([-50, -50, -50]),
+                    high=np.array([50, 50, 50]),
                     dtype=float,
                 )
             if "velocity" in self._obstacle_mask:
                 observation_space_obstacle["velocity"] = spaces.Box(
-                    low=np.array([-5, -5, -5]),
-                    high=np.array([5, 5, 5]),
+                    low=np.array([-50, -50, -50]),
+                    high=np.array([50, 50, 50]),
                     dtype=float,
                 )
             if "acceleration" in self._obstacle_mask:
@@ -42,14 +42,14 @@ class FullSensor(Sensor):
                     high=np.array([5, 5, 5]),
                     dtype=float,
                 )
-            if 'type' in self._obstacle_mask:
-                observation_space_obstacle['type'] = spaces.Discrete(128)
+            if "type" in self._obstacle_mask:
+                observation_space_obstacle["type"] = spaces.Discrete(128)
             if "size" in self._obstacle_mask:
                 low_limit_size = [
                     0,
                 ] * len(obstacle.size())
                 high_limit_size = [
-                    5,
+                    50,
                 ] * len(obstacle.size())
                 observation_space_obstacle["size"] = spaces.Box(
                     low=np.array(low_limit_size),
@@ -68,14 +68,14 @@ class FullSensor(Sensor):
             observation_space_goal = {}
             if "position" in self._goal_mask:
                 observation_space_goal["position"] = spaces.Box(
-                    low=np.array([-5, -5, -5]),
-                    high=np.array([5, 5, 5]),
+                    low=np.array([-50, -50, -50]),
+                    high=np.array([50, 50, 50]),
                     dtype=float,
                 )
             if "velocity" in self._goal_mask:
                 observation_space_goal["velocity"] = spaces.Box(
-                    low=np.array([-5, -5, -5]),
-                    high=np.array([5, 5, 5]),
+                    low=np.array([-50, -50, -50]),
+                    high=np.array([50, 50, 50]),
                     dtype=float,
                 )
             if "acceleration" in self._goal_mask:
