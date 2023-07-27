@@ -48,7 +48,7 @@ def run_point_robot_with_sdf_sensor(n_steps=10, render=False, obstacles=True, go
     sensor = SDFSensor(
         limits =  np.array([[-2, 2], [-2, 2], [0, 0]]),
         resolution = np.array([101, 101, 1], dtype=int),
-        interval=100,
+        interval=10,
     )
 
     env.add_sensor(sensor, [0])
@@ -66,7 +66,7 @@ def run_point_robot_with_sdf_sensor(n_steps=10, render=False, obstacles=True, go
     history = []
     for _ in range(n_steps):
         action = defaultAction
-        ob, reward, done, info = env.step(action)
+        ob, *_ = env.step(action)
         indices = get_index_from_coordinates(np.array([2.0, -1.0, 0.0]), sensor.mesh())
         point = np.append(ob['robot_0']['joint_state']['position'][0:2], 0.0)
         sdf = ob['robot_0']['SDFSensor']
