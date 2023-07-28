@@ -40,8 +40,10 @@ class Lidar(Sensor):
                  ray_length=10.0,
                  raw_data=True,
                  angle_limits: np.ndarray = np.array([-np.pi, np.pi]),
+                 visualize: bool = True,
                 ):
         super().__init__("LidarSensor")
+        self._visualize = visualize
         self._nb_rays = nb_rays
         self._raw_data = raw_data
         self._ray_length = ray_length
@@ -109,7 +111,8 @@ class Lidar(Sensor):
             self._distances[i] = np.linalg.norm(
                 self._rel_positions[2 * i : 2 * i + 2]
             )
-        self.update_lidar_spheres(lidar_position)
+        if self._visualize:
+            self.update_lidar_spheres(lidar_position)
         if self._raw_data:
             return self._distances
         return self._rel_positions
