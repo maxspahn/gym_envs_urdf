@@ -1,3 +1,4 @@
+from typing import List
 import gymnasium as gym
 import numpy as np
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
@@ -35,7 +36,19 @@ def run_panda_capsules(n_steps=100000, render=False, goal=True, obstacles=True):
     link_rotations = [np.identity(3)] * 9
     link_rotations[8] = np.array([[0, 0, -1], [-1, 0, 0], [0, 1, 0]])
     collision_links = [0, 1, 2, 3, 4, 4, 5, 6, 7]
+    collision_links: List[str] = [
+            "panda_link1",
+            "panda_link2",
+            "panda_link3",
+            "panda_link4",
+            "panda_link5",
+            "panda_link5",
+            "panda_link6",
+            "panda_link7",
+            "panda_link8",
+    ]
     lengths = [0.2830, 0.12, 0.15, 0.12, 0.1, 0.14, 0.08, 0.14, 0.01]
+
     radii = [0.09, 0.09, 0.09, 0.09, 0.09, 0.055, 0.08, 0.07, 0.06]
     for i in range(len(collision_links)):
         link_transformation = np.identity(4)

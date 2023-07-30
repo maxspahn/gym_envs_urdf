@@ -483,7 +483,7 @@ class UrdfEnv(gym.Env):
     def add_collision_link(
         self,
         robot_index: int = 0,
-        link_index: int = 0,
+        link_index: Union[int, str] = 0,
         sphere_on_link_index: int=0,
         shape_type: str = "sphere",
         size: Optional[List[float]] = None,
@@ -500,7 +500,8 @@ class UrdfEnv(gym.Env):
                 rgba_color,
                 with_collision_shape=False,
             )
-
+        if isinstance(link_index, str):
+            link_index = self._robots[robot_index]._link_names.index(link_index)
         self._collision_links[bullet_id] = (
             self._robots[robot_index]._robot,
             link_index,

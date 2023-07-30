@@ -44,6 +44,7 @@ class GenericRobot(ABC):
         self._urdf_robot = yourdfpy.urdf.URDF.load(self._urdf_file)
         self._mode = ControlMode(mode)
         self.set_degrees_of_freedom(n)
+        self._link_names = []
         self.set_joint_names()
         self.extract_joint_ids()
         self.read_limits()
@@ -121,8 +122,10 @@ class GenericRobot(ABC):
                 for i in range(num_joints):
                     joint_info = p.getJointInfo(self._robot, i)
                     joint_name = joint_info[1].decode("UTF-8")
+                    link_name = joint_info[12].decode("UTF-8")
                     if joint_name == name:
                         self._robot_joints.append(i)
+                    self._link_names.append(link_name)
                 for i in range(num_joints):
                     joint_info = p.getJointInfo(self._robot, i)
                     joint_name = joint_info[1].decode("UTF-8")
