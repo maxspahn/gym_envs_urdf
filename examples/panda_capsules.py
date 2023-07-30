@@ -36,7 +36,7 @@ def run_panda_capsules(n_steps=100000, render=False, goal=True, obstacles=True):
     link_rotations = [np.identity(3)] * 9
     link_rotations[8] = np.array([[0, 0, -1], [-1, 0, 0], [0, 1, 0]])
     collision_links = [0, 1, 2, 3, 4, 4, 5, 6, 7]
-    collision_links: List[Union] = [
+    collision_links: List[str] = [
             "panda_link1",
             "panda_link2",
             "panda_link3",
