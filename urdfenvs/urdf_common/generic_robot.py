@@ -17,6 +17,7 @@ class ControlMode(Enum):
 class GenericRobot(ABC):
     """GenericRobot."""
     _castor_wheels = []
+    _link_names = []
 
     def __init__(self, n: int, urdf_file: str, mode=ControlMode.velocity):
         """Constructor for generic robot.
@@ -121,8 +122,10 @@ class GenericRobot(ABC):
                 for i in range(num_joints):
                     joint_info = p.getJointInfo(self._robot, i)
                     joint_name = joint_info[1].decode("UTF-8")
+                    link_name = joint_info[12].decode("UTF-8")
                     if joint_name == name:
                         self._robot_joints.append(i)
+                    self._link_names.append(link_name)
                 for i in range(num_joints):
                     joint_info = p.getJointInfo(self._robot, i)
                     joint_name = joint_info[1].decode("UTF-8")
