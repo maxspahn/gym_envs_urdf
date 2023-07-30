@@ -401,9 +401,7 @@ class UrdfEnv(gym.Env):
 
     def update_collision_links(self) -> None:
         for visual_shape_id, info in self._collision_links.items():
-            print(info[0], info[1])
             link_state = p.getLinkState(info[0], info[1])
-            print(link_state)
             link_position = link_state[0]
             link_ori = np.array(link_state[1])
             transformation_matrix = get_transformation_matrix(link_ori, link_position)

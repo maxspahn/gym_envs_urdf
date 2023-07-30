@@ -17,7 +17,6 @@ class ControlMode(Enum):
 class GenericRobot(ABC):
     """GenericRobot."""
     _castor_wheels = []
-    _link_names = []
 
     def __init__(self, n: int, urdf_file: str, mode=ControlMode.velocity):
         """Constructor for generic robot.
@@ -45,6 +44,7 @@ class GenericRobot(ABC):
         self._urdf_robot = yourdfpy.urdf.URDF.load(self._urdf_file)
         self._mode = ControlMode(mode)
         self.set_degrees_of_freedom(n)
+        self._link_names = []
         self.set_joint_names()
         self.extract_joint_ids()
         self.read_limits()
