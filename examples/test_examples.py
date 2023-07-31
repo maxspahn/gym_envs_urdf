@@ -82,6 +82,14 @@ def test_point_robot_with_obstacle_sensor():
     from point_robot_obstacle_sensor import run_point_robot_with_obstacle_sensor
     blueprint_test(run_point_robot_with_obstacle_sensor)
 
+def test_point_robot_with_occupancy_sensor():
+    from point_robot_occupancy_sensor import run_point_robot_with_occupancy_sensor
+    blueprint_test(run_point_robot_with_occupancy_sensor)
+
+def test_point_robot_with_sdf_sensor():
+    from point_robot_sdf_sensor import run_point_robot_with_sdf_sensor
+    blueprint_test(run_point_robot_with_sdf_sensor)
+
 def test_tiago_robot():
     from tiago import run_tiago
     blueprint_test(run_tiago)
