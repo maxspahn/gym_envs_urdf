@@ -45,12 +45,12 @@ class GridSensor(Sensor):
         observation space."""
         pass
 
-    def distances(self, obstacles: dict) -> np.ndarray:
+    def distances(self, obstacles: dict, t: float) -> np.ndarray:
         mesh_flat = self._mesh.reshape((-1, 3))
         distances = np.min(
             np.array(
                 [
-                    obstacle.distance(mesh_flat)
+                    obstacle.distance(mesh_flat, t=t)
                     for obstacle in list(obstacles.values())
                 ]
             ),
