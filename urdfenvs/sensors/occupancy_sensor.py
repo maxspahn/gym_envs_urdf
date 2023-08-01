@@ -33,7 +33,7 @@ class OccupancySensor(GridSensor):
         ):
             return self._grid_values
         start_time = perf_counter()
-        distances = self.distances(obstacles)
+        distances = self.distances(obstacles, t)
         self._grid_values = np.array(distances <= 0.0, dtype=int).reshape(self._resolution)
         end_time = perf_counter()
 
