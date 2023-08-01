@@ -41,8 +41,9 @@ class Lidar(Sensor):
                  raw_data=True,
                  angle_limits: np.ndarray = np.array([-np.pi, np.pi]),
                  visualize: bool = True,
+                 variance: float = 0.0,
                 ):
-        super().__init__("LidarSensor")
+        super().__init__("LidarSensor", variance=variance)
         self._visualize = visualize
         self._nb_rays = nb_rays
         self._raw_data = raw_data
@@ -103,11 +104,14 @@ class Lidar(Sensor):
                 [np.cos(theta + yaw), np.sin(theta + yaw), 0.0]
             )
             lidar = p.rayTest(ray_start, ray_end)
-            self._rel_positions[2 * i : 2 * i + 2] = (
+            true_rel_positions = (
                 lidar[0][2]
                 * self._ray_length
                 * np.array([np.cos(theta + yaw), np.sin(theta + yaw)])
             )
+            noisy_rel_positions = np.random.normal(true_rel_positions, self._variance)
+
+            self._rel_positions[2 * i : 2 * i + 2] = noisy_rel_positions
             self._distances[i] = np.linalg.norm(
                 self._rel_positions[2 * i : 2 * i + 2]
             )

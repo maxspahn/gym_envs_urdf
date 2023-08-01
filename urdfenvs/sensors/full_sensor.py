@@ -6,12 +6,12 @@ from gymnasium import spaces
 
 class FullSensor(Sensor):
     def __init__(
-        self, goal_mask: list, obstacle_mask: list, variance: float = 0.1
+        self, goal_mask: list, obstacle_mask: list, variance: float = 0.0
     ):
+        super().__init__("FullSensor", variance=variance)
         self._obstacle_mask = obstacle_mask
         self._goal_mask = goal_mask
-        self._name = "FullSensor"
-        self._noise_variance = variance
+
 
     def _reset(self):
         pass
@@ -127,7 +127,7 @@ class FullSensor(Sensor):
                     observation[mask_item] = np.array([ord(c) for c in value])
                 else:
                     observation[mask_item] = np.random.normal(
-                        np.array(value), self._noise_variance
+                        np.array(value), self._variance
                     ).astype("float32")
             observations[obst_id] = observation
 
