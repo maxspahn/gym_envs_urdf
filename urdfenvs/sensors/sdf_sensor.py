@@ -17,8 +17,15 @@ class SDFSensor(GridSensor):
         limits: np.ndarray = np.array([[-1, -1], [-1, 1], [-1, 1]]),
         resolution: np.ndarray = np.array([10, 10, 10], dtype=int),
         interval: int = -1,
+        variance: float = 0.0,
     ):
-        super().__init__(limits=limits, resolution=resolution, interval=interval, name="SDFSensor")
+        super().__init__(
+            limits=limits,
+            resolution=resolution,
+            interval=interval,
+            name="SDFSensor",
+            variance=variance
+        )
     def get_observation_space(self, obstacles: dict, goals: dict):
         """Create observation space, all observations should be inside the
         observation space."""

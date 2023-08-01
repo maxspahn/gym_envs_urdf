@@ -36,15 +36,16 @@ class Lidar3D(Sensor):
 
     def __init__(self,
                  link_name,
-                 nb_rays=10,
+                 nb_rays=[10, 10],
                  ray_length=10.0,
                  raw_data=True,
                  angle_limits: np.ndarray = np.array([
                      [-np.pi, np.pi],
                      [-0.1 * np.pi, 0.1 * np.pi]
                      ]),
+                 variance: float = 0.0,
                 ):
-        super().__init__("LidarSensor")
+        super().__init__("LidarSensor", variance=variance)
         self._nb_rays = nb_rays
         self._total_rays = nb_rays[0] * nb_rays[1]
         self._raw_data = raw_data

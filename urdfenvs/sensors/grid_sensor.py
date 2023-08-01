@@ -18,8 +18,9 @@ class GridSensor(Sensor):
         resolution: np.ndarray = np.array([10, 10, 10], dtype=int),
         interval: int = -1,
         name: str = "Grid",
+        variance: float = 0.0,
     ):
-        super().__init__(name)
+        super().__init__(name, variance=variance)
         self._resolution = resolution
         self._limits = limits
         self._interval = interval
@@ -56,7 +57,8 @@ class GridSensor(Sensor):
             ),
             axis=0,
         )
-        return distances
+        noisy_distances = np.random.normal(distances, self._variance)
+        return noisy_distances
 
     @abstractmethod
     def sense(self, robot, obstacles: dict, goals: dict, t: float) -> np.ndarray:
