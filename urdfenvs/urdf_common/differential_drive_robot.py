@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from typing import List
 import pybullet as p
 import gymnasium as gym
@@ -40,8 +41,8 @@ class DifferentialDriveRobot(GenericRobot):
     ):
         """Constructor for differential drive robots."""
         self._number_actuated_axes = int(len(actuated_wheels)/2)
-        self._spawn_rotation = spawn_rotation
-        self._spawn_offset = spawn_offset
+        self._spawn_rotation = deepcopy(spawn_rotation)
+        self._spawn_offset = deepcopy(spawn_offset)
         self._castor_wheels = castor_wheels
         self._actuated_wheels = actuated_wheels
         self._wheel_radius = wheel_radius
