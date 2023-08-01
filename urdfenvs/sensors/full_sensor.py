@@ -155,7 +155,7 @@ class FullSensor(Sensor):
                     observation[mask_item] = np.array([value])
                 else:
                     observation[mask_item] = np.random.normal(
-                        np.array(value), self._noise_variance
+                        np.array(value), self._variance
                     ).astype("float32")
             observations[obst_id] = observation
 
