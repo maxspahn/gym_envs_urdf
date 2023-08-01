@@ -31,7 +31,7 @@ class SDFSensor(GridSensor):
         observation space."""
         observation_space = gym.spaces.Box(
             0.0,
-            10.0,
+            np.inf,
             shape=self.get_observation_size(),
             dtype=float,
         )

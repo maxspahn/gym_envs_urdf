@@ -39,8 +39,8 @@ class FreeSpaceDecompositionSensor(Lidar):
         observation_space = {}
         for i in range(self._fsd._number_constraints):
             observation_space[f"constraint_{i}"] = gym.spaces.Box(
-                    -100,
-                    100,
+                    -np.inf,
+                    np.inf,
                     shape=(4,),
                     dtype=float,
                 )
