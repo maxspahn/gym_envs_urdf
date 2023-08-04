@@ -4,6 +4,7 @@ import pybullet as p
 import gymnasium as gym
 
 from urdfenvs.sensors.sensor import Sensor
+from urdfenvs.urdf_common.helpers import add_shape
 
 class LinkIdNotFoundError(Exception):
     pass
@@ -40,11 +41,10 @@ class Lidar(Sensor):
                  ray_length=10.0,
                  raw_data=True,
                  angle_limits: np.ndarray = np.array([-np.pi, np.pi]),
-                 visualize: bool = True,
+                 plotting_interval: int=-1,
                  variance: float = 0.0,
                 ):
-        super().__init__("LidarSensor", variance=variance)
-        self._visualize = visualize
+        super().__init__("LidarSensor", variance=variance, plotting_interval=plotting_interval)
         self._nb_rays = nb_rays
         self._raw_data = raw_data
         self._ray_length = ray_length
@@ -92,6 +92,7 @@ class Lidar(Sensor):
 
     def sense(self, robot, obstacles: dict, goals: dict, t: float):
         """Sense the distance toward the next object with the Lidar."""
+        self._call_counter += 1
         if not self._link_id:
             self.extract_link_id(robot)
         link_state = p.getLinkState(robot, self._link_id)
@@ -115,7 +116,7 @@ class Lidar(Sensor):
             self._distances[i] = np.linalg.norm(
                 self._rel_positions[2 * i : 2 * i + 2]
             )
-        if self._visualize:
+        if self._plotting_interval > 0 and self._call_counter % self._plotting_interval == 0:
             self.update_lidar_spheres(lidar_position)
         if self._raw_data:
             return self._distances
@@ -136,16 +137,8 @@ class Lidar(Sensor):
         q = lidar_position
         q_obs = self._rel_positions.reshape(self._nb_rays, 2)
         q_obs = np.append(q_obs, np.zeros((self._nb_rays, 1)), axis=1)
-        shape_id_sphere = p.createVisualShape(
-            p.GEOM_SPHERE, radius=0.05, rgbaColor=[0.0, 0.0, 0.0, 0.8]
-        )
         for ray_id in range(self._nb_rays):
-            body_id_sphere = p.createMultiBody(
-                baseMass=0,
-                baseCollisionShapeIndex=-1,
-                baseVisualShapeIndex=shape_id_sphere,
-                basePosition=q + q_obs[ray_id],
-            )
+            body_id_sphere = add_shape('sphere', size=[0.05], color=[0.0, 0.0, 0.0, 0.8], position=q + q_obs[ray_id], with_collision_shape=False)
             self._sphere_ids[ray_id] = body_id_sphere
 
     def update_lidar_spheres(self, lidar_position):

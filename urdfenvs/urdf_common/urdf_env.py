@@ -1,10 +1,11 @@
-import gymnasium as gym
 import time
-import numpy as np
-import pybullet as p
 import warnings
 import logging
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Tuple
+
+import pybullet as p
+import numpy as np
+import gymnasium as gym
 
 from mpscenes.obstacles.collision_obstacle import CollisionObstacle
 from mpscenes.goals.goal_composition import GoalComposition
@@ -14,121 +15,7 @@ from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
 from urdfenvs.urdf_common.reward import Reward
-
-
-class InvalidQuaternionOrderError(Exception):
-    pass
-
-
-def quaternion_to_rotation_matrix(
-    quaternion: np.ndarray, ordering: str = "wxyz"
-) -> np.ndarray:
-    # Normalize the quaternion if needed
-    quaternion /= np.linalg.norm(quaternion)
-
-    if ordering == "wxyz":
-        w, x, y, z = quaternion
-    elif ordering == "xyzw":
-        x, y, z, w = quaternion
-    else:
-        raise InvalidQuaternionOrderError(
-            f"Order {ordering} is not permitted, options are 'xyzw', and 'wxyz'"
-        )
-    rotation_matrix = np.array(
-        [
-            [1 - 2 * y**2 - 2 * z**2, 2 * x * y - 2 * w * z, 2 * x * z + 2 * w * y],
-            [2 * x * y + 2 * w * z, 1 - 2 * x**2 - 2 * z**2, 2 * y * z - 2 * w * x],
-            [2 * x * z - 2 * w * y, 2 * y * z + 2 * w * x, 1 - 2 * x**2 - 2 * y**2],
-        ]
-    )
-
-    return rotation_matrix
-
-
-def get_transformation_matrix(
-    quaternion: np.ndarray, translation: np.ndarray
-) -> np.ndarray:
-    rotation = quaternion_to_rotation_matrix(quaternion, ordering="xyzw")
-
-    transformation_matrix = np.eye(4)
-    transformation_matrix[:3, :3] = rotation
-    transformation_matrix[:3, 3] = translation
-
-    return transformation_matrix
-
-def matrix_to_quaternion(matrix, ordering='wxyz') -> tuple:
-    """
-    Convert a 4x4 transformation matrix to a quaternion.
-
-    Parameters:
-        matrix (numpy.ndarray): The 4x4 transformation matrix.
-
-    Returns:
-        numpy.ndarray: The quaternion representation (w, x, y, z).
-    """
-
-    # Extract the rotation matrix from the transformation matrix
-    rotation_matrix = matrix[:3, :3]
-    translation = matrix[:3, 3]
-
-    # Calculate the trace of the rotation matrix
-    trace = np.trace(rotation_matrix)
-
-    if trace > 0:
-        # The quaternion calculation when the trace is positive
-        s = np.sqrt(trace + 1.0) * 2
-        w = 0.25 * s
-        x = (rotation_matrix[2, 1] - rotation_matrix[1, 2]) / s
-        y = (rotation_matrix[0, 2] - rotation_matrix[2, 0]) / s
-        z = (rotation_matrix[1, 0] - rotation_matrix[0, 1]) / s
-    elif (rotation_matrix[0, 0] > rotation_matrix[1, 1]) and (rotation_matrix[0, 0] > rotation_matrix[2, 2]):
-        # The quaternion calculation when the trace is largest along x-axis
-        s = np.sqrt(
-                1.0
-                + rotation_matrix[0, 0]
-                - rotation_matrix[1, 1]
-                - rotation_matrix[2, 2]
-            ) * 2
-        w = (rotation_matrix[2, 1] - rotation_matrix[1, 2]) / s
-        x = 0.25 * s
-        y = (rotation_matrix[0, 1] + rotation_matrix[1, 0]) / s
-        z = (rotation_matrix[0, 2] + rotation_matrix[2, 0]) / s
-    elif rotation_matrix[1, 1] > rotation_matrix[2, 2]:
-        # The quaternion calculation when the trace is largest along y-axis
-        s = np.sqrt(
-                1.0
-                + rotation_matrix[1, 1]
-                - rotation_matrix[0, 0]
-                - rotation_matrix[2, 2]
-            ) * 2
-        w = (rotation_matrix[0, 2] - rotation_matrix[2, 0]) / s
-        x = (rotation_matrix[0, 1] + rotation_matrix[1, 0]) / s
-        y = 0.25 * s
-        z = (rotation_matrix[1, 2] + rotation_matrix[2, 1]) / s
-    else:
-        # The quaternion calculation when the trace is largest along z-axis
-        s = np.sqrt(
-                1.0
-                + rotation_matrix[2, 2]
-                - rotation_matrix[0, 0]
-                - rotation_matrix[1, 1]
-            ) * 2
-        w = (rotation_matrix[1, 0] - rotation_matrix[0, 1]) / s
-        x = (rotation_matrix[0, 2] + rotation_matrix[2, 0]) / s
-        y = (rotation_matrix[1, 2] + rotation_matrix[2, 1]) / s
-        z = 0.25 * s
-
-    quaternion = np.array([1, 0, 0, 0])
-    if ordering == "wxyz":
-        quaternion = np.array([w, x, y, z])
-    elif ordering == "xyzw":
-        quaternion = np.array([x, y, z, w])
-    else:
-        raise InvalidQuaternionOrderError(
-            f"Order {ordering} is not permitted, options are 'xyzw', and 'wxyz'"
-        )
-
-    return translation, quaternion
+from urdfenvs.urdf_common.helpers import add_shape, get_transformation_matrix, matrix_to_quaternion
 
 
 class WrongObservationError(Exception):
@@ -201,7 +88,7 @@ class UrdfEnv(gym.Env):
         self._reward_calculator = None
         self.sensors = (
             []
-        )  # An empty list of sensors that will be filled in the set_spaces method.
+        )
         if self._render:
             self._cid = p.connect(p.GUI)
             p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
@@ -444,9 +331,9 @@ class UrdfEnv(gym.Env):
         """
         # add obstacle to environment
         if obst.type() == "urdf":
-            obst_id = self.add_shape(obst.type(), obst.size(), urdf=obst.urdf())
+            obst_id = add_shape(obst.type(), obst.size(), urdf=obst.urdf())
         else:
-            obst_id = self.add_shape(
+            obst_id = add_shape(
                 obst.type(),
                 obst.size(),
                 obst.rgba().tolist(),
@@ -494,7 +381,7 @@ class UrdfEnv(gym.Env):
         if link_transformation is None:
             link_transformation = np.identity(4)
         rgba_color = [1.0, 1.0, 0.0, 0.3]
-        bullet_id = self.add_shape(
+        bullet_id = add_shape(
                 shape_type,
                 size,
                 rgba_color,
@@ -516,6 +403,26 @@ class UrdfEnv(gym.Env):
             sphere_on_link_index,
         )
         return bullet_id
+
+    def add_debug_shape(
+        self,
+        position: Tuple[float],
+        orientation: Tuple[float],
+        shape_type: str = "sphere",
+        size: Optional[List[float]] = None,
+        rgba_color : Optional[List[float]] = None
+    ) -> None:
+        if size is None:
+            size = [1.0]
+        add_shape(
+                shape_type,
+                size,
+                rgba_color,
+                with_collision_shape=False,
+                orientation=orientation,
+                position=position,
+            )
+
 
     def add_sub_goal(self, goal: SubGoal) -> int:
         rgba_color = [0.0, 1.0, 0.0, 0.3]
@@ -559,81 +466,6 @@ class UrdfEnv(gym.Env):
             goal_id = self.add_sub_goal(goal)
             self._goals[goal_id] = goal
 
-    def add_shape(
-        self,
-        shape_type: str,
-        size: list,
-        color: list = [0.0, 0.0, 0.0, 1.0],
-        movable: bool = False,
-        orientation: tuple = (0, 0, 0, 1),
-        position: tuple = (0, 0, 0),
-        scaling: float = 1.0,
-        urdf: str = None,
-        with_collision_shape: bool = True,
-    ) -> int:
-
-        mass = float(movable)
-        if shape_type in ["sphere", "splineSphere", "analyticSphere"]:
-            shape_id = p.createCollisionShape(p.GEOM_SPHERE, radius=size[0])
-            visual_shape_id = p.createVisualShape(
-                p.GEOM_SPHERE,
-                rgbaColor=color,
-                specularColor=[1.0, 0.5, 0.5],
-                radius=size[0],
-            )
-
-        elif shape_type == "box":
-            half_extens = [s / 2 for s in size]
-            position = [position[i] - size[i] for i in range(3)]
-            shape_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=half_extens)
-            visual_shape_id = p.createVisualShape(
-                p.GEOM_BOX,
-                rgbaColor=color,
-                specularColor=[1.0, 0.5, 0.5],
-                halfExtents=half_extens,
-            )
-
-        elif shape_type == "cylinder":
-            shape_id = p.createCollisionShape(
-                p.GEOM_CYLINDER, radius=size[0], height=size[1]
-            )
-            visual_shape_id = p.createVisualShape(
-                p.GEOM_CYLINDER,
-                rgbaColor=color,
-                specularColor=[1.0, 0.5, 0.5],
-                radius=size[0],
-                length=size[1],
-            )
-
-        elif shape_type == "capsule":
-            shape_id = p.createCollisionShape(
-                p.GEOM_CAPSULE, radius=size[0],height=size[1]
-            )
-            visual_shape_id = p.createVisualShape(
-                p.GEOM_CAPSULE,
-                rgbaColor=color,
-                specularColor=[1.0, 0.5, 0.5],
-                radius=size[0],
-                length=size[1],
-            )
-        elif shape_type == "urdf":
-            shape_id = p.loadURDF(
-                fileName=urdf, basePosition=position, globalScaling=scaling
-            )
-            return shape_id
-        else:
-            warnings.warn("Unknown shape type: {shape_type}, aborting...")
-            return -1
-        if not with_collision_shape:
-            shape_id = -1
-        bullet_id = p.createMultiBody(
-            baseMass=mass,
-            baseCollisionShapeIndex=shape_id,
-            baseVisualShapeIndex=visual_shape_id,
-            basePosition=position,
-            baseOrientation=orientation,
-        )
-        return bullet_id
 
     def add_sensor(self, sensor: Sensor, robot_ids: List) -> None:
         """Adds sensor to the robot.

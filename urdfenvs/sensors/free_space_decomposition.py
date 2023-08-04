@@ -23,10 +23,9 @@ class FreeSpaceDecompositionSensor(Lidar):
                          raw_data=False,
                          angle_limits=angle_limits,
                          variance=variance,
+                         plotting_interval=plotting_interval,
                         )
         self._name = "FreeSpaceDecompSensor"
-        self._plotting_interval = plotting_interval
-        self._call_counter = 13
         self._fsd = FreeSpaceDecomposition(
                 np.array([0.0, 0.0, 0.0]),
                 max_radius=max_radius,
@@ -47,7 +46,6 @@ class FreeSpaceDecompositionSensor(Lidar):
         return gym.spaces.Dict({self._name: gym.spaces.Dict(observation_space)})
 
     def sense(self, robot, obstacles: dict, goals: dict, t: float):
-        self._call_counter += 1
         lidar_observation = super().sense(robot, obstacles, goals, t).reshape((self._nb_rays, 2))
         lidar_position = np.array(p.getLinkState(robot, self._link_id)[0])
         relative_positions = np.concatenate((np.reshape(lidar_observation, (self._nb_rays, 2)), np.zeros((self._nb_rays, 1))), axis=1)
