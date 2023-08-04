@@ -39,7 +39,7 @@ class Lidar3D(Sensor):
     def __init__(
         self,
         link_name,
-        nb_rays: Optional[List[int]]=None,
+        nb_rays: Optional[List[int]] = None,
         ray_length=10.0,
         raw_data=True,
         angle_limits: np.ndarray = np.array(

@@ -28,7 +28,7 @@ def run_point_robot_with_lidar(
         env.add_obstacle(urdfObst1)
         env.add_obstacle(dynamicSphereObst3)
     number_lidar_rays = 64
-    lidar = Lidar(4, nb_rays=number_lidar_rays, raw_data=False)
+    lidar = Lidar("lidar_sensor_joint", nb_rays=number_lidar_rays, raw_data=False)
     env.add_sensor(lidar, robot_ids=[0])
     env.set_spaces()
 

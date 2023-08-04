@@ -4,6 +4,46 @@ from typing import Tuple, Optional, List
 import numpy as np
 import pybullet
 
+
+def quaternion_between_vectors(v1, v2, ordering="wxyz"):
+    quaternion = np.zeros(4)
+    a_part = np.cross(v1, v2)
+    if ordering == "wxyz":
+        quaternion[0] = np.sqrt(
+            (np.linalg.norm(v1) ** 2) * (np.linalg.norm(v2) ** 2)
+        ) + np.dot(v1, v2)
+        quaternion[1:4] = a_part
+    elif ordering == "xyzw":
+        quaternion[0:3] = a_part
+        quaternion[3] = np.sqrt(
+            (np.linalg.norm(v1) ** 2) * (np.linalg.norm(v2) ** 2)
+        ) + np.dot(v1, v2)
+    else:
+        raise InvalidQuaternionOrderError(
+            f"Order {ordering} is not permitted, options are 'xyzw', and 'wxyz'"
+        )
+    normed_quat = quaternion / np.linalg.norm(quaternion)
+    return normed_quat
+
+
+class LinkIdNotFoundError(Exception):
+    pass
+
+
+def extract_link_id(robot, link_name: str):
+    number_links = pybullet.getNumJoints(robot)
+    joint_names = []
+    for i in range(number_links):
+        joint_name = pybullet.getJointInfo(robot, i)[1].decode("UTF-8")
+        joint_names.append(joint_name)
+        if joint_name == link_name:
+            return i
+    raise LinkIdNotFoundError(
+        f"Link with name {link_name} not found. "
+        f"Possible links are {joint_names}"
+    )
+
+
 class InvalidQuaternionOrderError(Exception):
     pass
 
@@ -24,9 +64,21 @@ def quaternion_to_rotation_matrix(
         )
     rotation_matrix = np.array(
         [
-            [1 - 2 * y**2 - 2 * z**2, 2 * x * y - 2 * w * z, 2 * x * z + 2 * w * y],
-            [2 * x * y + 2 * w * z, 1 - 2 * x**2 - 2 * z**2, 2 * y * z - 2 * w * x],
-            [2 * x * z - 2 * w * y, 2 * y * z + 2 * w * x, 1 - 2 * x**2 - 2 * y**2],
+            [
+                1 - 2 * y**2 - 2 * z**2,
+                2 * x * y - 2 * w * z,
+                2 * x * z + 2 * w * y,
+            ],
+            [
+                2 * x * y + 2 * w * z,
+                1 - 2 * x**2 - 2 * z**2,
+                2 * y * z - 2 * w * x,
+            ],
+            [
+                2 * x * z - 2 * w * y,
+                2 * y * z + 2 * w * x,
+                1 - 2 * x**2 - 2 * y**2,
+            ],
         ]
     )
 
@@ -43,6 +95,7 @@ def get_transformation_matrix(
     transformation_matrix[:3, 3] = translation
 
     return transformation_matrix
+
 
 def matrix_to_quaternion(matrix, ordering="wxyz") -> Tuple[float]:
     """
@@ -69,38 +122,49 @@ def matrix_to_quaternion(matrix, ordering="wxyz") -> Tuple[float]:
         x = (rotation_matrix[2, 1] - rotation_matrix[1, 2]) / s
         y = (rotation_matrix[0, 2] - rotation_matrix[2, 0]) / s
         z = (rotation_matrix[1, 0] - rotation_matrix[0, 1]) / s
-    elif (rotation_matrix[0, 0] > rotation_matrix[1, 1]) and (rotation_matrix[0, 0] > rotation_matrix[2, 2]):
+    elif (rotation_matrix[0, 0] > rotation_matrix[1, 1]) and (
+        rotation_matrix[0, 0] > rotation_matrix[2, 2]
+    ):
         # The quaternion calculation when the trace is largest along x-axis
-        s = np.sqrt(
+        s = (
+            np.sqrt(
                 1.0
                 + rotation_matrix[0, 0]
                 - rotation_matrix[1, 1]
                 - rotation_matrix[2, 2]
-            ) * 2
+            )
+            * 2
+        )
         w = (rotation_matrix[2, 1] - rotation_matrix[1, 2]) / s
         x = 0.25 * s
         y = (rotation_matrix[0, 1] + rotation_matrix[1, 0]) / s
         z = (rotation_matrix[0, 2] + rotation_matrix[2, 0]) / s
     elif rotation_matrix[1, 1] > rotation_matrix[2, 2]:
         # The quaternion calculation when the trace is largest along y-axis
-        s = np.sqrt(
+        s = (
+            np.sqrt(
                 1.0
                 + rotation_matrix[1, 1]
                 - rotation_matrix[0, 0]
                 - rotation_matrix[2, 2]
-            ) * 2
+            )
+            * 2
+        )
         w = (rotation_matrix[0, 2] - rotation_matrix[2, 0]) / s
         x = (rotation_matrix[0, 1] + rotation_matrix[1, 0]) / s
         y = 0.25 * s
         z = (rotation_matrix[1, 2] + rotation_matrix[2, 1]) / s
     else:
         # The quaternion calculation when the trace is largest along z-axis
-        s = np.sqrt(
+        s = (
+            np.sqrt(
                 1.0
                 + rotation_matrix[2, 2]
                 - rotation_matrix[0, 0]
                 - rotation_matrix[1, 1]
-            ) * 2
+            )
+            * 2
+        )
         w = (rotation_matrix[1, 0] - rotation_matrix[0, 1]) / s
         x = (rotation_matrix[0, 2] + rotation_matrix[2, 0]) / s
         y = (rotation_matrix[1, 2] + rotation_matrix[2, 1]) / s
@@ -117,7 +181,6 @@ def matrix_to_quaternion(matrix, ordering="wxyz") -> Tuple[float]:
         )
 
     return translation, quaternion
-
 
 
 def add_shape(
@@ -181,7 +244,7 @@ def add_shape(
 
     elif shape_type == "capsule":
         shape_id = pybullet.createCollisionShape(
-            pybullet.GEOM_CAPSULE, radius=size[0],height=size[1]
+            pybullet.GEOM_CAPSULE, radius=size[0], height=size[1]
         )
         visual_shape_id = pybullet.createVisualShape(
             pybullet.GEOM_CAPSULE,
