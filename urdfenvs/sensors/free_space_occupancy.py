@@ -12,6 +12,7 @@ class FreeSpaceOccupancySensor(FSDSensor, OccupancySensor):
     def __init__(
         self,
         link_name,
+        name: str = "FreeSpaceDecompSensor",
         max_radius: float = 1.0,
         number_constraints: int = 10,
         limits: np.ndarray = np.array([[-1, 1], [-1, 1], [-1, 1]]),
@@ -39,7 +40,7 @@ class FreeSpaceOccupancySensor(FSDSensor, OccupancySensor):
             plotting_interval=plotting_interval,
         )
         self._link_name = link_name
-        self._name = "FreeSpaceDecompSensor"
+        self._name = name
         self._height = 0.3
 
     def sense(self, robot, obstacles: dict, goals: dict, t: float):
