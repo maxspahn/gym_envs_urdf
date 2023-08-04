@@ -20,12 +20,14 @@ class FreeSpaceOccupancySensor(FSDSensor, OccupancySensor):
         variance: float = 0.0,
         plotting_interval: int = -1,
         plotting_interval_fsd: int = -1,
+        planar_visualization: bool = False,
     ):
         FSDSensor.__init__(
             self,
             max_radius,
             number_constraints=number_constraints,
             plotting_interval_fsd=plotting_interval_fsd,
+            planar_visualization=planar_visualization,
             variance=variance,
         )
         OccupancySensor.__init__(

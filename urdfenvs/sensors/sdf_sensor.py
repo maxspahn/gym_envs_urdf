@@ -1,7 +1,7 @@
 """Module for signed distance field sensor simulation."""
 from time import perf_counter
+import logging
 import numpy as np
-import pybullet as p
 import gymnasium as gym
 
 from urdfenvs.sensors.grid_sensor import GridSensor
@@ -49,6 +49,6 @@ class SDFSensor(GridSensor):
         self._grid_values = np.maximum(distances, 0.0).reshape(self._resolution)
         end_time = perf_counter()
 
-        print(f"Computed SDF in {end_time-start_time} s")
+        logging.info(f"Computed SDF in {end_time-start_time} s")
         self._computed = True
         return self._grid_values

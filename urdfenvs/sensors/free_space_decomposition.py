@@ -19,6 +19,7 @@ class FreeSpaceDecompositionSensor(FSDSensor, Lidar):
         plotting_interval: int = -1,
         plotting_interval_fsd: int = -1,
         variance: float = 0.0,
+        planar_visualization: bool = True,
     ):
         FSDSensor.__init__(
             self,
@@ -26,6 +27,7 @@ class FreeSpaceDecompositionSensor(FSDSensor, Lidar):
             number_constraints=number_constraints,
             plotting_interval_fsd=plotting_interval_fsd,
             variance=variance,
+            planar_visualization=planar_visualization,
         )
         Lidar.__init__(
             self,

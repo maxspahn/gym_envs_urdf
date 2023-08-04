@@ -14,7 +14,7 @@ from urdfenvs.urdf_common.urdf_env import UrdfEnv
 
 
 def run_point_robot_with_freespacedecomp(
-    n_steps=1000, render=False, obstacles=True, goal=True
+    n_steps=10000, render=False, obstacles=True, goal=True
 ):
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
@@ -27,7 +27,7 @@ def run_point_robot_with_freespacedecomp(
     free_space_decomp  = FreeSpaceOccupancySensor(
         'mobile_joint_theta',
         plotting_interval=1000,
-        plotting_interval_fsd=10,
+        plotting_interval_fsd=100,
         max_radius=10,
         number_constraints=10,
         limits =  np.array([[-5, 5], [-5, 5], [0, 50/val]]),
