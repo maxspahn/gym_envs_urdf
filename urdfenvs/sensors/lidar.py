@@ -6,6 +6,7 @@ import gymnasium as gym
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.helpers import add_shape
 
+
 class LinkIdNotFoundError(Exception):
     pass
 
@@ -35,16 +36,21 @@ class Lidar(Sensor):
         Raw distance information for rays.
     """
 
-    def __init__(self,
-                 link_name,
-                 nb_rays=10,
-                 ray_length=10.0,
-                 raw_data=True,
-                 angle_limits: np.ndarray = np.array([-np.pi, np.pi]),
-                 plotting_interval: int=-1,
-                 variance: float = 0.0,
-                ):
-        super().__init__("LidarSensor", variance=variance, plotting_interval=plotting_interval)
+    def __init__(
+        self,
+        link_name,
+        nb_rays=10,
+        ray_length=10.0,
+        raw_data=True,
+        angle_limits: np.ndarray = np.array([-np.pi, np.pi]),
+        plotting_interval: int = -1,
+        variance: float = 0.0,
+    ):
+        super().__init__(
+            "LidarSensor",
+            variance=variance,
+            plotting_interval=plotting_interval,
+        )
         self._nb_rays = nb_rays
         self._raw_data = raw_data
         self._ray_length = ray_length
@@ -54,7 +60,9 @@ class Lidar(Sensor):
             self._link_id = link_name
         self._angle_limits = angle_limits
         self._thetas = [
-            angle_limits[0] + i * (angle_limits[1] - angle_limits[0]) / self._nb_rays for i in range(self._nb_rays)
+            angle_limits[0]
+            + i * (angle_limits[1] - angle_limits[0]) / self._nb_rays
+            for i in range(self._nb_rays)
         ]
         self._rel_positions = np.zeros(2 * nb_rays)
         self._distances = np.zeros(nb_rays)
@@ -72,8 +80,8 @@ class Lidar(Sensor):
         """Create observation space, all observations should be inside the
         observation space."""
         observation_space = gym.spaces.Box(
-            -self._ray_length-0.01,
-            self._ray_length+0.01,
+            -self._ray_length - 0.01,
+            self._ray_length + 0.01,
             shape=(self.get_observation_size(),),
             dtype=float,
         )
@@ -88,7 +96,10 @@ class Lidar(Sensor):
             if joint_name == self._link_name:
                 self._link_id = i
                 return
-        raise LinkIdNotFoundError(f"Link with name {self._link_name} not found. Possible links are {joint_names}")
+        raise LinkIdNotFoundError(
+            f"Link with name {self._link_name} not found. "
+            f"Possible links are {joint_names}"
+        )
 
     def sense(self, robot, obstacles: dict, goals: dict, t: float):
         """Sense the distance toward the next object with the Lidar."""
@@ -96,7 +107,7 @@ class Lidar(Sensor):
         if not self._link_id:
             self.extract_link_id(robot)
         link_state = p.getLinkState(robot, self._link_id)
-            
+
         lidar_position = link_state[0]
         ray_start = lidar_position
         yaw = p.getEulerFromQuaternion(link_state[1])[2]
@@ -110,13 +121,18 @@ class Lidar(Sensor):
                 * self._ray_length
                 * np.array([np.cos(theta + yaw), np.sin(theta + yaw)])
             )
-            noisy_rel_positions = np.random.normal(true_rel_positions, self._variance)
+            noisy_rel_positions = np.random.normal(
+                true_rel_positions, self._variance
+            )
 
             self._rel_positions[2 * i : 2 * i + 2] = noisy_rel_positions
             self._distances[i] = np.linalg.norm(
                 self._rel_positions[2 * i : 2 * i + 2]
             )
-        if self._plotting_interval > 0 and self._call_counter % self._plotting_interval == 0:
+        if (
+            self._plotting_interval > 0
+            and self._call_counter % self._plotting_interval == 0
+        ):
             self.update_lidar_spheres(lidar_position)
         if self._raw_data:
             return self._distances
@@ -138,7 +154,13 @@ class Lidar(Sensor):
         q_obs = self._rel_positions.reshape(self._nb_rays, 2)
         q_obs = np.append(q_obs, np.zeros((self._nb_rays, 1)), axis=1)
         for ray_id in range(self._nb_rays):
-            body_id_sphere = add_shape('sphere', size=[0.05], color=[0.0, 0.0, 0.0, 0.8], position=q + q_obs[ray_id], with_collision_shape=False)
+            body_id_sphere = add_shape(
+                "sphere",
+                size=[0.05],
+                color=[0.0, 0.0, 0.0, 0.8],
+                position=q + q_obs[ray_id],
+                with_collision_shape=False,
+            )
             self._sphere_ids[ray_id] = body_id_sphere
 
     def update_lidar_spheres(self, lidar_position):

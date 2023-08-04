@@ -24,8 +24,9 @@ class SDFSensor(GridSensor):
             resolution=resolution,
             interval=interval,
             name="SDFSensor",
-            variance=variance
+            variance=variance,
         )
+
     def get_observation_space(self, obstacles: dict, goals: dict):
         """Create observation space, all observations should be inside the
         observation space."""

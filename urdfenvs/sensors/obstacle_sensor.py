@@ -23,6 +23,7 @@ class ObstacleSensor(Sensor):
         and angular velocity in cartesian format (x, y, z)
 
     """
+
     def __init__(self):
         super().__init__("ObstacleSensor")
         self._observation = np.zeros(self.get_observation_size())
@@ -33,7 +34,7 @@ class ObstacleSensor(Sensor):
         for _ in range(2, p.getNumBodies()):
             size += (
                 14  # add space for position, velocity,
-                    # orientation and angular velocity
+                # orientation and angular velocity
             )
         return size
 
@@ -63,8 +64,9 @@ class ObstacleSensor(Sensor):
                                 high=max_os_value,
                                 shape=(4,),
                                 dtype=float,
-                            )
-                        }),
+                            ),
+                        }
+                    ),
                     "twist": gym.spaces.Dict(
                         {
                             "linear": gym.spaces.Box(
@@ -78,9 +80,9 @@ class ObstacleSensor(Sensor):
                                 high=max_os_value,
                                 shape=(3,),
                                 dtype=float,
-                            )
+                            ),
                         }
-                    )
+                    ),
                 }
             )
 
@@ -103,12 +105,12 @@ class ObstacleSensor(Sensor):
             observation[f"obstacle_{obj_id-2}"] = {
                 "pose": {
                     "position": np.array(pos[0]),
-                    "orientation": np.array(pos[1])
+                    "orientation": np.array(pos[1]),
                 },
                 "twist": {
                     "linear": np.array(vel[0]),
-                    "angular": np.array(vel[1])
-                }
+                    "angular": np.array(vel[1]),
+                },
             }
 
         return observation

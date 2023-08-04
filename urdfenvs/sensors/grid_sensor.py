@@ -3,7 +3,6 @@ from abc import abstractmethod
 from typing import Tuple
 
 import numpy as np
-import gymnasium as gym
 
 from urdfenvs.sensors.sensor import Sensor
 
@@ -22,7 +21,9 @@ class GridSensor(Sensor):
         variance: float = 0.0,
         plotting_interval: int = -1,
     ):
-        super().__init__(name, variance=variance, plotting_interval=plotting_interval)
+        super().__init__(
+            name, variance=variance, plotting_interval=plotting_interval
+        )
         self._resolution = resolution
         self._limits = limits
         self._interval = interval
@@ -44,9 +45,13 @@ class GridSensor(Sensor):
         return self._mesh.size // 3
 
     def voxel_size(self) -> Tuple[float]:
-        voxel_size = (self._limits[:, 1] - self._limits[:, 0])/(self._resolution - 1)
+        voxel_size = (self._limits[:, 1] - self._limits[:, 0]) / (
+            self._resolution - 1
+        )
         nan_index = np.where(np.isnan(voxel_size))[0]
-        voxel_size[nan_index] = np.maximum(0.01, self._limits[nan_index, 1] - self._limits[nan_index, 0])
+        voxel_size[nan_index] = np.maximum(
+            0.01, self._limits[nan_index, 1] - self._limits[nan_index, 0]
+        )
         return voxel_size
 
     def get_observation_size(self):
@@ -59,7 +64,7 @@ class GridSensor(Sensor):
         pass
 
     def distances(self, obstacles: dict, t: float) -> np.ndarray:
-        max_voxel_size = np.max(self.voxel_size())/2.0
+        max_voxel_size = np.max(self.voxel_size()) / 2.0
         mesh_flat = self._mesh.reshape((-1, 3))
         if obstacles:
             distances = np.min(
@@ -77,6 +82,7 @@ class GridSensor(Sensor):
             return np.ones(self.number_of_voxels()) * 1000
 
     @abstractmethod
-    def sense(self, robot, obstacles: dict, goals: dict, t: float) -> np.ndarray:
+    def sense(
+        self, robot, obstacles: dict, goals: dict, t: float
+    ) -> np.ndarray:
         pass
-

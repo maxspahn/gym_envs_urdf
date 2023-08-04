@@ -12,7 +12,6 @@ class FullSensor(Sensor):
         self._obstacle_mask = obstacle_mask
         self._goal_mask = goal_mask
 
-
     def _reset(self):
         pass
 
