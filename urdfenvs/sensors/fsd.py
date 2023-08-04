@@ -2,6 +2,7 @@
 import numpy as np
 from typing import Callable, List
 
+
 class HalfPlane(object):
     _normal_vector: np.ndarray
     _point: np.ndarray

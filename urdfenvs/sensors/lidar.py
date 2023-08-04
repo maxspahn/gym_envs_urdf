@@ -4,11 +4,7 @@ import pybullet as p
 import gymnasium as gym
 
 from urdfenvs.sensors.sensor import Sensor
-from urdfenvs.urdf_common.helpers import add_shape
-
-
-class LinkIdNotFoundError(Exception):
-    pass
+from urdfenvs.urdf_common.helpers import add_shape, extract_link_id
 
 
 class Lidar(Sensor):
@@ -87,25 +83,11 @@ class Lidar(Sensor):
         )
         return gym.spaces.Dict({self._name: observation_space})
 
-    def extract_link_id(self, robot):
-        number_links = p.getNumJoints(robot)
-        joint_names = []
-        for i in range(number_links):
-            joint_name = p.getJointInfo(robot, i)[1].decode("UTF-8")
-            joint_names.append(joint_name)
-            if joint_name == self._link_name:
-                self._link_id = i
-                return
-        raise LinkIdNotFoundError(
-            f"Link with name {self._link_name} not found. "
-            f"Possible links are {joint_names}"
-        )
-
     def sense(self, robot, obstacles: dict, goals: dict, t: float):
         """Sense the distance toward the next object with the Lidar."""
         self._call_counter += 1
         if not self._link_id:
-            self.extract_link_id(robot)
+            self._link_id = extract_link_id(robot, self._link_name)
         link_state = p.getLinkState(robot, self._link_id)
 
         lidar_position = link_state[0]

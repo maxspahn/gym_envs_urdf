@@ -17,10 +17,18 @@ class FreeSpaceDecompositionSensor(FSDSensor, Lidar):
         ray_length: float = 10.0,
         angle_limits: np.ndarray = np.array([-np.pi, np.pi]),
         plotting_interval: int = -1,
+        plotting_interval_fsd: int = -1,
         variance: float = 0.0,
     ):
-        FSDSensor.__init__(self, link_name, max_radius, number_constraints=number_constraints, plotting_interval=plotting_interval, variance=variance)
-        Lidar.__init__(self,
+        FSDSensor.__init__(
+            self,
+            max_radius,
+            number_constraints=number_constraints,
+            plotting_interval_fsd=plotting_interval_fsd,
+            variance=variance,
+        )
+        Lidar.__init__(
+            self,
             link_name,
             nb_rays=nb_rays,
             ray_length=ray_length,
@@ -31,9 +39,10 @@ class FreeSpaceDecompositionSensor(FSDSensor, Lidar):
         )
         self._name = "FreeSpaceDecompSensor"
 
-
     def sense(self, robot, obstacles: dict, goals: dict, t: float):
-        lidar_observation = Lidar.sense(self, robot, obstacles, goals, t).reshape((self._nb_rays, 2))
+        lidar_observation = Lidar.sense(
+            self, robot, obstacles, goals, t
+        ).reshape((self._nb_rays, 2))
         lidar_position = np.array(p.getLinkState(robot, self._link_id)[0])
         relative_positions = np.concatenate(
             (
@@ -47,6 +56,3 @@ class FreeSpaceDecompositionSensor(FSDSensor, Lidar):
             lidar_position[np.newaxis, :], self._nb_rays, axis=0
         )
         return self.compute_fsd(absolute_positions, lidar_position)
-
-
-

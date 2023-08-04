@@ -2,16 +2,14 @@ import gymnasium as gym
 import pprint
 import numpy as np
 from urdfenvs.scene_examples.obstacles import (
-    sphereObst1,
     sphereObst2,
-    urdfObst1,
-    dynamicSphereObst3,
     dynamicSphereObst1,
+    cylinder_obstacle,
     wall_obstacles,
 )
 
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
-from urdfenvs.sensors.free_space_decomposition import FreeSpaceDecompositionSensor
+from urdfenvs.sensors.free_space_occupancy import FreeSpaceOccupancySensor
 from urdfenvs.urdf_common.urdf_env import UrdfEnv
 
 
@@ -22,20 +20,19 @@ def run_point_robot_with_freespacedecomp(
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
     ]
     env: UrdfEnv = gym.make("urdf-env-v0", dt=0.01, robots=robots, render=render)
-    for wall in wall_obstacles:
-        env.add_obstacle(wall)
     if obstacles:
-        env.add_obstacle(sphereObst1)
         env.add_obstacle(sphereObst2)
-        env.add_obstacle(dynamicSphereObst1)
-    number_lidar_rays = 64
-    free_space_decomp  = FreeSpaceDecompositionSensor(
-        "mobile_joint_theta",
-        nb_rays=number_lidar_rays,
-        plotting_interval=10,
+        env.add_obstacle(cylinder_obstacle)
+    val = 40
+    free_space_decomp  = FreeSpaceOccupancySensor(
+        'mobile_joint_theta',
+        plotting_interval=1000,
         plotting_interval_fsd=10,
         max_radius=10,
         number_constraints=10,
+        limits =  np.array([[-5, 5], [-5, 5], [0, 50/val]]),
+        resolution = np.array([val + 1, val + 1, 5], dtype=int),
+        interval=100,
     )
     env.add_sensor(free_space_decomp, robot_ids=[0])
     env.set_spaces()

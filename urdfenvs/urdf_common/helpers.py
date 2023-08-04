@@ -4,6 +4,22 @@ from typing import Tuple, Optional, List
 import numpy as np
 import pybullet
 
+class LinkIdNotFoundError(Exception):
+    pass
+
+def extract_link_id(robot, link_name: str):
+    number_links = pybullet.getNumJoints(robot)
+    joint_names = []
+    for i in range(number_links):
+        joint_name = pybullet.getJointInfo(robot, i)[1].decode("UTF-8")
+        joint_names.append(joint_name)
+        if joint_name == link_name:
+            return i
+    raise LinkIdNotFoundError(
+        f"Link with name {link_name} not found. "
+        f"Possible links are {joint_names}"
+    )
+
 class InvalidQuaternionOrderError(Exception):
     pass
 
