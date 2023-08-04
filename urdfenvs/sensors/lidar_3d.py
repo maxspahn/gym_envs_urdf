@@ -1,9 +1,11 @@
 """Module for lidar sensor simulation."""
+from typing import List, Optional
 import numpy as np
 import pybullet as p
 import gymnasium as gym
 
 from urdfenvs.sensors.sensor import Sensor
+
 
 class LinkIdNotFoundError(Exception):
     pass
@@ -34,19 +36,22 @@ class Lidar3D(Sensor):
         Raw distance information for rays.
     """
 
-    def __init__(self,
-                 link_name,
-                 nb_rays=[10, 10],
-                 ray_length=10.0,
-                 raw_data=True,
-                 angle_limits: np.ndarray = np.array([
-                     [-np.pi, np.pi],
-                     [-0.1 * np.pi, 0.1 * np.pi]
-                     ]),
-                 variance: float = 0.0,
-                ):
+    def __init__(
+        self,
+        link_name,
+        nb_rays: Optional[List[int]]=None,
+        ray_length=10.0,
+        raw_data=True,
+        angle_limits: np.ndarray = np.array(
+            [[-np.pi, np.pi], [-0.1 * np.pi, 0.1 * np.pi]]
+        ),
+        variance: float = 0.0,
+    ):
         super().__init__("LidarSensor", variance=variance)
-        self._nb_rays = nb_rays
+        if nb_rays is None:
+            self._nb_rays = [10, 10]
+        else:
+            self._nb_rays = nb_rays
         self._total_rays = nb_rays[0] * nb_rays[1]
         self._raw_data = raw_data
         self._ray_length = ray_length
@@ -56,10 +61,14 @@ class Lidar3D(Sensor):
             self._link_id = link_name
         self._angle_limits = angle_limits
         self._thetas = [
-            angle_limits[0, 0] + i * (angle_limits[0, 1] - angle_limits[0, 0]) / self._nb_rays[0] for i in range(self._nb_rays[0])
+            angle_limits[0, 0]
+            + i * (angle_limits[0, 1] - angle_limits[0, 0]) / self._nb_rays[0]
+            for i in range(self._nb_rays[0])
         ]
         self._alphas = [
-            angle_limits[1, 0] + i * (angle_limits[1, 1] - angle_limits[1, 0]) / self._nb_rays[1] for i in range(self._nb_rays[1])
+            angle_limits[1, 0]
+            + i * (angle_limits[1, 1] - angle_limits[1, 0]) / self._nb_rays[1]
+            for i in range(self._nb_rays[1])
         ]
         self._rel_positions = np.zeros(3 * self._total_rays)
         self._distances = np.zeros(self._total_rays)
@@ -77,8 +86,8 @@ class Lidar3D(Sensor):
         """Create observation space, all observations should be inside the
         observation space."""
         observation_space = gym.spaces.Box(
-            -self._ray_length-0.01,
-            self._ray_length+0.01,
+            -self._ray_length - 0.01,
+            self._ray_length + 0.01,
             shape=(self.get_observation_size(),),
             dtype=float,
         )
@@ -93,23 +102,28 @@ class Lidar3D(Sensor):
             if joint_name == self._link_name:
                 self._link_id = i
                 return
-        raise LinkIdNotFoundError(f"Link with name {self._link_name} not found. Possible links are {joint_names}")
+        raise LinkIdNotFoundError(
+            f"Link with name {self._link_name} not found. "
+            f"Possible links are {joint_names}"
+        )
 
     def sense(self, robot, obstacles: dict, goals: dict, t: float):
         """Sense the distance toward the next object with the Lidar."""
         if not self._link_id:
             self.extract_link_id(robot)
         link_state = p.getLinkState(robot, self._link_id)
-            
+
         lidar_position = link_state[0]
         ray_start = (lidar_position[0], lidar_position[1], lidar_position[2])
         yaw = p.getEulerFromQuaternion(link_state[1])[2]
         for i, theta in enumerate(self._thetas):
             for j, alpha in enumerate(self._alphas):
                 direction = np.array(
-                    [np.cos(alpha) * np.cos(theta + yaw),
-                     np.cos(alpha) * np.sin(theta + yaw),
-                     np.sin(alpha)]
+                    [
+                        np.cos(alpha) * np.cos(theta + yaw),
+                        np.cos(alpha) * np.sin(theta + yaw),
+                        np.sin(alpha),
+                    ]
                 )
                 ray_end = np.array(ray_start) + self._ray_length * direction
                 lidar = p.rayTest(ray_start, ray_end)
@@ -117,7 +131,7 @@ class Lidar3D(Sensor):
                 actual_ray_end = lidar[0][2] * self._ray_length * direction
                 self._rel_positions[index : index + 3] = actual_ray_end
                 self._distances[i * self._nb_rays[1] + j] = np.linalg.norm(
-                    self._rel_positions[index: index+3]
+                    self._rel_positions[index : index + 3]
                 )
         self.update_lidar_spheres(lidar_position)
         if self._raw_data:

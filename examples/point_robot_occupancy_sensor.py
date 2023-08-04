@@ -8,6 +8,7 @@ from urdfenvs.scene_examples.obstacles import (
     cylinder_obstacle,
     sphereObst2,
     sphereObst1,
+    dynamicSphereObst1,
 )
 
 
@@ -33,12 +34,15 @@ def run_point_robot_with_occupancy_sensor(n_steps=10, render=False, obstacles=Tr
     env.add_obstacle(sphereObst2)
     env.add_obstacle(cylinder_obstacle)
     env.add_obstacle(sphereObst1)
+    env.add_obstacle(dynamicSphereObst1)
 
     # add sensor
+    val = 40
     sensor = OccupancySensor(
-        limits =  np.array([[-5, 5], [-5, 5], [0, 0]]),
-        resolution = np.array([101, 101, 1], dtype=int),
-        interval=10,
+        limits =  np.array([[-5, 5], [-5, 5], [0, 50/val]]),
+        resolution = np.array([val + 1, val + 1, 5], dtype=int),
+        interval=100,
+        plotting_interval=100,
     )
 
     env.add_sensor(sensor, [0])
@@ -50,6 +54,12 @@ def run_point_robot_with_occupancy_sensor(n_steps=10, render=False, obstacles=Tr
     initial_observations = []
     ob, _ = env.reset(pos=pos0, vel=vel0)
     initial_observations.append(ob)
+    env.add_debug_shape(
+        (0.2, -0.3, 0.0),
+        (0.0, 0.0, 0.0, 1.0),
+        size=[0.3],
+        rgba_color=[0.0, 0.0, 0.0, 0.3],
+    )
 
     history = []
     for _ in range(n_steps):
