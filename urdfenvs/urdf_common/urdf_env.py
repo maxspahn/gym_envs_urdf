@@ -1,3 +1,4 @@
+from os import wait
 import time
 import warnings
 import logging
@@ -56,6 +57,7 @@ class UrdfEnv(gym.Env):
         self,
         robots: List[GenericRobot],
         render: bool = False,
+        enforce_real_time: Optional[bool] = None,
         dt: float = 0.01,
         observation_checking=True,
     ) -> None:
@@ -76,6 +78,7 @@ class UrdfEnv(gym.Env):
         self._t: float = 0.0
         self._robots: List[GenericRobot] = robots
         self._render: bool = render
+        self._enforce_real_time: bool = render if enforce_real_time is None else enforce_real_time
         self._done: bool = False
         self._info: dict = {}
         self._num_sub_steps: float = 20
@@ -182,6 +185,7 @@ class UrdfEnv(gym.Env):
         self.action_space = gym.spaces.flatten_space(action_space)
 
     def step(self, action):
+        step_start = time.perf_counter()
         self._t += self.dt()
         # Feed action to the robot and get observation of robot's state
 
@@ -224,6 +228,15 @@ class UrdfEnv(gym.Env):
 
         terminated = self._done
         truncated = self._get_truncated()
+        step_end = time.perf_counter()
+        step_time = step_end - step_start
+        if self._enforce_real_time:
+            sleep_time = max(0.0, self.dt() - step_time)
+            time.sleep(sleep_time)
+        step_final_end = time.perf_counter()
+        total_step_time = step_final_end - step_start
+        real_time_factor = self.dt()/total_step_time
+        logging.info(f"Real time factor {real_time_factor}")
         return ob, reward, terminated, truncated, self._info
     
     def _get_truncated(self) -> bool:
@@ -537,7 +550,7 @@ class UrdfEnv(gym.Env):
         the simulation when rendering is not desired.
 
         """
-        time.sleep(self.dt())
+        #time.sleep(self.dt())
 
     def close(self) -> None:
         p.disconnect(self._cid)
