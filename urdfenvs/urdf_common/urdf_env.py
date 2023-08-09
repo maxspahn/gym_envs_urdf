@@ -1,9 +1,10 @@
-from os import wait
 import time
+from copy import deepcopy
 import warnings
 import logging
-from typing import List, Union, Optional, Tuple
+from typing import List, Type, Union, Optional, Tuple
 
+import dill
 import pybullet as p
 import numpy as np
 import gymnasium as gym
@@ -92,6 +93,13 @@ class UrdfEnv(gym.Env):
         self.sensors = (
             []
         )
+        self.connect_physics_engine()
+        self._obsts = {}
+        self._collision_links = {}
+        self._goals = {}
+        self.set_spaces()
+
+    def connect_physics_engine(self):
         if self._render:
             self._cid = p.connect(p.GUI)
             p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
@@ -102,10 +110,27 @@ class UrdfEnv(gym.Env):
         )
         self.plane = Plane()
         p.setGravity(0, 0, -10.0)
+
+    def load_environment(self):
+        old_obsts = deepcopy(list(self._obsts.values()))
         self._obsts = {}
-        self._collision_links = {}
+        for obst in old_obsts:
+            self.add_obstacle(obst)
+        old_goals = deepcopy(list(self._goals.values()))
         self._goals = {}
-        self.set_spaces()
+        for goal in old_goals:
+            self.add_goal(goal)
+        #TODO load collision links
+
+    @classmethod
+    def load(cls: Type["UrdfEnv"], file_name: str, render: bool = False) -> "UrdfEnv":
+        with open(file_name, "rb") as f:
+            env: "UrdfEnv" =  dill.load(f)
+        env._render = render
+        env.connect_physics_engine()
+        env.reset()
+        env.load_environment()
+        return env
 
     def set_reward_calculator(self, reward_calculator: Reward) -> None:
         self._reward_calculator = reward_calculator
@@ -207,7 +232,7 @@ class UrdfEnv(gym.Env):
             contacts = p.getContactPoints(robot._robot)
             for contact_info in contacts:
                 body_b = contact_info[2]
-                if body_b in self._obsts.keys():
+                if body_b in self._obsts:
                     message = f"Collision occured at {round(self.t(), 2)} " \
                         f"between robot {robot_id} and obstacle " \
                         f"with id {body_b}"
@@ -279,10 +304,10 @@ class UrdfEnv(gym.Env):
         return goal_dict
 
     def empty_scene(self) -> None:
-        for goal_id in self._goals.keys():
+        for goal_id in self._goals:
             p.removeBody(goal_id)
         self._goals = {}
-        for obst_id in self._obsts.keys():
+        for obst_id in self._obsts:
             p.removeBody(obst_id)
         self._obsts = {}
 
@@ -490,12 +515,12 @@ class UrdfEnv(gym.Env):
 
     def reset(
         self,
-        seed: int = None, 
-        options: dict = None,
-        pos: np.ndarray = None,
-        vel: np.ndarray = None,
-        mount_positions: np.ndarray = None,
-        mount_orientations: np.ndarray = None,
+        seed: Optional[int] = None,
+        options: Optional[dict] = None,
+        pos: Optional[np.ndarray] = None,
+        vel: Optional[np.ndarray] = None,
+        mount_positions: Optional[np.ndarray] = None,
+        mount_orientations: Optional[np.ndarray] = None,
     ) -> tuple:
         """Resets the simulation and the robot.
 
@@ -554,3 +579,8 @@ class UrdfEnv(gym.Env):
 
     def close(self) -> None:
         p.disconnect(self._cid)
+
+
+    def dump(self, file_name: str) -> None:
+        with open(file_name, 'wb') as f:
+            dill.dump(self,  f)

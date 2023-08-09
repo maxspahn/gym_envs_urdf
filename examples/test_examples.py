@@ -98,3 +98,7 @@ def test_multi_robot():
     from multi_robot import run_multi_robot
     blueprint_test(run_multi_robot)
 
+def test_serialization():
+    from serializing_environments import run_serializing_example
+    blueprint_test(run_serializing_example)
+
