@@ -209,7 +209,7 @@ class UrdfEnv(gym.Env):
         action_space = gym.spaces.Dict(action_space_as_dict)
         self.action_space = gym.spaces.flatten_space(action_space)
 
-    def step(self, action):
+    def step(self, action: np.ndarray):
         step_start = time.perf_counter()
         self._t += self.dt()
         # Feed action to the robot and get observation of robot's state
