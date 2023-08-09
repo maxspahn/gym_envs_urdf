@@ -37,11 +37,14 @@ def load(file_name: str, render: bool):
     env_loaded = UrdfEnv.load(file_name, render=render)
     return env_loaded
 
-def run_serializing_example(n_steps: int=10000, render: bool = False):
+def run_serializing_example(n_steps: int=10000, render: bool = False, goal=False, obstacles=False):
     serialize("point_robot_env.pkl")
     env = load("point_robot_env.pkl", render)
+    history = []
     for _ in range(n_steps):
-        env.step(np.zeros(env.n()))
+        ob, *_ = env.step(np.zeros(env.n()))
+        history.append(ob)
+    return history
 
 if __name__ == "__main__":
     run_serializing_example(n_steps = 10000, render=True)
