@@ -11,7 +11,7 @@ import numpy as np
 
 
 
-def run_point_robot_with_obstacle_sensor(n_steps=10, render=False, obstacles=True, goal=True):
+def run_point_robot_with_full_sensor(n_steps=10, render=False, obstacles=True, goal=True):
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
     ]
@@ -44,7 +44,7 @@ def run_point_robot_with_obstacle_sensor(n_steps=10, render=False, obstacles=Tru
         history = []
         for _ in range(n_steps):
             action = defaultAction
-            ob, reward, done, info = env.step(action)
+            ob, *_ = env.step(action)
             for obstacle_index in list(ob['robot_0']['FullSensor']['obstacles'].keys()):
                 ob_type = ob['robot_0']['FullSensor']['obstacles'][obstacle_index]['type']
                 ob['robot_0']['FullSensor']['obstacles'][obstacle_index]['type'] = "".join([chr(i) for i in ob_type])
@@ -54,4 +54,4 @@ def run_point_robot_with_obstacle_sensor(n_steps=10, render=False, obstacles=Tru
 
 
 if __name__ == "__main__":
-    run_point_robot_with_obstacle_sensor(render=True, n_steps=300)
+    run_point_robot_with_full_sensor(render=True, n_steps=300)

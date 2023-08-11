@@ -66,6 +66,10 @@ def test_point_robot():
     from point_robot import run_point_robot
     blueprint_test(run_point_robot)
 
+def test_point_robot_with_full_sensor():
+    from point_robot_full_sensor import run_point_robot_with_full_sensor
+    blueprint_test(run_point_robot_with_full_sensor)
+
 def test_point_robot_with_lidar():
     from point_robot_lidar_sensor import run_point_robot_with_lidar
     blueprint_test(run_point_robot_with_lidar)
