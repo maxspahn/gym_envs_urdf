@@ -274,7 +274,7 @@ packaging = "*"
 name = "dill"
 version = "0.3.7"
 description = "serialize all of Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2350,4 +2350,4 @@ keyboard = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "2112e41fef75fa20450e35f17e211940d3489eaf9a9a1a393fcc4ca05b6a2152"
+content-hash = "70267c13e45a05aa205e19bfd08dcd7355171f14447552c5822c9b84a9a605d0"
