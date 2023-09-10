@@ -86,9 +86,11 @@ class HolonomicRobot(GenericRobot):
 
     def apply_torque_action(self, torques: np.ndarray) -> None:
         for i in range(self._n):
+            p.setJointMotorControl2(self._robot,
+                jointIndex=self._robot_joints[i],controlMode= p.VELOCITY_CONTROL, force=0.1)
             p.setJointMotorControl2(
                 self._robot,
-                self._robot_joints[i],
+                jointIndex=self._robot_joints[i],
                 controlMode=p.TORQUE_CONTROL,
                 force=torques[i],
             )
