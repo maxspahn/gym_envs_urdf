@@ -49,6 +49,7 @@ class GenericRobot(ABC):
         self.extract_joint_ids()
         self.read_limits()
 
+
     def set_degrees_of_freedom(self, n):
         if n > 0:
             self._n = n
@@ -198,7 +199,7 @@ class GenericRobot(ABC):
         func:`~urdfenvs.urdfCommon.generic_robot.generic_rob
         ot.apply_torque_action`
         """
-        self._friction = 0.0
+        self._friction = 0.1
         for i in range(self._n):
             p.setJointMotorControl2(
                 self._robot,
@@ -206,6 +207,7 @@ class GenericRobot(ABC):
                 controlMode=p.VELOCITY_CONTROL,
                 force=self._friction,
             )
+        p.setGravity(0, 0, 0)
 
     @abstractmethod
     def apply_torque_action(self, torques) -> None:
