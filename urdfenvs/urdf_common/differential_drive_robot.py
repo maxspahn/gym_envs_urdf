@@ -277,7 +277,17 @@ ignored for differential drive robots."
         here. The function also makes sure that the orientation is always
         between -pi and pi.
         """
-        pos_base -= self._spawn_rotation
+        pos_base[2] -= self._spawn_rotation
+        #TODO: The orientation is with respect to the spawn position
+        # If this is changed as suggested below, it breaks the velocities.
+        """
+        if self._facing_direction == '-y':
+            pos_base[2] -= np.pi/2
+        elif self._facing_direction == 'y':
+            pos_base[2] += np.pi/2
+        elif self._facing_direction == '-x':
+            pos_base[2] + np.pi
+        """
         if pos_base[2] < -np.pi:
             pos_base[2] += 2 * np.pi
         return pos_base
@@ -314,7 +324,7 @@ ignored for differential drive robots."
             ]
         )
         # make sure that the rotation is within -pi and pi
-        self.correct_base_orientation(pos_base)
+        pos_base = self.correct_base_orientation(pos_base)
         # wheel velocities
         vel_wheels = p.getJointStates(self._robot, self._robot_joints)
         v_right = vel_wheels[0][1]
