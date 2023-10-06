@@ -86,6 +86,7 @@ class UrdfEnv(gym.Env):
         self._obsts: dict = {}
         self._collision_links: dict = {}
         self._collision_links_poses: dict = {}
+        self._visualizations: dict = {}
         self._goals: dict = {}
         self._space_set = False
         self._observation_checking = observation_checking
@@ -227,6 +228,7 @@ class UrdfEnv(gym.Env):
         self.update_obstacles()
         self.update_goals()
         self.update_collision_links()
+
         p.stepSimulation(self._cid)
         for robot_id, robot in enumerate(self._robots):
             contacts = p.getContactPoints(robot._robot)
@@ -337,6 +339,14 @@ class UrdfEnv(gym.Env):
                 visual_shape_id, translation, rotation
             )
 
+    def update_visualizations(self, positions) -> None:
+        for visual_shape_id, info in self._visualizations.items():
+            position = positions[visual_shape_id-1]
+            rotation = [1, 0, 0, 0]
+            p.resetBasePositionAndOrientation(
+                visual_shape_id, position, rotation
+            )
+
     def collision_links_poses(self, position_only: bool=False) -> dict:
         if position_only:
             result_dict = {}
@@ -404,6 +414,27 @@ class UrdfEnv(gym.Env):
 
     def get_obstacles(self) -> dict:
         return self._obsts
+
+    def add_visualization(
+        self,shape_type: str = "cylinder",
+        size: Optional[List[float]] = None,
+        rgba_color: Optional[np.ndarray] = [1.0, 1.0, 0.0, 0.3],
+        ) -> int:
+
+        length = [1.0]
+        if size is None:
+            size = [1.0, 0.2]
+
+        bullet_id = add_shape(
+            shape_type,
+            size,
+            rgba_color,
+            with_collision_shape=False,
+        )
+
+        self._visualizations[bullet_id] = (bullet_id)
+
+        return bullet_id
 
     def add_collision_link(
         self,
