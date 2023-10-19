@@ -340,8 +340,8 @@ class UrdfEnv(gym.Env):
             )
 
     def update_visualizations(self, positions) -> None:
-        for visual_shape_id, info in self._visualizations.items():
-            position = positions[visual_shape_id-1]
+        for i, (visual_shape_id, info) in enumerate(self._visualizations.items()):
+            position = positions[i]
             rotation = [1, 0, 0, 0]
             p.resetBasePositionAndOrientation(
                 visual_shape_id, position, rotation
