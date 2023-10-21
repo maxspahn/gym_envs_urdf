@@ -7,7 +7,7 @@ from urdfenvs.urdf_common.urdf_env import UrdfEnv
 
 def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
     robots = [
-        GenericUrdfReacher(urdf="panda_with_gripper.urdf", mode="vel"),
+        GenericUrdfReacher(urdf="panda_with_gripper.urdf", mode="vel", friction_torque = 0.1),
     ]
     env: UrdfEnv = gym.make(
         "urdf-env-v0",
@@ -17,6 +17,7 @@ def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
     )
     env.add_goal(dynamicGoal)
     env.add_obstacle(dynamicSphereObst2)
+
     env.set_spaces()
     action = np.ones(env.n()) * 0.1
     ob = env.reset()
@@ -53,4 +54,4 @@ def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
 
 
 if __name__ == "__main__":
-    run_panda(render=True)
+    run_panda(render=False)
