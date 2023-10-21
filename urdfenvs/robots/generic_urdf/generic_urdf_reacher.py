@@ -4,7 +4,7 @@ import os
 
 
 class GenericUrdfReacher(HolonomicRobot):
-    def __init__(self, urdf, mode, friction_torque):
+    def __init__(self, urdf, mode, friction_torque = 0.1):
         super().__init__(-1, urdf, mode= mode, friction_torque= friction_torque)
 
     def set_joint_names(self):

@@ -5,9 +5,9 @@ from urdfenvs.scene_examples.goal import dynamicGoal
 from urdfenvs.scene_examples.obstacles import dynamicSphereObst2
 from urdfenvs.urdf_common.urdf_env import UrdfEnv
 
-def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
+def run_panda(n_steps=1000, render=False, goal=True, obstacles=True, ):
     robots = [
-        GenericUrdfReacher(urdf="panda_with_gripper.urdf", mode="vel", friction_torque = 0.1),
+        GenericUrdfReacher(urdf="panda_with_gripper.urdf", mode="vel", friction_torque = 0.3),
     ]
     env: UrdfEnv = gym.make(
         "urdf-env-v0",

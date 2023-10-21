@@ -55,7 +55,7 @@ class GenericRobot(ABC):
         self.read_limits()
         self.apply_friction(friction_torque)
     
-    def apply_friction(self, friction_torque: TorqueInput= 0.1):
+    def apply_friction(self, friction_torque: TorqueInput):
         # Checking if the length of input torque (in case of being a `list[float]` matches the number of joints in robot.)
         if(isinstance(friction_torque, list) and len(friction_torque) != self.n()):
             raise ValueError(f"The length of torque array must match the number of joints in the robot. (Input length: {len(friction_torque)}, expected length: {self.n()})")
