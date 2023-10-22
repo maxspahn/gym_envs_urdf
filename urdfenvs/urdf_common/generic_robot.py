@@ -16,7 +16,7 @@ class ControlMode(Enum):
 
 
 
-TorqueInput = Union[float, list[float]]
+TorqueInput = Union[float, List[float]]
 
 
 class GenericRobot(ABC):
@@ -56,10 +56,11 @@ class GenericRobot(ABC):
         self.apply_friction(friction_torque)
     
     def apply_friction(self, friction_torque: TorqueInput):
-        # Checking if the length of input torque (in case of being a `list[float]` matches the number of joints in robot.)
-        if(isinstance(friction_torque, list) and len(friction_torque) != self.n()):
+        # Checking if the length of input torque (in case of being a `List[float]` matches the number of joints in robot.)
+        if(isinstance(friction_torque, List) and len(friction_torque) != self.n()):
             raise ValueError(f"The length of torque array must match the number of joints in the robot. (Input length: {len(friction_torque)}, expected length: {self.n()})")
         self._friction = friction_torque
+
     def set_degrees_of_freedom(self, n):
         if n > 0:
             self._n = n
@@ -214,7 +215,7 @@ class GenericRobot(ABC):
                 self._robot,
                 jointIndex=self._robot_joints[i],
                 controlMode=p.VELOCITY_CONTROL,
-                force=self._friction if isinstance(self._friction, float) else self._friction[i],
+                force=self._friction if (isinstance(self._friction, float) or isinstance(self._friction, int)) else self._friction[i],
             )
         p.setGravity(0, 0, 0)
 
