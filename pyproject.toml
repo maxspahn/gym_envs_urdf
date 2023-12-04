@@ -21,8 +21,9 @@ numpy = "^1.19,<1.24"
 yourdfpy = "^0.0.52"
 deprecation = "^2.1.0"
 mpscenes = "^0.4.4"
-gymnasium = "^0.28.1"
+gymnasium = {extras = ["mujoco"], version = "^0.29.1"}
 dill = "^0.3.7"
+mujoco = "<3.0.0"
 
 [tool.poetry.extras]
 keyboard = ["pynput", "multiprocess"]
