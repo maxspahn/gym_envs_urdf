@@ -29,6 +29,12 @@ class FullSensor(Sensor):
                     high=np.array([50, 50, 50]),
                     dtype=float,
                 )
+            if "orientation" in self._obstacle_mask:
+                observation_space_obstacle["orientation"] = spaces.Box(
+                    low=np.array([-1, -1, -1, -1]),
+                    high=np.array([1, 1, 1, 1]),
+                    dtype=float,
+                )
             if "velocity" in self._obstacle_mask:
                 observation_space_obstacle["velocity"] = spaces.Box(
                     low=np.array([-50, -50, -50]),
@@ -111,6 +117,9 @@ class FullSensor(Sensor):
             for mask_item in self._obstacle_mask:
                 if mask_item == "position":
                     value, _ = p.getBasePositionAndOrientation(obst_id)
+                elif mask_item == "orientation":
+                    _, value_raw = p.getBasePositionAndOrientation(obst_id)
+                    value = value_raw[3:] + value_raw[:3]
 
                 elif mask_item == "velocity":
                     value, _ = p.getBaseVelocity(obst_id)

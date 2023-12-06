@@ -25,7 +25,7 @@ def run_point_robot_with_full_sensor(n_steps=10, render=False, obstacles=True, g
     env.add_goal(goal1)
 
     # add sensor
-    sensor = FullSensor(['position'], ['position', 'size', 'type'], variance=0.0)
+    sensor = FullSensor(['position'], ['position', 'size', 'type', 'orientation'], variance=0.0)
     env.add_sensor(sensor, [0])
     # Set spaces AFTER all components have been added.
     env.set_spaces()

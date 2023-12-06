@@ -199,9 +199,9 @@ def add_shape(
     if color is None:
         color = [1.0, 1.0, 1.0, 1.0]
     if orientation is None:
-        base_orientation = (0.0, 0.0, 0.0, 1.0)
+        base_orientation = [0.0, 0.0, 0.0, 1.0]
     else:
-        base_orientation = orientation
+        base_orientation = orientation[1:] + orientation[:1]
     if position is None:
         base_position = (0.0, 0.0, 0.0)
     else:
@@ -219,7 +219,7 @@ def add_shape(
 
     elif shape_type == "box":
         half_extens = [s / 2 for s in size]
-        base_position = tuple(base_position[i] - size[i] for i in range(3))
+        base_position = tuple(base_position[i] for i in range(3))
         shape_id = pybullet.createCollisionShape(
             pybullet.GEOM_BOX, halfExtents=half_extens
         )

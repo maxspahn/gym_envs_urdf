@@ -321,7 +321,8 @@ class UrdfEnv(gym.Env):
             try:
                 pos = obst.position(t=self.t()).tolist()
                 vel = obst.velocity(t=self.t()).tolist()
-                ori = [0, 0, 0, 1]
+                ori = obst.orientation(t=self.t()).tolist()
+                ori = ori[1:] + ori[:1]
                 p.resetBasePositionAndOrientation(obst_id, pos, ori)
                 p.resetBaseVelocity(obst_id, linearVelocity=vel)
             except Exception:
@@ -386,7 +387,8 @@ class UrdfEnv(gym.Env):
                 obst.type(),
                 obst.size(),
                 obst.rgba().tolist(),
-                position=obst.position(),
+                position=obst.position().tolist(),
+                orientation=obst.orientation().tolist(),
                 movable=obst.movable(),
             )
         self._obsts[obst_id] = obst
@@ -401,7 +403,8 @@ class UrdfEnv(gym.Env):
             else:
                 pos = obstacle.position(t=0).tolist()
                 vel = obstacle.velocity(t=0).tolist()
-            ori = [0, 0, 0, 1]
+                ori = obstacle.orientation(t=0).tolist()
+            ori = ori[1:] + ori[:1]
             p.resetBasePositionAndOrientation(obst_id, pos, ori)
             p.resetBaseVelocity(obst_id, linearVelocity=vel)
 
