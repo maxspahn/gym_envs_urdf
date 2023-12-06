@@ -60,6 +60,7 @@ class UrdfEnv(gym.Env):
         render: bool = False,
         enforce_real_time: Optional[bool] = None,
         dt: float = 0.01,
+        num_sub_steps: int = 20,
         observation_checking=True,
     ) -> None:
         """Constructor for environment.
@@ -82,7 +83,7 @@ class UrdfEnv(gym.Env):
         self._enforce_real_time: bool = render if enforce_real_time is None else enforce_real_time
         self._done: bool = False
         self._info: dict = {}
-        self._num_sub_steps: float = 20
+        self._num_sub_steps: float = num_sub_steps
         self._obsts: dict = {}
         self._collision_links: dict = {}
         self._collision_links_poses: dict = {}
