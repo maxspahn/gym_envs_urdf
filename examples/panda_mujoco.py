@@ -2,7 +2,7 @@ import numpy as np
 import gymnasium as gym
 from urdfenvs.urdf_common.generic_mujoco_env import GenericMujocoEnv
 
-env: GenericMujocoEnv = gym.make("generic-mujoco-env-v0", xml_file='panda_scene.xml', render_mode='human')
+env: GenericMujocoEnv = gym.make("generic-mujoco-env-v0", xml_file='panda_scene_with_box.xml', render_mode='human')
 
 
 observation, info = env.reset(seed=42)
