@@ -103,10 +103,19 @@ def albertReacherEnv():
 
 @pytest.fixture
 def priusEnv():
-    from urdfenvs.robots.prius import Prius
+    from urdfenvs.urdf_common.bicycle_model import BicycleModel
     initPos = np.zeros(3)
     initVel = np.zeros(2)
-    robot = Prius(mode="vel")
+    robot = BicycleModel(
+        urdf='prius.urdf',
+        mode="vel",
+        scaling=0.3,
+        wheel_radius = 0.31265,
+        wheel_distance = 0.494,
+        spawn_offset = np.array([-0.435, 0.0, 0.05]),
+        actuated_wheels=['front_right_wheel_joint', 'front_left_wheel_joint', 'rear_right_wheel_joint', 'rear_left_wheel_joint'],
+        steering_links=['front_right_steer_joint', 'front_left_steer_joint'],
+    )
     return (robot, initPos, initVel)
 
 @pytest.fixture
