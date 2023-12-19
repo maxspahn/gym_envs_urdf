@@ -1,9 +1,11 @@
 import pybullet as p
+from typing import List
 import gymnasium as gym
 import numpy as np
 import logging
 
 from urdfenvs.urdf_common.generic_robot import GenericRobot
+from urdfenvs.urdf_common.generic_robot import ControlMode
 
 
 class BicycleModel(GenericRobot):
@@ -17,13 +19,37 @@ class BicycleModel(GenericRobot):
     _spawn_offset : np.ndarray
         The offset by which the initial position must be shifted to align
         observation with that position.
+    _scaling: float
+        The size scaling in which the urdf should be spawned.
+        This also effects the dynamics of the system.
     """
+    _scaling: float
+    _wheel_radius: float
+    _wheel_distance: float
+    _spawn_offset: np.ndarray
 
-    def __init__(self, n: int, urdf_file: str, mode: str):
-        """Constructor for bicyle model robot."""
-        super().__init__(n, urdf_file, mode)
-        self._wheel_radius: float = None
-        self._spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15])
+    def __init__(
+            self,
+            urdf: str,
+            mode: ControlMode,
+            actuated_wheels: List[str],
+            steering_links: List[str],
+            wheel_radius: float,
+            wheel_distance: float,
+            spawn_offset: np.ndarray = np.array([-0.435, 0.0, 0.05]),
+            scaling: float = 1.0
+
+        ):
+        self._scaling = scaling
+        self._wheel_radius = wheel_radius
+        self._wheel_distance = wheel_distance
+        self._spawn_offset = spawn_offset
+        self._steering_links = steering_links
+        self._actuated_wheels = actuated_wheels
+        self._wheel_radius = wheel_radius
+        self._wheel_joints = []
+        self._steering_joints = []
+        super().__init__(2, urdf, mode)
 
     def ns(self) -> int:
         """Returns the number of degrees of freedom.
@@ -32,6 +58,31 @@ class BicycleModel(GenericRobot):
         number of degrees of freedom for bycycle models.
         """
         return self.n() + 1
+
+    def extract_joint_ids(self) -> None:
+        """Automated extraction of joint ids
+
+        Extract joint ids by the joint names.
+
+        """
+        if not hasattr(self, "_steering_joints"):
+            return
+        if hasattr(self, "_robot"):
+            self._robot_joints = []
+            self._castor_joints = []
+            num_joints = p.getNumJoints(self._robot)
+            for name in self._joint_names:
+                for i in range(num_joints):
+                    joint_info = p.getJointInfo(self._robot, i)
+                    joint_name = joint_info[1].decode("UTF-8")
+                    link_name = joint_info[12].decode("UTF-8")
+                    if joint_name == name:
+                        self._robot_joints.append(i)
+                    self._link_names.append(link_name)
+                    if joint_name in self._actuated_wheels:
+                        self._wheel_joints.append(i)
+                    if joint_name in self._steering_links:
+                        self._steering_joints.append(i)
 
     def reset(
             self,
@@ -69,15 +120,35 @@ ignored for bicycle models."
         self._limit_tor_j = np.zeros((2, self.n()))
         self._limit_acc_j = np.zeros((2, self.n()))
         self._limit_pos_steering = np.zeros(2)
-        joint = self._urdf_robot.robot.joints[self._steering_joints[1] - 1]
-        self._limit_pos_steering[0] = joint.limit.lower - 0.1
-        self._limit_pos_steering[1] = joint.limit.upper + 0.1
+        if len(self._steering_joints) > 0:
+            joint = self._urdf_robot.robot.joints[self._steering_joints[1] - 1]
+            if joint.limit is not None:
+                self._limit_pos_steering[0] = joint.limit.lower - 0.1
+                self._limit_pos_steering[1] = joint.limit.upper + 0.1
         self._limit_vel_forward_j = np.array([[-40., -10.], [40., 10.]])
         self._limit_pos_j[0, 0:3] = np.array([-1000., -1000., -2 * np.pi])
         self._limit_pos_j[1, 0:3] = np.array([1000., 1000, 2 * np.pi])
         self._limit_vel_j[0, 0:3] = np.array([-40., -40., -10.])
         self._limit_vel_j[1, 0:3] = np.array([40., 40., 10.])
         self.set_acceleration_limits()
+
+    def set_joint_names(self):
+        self._joint_names = self._steering_links + self._actuated_wheels
+
+    def set_acceleration_limits(self):
+        acc_limit = np.array([1.0, 1.0])
+        self._limit_acc_j[0, :] = -acc_limit
+        self._limit_acc_j[1, :] = acc_limit
+
+    def check_state_new(self, pos: np.ndarray, vel: np.ndarray):
+        if (
+            not isinstance(pos, np.ndarray)
+            or not pos.size == self.n() + 1
+        ):
+            pos = np.zeros(self.n() + 1)
+        if not isinstance(vel, np.ndarray) or not vel.size == self.n():
+            vel = np.zeros(self.n())
+        return pos, vel
 
     def check_state(self, pos: np.ndarray, vel: np.ndarray) -> tuple:
         """Filters state of the robot and returns a valid state."""
@@ -151,7 +222,7 @@ ignored for bicycle models."
             controlMode=p.POSITION_CONTROL,
             targetPosition=pos_wheel_right,
         )
-        for joint in self._forward_joints:
+        for joint in self._wheel_joints:
             p.setJointMotorControl2(
                 self._robot,
                 joint,
@@ -210,7 +281,7 @@ ignored for bicycle models."
             [link_state[6][0], link_state[6][1], link_state[7][2]]
         )
         # wheel velocities
-        vel_wheels = p.getJointStates(self._robot, self._forward_joints[2:4])
+        vel_wheels = p.getJointStates(self._robot, self._wheel_joints[2:4])
         v_right = vel_wheels[0][1]
         v_left = vel_wheels[1][1]
         vel = np.array(
