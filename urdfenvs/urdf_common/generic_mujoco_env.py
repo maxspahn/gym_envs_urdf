@@ -1,5 +1,7 @@
 import numpy as np
+from typing import List
 import os
+import xml.etree.ElementTree as ET
 
 from gymnasium import utils
 from gymnasium.envs.mujoco import MujocoEnv
@@ -9,13 +11,14 @@ import mujoco
 import itertools
 
 import urdfenvs
+from urdfenvs.urdf_common.generic_mujoco_robot import GenericMujocoRobot
+from mpscenes.obstacles.collision_obstacle import CollisionObstacle
 
 
 DEFAULT_CAMERA_CONFIG = {
     "trackbodyid": -1,
     "distance": 4.0,
 }
-
 
 class GenericMujocoEnv(MujocoEnv, utils.EzPickle):
     metadata = {
@@ -26,32 +29,41 @@ class GenericMujocoEnv(MujocoEnv, utils.EzPickle):
         ],
         "render_fps": 20,
     }
-    def __init__(self, **kwargs):
-        utils.EzPickle.__init__(self, **kwargs)
-        observation_space = Box(low=-np.inf, high=np.inf, shape=(14,), dtype=np.float64)
-        xml_file = kwargs["xml_file"]
-        del kwargs['xml_file']
-        if not os.path.exists(xml_file):
-            asset_dir = urdfenvs.__path__[0] + "/assets"
-            asset_xml = None
-            for root, _, files in os.walk(asset_dir):
-                for file in files:
-                    if file == xml_file:
-                        asset_xml = os.path.join(root, file)
-            if asset_xml is None:
-                raise Exception(f"the request xml {xml_file} can not be found")
-            self._xml_file = asset_xml
-        else:
-            self._xml_file = xml_file
 
+    def __init__(
+        self,
+        robots: List[GenericMujocoRobot],
+        obstacles: List[CollisionObstacle],
+        render: bool = False,
+    ) -> None:
+        utils.EzPickle.__init__(self)
+        observation_space = Box(low=-np.inf, high=np.inf, shape=(14,), dtype=np.float64)
+        self._xml_file = robots[0].xml_file
+        self._obstacles = obstacles
+        self.add_obstacles()
+        render_mode = None
+        if render:
+            render_mode = "human"
         MujocoEnv.__init__(
             self,
-            self._xml_file,
+            "",
             5,
             observation_space=observation_space,
             default_camera_config=DEFAULT_CAMERA_CONFIG,
-            **kwargs,
+            render_mode=render_mode,
         )
+
+
+
+    def _initialize_simulation(
+        self,
+    ):
+        model = mujoco.MjModel.from_xml_path(self._xml_file)
+        model.body_pos[0] = [0, 1, 1]
+        model.vis.global_.offwidth = self.width
+        model.vis.global_.offheight = self.height
+        data = mujoco.MjData(model)
+        return model, data
 
         
 
@@ -71,21 +83,30 @@ class GenericMujocoEnv(MujocoEnv, utils.EzPickle):
             {},
         )
 
-    def reset_model(self, pos=np.ones(9)):
+    def reset(self, pos=np.ones(9)):
         qpos = pos
         qvel = self.init_qvel
         self.set_state(qpos, qvel)
         return self._get_obs()
 
+
     def add_obstacles(self) -> None:
-        viewer = self.mujoco_renderer.viewer
-        marker = {}
-        marker["pos"] = np.array([1.0, 1.0, 1.0])
-        marker["size"] = np.ones(3)
-        #viewer.add_marker(**marker)
-        viewer.add_marker(type=mujoco.mjtGeom.mjGEOM_SPHERE,
-                  pos=np.array([1, 1, 0.1]),
-                  label='hi')
+        tree = ET.parse(self._xml_file)
+        worldbody = tree.getroot().find('worldbody')
+        for obstacle in self._obstacles:
+            self.add_obstacle(obstacle, worldbody)
+        self._xml_file = self._xml_file[:-4]+'_temp.xml'
+        tree.write(self._xml_file)
+
+    def add_obstacle(self, obst: CollisionObstacle, worldbody: ET.Element) -> None:
+        geom_values = {
+            'name': obst.name(),
+            'type': obst.type(),
+            'rgba': " ".join([str(i) for i in obst.rgba()]),
+            'pos': " ".join([str(i) for i in obst.position()]),
+            'size': " ".join([str(i/2) for i in obst.size()]),
+        }
+        ET.SubElement(worldbody, 'geom', geom_values)
 
 
     def _get_obs(self):
