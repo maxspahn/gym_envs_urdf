@@ -34,13 +34,12 @@ def run_panda(n_steps: int = 1000, render: bool = True, physics_engine: str = 'b
     env.reset(pos=pos0)
 
     action_mag = np.array([0.3, -0.2, 0.3, -0.15, 0.2, -0.01, 0.35, 0.01])
-    N = 1000
     t = 0.0
-    for _ in range(N):
+    for _ in range(n_steps):
         t += env.dt
         action = action_mag * np.cos(t)
         observation, *_ = env.step(action)
     env.close()
 
 if __name__ == "__main__":
-    run_panda(render=True, physics_engine=sys.argv[1])
+    run_panda(n_steps=int(1e8), render=True, physics_engine=sys.argv[1])
