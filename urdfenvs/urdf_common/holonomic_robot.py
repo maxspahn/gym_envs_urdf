@@ -2,7 +2,7 @@ import pybullet as p
 import gymnasium as gym
 import numpy as np
 
-from urdfenvs.urdf_common.generic_robot import GenericRobot
+from urdfenvs.urdf_common.generic_robot import GenericRobot, ControlMode
 
 
 class HolonomicRobot(GenericRobot):
@@ -35,6 +35,8 @@ class HolonomicRobot(GenericRobot):
             )
         self.update_state()
         self._integrated_velocities = vel
+        if self._mode == ControlMode.torque:
+            self.disable_velocity_control()
 
     def read_limits(self) -> None:
         """
@@ -88,7 +90,7 @@ class HolonomicRobot(GenericRobot):
         for i in range(self._n):
             p.setJointMotorControl2(
                 self._robot,
-                self._robot_joints[i],
+                jointIndex=self._robot_joints[i],
                 controlMode=p.TORQUE_CONTROL,
                 force=torques[i],
             )

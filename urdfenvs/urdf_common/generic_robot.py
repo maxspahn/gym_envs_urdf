@@ -1,7 +1,7 @@
 import os
 from enum import Enum
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Union
 import pybullet as p
 import gymnasium as gym
 import numpy as np
@@ -14,11 +14,16 @@ class ControlMode(Enum):
     acceleration = 'acc'
     velocity = 'vel'
 
+
+
+TorqueInput = Union[float, List[float]]
+
+
 class GenericRobot(ABC):
     """GenericRobot."""
     _castor_wheels = []
 
-    def __init__(self, n: int, urdf_file: str, mode=ControlMode.velocity):
+    def __init__(self, n: int, urdf_file: str, mode=ControlMode.velocity, friction_torque: TorqueInput = 0.1):
         """Constructor for generic robot.
 
         Parameters
@@ -48,6 +53,13 @@ class GenericRobot(ABC):
         self.set_joint_names()
         self.extract_joint_ids()
         self.read_limits()
+        self.apply_friction(friction_torque)
+    
+    def apply_friction(self, friction_torque: TorqueInput):
+        # Checking if the length of input torque (in case of being a `List[float]` matches the number of joints in robot.)
+        if(isinstance(friction_torque, List) and len(friction_torque) != self.n()):
+            raise ValueError(f"The length of torque array must match the number of joints in the robot. (Input length: {len(friction_torque)}, expected length: {self.n()})")
+        self._friction = friction_torque
 
     def set_degrees_of_freedom(self, n):
         if n > 0:
@@ -198,14 +210,14 @@ class GenericRobot(ABC):
         func:`~urdfenvs.urdfCommon.generic_robot.generic_rob
         ot.apply_torque_action`
         """
-        self._friction = 0.0
         for i in range(self._n):
             p.setJointMotorControl2(
                 self._robot,
                 jointIndex=self._robot_joints[i],
                 controlMode=p.VELOCITY_CONTROL,
-                force=self._friction,
+                force=self._friction if (isinstance(self._friction, float) or isinstance(self._friction, int)) else self._friction[i],
             )
+        p.setGravity(0, 0, 0)
 
     @abstractmethod
     def apply_torque_action(self, torques) -> None:
