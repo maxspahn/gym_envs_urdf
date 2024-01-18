@@ -255,6 +255,8 @@ ignored for bicycle models."
             pos_base[2] += np.pi
         if pos_base[2] < -np.pi:
             pos_base[2] += 2 * np.pi
+        if pos_base[2] > np.pi:
+            pos_base[2] -= 2 * np.pi
         return pos_base
 
     def update_state(self) -> None:
