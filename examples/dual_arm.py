@@ -5,7 +5,7 @@ from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 
 def run_dual_arm(n_steps=5000, render=False, goal=True, obstacles=True):
     robots = [
-        GenericUrdfReacher(urdf="dual_arm.urdf", mode="vel"),
+        GenericUrdfReacher(urdf="dualArm.urdf", mode="vel"),
     ]
     env = gym.make(
         "urdf-env-v0",

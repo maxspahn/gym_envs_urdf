@@ -5,7 +5,7 @@ import numpy as np
 
 def run_mobile_reacher(n_steps=1000, render=False, goal=True, obstacles=True):
     robots = [
-        GenericUrdfReacher(urdf="mobilePandaWithGripper.urdf", mode="vel"),
+        GenericUrdfReacher(urdf="mobilePanda_with_gripper.urdf", mode="vel"),
     ]
     env = gym.make(
         "urdf-env-v0",

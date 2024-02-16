@@ -20,7 +20,7 @@ def run_tiago(n_steps=1000, render=False, goal=True, obstacles=True):
 
     robots = [
         GenericDiffDriveRobot(
-            urdf="tiago_dual.urdf",
+            urdf="tiago.urdf",
             mode="vel",
             actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
             castor_wheels=[

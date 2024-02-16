@@ -1,6 +1,9 @@
-import numpy as np
+import os
 import sys
+import shutil
+import numpy as np
 import gymnasium as gym
+from robotmodels.utils.robotmodel import RobotModel, LocalRobotModel
 from urdfenvs.generic_mujoco.generic_mujoco_env import GenericMujocoEnv
 from urdfenvs.generic_mujoco.generic_mujoco_robot import GenericMujocoRobot
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
@@ -10,10 +13,16 @@ from urdfenvs.scene_examples.obstacles import sphereObst1, sphereObst2, wall_obs
 
 def run_panda(n_steps: int = 1000, render: bool = True, physics_engine: str = "bullet"):
     obstacles = [sphereObst1, sphereObst2, cylinder_obstacle] + wall_obstacles
+    shutil.rmtree('panda')
+    robot_model_original = RobotModel('panda', 'panda_scene')
+    robot_model_original.copy_model(os.path.join(os.getcwd(), 'panda'))
+    robot_model = LocalRobotModel('panda', 'panda_scene')
+
+    xml_file = robot_model.get_xml_path()
     if physics_engine == "mujoco":
 
         robots  = [
-            GenericMujocoRobot(xml_file="panda_scene.xml", mode="vel"),
+            GenericMujocoRobot(xml_file=xml_file, mode="vel"),
         ]
         env = GenericMujocoEnv(robots, obstacles, render=render)
     if physics_engine == "bullet":
