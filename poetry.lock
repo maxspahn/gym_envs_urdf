@@ -976,16 +976,6 @@ files = [
     {file = "MarkupSafe-2.1.3-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:5bbe06f8eeafd38e5d0a4894ffec89378b6c6a625ff57e3028921f8ff59318ac"},
     {file = "MarkupSafe-2.1.3-cp311-cp311-win32.whl", hash = "sha256:dd15ff04ffd7e05ffcb7fe79f1b98041b8ea30ae9234aed2a9168b5797c3effb"},
     {file = "MarkupSafe-2.1.3-cp311-cp311-win_amd64.whl", hash = "sha256:134da1eca9ec0ae528110ccc9e48041e0828d79f24121a1a146161103c76e686"},
-    {file = "MarkupSafe-2.1.3-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:f698de3fd0c4e6972b92290a45bd9b1536bffe8c6759c62471efaa8acb4c37bc"},
-    {file = "MarkupSafe-2.1.3-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:aa57bd9cf8ae831a362185ee444e15a93ecb2e344c8e52e4d721ea3ab6ef1823"},
-    {file = "MarkupSafe-2.1.3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ffcc3f7c66b5f5b7931a5aa68fc9cecc51e685ef90282f4a82f0f5e9b704ad11"},
-    {file = "MarkupSafe-2.1.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:47d4f1c5f80fc62fdd7777d0d40a2e9dda0a05883ab11374334f6c4de38adffd"},
-    {file = "MarkupSafe-2.1.3-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:1f67c7038d560d92149c060157d623c542173016c4babc0c1913cca0564b9939"},
-    {file = "MarkupSafe-2.1.3-cp312-cp312-musllinux_1_1_aarch64.whl", hash = "sha256:9aad3c1755095ce347e26488214ef77e0485a3c34a50c5a5e2471dff60b9dd9c"},
-    {file = "MarkupSafe-2.1.3-cp312-cp312-musllinux_1_1_i686.whl", hash = "sha256:14ff806850827afd6b07a5f32bd917fb7f45b046ba40c57abdb636674a8b559c"},
-    {file = "MarkupSafe-2.1.3-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:8f9293864fe09b8149f0cc42ce56e3f0e54de883a9de90cd427f191c346eb2e1"},
-    {file = "MarkupSafe-2.1.3-cp312-cp312-win32.whl", hash = "sha256:715d3562f79d540f251b99ebd6d8baa547118974341db04f5ad06d5ea3eb8007"},
-    {file = "MarkupSafe-2.1.3-cp312-cp312-win_amd64.whl", hash = "sha256:1b8dd8c3fd14349433c79fa8abeb573a55fc0fdd769133baac1f5e07abf54aeb"},
     {file = "MarkupSafe-2.1.3-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:8e254ae696c88d98da6555f5ace2279cf7cd5b3f52be2b5cf97feafe883b58d2"},
     {file = "MarkupSafe-2.1.3-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:cb0932dc158471523c9637e807d9bfb93e06a95cbf010f1a38b98623b929ef2b"},
     {file = "MarkupSafe-2.1.3-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9402b03f1a1b4dc4c19845e5c749e3ab82d5078d16a2a4c2cd2df62d57bb0707"},
@@ -1394,6 +1384,17 @@ prettyprint = ["lxml"]
 validation = ["lxml"]
 
 [[package]]
+name = "pyglet"
+version = "1.5.28"
+description = "Cross-platform windowing and multimedia library"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyglet-1.5.28-py3-none-any.whl", hash = "sha256:ea312a553c266a0f45a9c209f565e3c02371c83d89fd8931422c6475ce4ecbae"},
+    {file = "pyglet-1.5.28.zip", hash = "sha256:68bff532226b0e8f54dfcc2f6df7d0e463b451fae97fe9fa4af4131d34afbc00"},
+]
+
+[[package]]
 name = "pygments"
 version = "2.17.2"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -1740,6 +1741,21 @@ urllib3 = ">=1.21.1,<3"
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
+
+[[package]]
+name = "robotmodels"
+version = "0.1.0"
+description = "A collection of robot models"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "robotmodels-0.1.0-py3-none-any.whl", hash = "sha256:1a517ca86ba76290d8afd1c87b4e5bedc078ad92e0a8e64c2f2989e806c484ad"},
+    {file = "robotmodels-0.1.0.tar.gz", hash = "sha256:99deaca59b0df76963d2ebacf9f5efd78f82e92d4c862adf52292b3b71eb24ac"},
+]
+
+[package.dependencies]
+pyglet = "<2"
+yourdfpy = ">=0.0.56,<0.0.57"
 
 [[package]]
 name = "rpds-py"
@@ -2491,13 +2507,13 @@ files = [
 
 [[package]]
 name = "yourdfpy"
-version = "0.0.52"
+version = "0.0.56"
 description = "A simpler and easier-to-use library for loading, manipulating, saving, and visualizing URDF files."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "yourdfpy-0.0.52-py3-none-any.whl", hash = "sha256:4a8da7bbce61ab60d64b2369852c8b470e74fa5508b6215bbc08db05b941349f"},
-    {file = "yourdfpy-0.0.52.tar.gz", hash = "sha256:767c98a621378102049da26925a33ebf6b9b80c05202ed674b7f51b6990f777e"},
+    {file = "yourdfpy-0.0.56-py3-none-any.whl", hash = "sha256:85063021aafa97e3818c9e708bc67a804678bbd7f8bbd3c4425f243ff58f9499"},
+    {file = "yourdfpy-0.0.56.tar.gz", hash = "sha256:6075b643482b5e4c406fa053597484c450c8823058d4068c091f54238808ab1a"},
 ]
 
 [package.dependencies]
@@ -2507,6 +2523,7 @@ six = "*"
 trimesh = {version = ">=3.11.2", extras = ["easy"]}
 
 [package.extras]
+full = ["pyglet (<2)"]
 testing = ["pytest", "pytest-cov", "setuptools"]
 
 [[package]]
@@ -2530,4 +2547,4 @@ keyboard = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "eceb9675f55d48105357ed799fc970d472475f6121234c5b331e7d52b2c86fba"
+content-hash = "7c5fbd929d78b67d4094aa9b19958b01440589adc8e73463de2bf70ec7ff23c8"
