@@ -23,7 +23,7 @@ deprecation = "^2.1.0"
 mpscenes = "^0.4.4"
 gymnasium = "^0.29.1"
 dill = "^0.3.7"
-robotmodels = "^0.1.0"
+robotmodels = {git = "https://github.com/maxspahn/robotmodels.git"}
 
 [tool.poetry.extras]
 keyboard = ["pynput", "multiprocess"]

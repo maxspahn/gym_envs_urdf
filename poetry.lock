@@ -1744,18 +1744,22 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "robotmodels"
-version = "0.1.0"
+version = "0.1.1"
 description = "A collection of robot models"
 optional = false
-python-versions = ">=3.8,<4.0"
-files = [
-    {file = "robotmodels-0.1.0-py3-none-any.whl", hash = "sha256:1a517ca86ba76290d8afd1c87b4e5bedc078ad92e0a8e64c2f2989e806c484ad"},
-    {file = "robotmodels-0.1.0.tar.gz", hash = "sha256:99deaca59b0df76963d2ebacf9f5efd78f82e92d4c862adf52292b3b71eb24ac"},
-]
+python-versions = "^3.8"
+files = []
+develop = false
 
 [package.dependencies]
 pyglet = "<2"
-yourdfpy = ">=0.0.56,<0.0.57"
+yourdfpy = "^0.0.56"
+
+[package.source]
+type = "git"
+url = "https://github.com/maxspahn/robotmodels.git"
+reference = "HEAD"
+resolved_reference = "d7ccfc7a36530a42059283aa8254bf302a5bd753"
 
 [[package]]
 name = "rpds-py"
@@ -2547,4 +2551,4 @@ keyboard = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "7c5fbd929d78b67d4094aa9b19958b01440589adc8e73463de2bf70ec7ff23c8"
+content-hash = "6cd0b0bfaaea3d46155ee50d3f31c4a9afd5f24d870515f1f1c32adc5dadaaec"

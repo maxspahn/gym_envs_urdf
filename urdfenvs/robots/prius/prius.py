@@ -16,7 +16,7 @@ class Prius(BicycleModel):
     """
     def __init__(self, mode: str):
         n = 2
-        urdf_file = os.path.join(os.path.dirname(__file__), 'prius.urdf')
+        urdf_file = 'prius.urdf'
         self._scaling: float = 0.3
         super().__init__(n, urdf_file, mode)
         self._wheel_radius = 0.31265
