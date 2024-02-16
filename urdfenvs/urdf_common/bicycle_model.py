@@ -11,6 +11,11 @@ from urdfenvs.urdf_common.generic_robot import ControlMode
 class BicycleModel(GenericRobot):
     """Bicycle model for car like vehicles.
 
+    The bicycle model in velocity mode takes as inputs the forward velocity
+    and the steering position. The latter seems counter-intuitive but is more
+    common for bicycle models.
+
+
     Attributes
     ----------
 
@@ -27,6 +32,7 @@ class BicycleModel(GenericRobot):
     _wheel_radius: float
     _wheel_distance: float
     _spawn_offset: np.ndarray
+    _facing_direction: str
 
     def __init__(
             self,
@@ -37,11 +43,13 @@ class BicycleModel(GenericRobot):
             wheel_radius: float,
             wheel_distance: float,
             spawn_offset: np.ndarray = np.array([-0.435, 0.0, 0.05]),
+            facing_direction: str = 'x',
             scaling: float = 1.0
 
         ):
         self._scaling = scaling
         self._wheel_radius = wheel_radius
+        self._facing_direction = facing_direction
         self._wheel_distance = wheel_distance
         self._spawn_offset = spawn_offset
         self._steering_links = steering_links
@@ -206,22 +214,14 @@ ignored for bicycle models."
         return (ospace, aspace)
 
     def apply_velocity_action(self, vels: np.ndarray) -> None:
-        """Applies velocities to steering and forward motion."""
-        p.setJointMotorControl2(
-            self._robot,
-            self._steering_joints[1],
-            controlMode=p.VELOCITY_CONTROL,
-            targetVelocity=vels[1],
-        )
-        pos_wheel_right, _, _, _ = p.getJointState(
-            self._robot, self._steering_joints[1]
-        )
-        p.setJointMotorControl2(
-            self._robot,
-            self._steering_joints[0],
-            controlMode=p.POSITION_CONTROL,
-            targetPosition=pos_wheel_right,
-        )
+        """Applies velocities to forward motion and sets steering angle."""
+        for steering_joint in self._steering_joints:
+            p.setJointMotorControl2(
+                self._robot,
+                steering_joint,
+                controlMode=p.POSITION_CONTROL,
+                targetPosition=vels[1],
+            )
         for joint in self._wheel_joints:
             p.setJointMotorControl2(
                 self._robot,
@@ -245,16 +245,18 @@ ignored for bicycle models."
         raise NotImplementedError("Torque action is not available for prius.")
 
     def correct_base_orientation(self, pos_base: np.ndarray) -> np.ndarray:
-        """Corrects base orientation by -pi.
-
-        The orientation observation should be zero when facing positive
-        x-direction. Some robot models are rotated by pi. This is corrected
-        here. The function also makes sure that the orientation is always
-        between -pi and pi.
+        """Corrects base orientation to be within the interval (-pi , pi].
         """
-        pos_base[2] -= np.pi
+        if self._facing_direction == '-y':
+            pos_base[2] -= np.pi/2
+        elif self._facing_direction == 'y':
+            pos_base[2] += np.pi/2
+        elif self._facing_direction == '-x':
+            pos_base[2] += np.pi
         if pos_base[2] < -np.pi:
             pos_base[2] += 2 * np.pi
+        if pos_base[2] > np.pi:
+            pos_base[2] -= 2 * np.pi
         return pos_base
 
     def update_state(self) -> None:
