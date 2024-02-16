@@ -60,6 +60,7 @@ class UrdfEnv(gym.Env):
         render: bool = False,
         enforce_real_time: Optional[bool] = None,
         dt: float = 0.01,
+        num_sub_steps: int = 20,
         observation_checking=True,
     ) -> None:
         """Constructor for environment.
@@ -82,7 +83,7 @@ class UrdfEnv(gym.Env):
         self._enforce_real_time: bool = render if enforce_real_time is None else enforce_real_time
         self._done: bool = False
         self._info: dict = {}
-        self._num_sub_steps: float = 20
+        self._num_sub_steps: float = num_sub_steps
         self._obsts: dict = {}
         self._collision_links: dict = {}
         self._collision_links_poses: dict = {}
@@ -321,7 +322,8 @@ class UrdfEnv(gym.Env):
             try:
                 pos = obst.position(t=self.t()).tolist()
                 vel = obst.velocity(t=self.t()).tolist()
-                ori = [0, 0, 0, 1]
+                ori = obst.orientation(t=self.t()).tolist()
+                ori = ori[1:] + ori[:1]
                 p.resetBasePositionAndOrientation(obst_id, pos, ori)
                 p.resetBaseVelocity(obst_id, linearVelocity=vel)
             except Exception:
@@ -386,7 +388,8 @@ class UrdfEnv(gym.Env):
                 obst.type(),
                 obst.size(),
                 obst.rgba().tolist(),
-                position=obst.position(),
+                position=obst.position().tolist(),
+                orientation=obst.orientation().tolist(),
                 movable=obst.movable(),
             )
         self._obsts[obst_id] = obst
@@ -401,7 +404,8 @@ class UrdfEnv(gym.Env):
             else:
                 pos = obstacle.position(t=0).tolist()
                 vel = obstacle.velocity(t=0).tolist()
-            ori = [0, 0, 0, 1]
+                ori = obstacle.orientation(t=0).tolist()
+            ori = ori[1:] + ori[:1]
             p.resetBasePositionAndOrientation(obst_id, pos, ori)
             p.resetBaseVelocity(obst_id, linearVelocity=vel)
 

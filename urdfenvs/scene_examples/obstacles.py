@@ -56,6 +56,7 @@ movable_obstacle_dict = {
     'type': 'box',
     'geometry': {
         'position' : [2.0, 0.0, 2.0],
+        'orientation': [0.923, 0, 0, -0.38],
         'width': 0.2,
         'height': 0.2,
         'length': 0.2,
