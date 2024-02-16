@@ -33,6 +33,8 @@ def run_panda(n_steps: int = 1000, render: bool = True, physics_engine: str = "b
     ob, info = env.reset()
 
     action_mag = np.array([0.8, -0.2, 0.3, -0.15, 0.2, -0.01, 0.35, 0.01])
+    if physics_engine == 'bullet':
+        action_mag = action_mag[0:7]
     t = 0.0
     for _ in range(n_steps):
         t += env.dt
