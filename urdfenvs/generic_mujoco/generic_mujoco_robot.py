@@ -24,15 +24,7 @@ class GenericMujocoRobot():
             Control mode. Note that the mode is not used in mujoco as it is implicitely defined by the actuators.
         """
         if not os.path.exists(xml_file):
-            asset_dir = urdfenvs.__path__[0] + "/assets"
-            asset_xml = None
-            for root, _, files in os.walk(asset_dir):
-                for file in files:
-                    if file == xml_file:
-                        asset_xml = os.path.join(root, file)
-            if asset_xml is None:
-                raise Exception(f"the request xml {xml_file} can not be found")
-            self._xml_file = asset_xml
+            raise Exception(f"the request xml {xml_file} can not be found")
         else:
             self._xml_file = xml_file
 
