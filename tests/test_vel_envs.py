@@ -65,7 +65,7 @@ def tiagoReacherEnv():
     init_pos[3] = 0.1
     init_vel = np.zeros(23)
     robot = GenericDiffDriveRobot(
-        urdf="tiago_dual.urdf",
+        urdf="tiago.urdf",
         mode="vel",
         actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
         castor_wheels=[
@@ -122,7 +122,7 @@ def priusEnv():
 @pytest.fixture
 def dualArmEnv():
     from urdfenvs.robots.generic_urdf import GenericUrdfReacher
-    robot = GenericUrdfReacher(urdf="dual_arm.urdf", mode="vel")
+    robot = GenericUrdfReacher(urdf="dualArm.urdf", mode="vel")
     init_pos = np.zeros(robot.n())
     init_vel = np.zeros(robot.n())
     return (robot, init_pos, init_vel)

@@ -1,13 +1,14 @@
 import os
 from enum import Enum
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 import pybullet as p
 import gymnasium as gym
 import numpy as np
 import yourdfpy
 import urdfenvs
 from urdfenvs.sensors.sensor import Sensor
+from robotmodels.utils.robotmodel import RobotModel
 
 class ControlMode(Enum):
     torque = 'tor'
@@ -27,17 +28,21 @@ class GenericRobot(ABC):
         n: int : Degrees of freedom of the robot
         urdf_file: str : Full path to urdf file
         """
-        # search for urdf in package if not found in cwd
         if not os.path.exists(urdf_file):
-            asset_dir = urdfenvs.__path__[0] + "/assets"
-            asset_urdf = None
-            for root, _, files in os.walk(asset_dir):
-                for file in files:
-                    if file == urdf_file:
-                        asset_urdf = os.path.join(root, file)
-            if asset_urdf is None:
+            # If file not in the working directory search the robotmodels package
+            if "_" in urdf_file:
+                robot_name = urdf_file.split("_")[0]
+                model_name = urdf_file.split(".")[0]
+            else:
+                robot_name = urdf_file.split(".")[0]
+                model_name = None
+            self._robot_model = RobotModel(robot_name = robot_name, model_name = model_name)
+            try:
+                urdf_file = self._robot_model.get_urdf_path()
+            except Exception as e:
+                print(e)
                 raise Exception(f"the request urdf {urdf_file} can not be found")
-            self._urdf_file = asset_urdf
+            self._urdf_file = urdf_file
         else:
             self._urdf_file = urdf_file
         self._sensors: List[Sensor] = []
@@ -48,6 +53,14 @@ class GenericRobot(ABC):
         self.set_joint_names()
         self.extract_joint_ids()
         self.read_limits()
+
+    def robot_model(self) -> Optional[RobotModel]:
+        try:
+            return self._robot_model
+        except Exception as e:
+            print(e)
+            print("RobotModel not available. Likely because you loaded a custom urdf.")
+            return None
 
     def set_degrees_of_freedom(self, n):
         if n > 0:

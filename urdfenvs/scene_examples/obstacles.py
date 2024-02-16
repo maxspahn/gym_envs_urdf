@@ -11,13 +11,13 @@ obst1Dict = {
     "geometry": {"position": [2.0, 2.0, 1.0], "radius": 1.0},
     "rgba": [0.3, 0.5, 0.6, 1.0],
 }
-sphereObst1 = SphereObstacle(name="simpleSphere", content_dict=obst1Dict)
+sphereObst1 = SphereObstacle(name="sphere_1", content_dict=obst1Dict)
 obst2Dict = {
     "type": "sphere",
     "movable": False,
     "geometry": {"position": [2.0, -0.0, 0.0], "radius": 0.2},
 }
-sphereObst2 = SphereObstacle(name="simpleSphere", content_dict=obst2Dict)
+sphereObst2 = SphereObstacle(name="sphere_2", content_dict=obst2Dict)
 urdfObst1Dict = {
     "type": "urdf",
     "geometry": {"position": [1.5, 0.0, 0.05]},

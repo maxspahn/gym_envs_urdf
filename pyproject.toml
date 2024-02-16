@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "urdfenvs"
-version = "0.8.20"
+version = "0.9.0"
 description = "Simple simulation environment for robots, based on the urdf files."
 authors = ["Max Spahn <m.spahn@tudelft.nl>"]
 maintainers = [
@@ -18,11 +18,12 @@ keywords = ["robotics", "motion-planning", "simulation"]
 python = "^3.8"
 pybullet = "^3.2.1"
 numpy = "^1.19,<1.24"
-yourdfpy = "^0.0.52"
+yourdfpy = "^0.0.56"
 deprecation = "^2.1.0"
 mpscenes = "^0.4.4"
-gymnasium = "^0.28.1"
+gymnasium = "^0.29.1"
 dill = "^0.3.7"
+robotmodels = "^0.1.1"
 
 [tool.poetry.extras]
 keyboard = ["pynput", "multiprocess"]
@@ -41,9 +42,15 @@ sphinxcontrib-napoleon = "0.7"
 [tool.poetry.group.keyboard]
 optional = true
 
+[tool.poetry.group.mujoco]
+optional = true
+
 [tool.poetry.group.keyboard.dependencies]
 pynput = "^1.7.6"
 multiprocess = "^0.70.12"
+
+[tool.poetry.group.mujoco.dependencies]
+mujoco = "^3.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

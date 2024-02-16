@@ -17,7 +17,7 @@ class IrisDrone(QuadrotorModel):
 
     def __init__(self, mode: str):
         n = 4  # number of actuated joints
-        urdf_file = os.path.join(os.path.dirname(__file__), 'iris.urdf')
+        urdf_file = 'iris.urdf'
         self._scaling: float = 1.0
         self._arm_length    = 0.046
         self._k_thrust      = 5.5716e-06

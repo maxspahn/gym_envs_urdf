@@ -146,6 +146,7 @@ class UrdfEnv(gym.Env):
     def ns_per_robot(self) -> list:
         return [robot.ns() for robot in self._robots]
 
+    @property
     def dt(self) -> float:
         return self._dt
 
@@ -213,7 +214,7 @@ class UrdfEnv(gym.Env):
 
     def step(self, action: np.ndarray):
         step_start = time.perf_counter()
-        self._t += self.dt()
+        self._t += self.dt
         # Feed action to the robot and get observation of robot's state
 
         if not self.action_space.contains(action):
@@ -223,7 +224,7 @@ class UrdfEnv(gym.Env):
         action_id = 0
         for robot in self._robots:
             action_robot = action[action_id : action_id + robot.n()]
-            robot.apply_action(action_robot, self.dt())
+            robot.apply_action(action_robot, self.dt)
             action_id += robot.n()
 
         self.update_obstacles()
@@ -259,11 +260,11 @@ class UrdfEnv(gym.Env):
         step_end = time.perf_counter()
         step_time = step_end - step_start
         if self._enforce_real_time:
-            sleep_time = max(0.0, self.dt() - step_time)
+            sleep_time = max(0.0, self.dt - step_time)
             time.sleep(sleep_time)
         step_final_end = time.perf_counter()
         total_step_time = step_final_end - step_start
-        real_time_factor = self.dt()/total_step_time
+        real_time_factor = self.dt/total_step_time
         logging.info(f"Real time factor {real_time_factor}")
         return ob, reward, terminated, truncated, self._info
     
@@ -610,7 +611,6 @@ class UrdfEnv(gym.Env):
         the simulation when rendering is not desired.
 
         """
-        #time.sleep(self.dt())
 
     def close(self) -> None:
         p.disconnect(self._cid)
