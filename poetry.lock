@@ -1747,19 +1747,15 @@ name = "robotmodels"
 version = "0.1.1"
 description = "A collection of robot models"
 optional = false
-python-versions = "^3.8"
-files = []
-develop = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "robotmodels-0.1.1-py3-none-any.whl", hash = "sha256:b89c62150cef262b43b271e3541dff037ce2cba6a7ec5c5b68315254e7f9a210"},
+    {file = "robotmodels-0.1.1.tar.gz", hash = "sha256:25ab3ab4940638d49f11bc781e045c0ace0e45d6aee3f4539df2999510630e7a"},
+]
 
 [package.dependencies]
 pyglet = "<2"
-yourdfpy = "^0.0.56"
-
-[package.source]
-type = "git"
-url = "https://github.com/maxspahn/robotmodels.git"
-reference = "HEAD"
-resolved_reference = "d7ccfc7a36530a42059283aa8254bf302a5bd753"
+yourdfpy = ">=0.0.56,<0.0.57"
 
 [[package]]
 name = "rpds-py"
@@ -2551,4 +2547,4 @@ keyboard = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "6cd0b0bfaaea3d46155ee50d3f31c4a9afd5f24d870515f1f1c32adc5dadaaec"
+content-hash = "435833506f49b85d616bf7f6e2a942a7f1d9385fda8b20fbd4c3dec56717d009"
