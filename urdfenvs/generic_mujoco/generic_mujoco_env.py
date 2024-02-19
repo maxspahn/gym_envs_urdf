@@ -249,12 +249,16 @@ class GenericMujocoEnv(utils.EzPickle):
     def add_obstacle(
         self, obst: CollisionObstacle, worldbody: ET.Element
     ) -> None:
+        if obst.type() == "sphere":
+            size = str(obst.size()[0])
+        else:
+            size = " ".join([str(i / 2) for i in obst.size()])
         geom_values = {
             "name": obst.name(),
             "type": obst.type(),
             "rgba": " ".join([str(i) for i in obst.rgba()]),
             "pos": " ".join([str(i) for i in obst.position()]),
-            "size": " ".join([str(i / 2) for i in obst.size()]),
+            "size": size,
         }
         ET.SubElement(worldbody, "geom", geom_values)
 
