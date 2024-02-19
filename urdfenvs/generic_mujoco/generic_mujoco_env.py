@@ -1,14 +1,15 @@
 import numpy as np
 from typing import List, Optional
-import os
 import xml.etree.ElementTree as ET
 
 import gymnasium as gym
 from gymnasium import utils
 import mujoco
-import itertools
 
-from urdfenvs.urdf_common.urdf_env import check_observation, WrongActionError, WrongObservationError
+from urdfenvs.urdf_common.urdf_env import (
+    check_observation,
+    WrongObservationError,
+)
 from urdfenvs.generic_mujoco.generic_mujoco_robot import GenericMujocoRobot
 from urdfenvs.generic_mujoco.mujoco_rendering import MujocoRenderer
 from mpscenes.obstacles.collision_obstacle import CollisionObstacle
@@ -20,6 +21,7 @@ DEFAULT_CAMERA_CONFIG = {
 }
 
 DEFAULT_SIZE = 480
+
 
 class GenericMujocoEnv(utils.EzPickle):
     metadata = {
@@ -89,32 +91,37 @@ class GenericMujocoEnv(utils.EzPickle):
 
     def get_observation_space(self) -> gym.spaces.Dict:
         """Get observation space."""
-        return gym.spaces.Dict({
-                "robot_0": gym.spaces.Dict({
-                    "joint_state": gym.spaces.Dict({
-                        "position": gym.spaces.Box(
-                            low=self.joint_limits()[:, 0],
-                            high=self.joint_limits()[:, 1],
-                            dtype=float,
-                        ),
-                        "velocity": gym.spaces.Box(
-                            low=np.ones_like(self.joint_limits()[:, 0]) * -2.0,
-                            high=np.ones_like(self.joint_limits()[:, 0]) * 2.0,
-                            dtype=float,
-                        ),
-                    })
-                })
-            })
+        return gym.spaces.Dict(
+            {
+                "robot_0": gym.spaces.Dict(
+                    {
+                        "joint_state": gym.spaces.Dict(
+                            {
+                                "position": gym.spaces.Box(
+                                    low=self.joint_limits()[:, 0],
+                                    high=self.joint_limits()[:, 1],
+                                    dtype=float,
+                                ),
+                                "velocity": gym.spaces.Box(
+                                    low=np.ones_like(self.joint_limits()[:, 0])
+                                    * -2.0,
+                                    high=np.ones_like(self.joint_limits()[:, 0])
+                                    * 2.0,
+                                    dtype=float,
+                                ),
+                            }
+                        )
+                    }
+                )
+            }
+        )
 
     def get_action_space(self) -> np.ndarray:
         return gym.spaces.Box(
-                low=self.actuator_limits()[:, 0],
-                high=self.actuator_limits()[:, 1],
-                dtype=float
+            low=self.actuator_limits()[:, 0],
+            high=self.actuator_limits()[:, 1],
+            dtype=float,
         )
-
-
-
 
     def joint_limits(self) -> np.ndarray:
         return self.model.jnt_range
@@ -124,7 +131,6 @@ class GenericMujocoEnv(utils.EzPickle):
 
     def velocity_limits(self) -> np.ndarray:
         return self.model.actuator_ctrlrange
-
 
     def _initialize_simulation(
         self,
@@ -138,8 +144,6 @@ class GenericMujocoEnv(utils.EzPickle):
     @property
     def dt(self) -> float:
         return self.model.opt.timestep * self.frame_skip
-
-        
 
     def step(self, action: np.ndarray):
         terminated = False
@@ -178,7 +182,7 @@ class GenericMujocoEnv(utils.EzPickle):
             qpos = pos
         else:
             qpos = (self.joint_limits()[:, 1] + self.joint_limits()[:, 0]) / 2
-        if vel is not None: 
+        if vel is not None:
             qvel = vel
         else:
             qvel = np.zeros(self.model.nv)
@@ -226,45 +230,45 @@ class GenericMujocoEnv(utils.EzPickle):
         # See https://github.com/openai/gym/issues/1541
         mujoco.mj_rnePostConstraint(self.model, self.data)
 
-
     def add_obstacles(self) -> None:
         tree = ET.parse(self._xml_file)
-        worldbody = tree.getroot().find('worldbody')
+        worldbody = tree.getroot().find("worldbody")
         for obstacle in self._obstacles:
             self.add_obstacle(obstacle, worldbody)
-        self._xml_file = self._xml_file[:-4]+'_temp.xml'
+        self._xml_file = self._xml_file[:-4] + "_temp.xml"
         tree.write(self._xml_file)
 
     def add_sub_goals(self) -> None:
         tree = ET.parse(self._xml_file)
-        worldbody = tree.getroot().find('worldbody')
+        worldbody = tree.getroot().find("worldbody")
         for sub_goal in self._goals:
             self.add_sub_goal(sub_goal, worldbody)
-        self._xml_file = self._xml_file[:-4]+'_temp.xml'
+        self._xml_file = self._xml_file[:-4] + "_temp.xml"
         tree.write(self._xml_file)
 
-    def add_obstacle(self, obst: CollisionObstacle, worldbody: ET.Element) -> None:
+    def add_obstacle(
+        self, obst: CollisionObstacle, worldbody: ET.Element
+    ) -> None:
         geom_values = {
-            'name': obst.name(),
-            'type': obst.type(),
-            'rgba': " ".join([str(i) for i in obst.rgba()]),
-            'pos': " ".join([str(i) for i in obst.position()]),
-            'size': " ".join([str(i/2) for i in obst.size()]),
+            "name": obst.name(),
+            "type": obst.type(),
+            "rgba": " ".join([str(i) for i in obst.rgba()]),
+            "pos": " ".join([str(i) for i in obst.position()]),
+            "size": " ".join([str(i / 2) for i in obst.size()]),
         }
-        ET.SubElement(worldbody, 'geom', geom_values)
+        ET.SubElement(worldbody, "geom", geom_values)
 
     def add_sub_goal(self, sub_goal: SubGoal, worldbody: ET.Element) -> None:
         geom_values = {
-            'name': sub_goal.name(),
-            'type': 'sphere',
-            'rgba': "0 1 0 0.3",
-            'pos': " ".join([str(i) for i in sub_goal.position()]),
-            'size': str(sub_goal.epsilon()),
-            'contype': str(0),
-            'conaffinity': str(0),
+            "name": sub_goal.name(),
+            "type": "sphere",
+            "rgba": "0 1 0 0.3",
+            "pos": " ".join([str(i) for i in sub_goal.position()]),
+            "size": str(sub_goal.epsilon()),
+            "contype": str(0),
+            "conaffinity": str(0),
         }
-        ET.SubElement(worldbody, 'geom', geom_values)
-
+        ET.SubElement(worldbody, "geom", geom_values)
 
     def _get_obs(self):
         """
@@ -276,14 +280,14 @@ class GenericMujocoEnv(utils.EzPickle):
         )
         """
         return {
-            "robot_0": { 
+            "robot_0": {
                 "joint_state": {
                     "position": self.data.qpos,
                     "velocity": self.data.qvel,
                 }
             }
         }
-        
+
     def close(self):
         if self.mujoco_renderer is not None:
             self.mujoco_renderer.close()
