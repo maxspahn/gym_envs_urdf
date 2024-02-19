@@ -1,14 +1,9 @@
 import os
-import sys
 import shutil
 import numpy as np
-import gymnasium as gym
-import matplotlib.pyplot as plt
 from robotmodels.utils.robotmodel import RobotModel, LocalRobotModel
 from urdfenvs.generic_mujoco.generic_mujoco_env import GenericMujocoEnv
 from urdfenvs.generic_mujoco.generic_mujoco_robot import GenericMujocoRobot
-from urdfenvs.robots.generic_urdf import GenericUrdfReacher
-from urdfenvs.urdf_common.urdf_env import UrdfEnv
 from urdfenvs.scene_examples.obstacles import sphereObst1, sphereObst2, wall_obstacles, cylinder_obstacle
 
 
@@ -31,7 +26,7 @@ def run_generic_mujoco(n_steps: int = 1000, render: bool = True):
     env = GenericMujocoEnv(robots, obstacles, render=render)
     ob, info = env.reset()
 
-    action_mag = np.random.rand(env.nu) * 0.3
+    action_mag = np.random.rand(env.nu) * 1.0
     t = 0.0
     obs = np.zeros((n_steps, env.nv))
     actions = np.zeros((n_steps, env.nu))
@@ -45,9 +40,6 @@ def run_generic_mujoco(n_steps: int = 1000, render: bool = True):
             print(info)
             break
     env.close()
-    plt.plot(obs[:, :])
-    plt.plot(actions[: ,:])
-    plt.show()
 
 if __name__ == "__main__":
     run_generic_mujoco(n_steps=int(1e2), render=True)
