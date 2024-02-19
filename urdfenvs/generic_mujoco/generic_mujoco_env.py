@@ -190,6 +190,18 @@ class GenericMujocoEnv(utils.EzPickle):
             self.data.act[:] = None
         mujoco.mj_forward(self.model, self.data)
 
+    @property
+    def nu(self) -> int:
+        return self.model.nu
+
+    @property
+    def nq(self) -> int:
+        return self.model.nq
+
+    @property
+    def nv(self) -> int:
+        return self.model.nv
+
     def do_simulation(self, ctrl, n_frames) -> None:
         """
         Step the simulation n number of frames and applying a control action.
