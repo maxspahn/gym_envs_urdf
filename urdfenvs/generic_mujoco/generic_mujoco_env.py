@@ -12,7 +12,7 @@ from urdfenvs.urdf_common.urdf_env import check_observation, WrongActionError, W
 from urdfenvs.generic_mujoco.generic_mujoco_robot import GenericMujocoRobot
 from urdfenvs.generic_mujoco.mujoco_rendering import MujocoRenderer
 from mpscenes.obstacles.collision_obstacle import CollisionObstacle
-
+from mpscenes.goals.sub_goal import SubGoal
 
 DEFAULT_CAMERA_CONFIG = {
     "trackbodyid": -1,
@@ -35,6 +35,7 @@ class GenericMujocoEnv(utils.EzPickle):
         self,
         robots: List[GenericMujocoRobot],
         obstacles: List[CollisionObstacle],
+        goals: List[SubGoal],
         render: bool = False,
         frame_skip: int = 5,
         width: int = DEFAULT_SIZE,
@@ -46,7 +47,9 @@ class GenericMujocoEnv(utils.EzPickle):
         utils.EzPickle.__init__(self)
         self._xml_file = robots[0].xml_file
         self._obstacles = obstacles
+        self._goals = goals
         self.add_obstacles()
+        self.add_sub_goals()
 
         render_mode = None
         if render:
@@ -232,6 +235,14 @@ class GenericMujocoEnv(utils.EzPickle):
         self._xml_file = self._xml_file[:-4]+'_temp.xml'
         tree.write(self._xml_file)
 
+    def add_sub_goals(self) -> None:
+        tree = ET.parse(self._xml_file)
+        worldbody = tree.getroot().find('worldbody')
+        for sub_goal in self._goals:
+            self.add_sub_goal(sub_goal, worldbody)
+        self._xml_file = self._xml_file[:-4]+'_temp.xml'
+        tree.write(self._xml_file)
+
     def add_obstacle(self, obst: CollisionObstacle, worldbody: ET.Element) -> None:
         geom_values = {
             'name': obst.name(),
@@ -239,6 +250,18 @@ class GenericMujocoEnv(utils.EzPickle):
             'rgba': " ".join([str(i) for i in obst.rgba()]),
             'pos': " ".join([str(i) for i in obst.position()]),
             'size': " ".join([str(i/2) for i in obst.size()]),
+        }
+        ET.SubElement(worldbody, 'geom', geom_values)
+
+    def add_sub_goal(self, sub_goal: SubGoal, worldbody: ET.Element) -> None:
+        geom_values = {
+            'name': sub_goal.name(),
+            'type': 'sphere',
+            'rgba': "0 1 0 0.3",
+            'pos': " ".join([str(i) for i in sub_goal.position()]),
+            'size': str(sub_goal.epsilon()),
+            'contype': str(0),
+            'conaffinity': str(0),
         }
         ET.SubElement(worldbody, 'geom', geom_values)
 
