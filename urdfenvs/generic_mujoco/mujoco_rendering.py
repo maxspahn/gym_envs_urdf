@@ -623,7 +623,7 @@ class WindowViewer(BaseRender):
             self.add_overlay(topleft, "Cap[t]ure frame", "")
         self.add_overlay(topleft, "Toggle geomgroup visibility", "0-4")
 
-        self.add_overlay(bottomleft, "FPS", f"{1 / self._time_per_render} ")
+        self.add_overlay(bottomleft, "FPS", f"{round(1 / self._time_per_render)} ")
 
         self.add_overlay(
             bottomleft, "Solver iterations", str(self.data.solver_niter[0] + 1)
@@ -633,7 +633,7 @@ class WindowViewer(BaseRender):
             "Step",
             str(round(self.data.time / self.model.opt.timestep)),
         )
-        self.add_overlay(bottomleft, f"timestep {self.model.opt.timestep}")
+        self.add_overlay(bottomleft, "timestep", f"{self.model.opt.timestep}")
 
 
 class MujocoRenderer:
