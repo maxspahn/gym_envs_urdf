@@ -38,7 +38,11 @@ _ALL_RENDERERS = collections.OrderedDict(
 
 class BaseRender:
     def __init__(
-        self, model: "mujoco.MjModel", data: "mujoco.MjData", width: int, height: int
+        self,
+        model: "mujoco.MjModel",
+        data: "mujoco.MjData",
+        width: int,
+        height: int,
     ):
         """Render context superclass for offscreen and window rendering."""
         self.model = model
@@ -58,7 +62,9 @@ class BaseRender:
         self.make_context_current()
 
         # Keep in Mujoco Context
-        self.con = mujoco.MjrContext(self.model, mujoco.mjtFontScale.mjFONTSCALE_150)
+        self.con = mujoco.MjrContext(
+            self.model, mujoco.mjtFontScale.mjFONTSCALE_150
+        )
 
         self._set_mujoco_buffer()
 
@@ -80,8 +86,9 @@ class BaseRender:
 
     def _add_marker_to_scene(self, marker: dict):
         if self.scn.ngeom >= self.scn.maxgeom:
-            raise RuntimeError("Ran out of geoms. maxgeom: %d" % self.scn.maxgeom)
-
+            raise RuntimeError(
+                "Ran out of geoms. maxgeom: %d" % self.scn.maxgeom
+            )
 
         g = self.scn.geoms[self.scn.ngeom]
         # default values.
@@ -157,7 +164,9 @@ class OffScreenViewer(BaseRender):
         self.backend = os.environ.get("MUJOCO_GL")
         if self.backend is not None:
             try:
-                self.opengl_context = _ALL_RENDERERS[self.backend](width, height)
+                self.opengl_context = _ALL_RENDERERS[self.backend](
+                    width, height
+                )
             except KeyError as e:
                 raise RuntimeError(
                     "Environment variable {} must be one of {!r}: got {!r}.".format(
@@ -247,11 +256,15 @@ class OffScreenViewer(BaseRender):
         mujoco.mjr_readPixels(rgb_arr, depth_arr, self.viewport, self.con)
 
         if render_mode == "depth_array":
-            depth_img = depth_arr.reshape(self.viewport.height, self.viewport.width)
+            depth_img = depth_arr.reshape(
+                self.viewport.height, self.viewport.width
+            )
             # original image is upside-down, so flip it
             return depth_img[::-1, :]
         else:
-            rgb_img = rgb_arr.reshape(self.viewport.height, self.viewport.width, 3)
+            rgb_img = rgb_arr.reshape(
+                self.viewport.height, self.viewport.width, 3
+            )
 
             if segmentation:
                 seg_img = (
@@ -303,7 +316,9 @@ class WindowViewer(BaseRender):
 
         width, height = glfw.get_video_mode(glfw.get_primary_monitor()).size
         glfw.window_hint(glfw.VISIBLE, 1)
-        self.window = glfw.create_window(width // 2, height // 2, "mujoco", None, None)
+        self.window = glfw.create_window(
+            width // 2, height // 2, "mujoco", None, None
+        )
 
         self.width, self.height = glfw.get_framebuffer_size(self.window)
         window_width, _ = glfw.get_window_size(self.window)
@@ -359,9 +374,10 @@ class WindowViewer(BaseRender):
             elif glfw.window_should_close(self.window):
                 glfw.destroy_window(self.window)
                 glfw.terminate()
-            self.viewport.width, self.viewport.height = glfw.get_framebuffer_size(
-                self.window
-            )
+            (
+                self.viewport.width,
+                self.viewport.height,
+            ) = glfw.get_framebuffer_size(self.window)
             # update scene
             mujoco.mjv_updateScene(
                 self.model,
@@ -465,8 +481,12 @@ class WindowViewer(BaseRender):
         # Display contact forces
         elif key == glfw.KEY_C:
             self._contacts = not self._contacts
-            self.vopt.flags[mujoco.mjtVisFlag.mjVIS_CONTACTPOINT] = self._contacts
-            self.vopt.flags[mujoco.mjtVisFlag.mjVIS_CONTACTFORCE] = self._contacts
+            self.vopt.flags[
+                mujoco.mjtVisFlag.mjVIS_CONTACTPOINT
+            ] = self._contacts
+            self.vopt.flags[
+                mujoco.mjtVisFlag.mjVIS_CONTACTFORCE
+            ] = self._contacts
         # Display coordinate frames
         elif key == glfw.KEY_E:
             self.vopt.frame = 1 - self.vopt.frame
@@ -481,7 +501,13 @@ class WindowViewer(BaseRender):
             else:
                 self.model.geom_rgba[:, 3] *= 5.0
         # Geom group visibility
-        elif key in (glfw.KEY_0, glfw.KEY_1, glfw.KEY_2, glfw.KEY_3, glfw.KEY_4):
+        elif key in (
+            glfw.KEY_0,
+            glfw.KEY_1,
+            glfw.KEY_2,
+            glfw.KEY_3,
+            glfw.KEY_4,
+        ):
             self.vopt.geomgroup[key - glfw.KEY_0] ^= 1
         # Quit
         if key == glfw.KEY_ESCAPE:
@@ -526,7 +552,9 @@ class WindowViewer(BaseRender):
         self._last_mouse_x = int(self._scale * xpos)
         self._last_mouse_y = int(self._scale * ypos)
 
-    def _mouse_button_callback(self, window: "glfw.LP__GLFWwindow", button, act, mods):
+    def _mouse_button_callback(
+        self, window: "glfw.LP__GLFWwindow", button, act, mods
+    ):
         self._button_left_pressed = (
             glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS
         )
@@ -557,19 +585,25 @@ class WindowViewer(BaseRender):
         else:
             self.add_overlay(
                 topleft,
-                "Run speed = %.3f x real time" % self._run_speed,
+                f"Run speed = {self._run_speed} x real time",
                 "[S]lower, [F]aster",
             )
         self.add_overlay(
-            topleft, "Ren[d]er every frame", "On" if self._render_every_frame else "Off"
+            topleft,
+            "Ren[d]er every frame",
+            "On" if self._render_every_frame else "Off",
         )
         self.add_overlay(
             topleft,
-            "Switch camera (#cams = %d)" % (self.model.ncam + 1),
-            "[Tab] (camera ID = %d)" % self.cam.fixedcamid,
+            f"Switch camera (#cams = {self.model.ncam + 1})",
+            f"[Tab] (camera ID = {self.cam.fixedcamid})",
         )
-        self.add_overlay(topleft, "[C]ontact forces", "On" if self._contacts else "Off")
-        self.add_overlay(topleft, "T[r]ansparent", "On" if self._transparent else "Off")
+        self.add_overlay(
+            topleft, "[C]ontact forces", "On" if self._contacts else "Off"
+        )
+        self.add_overlay(
+            topleft, "T[r]ansparent", "On" if self._transparent else "Off"
+        )
         if self._paused is not None:
             if not self._paused:
                 self.add_overlay(topleft, "Stop", "[Space]")
@@ -579,31 +613,35 @@ class WindowViewer(BaseRender):
                     topleft, "Advance simulation by one step", "[right arrow]"
                 )
         self.add_overlay(
-            topleft, "Referenc[e] frames", "On" if self.vopt.frame == 1 else "Off"
+            topleft, "Reference frames", "On" if self.vopt.frame == 1 else "Off"
         )
         self.add_overlay(topleft, "[H]ide Menu", "")
         if self._image_idx > 0:
             fname = self._image_path % (self._image_idx - 1)
-            self.add_overlay(topleft, "Cap[t]ure frame", "Saved as %s" % fname)
+            self.add_overlay(topleft, "Cap[t]ure frame", f"Saved as {fname}")
         else:
             self.add_overlay(topleft, "Cap[t]ure frame", "")
         self.add_overlay(topleft, "Toggle geomgroup visibility", "0-4")
 
-        self.add_overlay(bottomleft, "FPS", "%d%s" % (1 / self._time_per_render, ""))
+        self.add_overlay(bottomleft, "FPS", f"{round(1 / self._time_per_render)} ")
+
         self.add_overlay(
             bottomleft, "Solver iterations", str(self.data.solver_niter[0] + 1)
         )
         self.add_overlay(
-            bottomleft, "Step", str(round(self.data.time / self.model.opt.timestep))
+            bottomleft,
+            "Step",
+            str(round(self.data.time / self.model.opt.timestep)),
         )
-        self.add_overlay(bottomleft, "timestep", "%.5f" % self.model.opt.timestep)
+        self.add_overlay(bottomleft, "timestep", f"{self.model.opt.timestep}")
 
 
 class MujocoRenderer:
     """This is the MuJoCo renderer manager class for every MuJoCo environment.
 
     The class has two main public methods available:
-    - :meth:`render` - Renders the environment in three possible modes: "human", "rgb_array", or "depth_array"
+    - :meth:`render` - Renders the environment in three possible modes:
+      "human", "rgb_array", or "depth_array"
     - :meth:`close` - Closes all contexts initialized with the renderer
 
     """
@@ -619,7 +657,8 @@ class MujocoRenderer:
         Args:
             model: MjModel data structure of the MuJoCo simulation
             data: MjData data structure of the MuJoCo simulation
-            default_cam_config: dictionary with attribute values of the viewer's default camera, https://mujoco.readthedocs.io/en/latest/XMLreference.html?highlight=camera#visual-global
+            default_cam_config: dictionary with attribute values of the
+            viewer's default camera.
         """
         self.model = model
         self.data = data
@@ -633,15 +672,21 @@ class MujocoRenderer:
         camera_id: Optional[int] = None,
         camera_name: Optional[str] = None,
     ):
-        """Renders a frame of the simulation in a specific format and camera view.
+        """Renders a frame of the simulation in a specific format and camera
+        view.
 
         Args:
-            render_mode: The format to render the frame, it can be: "human", "rgb_array", or "depth_array"
-            camera_id: The integer camera id from which to render the frame in the MuJoCo simulation
-            camera_name: The string name of the camera from which to render the frame in the MuJoCo simulation. This argument should not be passed if using cameara_id instead and vice versa
+            render_mode: The format to render the frame, it can be: "human",
+            "rgb_array", or "depth_array" camera_id: The integer camera id from
+            which to render the frame in the MuJoCo simulation camera_name: The
+            string name of the camera from which to render the frame in the
+            MuJoCo simulation. This argument should not be passed if using
+            cameara_id instead and vice versa
 
         Returns:
-            If render_mode is "rgb_array" or "depth_arra" it returns a numpy array in the specified format. "human" render mode does not return anything.
+            If render_mode is "rgb_array" or "depth_arra" it returns a numpy
+            array in the specified format. "human" render mode does not return
+            anything.
         """
 
         viewer = self._get_viewer(render_mode=render_mode)

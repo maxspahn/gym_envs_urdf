@@ -106,3 +106,7 @@ def test_serialization():
     from serializing_environments import run_serializing_example
     blueprint_test(run_serializing_example)
 
+def test_mujoco_example():
+    from mujoco_example import run_generic_mujoco
+    blueprint_test(run_generic_mujoco)
+
