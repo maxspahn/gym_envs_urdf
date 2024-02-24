@@ -1,6 +1,7 @@
 import numpy as np
 from typing import List, Optional
 import xml.etree.ElementTree as ET
+import xml.dom.minidom as minidom
 
 import gymnasium as gym
 from gymnasium import utils
@@ -32,6 +33,7 @@ class GenericMujocoEnv(utils.EzPickle):
         ],
         "render_fps": 20,
     }
+    _t: float
 
     def __init__(
         self,
@@ -50,8 +52,8 @@ class GenericMujocoEnv(utils.EzPickle):
         self._xml_file = robots[0].xml_file
         self._obstacles = obstacles
         self._goals = goals
-        self.add_obstacles()
-        self.add_sub_goals()
+        self.add_scene()
+        self._t = 0.0
 
         render_mode = None
         if render:
@@ -141,11 +143,21 @@ class GenericMujocoEnv(utils.EzPickle):
         self.model.vis.global_.offheight = self.height
         self.data = mujoco.MjData(self.model)
 
+
     @property
     def dt(self) -> float:
         return self.model.opt.timestep * self.frame_skip
 
+    @property
+    def t(self) -> float:
+        return self._t
+
+    def update_obstacles_position(self):
+        for i, obstacle in enumerate(self._obstacles):
+            self.data.mocap_pos[i] = obstacle.position(t=self.t)
+
     def step(self, action: np.ndarray):
+        self._t += self.dt
         terminated = False
         truncated = False
         info = {}
@@ -155,6 +167,7 @@ class GenericMujocoEnv(utils.EzPickle):
             info = {"action_limits": f"{action} not in {self.action_space}"}
 
         self.do_simulation(action, self.frame_skip)
+        self.update_obstacles_position()
         if self.render_mode == "human":
             self.render()
 
@@ -187,6 +200,7 @@ class GenericMujocoEnv(utils.EzPickle):
         else:
             qvel = np.zeros(self.model.nv)
         self.set_state(qpos, qvel)
+        self._t = 0.0
         return self._get_obs(), {}
 
     def set_state(self, qpos, qvel):
@@ -230,21 +244,17 @@ class GenericMujocoEnv(utils.EzPickle):
         # See https://github.com/openai/gym/issues/1541
         mujoco.mj_rnePostConstraint(self.model, self.data)
 
-    def add_obstacles(self) -> None:
+    def add_scene(self) -> None:
         tree = ET.parse(self._xml_file)
-        worldbody = tree.getroot().find("worldbody")
+        root = tree.getroot()
+        worldbody = root.find("worldbody")
         for obstacle in self._obstacles:
             self.add_obstacle(obstacle, worldbody)
-        self._xml_file = self._xml_file[:-4] + "_temp.xml"
-        tree.write(self._xml_file)
-
-    def add_sub_goals(self) -> None:
-        tree = ET.parse(self._xml_file)
-        worldbody = tree.getroot().find("worldbody")
         for sub_goal in self._goals:
             self.add_sub_goal(sub_goal, worldbody)
         self._xml_file = self._xml_file[:-4] + "_temp.xml"
         tree.write(self._xml_file)
+
 
     def add_obstacle(
         self, obst: CollisionObstacle, worldbody: ET.Element
@@ -253,14 +263,20 @@ class GenericMujocoEnv(utils.EzPickle):
             size = str(obst.size()[0])
         else:
             size = " ".join([str(i / 2) for i in obst.size()])
+
         geom_values = {
             "name": obst.name(),
             "type": obst.type(),
             "rgba": " ".join([str(i) for i in obst.rgba()]),
-            "pos": " ".join([str(i) for i in obst.position()]),
             "size": size,
         }
-        ET.SubElement(worldbody, "geom", geom_values)
+
+        body = ET.SubElement(worldbody, "body")
+        body.set("name", obst.name())
+        body.set("mocap", "true")
+        body.set("pos", " ".join([str(i) for i in obst.position()]))
+
+        ET.SubElement(body, "geom", geom_values)
 
     def add_sub_goal(self, sub_goal: SubGoal, worldbody: ET.Element) -> None:
         geom_values = {
