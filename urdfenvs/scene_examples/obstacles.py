@@ -33,7 +33,7 @@ dynamicSphereObst1 = DynamicSphereObstacle(
     name="simpleSphere", content_dict=dynamicObst1Dict
 )
 dynamicObst2Dict = {
-    "type": "analyticSphere",
+    "type": "sphere",
     "geometry": {"trajectory": ["0.6", "0.5 - 0.1 * t", "0.8"], "radius": 0.2},
     "movable": False,
 }
@@ -46,7 +46,7 @@ splineDict = {
     "duration": 10,
 }
 dynamicObst3Dict = {
-    "type": "splineSphere",
+    "type": "sphere",
     "geometry": {"trajectory": splineDict, "radius": 0.2},
 }
 dynamicSphereObst3 = DynamicSphereObstacle(
