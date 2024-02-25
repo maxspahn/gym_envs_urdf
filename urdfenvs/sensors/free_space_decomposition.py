@@ -1,7 +1,5 @@
 """Module for fsd sensor based on lidar."""
 import numpy as np
-import pybullet as p
-import gymnasium as gym
 
 from urdfenvs.sensors.lidar import Lidar
 from urdfenvs.sensors.fsd_sensor import FSDSensor
@@ -45,7 +43,7 @@ class FreeSpaceDecompositionSensor(FSDSensor, Lidar):
         lidar_observation = Lidar.sense(
             self, robot, obstacles, goals, t
         ).reshape((self._nb_rays, 2))
-        lidar_position = np.array(p.getLinkState(robot, self._link_id)[0])
+        lidar_position = self._physics_engine.get_link_position(robot, self._link_id)
         relative_positions = np.concatenate(
             (
                 np.reshape(lidar_observation, (self._nb_rays, 2)),

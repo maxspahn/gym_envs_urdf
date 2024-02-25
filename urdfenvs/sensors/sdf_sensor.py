@@ -18,6 +18,7 @@ class SDFSensor(GridSensor):
         resolution: np.ndarray = np.array([10, 10, 10], dtype=int),
         interval: int = -1,
         variance: float = 0.0,
+        physics_engine_name='pybullet',
     ):
         super().__init__(
             limits=limits,
@@ -25,6 +26,7 @@ class SDFSensor(GridSensor):
             interval=interval,
             name="SDFSensor",
             variance=variance,
+            physics_engine_name=physics_engine_name,
         )
 
     def get_observation_space(self, obstacles: dict, goals: dict):

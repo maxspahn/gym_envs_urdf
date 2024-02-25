@@ -4,12 +4,36 @@ import numpy as np
 from robotmodels.utils.robotmodel import RobotModel, LocalRobotModel
 from urdfenvs.generic_mujoco.generic_mujoco_env import GenericMujocoEnv
 from urdfenvs.generic_mujoco.generic_mujoco_robot import GenericMujocoRobot
+from urdfenvs.sensors.free_space_occupancy import FreeSpaceOccupancySensor
+from urdfenvs.sensors.full_sensor import FullSensor
+from urdfenvs.sensors.sdf_sensor import SDFSensor
 from urdfenvs.scene_examples.obstacles import sphereObst1, sphereObst2, wall_obstacles, cylinder_obstacle, dynamicSphereObst2
 from urdfenvs.scene_examples.goal import goal1
 
 
 ROBOTTYPE = 'panda'
 ROBOTMODEL = 'panda_without_gripper'
+ROBOTTYPE = 'pointRobot'
+ROBOTMODEL = 'pointRobot'
+
+def get_index_from_coordinates(point, mesh) -> tuple:
+    distances = np.linalg.norm(mesh - point, axis=3)
+    return np.unravel_index(np.argmin(distances), mesh.shape[:-1])
+
+def evaluate_sdf(point, mesh, sdf, resolution) -> tuple:
+    index = list(get_index_from_coordinates(point, mesh))
+    value = sdf[tuple(index)]
+    gradient = np.zeros(3)
+    for dim in range(3):
+        lower_index = tuple(index[:dim] + [index[dim] - 1] + index[dim+1:])
+        upper_index = tuple(index[:dim] + [index[dim] + 1] + index[dim+1:])
+
+        if lower_index[dim] < 0 or upper_index[dim] >= sdf.shape[dim]:
+            gradient[dim] = 0.0
+        else:
+            gradient[dim] = (sdf[upper_index] - sdf[lower_index]) / resolution[dim]
+
+    return value, gradient
 
 
 def run_generic_mujoco(n_steps: int = 1000, render: bool = True, goal: bool = False, obstacles: bool = False):
@@ -21,6 +45,25 @@ def run_generic_mujoco(n_steps: int = 1000, render: bool = True, goal: bool = Fa
         obstacle_list= [sphereObst1, sphereObst2, cylinder_obstacle, dynamicSphereObst2] + wall_obstacles
     else:
         obstacle_list= []
+    full_sensor = FullSensor(['position'], ['position', 'size', 'type', 'orientation'], variance=0.0, physics_engine_name='mujoco')
+    sdf_sensor = SDFSensor(
+        limits =  np.array([[-2, 2], [-2, 2], [0, 0]]),
+        resolution = np.array([101, 101, 1], dtype=int),
+        interval=10,
+        physics_engine_name='mujoco',
+    )
+    val = 40
+    fsd_sensor = FreeSpaceOccupancySensor(
+        'base_link',
+        plotting_interval=-1,
+        plotting_interval_fsd=-1,
+        max_radius=10,
+        number_constraints=10,
+        limits =  np.array([[-5, 5], [-5, 5], [0, 50/val]]),
+        resolution = np.array([val + 1, val + 1, 5], dtype=int),
+        interval=100,
+        physics_engine_name='mujoco',
+    )
     if os.path.exists(ROBOTTYPE):
         shutil.rmtree(ROBOTTYPE)
     robot_model_original = RobotModel(ROBOTTYPE, ROBOTMODEL)
@@ -31,7 +74,13 @@ def run_generic_mujoco(n_steps: int = 1000, render: bool = True, goal: bool = Fa
     robots  = [
         GenericMujocoRobot(xml_file=xml_file, mode="vel"),
     ]
-    env = GenericMujocoEnv(robots, obstacle_list, goal_list, render=render)
+    env = GenericMujocoEnv(
+        robots,
+        obstacle_list,
+        goal_list,
+        sensors=[full_sensor, fsd_sensor, sdf_sensor],
+        render=render,
+    )
     ob, info = env.reset()
 
     action_mag = np.random.rand(env.nu) * 1.0
@@ -40,6 +89,7 @@ def run_generic_mujoco(n_steps: int = 1000, render: bool = True, goal: bool = Fa
     for _ in range(n_steps):
         action = action_mag * np.cos(env.t)
         ob, _, terminated, _, info = env.step(action)
+        #print(ob['robot_0'])
         history.append(ob)
         if terminated:
             print(info)

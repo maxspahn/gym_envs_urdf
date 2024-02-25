@@ -1,11 +1,8 @@
 """Module for fsd sensor based on lidar."""
 import numpy as np
-import pybullet as p
-import gymnasium as gym
 
 from urdfenvs.sensors.fsd_sensor import FSDSensor
 from urdfenvs.sensors.occupancy_sensor import OccupancySensor
-from urdfenvs.urdf_common.helpers import extract_link_id
 
 
 class FreeSpaceOccupancySensor(FSDSensor, OccupancySensor):
@@ -22,6 +19,7 @@ class FreeSpaceOccupancySensor(FSDSensor, OccupancySensor):
         plotting_interval: int = -1,
         plotting_interval_fsd: int = -1,
         planar_visualization: bool = False,
+        physics_engine_name: str = 'pybullet',
     ):
         FSDSensor.__init__(
             self,
@@ -38,6 +36,7 @@ class FreeSpaceOccupancySensor(FSDSensor, OccupancySensor):
             interval=interval,
             variance=variance,
             plotting_interval=plotting_interval,
+            physics_engine_name=physics_engine_name
         )
         self._link_name = link_name
         self._name = name
@@ -47,7 +46,7 @@ class FreeSpaceOccupancySensor(FSDSensor, OccupancySensor):
         occupancy = OccupancySensor.sense(
             self, robot, obstacles, goals, t
         ).reshape((-1, 1))
-        link_id = extract_link_id(robot, self._link_name)
-        seed_point = np.array(p.getLinkState(robot, link_id)[0])
+        link_id = self._physics_engine.extract_link_id(robot, self._link_name)
+        seed_point = self._physics_engine.get_link_position(robot, link_id)
         point_positions = self._mesh_flat[np.where(occupancy == 1)[0]]
         return self.compute_fsd(point_positions, seed_point)

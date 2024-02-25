@@ -20,9 +20,13 @@ class GridSensor(Sensor):
         name: str = "Grid",
         variance: float = 0.0,
         plotting_interval: int = -1,
+        physics_engine_name: str = "pybullet",
     ):
         super().__init__(
-            name, variance=variance, plotting_interval=plotting_interval
+            name,
+            variance=variance,
+            plotting_interval=plotting_interval,
+            physics_engine_name=physics_engine_name,
         )
         self._resolution = resolution
         self._limits = limits
