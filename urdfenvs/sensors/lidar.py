@@ -4,7 +4,7 @@ import pybullet as p
 import gymnasium as gym
 
 from urdfenvs.sensors.sensor import Sensor
-from urdfenvs.urdf_common.helpers import add_shape, extract_link_id
+from urdfenvs.urdf_common.helpers import add_shape
 
 
 class Lidar(Sensor):
@@ -87,7 +87,7 @@ class Lidar(Sensor):
         """Sense the distance toward the next object with the Lidar."""
         self._call_counter += 1
         if not self._link_id:
-            self._link_id = extract_link_id(robot, self._link_name)
+            self._link_id = self._physics_engine.extract_link_id(robot, self._link_name)
         link_state = p.getLinkState(robot, self._link_id)
 
         lidar_position = link_state[0]

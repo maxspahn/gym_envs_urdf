@@ -1,14 +1,17 @@
 from urdfenvs.sensors.sensor import Sensor
 import numpy as np
-import pybullet as p
 from gymnasium import spaces
 
 
 class FullSensor(Sensor):
     def __init__(
-        self, goal_mask: list, obstacle_mask: list, variance: float = 0.0
+        self,
+        goal_mask: list,
+        obstacle_mask: list,
+        variance: float = 0.0,
+        physics_engine_name: str = 'pybullet',
     ):
-        super().__init__("FullSensor", variance=variance)
+        super().__init__("FullSensor", variance=variance, physics_engine_name=physics_engine_name)
         self._obstacle_mask = obstacle_mask
         self._goal_mask = goal_mask
 
@@ -108,6 +111,8 @@ class FullSensor(Sensor):
             observation_space["goals"] = spaces.Dict(observation_space_goals)
         return spaces.Dict({self._name: spaces.Dict(observation_space)})
 
+
+
     def sense(self, robot, obstacles: dict, goals: dict, t: float):
         sensor_observation = {}
 
@@ -116,13 +121,13 @@ class FullSensor(Sensor):
             observation = {}
             for mask_item in self._obstacle_mask:
                 if mask_item == "position":
-                    value, _ = p.getBasePositionAndOrientation(obst_id)
+                    value, _ = self._physics_engine.get_obstacle_pose(obst_id)
                 elif mask_item == "orientation":
-                    _, value_raw = p.getBasePositionAndOrientation(obst_id)
+                    _, value_raw = self._physics_engine.get_obstacle_pose(obst_id)
                     value = value_raw[3:] + value_raw[:3]
 
                 elif mask_item == "velocity":
-                    value, _ = p.getBaseVelocity(obst_id)
+                    value, _ = self._physics_engine.get_obstacle_velocity(obst_id)
 
                 else:
                     try:
@@ -143,15 +148,14 @@ class FullSensor(Sensor):
             sensor_observation["obstacles"] = observations
 
         observations = {}
-        for obst_id, goal in goals.items():
+        for goal_id, goal in goals.items():
             observation = {}
             for mask_item in self._goal_mask:
                 if mask_item == "position":
-                    value, _ = p.getBasePositionAndOrientation(obst_id)
+                    value, _ = self._physics_engine.get_obstacle_pose(goal_id)
 
                 elif mask_item == "velocity":
-                    value, _ = p.getBaseVelocity(obst_id)
-
+                    value, _ = self._physics_engine.get_obstacle_velocity(goal_id)
                 else:
                     try:
                         value = getattr(goal, mask_item)(t=t)
@@ -165,7 +169,7 @@ class FullSensor(Sensor):
                     observation[mask_item] = np.random.normal(
                         np.array(value), self._variance
                     ).astype("float32")
-            observations[obst_id] = observation
+            observations[goal_id] = observation
 
         if observations:
             sensor_observation["goals"] = observations

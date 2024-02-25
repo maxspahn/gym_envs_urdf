@@ -61,11 +61,11 @@ class FSDSensor(Sensor):
 
     def visualize_constraints(self):
         plot_points = self._fsd.get_points()
-        pybullet.removeAllUserDebugItems()
+        self._physics_engine.clear_visualizations()
         for plot_point in plot_points:
             start_point = (plot_point[0, 0], plot_point[-1, 0], self._height)
             end_point = (plot_point[0, 1], plot_point[-1, 1], self._height)
-            pybullet.addUserDebugLine(start_point, end_point)
+            self._physics_engine.add_visualization_line(start_point, end_point)
 
     def visualize_constraints_with_boxes(self, center_position: np.ndarray):
         constraints = self._fsd.constraints()

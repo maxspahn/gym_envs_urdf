@@ -17,6 +17,7 @@ class OccupancySensor(GridSensor):
         interval: int = -1,
         variance: float = 0.0,
         plotting_interval: int = -1,
+        physics_engine_name: str = 'pybullet',
     ):
         super().__init__(
             limits=limits,
@@ -25,6 +26,7 @@ class OccupancySensor(GridSensor):
             name="Occupancy",
             variance=variance,
             plotting_interval=plotting_interval,
+            physics_engine_name=physics_engine_name,
         )
         self._voxel_ids = [
             -1,
