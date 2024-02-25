@@ -6,6 +6,7 @@ import xml.dom.minidom as minidom
 import gymnasium as gym
 from gymnasium import utils
 import mujoco
+from urdfenvs.sensors.sensor import Sensor
 
 from urdfenvs.urdf_common.urdf_env import (
     check_observation,
@@ -40,6 +41,7 @@ class GenericMujocoEnv(utils.EzPickle):
         robots: List[GenericMujocoRobot],
         obstacles: List[CollisionObstacle],
         goals: List[SubGoal],
+        sensors: Optional[List[Sensor]] = None,
         render: bool = False,
         frame_skip: int = 5,
         width: int = DEFAULT_SIZE,
@@ -55,6 +57,7 @@ class GenericMujocoEnv(utils.EzPickle):
         self.add_scene()
         self._t = 0.0
 
+
         render_mode = None
         if render:
             render_mode = "human"
@@ -62,8 +65,16 @@ class GenericMujocoEnv(utils.EzPickle):
         self.width = width
         self.height = height
 
+
         self.frame_skip = frame_skip
         self._initialize_simulation()
+
+        if not sensors:
+            self._sensors = []
+        else:
+            self._sensors = sensors
+            for sensor in self._sensors:
+                sensor.set_data(self.data)
 
         assert self.metadata["render_modes"] == [
             "human",
@@ -93,30 +104,30 @@ class GenericMujocoEnv(utils.EzPickle):
 
     def get_observation_space(self) -> gym.spaces.Dict:
         """Get observation space."""
-        return gym.spaces.Dict(
-            {
-                "robot_0": gym.spaces.Dict(
-                    {
-                        "joint_state": gym.spaces.Dict(
-                            {
-                                "position": gym.spaces.Box(
-                                    low=self.joint_limits()[:, 0],
-                                    high=self.joint_limits()[:, 1],
-                                    dtype=float,
-                                ),
-                                "velocity": gym.spaces.Box(
-                                    low=np.ones_like(self.joint_limits()[:, 0])
-                                    * -2.0,
-                                    high=np.ones_like(self.joint_limits()[:, 0])
-                                    * 2.0,
-                                    dtype=float,
-                                ),
-                            }
-                        )
-                    }
-                )
-            }
-        )
+        observation_space_as_dict= dict(gym.spaces.Dict({
+            "joint_state": gym.spaces.Dict(
+                {
+                    "position": gym.spaces.Box(
+                        low=self.joint_limits()[:, 0],
+                        high=self.joint_limits()[:, 1],
+                        dtype=float,
+                    ),
+                    "velocity": gym.spaces.Box(
+                        low=np.ones_like(self.joint_limits()[:, 0])
+                        * -2.0,
+                        high=np.ones_like(self.joint_limits()[:, 0])
+                        * 2.0,
+                        dtype=float,
+                    ),
+                }
+            )
+        }))
+        for sensor in self._sensors:
+            observation_space_as_dict.update(
+                sensor.get_observation_space(self.obstacles_dict, self.goals_dict)
+            )
+        observation_space = gym.spaces.Dict({'robot_0': gym.spaces.Dict(observation_space_as_dict)})
+        return observation_space
 
     def get_action_space(self) -> np.ndarray:
         return gym.spaces.Box(
@@ -151,6 +162,14 @@ class GenericMujocoEnv(utils.EzPickle):
     @property
     def t(self) -> float:
         return self._t
+
+    @property
+    def obstacles_dict(self) -> dict:
+        return {k: v for k, v in enumerate(self._obstacles)}
+
+    @property
+    def goals_dict(self) -> dict:
+        return {k: v for k, v in enumerate(self._goals)}
 
     def update_obstacles_position(self):
         for i, obstacle in enumerate(self._obstacles):
@@ -291,22 +310,15 @@ class GenericMujocoEnv(utils.EzPickle):
         ET.SubElement(worldbody, "geom", geom_values)
 
     def _get_obs(self):
-        """
-        return np.concatenate(
-            [
-                self.data.qpos.flat[:8],
-                self.data.qvel.flat[:8],
-            ]
-        )
-        """
-        return {
-            "robot_0": {
-                "joint_state": {
-                    "position": self.data.qpos,
-                    "velocity": self.data.qvel,
-                }
+        observation = {
+            "joint_state": {
+                "position": self.data.qpos,
+                "velocity": self.data.qvel,
             }
         }
+        for sensor in self._sensors:
+            observation.update({sensor.name(): sensor.sense(0, self.obstacles_dict, self.goals_dict, self.t)})
+        return {"robot_0": observation}
 
     def close(self):
         if self.mujoco_renderer is not None:
