@@ -3,6 +3,7 @@ from typing import Tuple, List
 from abc import abstractmethod
 
 import numpy as np
+from scipy.spatial.transform import Rotation
 import pybullet
 
 class LinkIdNotFoundError(Exception):
@@ -29,6 +30,21 @@ class PhysicsEngineInterface():
     @abstractmethod
     def get_link_position(self, *args) -> np.ndarray:
         pass
+
+    @abstractmethod
+    def get_link_orientation(self, *args) -> np.ndarray:
+        pass
+
+    def ray_cast(
+        self,
+        ray_start: np.ndarray,
+        ray_end: np.ndarray,
+        ray_index: int,
+        ray_length: float
+    ) -> np.ndarray:
+        raise NotImplementedError(
+            f"Clearing of visualization of lines not implemented for {type(self)}."
+        )
 
     def clear_visualizations(self) -> None:
         raise NotImplementedError(
@@ -71,6 +87,20 @@ class PybulletInterface(PhysicsEngineInterface):
         link_position = np.array(pybullet.getLinkState(robot, link_id)[0])
         return link_position
 
+    def get_link_orientation(self, robot, link_id) -> np.ndarray:
+        link_orientation = np.array(pybullet.getLinkState(robot, link_id)[1])
+        return link_orientation
+
+    def ray_cast(
+        self,
+        ray_start: np.ndarray,
+        ray_end: np.ndarray,
+        ray_index: int,
+        ray_length: float
+    ) -> np.ndarray:
+        lidar = pybullet.rayTest(ray_start, ray_end)
+        return lidar[0][2] * ray_length
+
     def clear_visualizations(self) -> None:
         pybullet.removeAllUserDebugItems()
 
@@ -94,10 +124,24 @@ class MujocoInterface(PhysicsEngineInterface):
         link_position = self._data.xpos[link_id]
         return link_position
 
+    def get_link_orientation(self, robot, link_id) -> np.ndarray:
+        link_orientation_matrix = np.reshape(self._data.xmat[link_id], (3, 3))
+        return Rotation.from_matrix(link_orientation_matrix).as_quat()
+
     def get_obstacle_pose(self, obst_id: int) -> Tuple[List[float], List[float]]:
         pos = self._data.mocap_pos[obst_id]
         ori = self._data.mocap_quat[obst_id]
         return pos.tolist(), ori.tolist()
+
+    def ray_cast(
+        self,
+        ray_start: np.ndarray,
+        ray_end: np.ndarray,
+        ray_index: int,
+        ray_length: float
+    ) -> np.ndarray:
+        ray_value = self._data.sensordata[ray_index] - (0.01 / 2)
+        return ray_value
 
     def get_obstacle_velocity(self, obst_id: int) -> None:
         raise NotImplementedError(
