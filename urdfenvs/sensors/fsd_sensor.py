@@ -16,11 +16,13 @@ class FSDSensor(Sensor):
         plotting_interval_fsd: int = -1,
         variance: float = 0.0,
         planar_visualization: bool = True,
+        physics_engine_name: str = 'pybullet'
     ):
         Sensor.__init__(
             self,
             "AbstractFSDSensor",
             variance=variance,
+            physics_engine_name=physics_engine_name,
         )
         self._fsd = FreeSpaceDecomposition(
             np.array([0.0, 0.0, 0.0]),

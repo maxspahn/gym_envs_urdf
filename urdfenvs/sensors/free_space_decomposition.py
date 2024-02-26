@@ -18,6 +18,7 @@ class FreeSpaceDecompositionSensor(FSDSensor, Lidar):
         plotting_interval_fsd: int = -1,
         variance: float = 0.0,
         planar_visualization: bool = True,
+        physics_engine_name: str = 'pybullet'
     ):
         FSDSensor.__init__(
             self,
@@ -26,6 +27,7 @@ class FreeSpaceDecompositionSensor(FSDSensor, Lidar):
             plotting_interval_fsd=plotting_interval_fsd,
             variance=variance,
             planar_visualization=planar_visualization,
+            physics_engine_name=physics_engine_name,
         )
         Lidar.__init__(
             self,
@@ -36,6 +38,7 @@ class FreeSpaceDecompositionSensor(FSDSensor, Lidar):
             angle_limits=angle_limits,
             variance=variance,
             plotting_interval=plotting_interval,
+            physics_engine_name=physics_engine_name,
         )
         self._name = "FreeSpaceDecompSensor"
 
