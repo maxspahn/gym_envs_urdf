@@ -313,7 +313,7 @@ class GenericMujocoEnv(utils.EzPickle):
             fromto_string += " " + " ".join(map(str, end_position))
 
             site_values = {
-              "name":f"rf_{i}",
+              "name":f"{sensor.name()}_rf_{i}",
               "type":"capsule",
               "size":"0.01",
               "fromto": fromto_string,
@@ -322,8 +322,8 @@ class GenericMujocoEnv(utils.EzPickle):
 
 
             rangefinder_values = {
-                'name': f'lidar_{i}',
-                'site': f'rf_{i}',
+                'name': f'{sensor.name()}_{i}',
+                'site': f'{sensor.name()}_rf_{i}',
                 'cutoff': str(sensor._ray_length + 0.01/2),
             }
             range_finder = ET.SubElement(sensor_element, 'rangefinder', rangefinder_values)
