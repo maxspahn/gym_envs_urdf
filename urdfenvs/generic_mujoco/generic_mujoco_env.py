@@ -57,6 +57,7 @@ class GenericMujocoEnv(utils.EzPickle):
 
         utils.EzPickle.__init__(self)
         self._xml_file = robots[0].xml_file
+        self._done: bool = False
         self._obstacles = obstacles
         self._goals = goals
         if not sensors:
@@ -119,9 +120,9 @@ class GenericMujocoEnv(utils.EzPickle):
                     ),
                     "velocity": gym.spaces.Box(
                         low=np.ones_like(self.joint_limits()[:, 0])
-                        * -2.0,
+                        * -10.0,
                         high=np.ones_like(self.joint_limits()[:, 0])
-                        * 2.0,
+                        * 10.0,
                         dtype=float,
                     ),
                 }
@@ -182,15 +183,23 @@ class GenericMujocoEnv(utils.EzPickle):
 
     def step(self, action: np.ndarray):
         self._t += self.dt
-        terminated = False
         truncated = False
         info = {}
         reward = 0
         if not self.action_space.contains(action):
-            terminated = True
+            self._done = True
             info = {"action_limits": f"{action} not in {self.action_space}"}
 
         self.do_simulation(action, self.frame_skip)
+        for contact in self.data.contact:
+            body1 = self.model.geom(contact.geom1).name
+            body2 = self.model.geom(contact.geom2).name
+
+            message = f"Collision occured at {round(self.t, 2)} " \
+                f"between {body1} and obstacle " \
+                f"with id {body2}"
+            info = {"Collision": message}
+            self._done = True
         self.update_obstacles_position()
         if self.render_mode == "human":
             self.render()
@@ -201,11 +210,11 @@ class GenericMujocoEnv(utils.EzPickle):
                 check_observation(self.observation_space, ob)
             except WrongObservationError as e:
                 self._done = True
-                self._info = {"observation_limits": str(e)}
+                info = {"observation_limits": str(e)}
         return (
             ob,
             reward,
-            terminated,
+            self._done,
             truncated,
             info,
         )
@@ -353,11 +362,14 @@ class GenericMujocoEnv(utils.EzPickle):
         ET.SubElement(body, "geom", geom_values)
 
     def add_sub_goal(self, sub_goal: SubGoal, worldbody: ET.Element) -> None:
+        position = np.zeros(3)
+        for index in sub_goal.indices():
+            position[index] = sub_goal.position()[index]
         geom_values = {
             "name": sub_goal.name(),
             "type": "sphere",
             "rgba": "0 1 0 0.3",
-            "pos": " ".join([str(i) for i in sub_goal.position()]),
+            "pos": " ".join([str(i) for i in position.tolist()]),
             "size": str(sub_goal.epsilon()),
         }
         ET.SubElement(worldbody, "site", geom_values)
