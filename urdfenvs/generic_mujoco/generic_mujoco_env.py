@@ -6,12 +6,14 @@ import xml.dom.minidom as minidom
 import gymnasium as gym
 from gymnasium import utils
 import mujoco
+from urdfenvs.sensors.lidar import Lidar
 from urdfenvs.sensors.sensor import Sensor
 
 from urdfenvs.urdf_common.urdf_env import (
     check_observation,
     WrongObservationError,
 )
+
 from urdfenvs.generic_mujoco.generic_mujoco_robot import GenericMujocoRobot
 from urdfenvs.generic_mujoco.mujoco_rendering import MujocoRenderer
 from mpscenes.obstacles.collision_obstacle import CollisionObstacle
@@ -23,6 +25,9 @@ DEFAULT_CAMERA_CONFIG = {
 }
 
 DEFAULT_SIZE = 480
+
+class LinkIdNotFoundError(Exception):
+    pass
 
 
 class GenericMujocoEnv(utils.EzPickle):
@@ -54,6 +59,10 @@ class GenericMujocoEnv(utils.EzPickle):
         self._xml_file = robots[0].xml_file
         self._obstacles = obstacles
         self._goals = goals
+        if not sensors:
+            self._sensors = []
+        else:
+            self._sensors = sensors
         self.add_scene()
         self._t = 0.0
 
@@ -69,12 +78,8 @@ class GenericMujocoEnv(utils.EzPickle):
         self.frame_skip = frame_skip
         self._initialize_simulation()
 
-        if not sensors:
-            self._sensors = []
-        else:
-            self._sensors = sensors
-            for sensor in self._sensors:
-                sensor.set_data(self.data)
+        for sensor in self._sensors:
+            sensor.set_data(self.data)
 
         assert self.metadata["render_modes"] == [
             "human",
@@ -271,8 +276,58 @@ class GenericMujocoEnv(utils.EzPickle):
             self.add_obstacle(obstacle, worldbody)
         for sub_goal in self._goals:
             self.add_sub_goal(sub_goal, worldbody)
+        for sensor in self._sensors:
+            if isinstance(sensor, Lidar):
+                self.add_range_finder(sensor,root)
+
         self._xml_file = self._xml_file[:-4] + "_temp.xml"
         tree.write(self._xml_file)
+
+
+    def add_range_finder(self, sensor: Lidar, root: ET.Element) -> None:
+        lidar_link = None
+        for body in root.iter('body'):
+            if body.attrib.get('name') == sensor._link_name:
+                lidar_link = body
+                break
+        if not lidar_link:
+            raise LinkIdNotFoundError(
+                f"Link '{sensor._link_name}' not found in xml. It might be in an include."
+            )
+
+        lidar_link = body
+        sensor_element = ET.Element('sensor')
+        for i in range(sensor._nb_rays):
+            angle = i/sensor._nb_rays * np.pi * 2
+            start_position = np.array([
+                np.cos(angle) * 0.00,
+                np.sin(angle) * 0.00,
+                0.0,
+            ])
+            end_position = np.array([
+                np.cos(angle) * 0.01,
+                np.sin(angle) * 0.01,
+                0.0,
+            ])
+            fromto_string = " ".join(map(str, start_position)) 
+            fromto_string += " " + " ".join(map(str, end_position))
+
+            site_values = {
+              "name":f"{sensor.name()}_rf_{i}",
+              "type":"capsule",
+              "size":"0.01",
+              "fromto": fromto_string,
+            }
+            site = ET.SubElement(lidar_link, "site", site_values)
+
+
+            rangefinder_values = {
+                'name': f'{sensor.name()}_{i}',
+                'site': f'{sensor.name()}_rf_{i}',
+                'cutoff': str(sensor._ray_length + 0.01/2),
+            }
+            range_finder = ET.SubElement(sensor_element, 'rangefinder', rangefinder_values)
+        root.append(sensor_element)
 
 
     def add_obstacle(
@@ -304,10 +359,8 @@ class GenericMujocoEnv(utils.EzPickle):
             "rgba": "0 1 0 0.3",
             "pos": " ".join([str(i) for i in sub_goal.position()]),
             "size": str(sub_goal.epsilon()),
-            "contype": str(0),
-            "conaffinity": str(0),
         }
-        ET.SubElement(worldbody, "geom", geom_values)
+        ET.SubElement(worldbody, "site", geom_values)
 
     def _get_obs(self):
         observation = {

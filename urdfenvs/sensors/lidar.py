@@ -2,6 +2,7 @@
 import numpy as np
 import pybullet as p
 import gymnasium as gym
+from scipy.spatial.transform import Rotation
 
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.helpers import add_shape
@@ -41,11 +42,13 @@ class Lidar(Sensor):
         angle_limits: np.ndarray = np.array([-np.pi, np.pi]),
         plotting_interval: int = -1,
         variance: float = 0.0,
+        physics_engine_name: str = 'pybullet',
     ):
         super().__init__(
             "LidarSensor",
             variance=variance,
             plotting_interval=plotting_interval,
+            physics_engine_name=physics_engine_name,
         )
         self._nb_rays = nb_rays
         self._raw_data = raw_data
@@ -88,19 +91,18 @@ class Lidar(Sensor):
         self._call_counter += 1
         if not self._link_id:
             self._link_id = self._physics_engine.extract_link_id(robot, self._link_name)
-        link_state = p.getLinkState(robot, self._link_id)
-
-        lidar_position = link_state[0]
+        lidar_position = self._physics_engine.get_link_position(robot, self._link_id)
         ray_start = lidar_position
-        yaw = p.getEulerFromQuaternion(link_state[1])[2]
+        quat = self._physics_engine.get_link_orientation(robot, self._link_id)
+        yaw = Rotation.from_quat(quat).as_euler('zyx', degrees=True)[0]
+
         for i, theta in enumerate(self._thetas):
             ray_end = np.array(ray_start) + self._ray_length * np.array(
                 [np.cos(theta + yaw), np.sin(theta + yaw), 0.0]
             )
-            lidar = p.rayTest(ray_start, ray_end)
+            lidar = self._physics_engine.ray_cast(ray_start, ray_end, i, self._ray_length)
             true_rel_positions = (
-                lidar[0][2]
-                * self._ray_length
+                lidar
                 * np.array([np.cos(theta + yaw), np.sin(theta + yaw)])
             )
             noisy_rel_positions = np.random.normal(
