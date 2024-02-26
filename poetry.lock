@@ -2735,4 +2735,4 @@ keyboard = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "75af935b1ce54d31a8e8d21fb65a0fd1685ab3edd7b51a788a01ba74d29f8bbd"
+content-hash = "247bf6f0d1bb5ea8f4c72d5dabedcd018abe3a00bea4dc91f6b63db59bec0615"
