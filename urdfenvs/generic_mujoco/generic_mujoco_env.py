@@ -120,9 +120,9 @@ class GenericMujocoEnv(utils.EzPickle):
                     ),
                     "velocity": gym.spaces.Box(
                         low=np.ones_like(self.joint_limits()[:, 0])
-                        * -2.0,
+                        * -10.0,
                         high=np.ones_like(self.joint_limits()[:, 0])
-                        * 2.0,
+                        * 10.0,
                         dtype=float,
                     ),
                 }
