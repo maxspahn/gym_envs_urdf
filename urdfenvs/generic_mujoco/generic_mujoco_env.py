@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Optional
+from typing import List, Optional, Union
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as minidom
 
@@ -47,7 +47,7 @@ class GenericMujocoEnv(utils.EzPickle):
         obstacles: List[CollisionObstacle],
         goals: List[SubGoal],
         sensors: Optional[List[Sensor]] = None,
-        render: bool = False,
+        render: Optional[Union[str, bool]] = None,
         frame_skip: int = 5,
         width: int = DEFAULT_SIZE,
         height: int = DEFAULT_SIZE,
@@ -68,9 +68,11 @@ class GenericMujocoEnv(utils.EzPickle):
         self._t = 0.0
 
 
-        render_mode = None
-        if render:
-            render_mode = "human"
+        render_mode = render
+        if render is True:
+            render_mode = 'human'
+        if render is False:
+            render_mode = None
 
         self.width = width
         self.height = height
