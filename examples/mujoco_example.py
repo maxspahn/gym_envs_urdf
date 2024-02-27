@@ -1,5 +1,6 @@
 import os
 import shutil
+from typing import Union
 import numpy as np
 from robotmodels.utils.robotmodel import RobotModel, LocalRobotModel
 from urdfenvs.generic_mujoco.generic_mujoco_env import GenericMujocoEnv
@@ -9,8 +10,9 @@ from urdfenvs.sensors.free_space_occupancy import FreeSpaceOccupancySensor
 from urdfenvs.sensors.full_sensor import FullSensor
 from urdfenvs.sensors.lidar import Lidar
 from urdfenvs.sensors.sdf_sensor import SDFSensor
-from urdfenvs.scene_examples.obstacles import sphereObst1, sphereObst2, wall_obstacles, cylinder_obstacle, dynamicSphereObst2
+from urdfenvs.scene_examples.obstacles import sphereObst1, sphereObst2, wall_obstacles, cylinder_obstacle, dynamicSphereObst1
 from urdfenvs.scene_examples.goal import goal1
+from gymnasium.wrappers.monitoring.video_recorder import VideoRecorder
 
 
 ROBOTTYPE = 'panda'
@@ -38,13 +40,13 @@ def evaluate_sdf(point, mesh, sdf, resolution) -> tuple:
     return value, gradient
 
 
-def run_generic_mujoco(n_steps: int = 1000, render: bool = True, goal: bool = False, obstacles: bool = False):
+def run_generic_mujoco(n_steps: int = 1000, render: Union[str, bool] = True, goal: bool = False, obstacles: bool = False):
     if goal:
         goal_list = [goal1]
     else:
         goal_list = []
     if obstacles:
-        obstacle_list= [sphereObst1, sphereObst2, cylinder_obstacle, dynamicSphereObst2] + wall_obstacles
+        obstacle_list= [sphereObst1, sphereObst2, cylinder_obstacle, dynamicSphereObst1] + wall_obstacles
     else:
         obstacle_list= []
     full_sensor = FullSensor(['position'], ['position', 'size', 'type', 'orientation'], variance=0.0, physics_engine_name='mujoco')
@@ -98,6 +100,7 @@ def run_generic_mujoco(n_steps: int = 1000, render: bool = True, goal: bool = Fa
         sensors=[lidar_sensor, full_sensor, free_space_decomp, sdf_sensor],
         render=render,
     )
+    #video_recorder = VideoRecorder(env, f'{ROBOTMODEL}.mp4')
     ob, info = env.reset()
 
     action_mag = np.random.rand(env.nu) * 1.0
@@ -105,12 +108,14 @@ def run_generic_mujoco(n_steps: int = 1000, render: bool = True, goal: bool = Fa
     history = []
     for _ in range(n_steps):
         action = action_mag * np.cos(env.t)
+        #video_recorder.capture_frame()
         ob, _, terminated, _, info = env.step(action)
         #print(ob['robot_0'])
         history.append(ob)
         if terminated:
             print(info)
             break
+    #video_recorder.close()
     env.close()
     return history
 

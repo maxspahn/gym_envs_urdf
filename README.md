@@ -7,6 +7,8 @@ deploy. Although, we used the OpenAI-Gym framing, these environments are
 not necessarly restricted to Reinforcement-Learning but rather to local
 motion planning in general.
 
+Pybullet
+--------
 
 <table>
  <tr>
@@ -40,6 +42,20 @@ motion planning in general.
  <tr>
   <td> <img src="/docs/source/img/panda.gif" width="250" height="250"/> </td>
   <td> <img src="/docs/source/img/albert.gif" width="250" height="250"/> </td>
+  </tr>
+</table>
+
+Mujoco
+--------
+
+<table>
+ <tr>
+  <td> Point Robot </td>
+  <td> Panda Robot </td>
+  </tr>
+ <tr>
+  <td> <img src="/docs/source/img/pointRobot_mujoco.gif" width="250" height="250"/> </td>
+  <td> <img src="/docs/source/img/panda_without_gripper.gif" width="250" height="250"/> </td>
   </tr>
 </table>
 
