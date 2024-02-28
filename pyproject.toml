@@ -21,7 +21,7 @@ numpy = "^1.19,<1.24"
 yourdfpy = "^0.0.56"
 deprecation = "^2.1.0"
 mpscenes = "^0.4.4"
-gymnasium = "^0.29.1"
+gymnasium = "1.0.0.a1"
 dill = "^0.3.7"
 robotmodels = "^0.1.2"
 scipy = "^1.9.0"
@@ -34,7 +34,7 @@ keyboard = ["pynput", "multiprocess"]
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^2.13"
+pylint = "^3.0"
 autopep8 = "^1.6.0"
 pytest = "^6.2.5"
 Sphinx = "4.2.0"

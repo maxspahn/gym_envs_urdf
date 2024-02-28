@@ -1,4 +1,5 @@
 import os
+import time
 import shutil
 from typing import Union
 import numpy as np
@@ -12,7 +13,7 @@ from urdfenvs.sensors.lidar import Lidar
 from urdfenvs.sensors.sdf_sensor import SDFSensor
 from urdfenvs.scene_examples.obstacles import sphereObst1, sphereObst2, wall_obstacles, cylinder_obstacle, dynamicSphereObst1
 from urdfenvs.scene_examples.goal import goal1
-from gymnasium.wrappers.monitoring.video_recorder import VideoRecorder
+from gymnasium.wrappers import RecordVideo
 
 
 ROBOTTYPE = 'panda'
@@ -100,24 +101,28 @@ def run_generic_mujoco(n_steps: int = 1000, render: Union[str, bool] = True, goa
         sensors=[lidar_sensor, full_sensor, free_space_decomp, sdf_sensor],
         render=render,
     )
-    #video_recorder = VideoRecorder(env, f'{ROBOTMODEL}.mp4')
+    trigger = lambda t: t % 200 == 0
+    action_mag = np.random.rand(env.nu) * 1.0
+    if render == 'rgb_array':
+        env = RecordVideo(env, video_folder=f'{ROBOTMODEL}.mp4')
     ob, info = env.reset()
 
-    action_mag = np.random.rand(env.nu) * 1.0
     t = 0.0
     history = []
-    for _ in range(n_steps):
-        action = action_mag * np.cos(env.t)
-        #video_recorder.capture_frame()
+    for i in range(n_steps):
+        t0 = time.perf_counter()
+        action = action_mag * np.cos(i/20)
         ob, _, terminated, _, info = env.step(action)
         #print(ob['robot_0'])
         history.append(ob)
         if terminated:
             print(info)
             break
-    #video_recorder.close()
+        t1 = time.perf_counter()
+        print(f"actual time: {t1-t0}")
+
     env.close()
     return history
 
 if __name__ == "__main__":
-    run_generic_mujoco(n_steps=int(1e3), render=True, obstacles=True, goal=True)
+    run_generic_mujoco(n_steps=int(1e3), render='human', obstacles=True, goal=True)
