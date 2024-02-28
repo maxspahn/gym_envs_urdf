@@ -21,7 +21,7 @@ def run_point_robot_with_freespacedecomp(
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
     ]
-    env: UrdfEnv = gym.make("urdf-env-v0", dt=0.01, robots=robots, render=render)
+    env: UrdfEnv = UrdfEnv(dt=0.01, robots=robots, render=render)
     for wall in wall_obstacles:
         env.add_obstacle(wall)
     if obstacles:

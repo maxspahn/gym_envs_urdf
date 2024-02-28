@@ -1,6 +1,6 @@
-import gymnasium as gym
 import numpy as np
 
+from urdfenvs.urdf_common.urdf_env import UrdfEnv
 from urdfenvs.urdf_common.bicycle_model import BicycleModel
 
 
@@ -18,8 +18,7 @@ def run_prius(n_steps=1000, render=False, goal=True, obstacles=True):
             facing_direction='-x'
         )
     ]
-    env = gym.make(
-        "urdf-env-v0",
+    env: UrdfEnv = UrdfEnv(
         dt=0.01, robots=robots, render=render
     )
     action = np.array([1.1, 0.1])

@@ -11,8 +11,7 @@ def run_tiago_keyboard(conn, n_steps=10000, render=True):
     robots = [
         TiagoRobot(mode="vel"),
     ]
-    env = gym.make(
-        "urdf-env-v0",
+    env: UrdfEnv = UrdfEnv(
         dt=0.01, robots=robots, render=render
     )
     ob = env.reset()

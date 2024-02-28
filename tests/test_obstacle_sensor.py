@@ -1,7 +1,7 @@
-import gymnasium as gym
 import numpy as np
 import pytest
 
+from urdfenvs.urdf_common.urdf_env import UrdfEnv
 from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
 from urdfenvs.scene_examples.obstacles import sphereObst1, urdfObst1, dynamicSphereObst3
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
@@ -10,8 +10,7 @@ def test_static_obstacle():
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
     ]
-    env = gym.make(
-        "urdf-env-v0",
+    env = UrdfEnv(
         dt=0.01, robots=robots, render=False
     )
     # add sensor
@@ -40,8 +39,7 @@ def test_dynamicObstacle():
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
     ]
-    env = gym.make(
-        "urdf-env-v0",
+    env = UrdfEnv(
         dt=0.01, robots=robots, render=False
     )
 
@@ -71,8 +69,7 @@ def test_shape_observation_space():
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
     ]
-    env = gym.make(
-        "urdf-env-v0",
+    env = UrdfEnv(
         dt=0.01, robots=robots, render=False
     )
     # add obstacle and sensor

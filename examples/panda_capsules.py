@@ -10,8 +10,7 @@ def run_panda_capsules(n_steps=100000, render=False, goal=True, obstacles=True):
     robots = [
         GenericUrdfReacher(urdf="panda_collision_links.urdf", mode="vel"),
     ]
-    env: UrdfEnv = gym.make(
-        "urdf-env-v0",
+    env: UrdfEnv = UrdfEnv(
         dt=0.01, robots=robots,
         render=render,
         observation_checking=False,

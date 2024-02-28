@@ -10,8 +10,7 @@ def run_point_robot(n_steps=1000, render=False, goal=True, obstacles=True):
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
     ]
-    env: UrdfEnv = gym.make(
-        "urdf-env-v0",
+    env: UrdfEnv = UrdfEnv(
         dt=0.01, robots=robots, render=render
     )
     action = np.array([0.1, 0.0, 0.0])

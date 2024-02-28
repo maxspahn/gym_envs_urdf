@@ -1,6 +1,7 @@
-import gymnasium as gym
 import os
 import numpy as np
+
+from urdfenvs.urdf_common.urdf_env import UrdfEnv
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.robots.generic_urdf import GenericDiffDriveRobot
 
@@ -48,8 +49,7 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
         boxer,
     ]
 
-    env = gym.make(
-        "urdf-env-v0",
+    env: UrdfEnv = UrdfEnv(
         dt=0.01, robots=robots, render=render
     )
     n = env.n()

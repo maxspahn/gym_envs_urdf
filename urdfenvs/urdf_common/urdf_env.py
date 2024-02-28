@@ -56,7 +56,7 @@ class UrdfEnv(gym.Env):
 
     def __init__(
         self,
-        robots: List[GenericRobot],
+        robots: List[type(GenericRobot)],
         render: bool = False,
         enforce_real_time: Optional[bool] = None,
         dt: float = 0.01,

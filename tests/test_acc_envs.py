@@ -1,6 +1,7 @@
 import gymnasium as gym
 import numpy as np
 import pytest
+from urdfenvs.urdf_common.urdf_env import UrdfEnv
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.robots.generic_urdf import GenericDiffDriveRobot
 
@@ -140,7 +141,7 @@ def allBicycleModelEnvs(priusEnv):
 
 def test_all(allEnvs):
     for setup in allEnvs:
-        env = gym.make("urdf-env-v0", robots=[setup[0]], render=False, dt=0.01)
+        env = UrdfEnv( robots=[setup[0]], render=False, dt=0.01)
         ob, _ = env.reset(pos=setup[1], vel=setup[2])
         action = np.random.random(env.n())
         np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['position'], setup[1], decimal=2)
@@ -153,7 +154,7 @@ def test_all(allEnvs):
 
 def test_allDifferentialDrive(allDifferentialDriveEnvs):
     for setup in allDifferentialDriveEnvs:
-        env = gym.make("urdf-env-v0", robots=[setup[0]], render=False, dt=0.01)
+        env = UrdfEnv( robots=[setup[0]], render=False, dt=0.01)
         ob, _ = env.reset(pos=setup[1], vel=setup[2])
         action = np.random.random(env.n()) * 0.1
         np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['position'], setup[1], decimal=2)
@@ -166,7 +167,7 @@ def test_allDifferentialDrive(allDifferentialDriveEnvs):
 
 def test_allBicycleModel(allBicycleModelEnvs):
     for setup in allBicycleModelEnvs:
-        env = gym.make("urdf-env-v0", robots=[setup[0]], render=False, dt=0.01)
+        env = UrdfEnv( robots=[setup[0]], render=False, dt=0.01)
         ob, _ = env.reset(pos=setup[1], vel=setup[2])
         action = np.random.random(env.n()) * 0.1
         np.testing.assert_array_almost_equal(ob['robot_0']['joint_state']['position'], setup[1], decimal=2)

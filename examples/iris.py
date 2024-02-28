@@ -1,14 +1,13 @@
-import gymnasium as gym
 import numpy as np
 from urdfenvs.robots.iris import IrisDrone
+from urdfenvs.urdf_common.urdf_env import UrdfEnv
 
 
 def run_iris(n_steps=3000, render=False, goal=True, obstacles=True):
     robots = [
         IrisDrone(mode="vel"),
     ]
-    env = gym.make(
-        "urdf-env-v0",
+    env: UrdfEnv = UrdfEnv(
         dt=0.01, robots=robots, render=render
     )
     # set initial state [x, y, z, qx, qy, qz, qw]
