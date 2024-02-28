@@ -1,4 +1,6 @@
 import numpy as np
+import time
+import logging
 from typing import List, Optional, Union
 import xml.etree.ElementTree as ET
 
@@ -52,6 +54,7 @@ class GenericMujocoEnv(Env):
         height: int = DEFAULT_SIZE,
         camera_id: Optional[int] = None,
         camera_name: Optional[str] = None,
+        enforce_real_time: Optional[bool] = None,
     ) -> None:
 
         utils.EzPickle.__init__(self)
@@ -72,6 +75,10 @@ class GenericMujocoEnv(Env):
             render_mode = 'human'
         if render is False:
             render_mode = None
+        if enforce_real_time and render_mode == 'human':
+            self._enforce_real_time = True
+        else:
+            self._enforce_real_time = False
 
         self.width = width
         self.height = height
@@ -185,6 +192,7 @@ class GenericMujocoEnv(Env):
             self.data.mocap_pos[i] = obstacle.position(t=self.t)
 
     def step(self, action: np.ndarray):
+        step_start = time.perf_counter()
         self._t += self.dt
         truncated = False
         info = {}
@@ -214,6 +222,15 @@ class GenericMujocoEnv(Env):
             except WrongObservationError as e:
                 self._done = True
                 info = {"observation_limits": str(e)}
+        step_end = time.perf_counter()
+        step_time = step_end - step_start
+        if self._enforce_real_time:
+            sleep_time = max(0.0, self.dt - step_time)
+            time.sleep(sleep_time)
+        step_final_end = time.perf_counter()
+        total_step_time = step_final_end - step_start
+        real_time_factor = self.dt/total_step_time
+        logging.info(f"Real time factor {real_time_factor}")
         return (
             ob,
             reward,

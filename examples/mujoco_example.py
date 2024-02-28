@@ -100,6 +100,7 @@ def run_generic_mujoco(n_steps: int = 1000, render: Union[str, bool] = True, goa
         goal_list,
         sensors=[lidar_sensor, full_sensor, free_space_decomp, sdf_sensor],
         render=render,
+        enforce_real_time=True,
     )
     trigger = lambda t: t % 200 == 0
     action_mag = np.random.rand(env.nu) * 1.0
@@ -119,7 +120,6 @@ def run_generic_mujoco(n_steps: int = 1000, render: Union[str, bool] = True, goa
             print(info)
             break
         t1 = time.perf_counter()
-        print(f"actual time: {t1-t0}")
 
     env.close()
     return history
