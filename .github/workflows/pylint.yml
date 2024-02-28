@@ -24,4 +24,4 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint --fail-under=9 urdfenvs
+        pylint --rcfile .pylintrc --fail-under=9 urdfenvs

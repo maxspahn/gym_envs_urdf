@@ -1,4 +1,3 @@
-import gymnasium as gym
 from urdfenvs.robots.generic_urdf.generic_diff_drive_robot import GenericDiffDriveRobot
 import numpy as np
 
@@ -38,8 +37,7 @@ def run_tiago(n_steps=1000, render=False, goal=True, obstacles=True):
             spawn_offset = np.array([-0.1764081, 0.0, 0.1]),
         ),
     ]
-    env: UrdfEnv = gym.make(
-        "urdf-env-v0",
+    env: UrdfEnv = UrdfEnv(
         dt=0.01, robots=robots, render=render
     )
     action = np.zeros(env.n())

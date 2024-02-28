@@ -1,10 +1,11 @@
 import numpy as np
+import time
+import logging
 from typing import List, Optional, Union
 import xml.etree.ElementTree as ET
-import xml.dom.minidom as minidom
 
 import gymnasium as gym
-from gymnasium import utils
+from gymnasium import Env, utils
 import mujoco
 from urdfenvs.sensors.lidar import Lidar
 from urdfenvs.sensors.sensor import Sensor
@@ -15,7 +16,7 @@ from urdfenvs.urdf_common.urdf_env import (
 )
 
 from urdfenvs.generic_mujoco.generic_mujoco_robot import GenericMujocoRobot
-from urdfenvs.generic_mujoco.mujoco_rendering import MujocoRenderer
+from gymnasium.envs.mujoco.mujoco_rendering import MujocoRenderer
 from mpscenes.obstacles.collision_obstacle import CollisionObstacle
 from mpscenes.goals.sub_goal import SubGoal
 
@@ -30,7 +31,7 @@ class LinkIdNotFoundError(Exception):
     pass
 
 
-class GenericMujocoEnv(utils.EzPickle):
+class GenericMujocoEnv(Env):
     metadata = {
         "render_modes": [
             "human",
@@ -53,6 +54,7 @@ class GenericMujocoEnv(utils.EzPickle):
         height: int = DEFAULT_SIZE,
         camera_id: Optional[int] = None,
         camera_name: Optional[str] = None,
+        enforce_real_time: Optional[bool] = None,
     ) -> None:
 
         utils.EzPickle.__init__(self)
@@ -73,6 +75,10 @@ class GenericMujocoEnv(utils.EzPickle):
             render_mode = 'human'
         if render is False:
             render_mode = None
+        if enforce_real_time and render_mode == 'human':
+            self._enforce_real_time = True
+        else:
+            self._enforce_real_time = False
 
         self.width = width
         self.height = height
@@ -102,12 +108,14 @@ class GenericMujocoEnv(utils.EzPickle):
         self.camera_id = camera_id
 
         self.mujoco_renderer = MujocoRenderer(
-            self.model, self.data, DEFAULT_CAMERA_CONFIG
+            self.model, self.data, DEFAULT_CAMERA_CONFIG,
+            height=DEFAULT_SIZE,
+            width=DEFAULT_SIZE,
         )
 
     def render(self):
         return self.mujoco_renderer.render(
-            self.render_mode, self.camera_id, self.camera_name
+            self.render_mode
         )
 
     def get_observation_space(self) -> gym.spaces.Dict:
@@ -184,6 +192,7 @@ class GenericMujocoEnv(utils.EzPickle):
             self.data.mocap_pos[i] = obstacle.position(t=self.t)
 
     def step(self, action: np.ndarray):
+        step_start = time.perf_counter()
         self._t += self.dt
         truncated = False
         info = {}
@@ -213,6 +222,15 @@ class GenericMujocoEnv(utils.EzPickle):
             except WrongObservationError as e:
                 self._done = True
                 info = {"observation_limits": str(e)}
+        step_end = time.perf_counter()
+        step_time = step_end - step_start
+        if self._enforce_real_time:
+            sleep_time = max(0.0, self.dt - step_time)
+            time.sleep(sleep_time)
+        step_final_end = time.perf_counter()
+        total_step_time = step_final_end - step_start
+        real_time_factor = self.dt/total_step_time
+        logging.info(f"Real time factor {real_time_factor}")
         return (
             ob,
             reward,
@@ -223,9 +241,12 @@ class GenericMujocoEnv(utils.EzPickle):
 
     def reset(
         self,
+        seed: Optional[int] = None,
+        options: Optional[dict] = None,
         pos: Optional[np.ndarray] = None,
         vel: Optional[np.ndarray] = None,
     ):
+        super().reset(seed=seed, options=options)
         if pos is not None:
             qpos = pos
         else:

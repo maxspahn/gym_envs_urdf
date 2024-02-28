@@ -3,6 +3,7 @@ import numpy as np
 
 from urdfenvs.scene_examples.obstacles import wall_obstacles
 from urdfenvs.robots.generic_urdf.generic_diff_drive_robot import GenericDiffDriveRobot
+from urdfenvs.urdf_common.urdf_env import UrdfEnv
 
 def run_jackal(n_steps=1000, render=False, goal=True, obstacles=True):
     robots = [
@@ -20,8 +21,7 @@ def run_jackal(n_steps=1000, render=False, goal=True, obstacles=True):
             wheel_distance = 2 * 0.187795 + 0.08,
         ),
     ]
-    env = gym.make(
-        "urdf-env-v0",
+    env: UrdfEnv = UrdfEnv(
         dt=0.01, robots=robots, render=render
     )
     action = np.array([1.0, 0.50])

@@ -19,7 +19,7 @@ def run_point_robot_with_freespacedecomp(
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
     ]
-    env: UrdfEnv = gym.make("urdf-env-v0", dt=0.01, robots=robots, render=render)
+    env: UrdfEnv = UrdfEnv(dt=0.01, robots=robots, render=render)
     if obstacles:
         env.add_obstacle(sphereObst2)
         env.add_obstacle(cylinder_obstacle)

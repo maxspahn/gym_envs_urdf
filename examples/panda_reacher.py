@@ -1,4 +1,3 @@
-import gymnasium as gym
 import numpy as np
 from robotmodels.utils.robotmodel import RobotModel
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
@@ -12,14 +11,16 @@ def run_panda(n_steps=1000, render=False, goal=True, obstacles=True):
     robots = [
         GenericUrdfReacher(urdf=urdf_file, mode="vel"),
     ]
-    env: UrdfEnv = gym.make(
-        "urdf-env-v0",
-        dt=0.01, robots=robots,
+    env: UrdfEnv = UrdfEnv(
+        robots=robots,
+        dt=0.01,
         render=render,
         observation_checking=False,
     )
-    env.add_goal(dynamicGoal)
-    env.add_obstacle(dynamicSphereObst2)
+    if goal:
+        env.add_goal(dynamicGoal)
+    if obstacles:
+        env.add_obstacle(dynamicSphereObst2)
     env.set_spaces()
     action = np.ones(env.n()) * 0.1
     ob = env.reset(pos=robot_model.home_cfg())

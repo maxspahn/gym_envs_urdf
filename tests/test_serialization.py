@@ -1,8 +1,8 @@
-import gymnasium as gym
 import numpy as np
 import pytest
 from urdfenvs.sensors.lidar import Lidar
 
+from urdfenvs.urdf_common.urdf_env import UrdfEnv
 from urdfenvs.scene_examples.obstacles import sphereObst1, dynamicSphereObst3
 from urdfenvs.scene_examples.goal import goal1
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
@@ -13,7 +13,7 @@ def test_serialization():
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
     ]
-    env: UrdfEnv = gym.make("urdf-env-v0", dt=0.01, robots=robots, render=False)
+    env: UrdfEnv = UrdfEnv(dt=0.01, robots=robots, render=False)
     env.reset()
     env.add_obstacle(sphereObst1)
     env.add_obstacle(dynamicSphereObst3)

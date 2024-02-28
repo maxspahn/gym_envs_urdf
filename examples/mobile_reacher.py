@@ -1,14 +1,13 @@
-import gymnasium as gym
-from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 import numpy as np
 
+from urdfenvs.robots.generic_urdf import GenericUrdfReacher
+from urdfenvs.urdf_common.urdf_env import UrdfEnv
 
 def run_mobile_reacher(n_steps=1000, render=False, goal=True, obstacles=True):
     robots = [
         GenericUrdfReacher(urdf="mobilePanda_with_gripper.urdf", mode="vel"),
     ]
-    env = gym.make(
-        "urdf-env-v0",
+    env: UrdfEnv = UrdfEnv(
         dt=0.01, robots=robots, render=render, num_sub_steps=200,
     )
     action = np.zeros(env.n())

@@ -1,7 +1,7 @@
-import gymnasium as gym
 import numpy as np
 from urdfenvs.scene_examples.obstacles import *
 from urdfenvs.scene_examples.goal import *
+from urdfenvs.urdf_common.urdf_env import UrdfEnv
 
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 
@@ -9,8 +9,7 @@ def run_point_robot(n_steps=1000, render=False, goal=True, obstacles=True):
     robots = [
         GenericUrdfReacher(urdf="heijn_robot.urdf", mode="vel"),
     ]
-    env = gym.make(
-        "urdf-env-v0",
+    env: UrdfEnv = UrdfEnv(
         dt=0.01, robots=robots, render=render
     )
     action = np.array([0.1, 0.0, 0.01])

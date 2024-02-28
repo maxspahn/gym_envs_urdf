@@ -1,20 +1,20 @@
-import gymnasium as gym
+import numpy as np
+
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.sensors.obstacle_sensor import ObstacleSensor
+from urdfenvs.urdf_common.urdf_env import UrdfEnv
 from urdfenvs.scene_examples.obstacles import (
     sphereObst1,
     urdfObst1,
     dynamicSphereObst3,
 )
-import numpy as np
 
 
 def run_point_robot_with_obstacle_sensor(n_steps=1000, render=False, obstacles=True, goal=True):
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
     ]
-    env = gym.make(
-        "urdf-env-v0",
+    env: UrdfEnv = UrdfEnv(
         dt=0.01, robots=robots, render=render
     )
     defaultAction = np.array([0.1, 0.0, 0.0])

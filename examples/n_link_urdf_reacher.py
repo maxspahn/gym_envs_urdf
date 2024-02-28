@@ -1,14 +1,14 @@
-import gymnasium as gym
-from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 import numpy as np
+
+from urdfenvs.robots.generic_urdf import GenericUrdfReacher
+from urdfenvs.urdf_common.urdf_env import UrdfEnv
 
 
 def run_n_link_reacher(n_steps=1000, render=False, goal=True, obstacles=True):
     robots = [
         GenericUrdfReacher(urdf="nlink_3.urdf", mode="acc"),
     ]
-    env = gym.make(
-        "urdf-env-v0",
+    env: UrdfEnv = UrdfEnv(
         dt=0.01, robots=robots, render=render
     )
     n = env.n()
