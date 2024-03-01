@@ -28,6 +28,14 @@ class PhysicsEngineInterface():
         pass
 
     @abstractmethod
+    def get_goal_pose(self, goal_id: int) -> Tuple[List[float]]:
+        pass
+
+    @abstractmethod
+    def get_goal_velocity(self, goal_id: int) -> Tuple[List[float]]:
+        pass
+
+    @abstractmethod
     def get_link_position(self, *args) -> np.ndarray:
         pass
 
@@ -83,6 +91,14 @@ class PybulletInterface(PhysicsEngineInterface):
         linear, angular = pybullet.getBaseVelocity(obst_id)
         return linear, angular
 
+    def get_goal_pose(self, goal_id: int) -> Tuple[List[float]]:
+        position, orientation = pybullet.getBasePositionAndOrientation(goal_id)
+        return position, orientation
+
+    def get_goal_velocity(self, goal_id: int) -> Tuple[List[float]]:
+        linear, angular = pybullet.getBaseVelocity(goal_id)
+        return linear, angular
+
     def get_link_position(self, robot, link_id) -> np.ndarray:
         link_position = np.array(pybullet.getLinkState(robot, link_id)[0])
         return link_position
@@ -132,6 +148,15 @@ class MujocoInterface(PhysicsEngineInterface):
         pos = self._data.mocap_pos[obst_id]
         ori = self._data.mocap_quat[obst_id]
         return pos.tolist(), ori.tolist()
+
+    def get_goal_pose(self, goal_id: int) -> Tuple[List[float]]:
+        pos = self._data.site(goal_id).xpos
+        goal_rotation = np.reshape(self._data.site(goal_id).xmat, (3, 3))
+        ori = Rotation.from_matrix(goal_rotation).as_quat()
+        return pos.tolist(), ori.tolist()
+
+    def get_goal_velocity(self, goal_id: int) -> Tuple[List[float]]:
+        return [0, 0, 0], [0, 0, 0]
 
     def ray_cast(
         self,
