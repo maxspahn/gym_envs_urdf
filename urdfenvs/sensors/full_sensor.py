@@ -152,10 +152,10 @@ class FullSensor(Sensor):
             observation = {}
             for mask_item in self._goal_mask:
                 if mask_item == "position":
-                    value, _ = self._physics_engine.get_obstacle_pose(goal_id)
+                    value, _ = self._physics_engine.get_goal_pose(goal_id)
 
                 elif mask_item == "velocity":
-                    value, _ = self._physics_engine.get_obstacle_velocity(goal_id)
+                    value, _ = self._physics_engine.get_goal_velocity(goal_id)
                 else:
                     try:
                         value = getattr(goal, mask_item)(t=t)
