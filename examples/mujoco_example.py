@@ -1,4 +1,5 @@
 import os
+import gymnasium as gym
 import time
 import shutil
 from typing import Union
@@ -94,15 +95,15 @@ def run_generic_mujoco(n_steps: int = 1000, render: Union[str, bool] = True, goa
     robots  = [
         GenericMujocoRobot(xml_file=xml_file, mode="vel"),
     ]
-    env = GenericMujocoEnv(
-        robots,
-        obstacle_list,
-        goal_list,
+    env: GenericMujocoEnv = gym.make(
+        'generic-mujoco-env-v0',
+        robots=robots,
+        obstacles=obstacle_list,
+        goals=goal_list,
         sensors=[lidar_sensor, full_sensor, free_space_decomp, sdf_sensor],
         render=render,
         enforce_real_time=True,
-    )
-    trigger = lambda t: t % 200 == 0
+    ).unwrapped
     action_mag = np.random.rand(env.nu) * 1.0
     if render == 'rgb_array':
         env = RecordVideo(env, video_folder=f'{ROBOTMODEL}.mp4')
