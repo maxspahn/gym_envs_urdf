@@ -26,7 +26,7 @@ dill = "^0.3.7"
 robotmodels = "^0.1.2"
 scipy = "^1.9.0"
 moviepy = "^1.0.3"
-trimesh = "^3.0,<3.22"
+trimesh = {version = "^3.0,<3.22", extras = ['easy']}
 
 [tool.poetry.extras]
 keyboard = ["pynput", "multiprocess"]
