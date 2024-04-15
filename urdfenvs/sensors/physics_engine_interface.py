@@ -165,7 +165,7 @@ class MujocoInterface(PhysicsEngineInterface):
         ray_index: int,
         ray_length: float
     ) -> np.ndarray:
-        if self._data.sensordata < 0:
+        if self._data.sensordata[ray_index] < 0:
             ray_value = ray_length - (0.01 / 2)
         else:
             ray_value = self._data.sensordata[ray_index] - (0.01 / 2)
