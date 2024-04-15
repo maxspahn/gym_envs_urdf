@@ -165,7 +165,10 @@ class MujocoInterface(PhysicsEngineInterface):
         ray_index: int,
         ray_length: float
     ) -> np.ndarray:
-        ray_value = self._data.sensordata[ray_index] - (0.01 / 2)
+        if self._data.sensordata[ray_index] < 0:
+            ray_value = ray_length - (0.01 / 2)
+        else:
+            ray_value = self._data.sensordata[ray_index] - (0.01 / 2)
         return ray_value
 
     def get_obstacle_velocity(self, obst_id: int) -> None:
