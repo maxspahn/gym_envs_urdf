@@ -112,7 +112,7 @@ class FreeSpaceDecomposition(object):
                 ].constraint()
             else:
                 point = self._position + np.array([20, 20, 0])
-                dummy_halfplane = HalfPlane(self._position, point)
+                dummy_halfplane = HalfPlane(point, self._position)
                 constraint_dict[
                     f"constraint_{i}"
                 ] = dummy_halfplane.constraint()
