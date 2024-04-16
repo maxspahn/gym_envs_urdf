@@ -405,5 +405,12 @@ class GenericMujocoEnv(Env):
         if self.mujoco_renderer is not None:
             self.mujoco_renderer.close()
 
-    def xml(self):
+    def xml(self) -> str:
+        """Return the xml string of the model.
+
+        As the model from the xml file may be changed during the simulation, 
+        by adding obstacles, goals, sensors, etc., this method ensures that 
+        the updated model can be saved as an xml file.
+
+        """
         return self._model_dm.to_xml_string()

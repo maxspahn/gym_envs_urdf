@@ -102,8 +102,6 @@ def run_generic_mujoco(n_steps: int = 1000, render: Union[str, bool] = True, goa
     if render == 'rgb_array':
         env = RecordVideo(env, video_folder=f'{ROBOTMODEL}.mp4')
     ob, info = env.reset()
-    with open('temp.xml', 'w') as f:
-        f.write(env.xml())
 
     t = 0.0
     history = []
