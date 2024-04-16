@@ -1,7 +1,5 @@
-import os
 import gymnasium as gym
 import time
-import shutil
 from typing import Union
 import numpy as np
 from robotmodels.utils.robotmodel import RobotModel, LocalRobotModel
@@ -85,11 +83,7 @@ def run_generic_mujoco(n_steps: int = 1000, render: Union[str, bool] = True, goa
         number_constraints=1,
         physics_engine_name='mujoco',
     )
-    if os.path.exists(ROBOTTYPE):
-        shutil.rmtree(ROBOTTYPE)
-    robot_model_original = RobotModel(ROBOTTYPE, ROBOTMODEL)
-    robot_model_original.copy_model(os.path.join(os.getcwd(), ROBOTTYPE))
-    robot_model = LocalRobotModel(ROBOTTYPE, ROBOTMODEL)
+    robot_model = RobotModel(ROBOTTYPE, ROBOTMODEL)
 
     xml_file = robot_model.get_xml_path()
     robots  = [
@@ -108,6 +102,8 @@ def run_generic_mujoco(n_steps: int = 1000, render: Union[str, bool] = True, goa
     if render == 'rgb_array':
         env = RecordVideo(env, video_folder=f'{ROBOTMODEL}.mp4')
     ob, info = env.reset()
+    with open('temp.xml', 'w') as f:
+        f.write(env.xml())
 
     t = 0.0
     history = []

@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 import gymnasium as gym
 from gymnasium import Env, utils
 import mujoco
+from dm_control import mjcf
 from urdfenvs.sensors.lidar import Lidar
 from urdfenvs.sensors.sensor import Sensor
 
@@ -164,7 +165,8 @@ class GenericMujocoEnv(Env):
     def _initialize_simulation(
         self,
     ):
-        self.model = mujoco.MjModel.from_xml_path(self._xml_file)
+        self.model = mujoco.MjModel.from_xml_string(self._model_dm.to_xml_string())
+
         self.model.body_pos[0] = [0, 1, 1]
         self.model.vis.global_.offwidth = self.width
         self.model.vis.global_.offheight = self.height
@@ -301,34 +303,25 @@ class GenericMujocoEnv(Env):
         mujoco.mj_rnePostConstraint(self.model, self.data)
 
     def add_scene(self) -> None:
-        tree = ET.parse(self._xml_file)
-        root = tree.getroot()
-        worldbody = root.find("worldbody")
+        self._model_dm = mjcf.from_path(self._xml_file)
         for obstacle in self._obstacles:
-            self.add_obstacle(obstacle, worldbody)
+            self.add_obstacle(obstacle)
         for sub_goal in self._goals:
-            self.add_sub_goal(sub_goal, worldbody)
+            self.add_sub_goal(sub_goal)
         for sensor in self._sensors:
             if isinstance(sensor, Lidar):
-                self.add_range_finder(sensor,root)
-
-        self._xml_file = self._xml_file[:-4] + "_temp.xml"
-        tree.write(self._xml_file)
+                self.add_range_finder(sensor)
 
 
-    def add_range_finder(self, sensor: Lidar, root: ET.Element) -> None:
-        lidar_link = None
-        for body in root.iter('body'):
-            if body.attrib.get('name') == sensor._link_name:
-                lidar_link = body
-                break
-        if not lidar_link:
+    def add_range_finder(self, sensor: Lidar) -> None:
+        try:
+            lidar_body = self._model_dm.find('body', sensor._link_name)
+        except Exception as e:
+            print(e)
             raise LinkIdNotFoundError(
                 f"Link '{sensor._link_name}' not found in xml. It might be in an include."
             )
 
-        lidar_link = body
-        sensor_element = ET.Element('sensor')
         for i in range(sensor._nb_rays):
             angle = i/sensor._nb_rays * np.pi * 2
             start_position = np.array([
@@ -350,7 +343,7 @@ class GenericMujocoEnv(Env):
               "size":"0.01",
               "fromto": fromto_string,
             }
-            site = ET.SubElement(lidar_link, "site", site_values)
+            lidar_body.add("site", **site_values)
 
 
             rangefinder_values = {
@@ -358,12 +351,11 @@ class GenericMujocoEnv(Env):
                 'site': f'{sensor.name()}_rf_{i}',
                 'cutoff': str(sensor._ray_length + 0.01/2),
             }
-            range_finder = ET.SubElement(sensor_element, 'rangefinder', rangefinder_values)
-        root.append(sensor_element)
+            self._model_dm.sensor.add("rangefinder", **rangefinder_values)
 
 
     def add_obstacle(
-        self, obst: CollisionObstacle, worldbody: ET.Element
+        self, obst: CollisionObstacle
     ) -> None:
         if obst.type() == "sphere":
             size = str(obst.size()[0])
@@ -376,15 +368,16 @@ class GenericMujocoEnv(Env):
             "rgba": " ".join([str(i) for i in obst.rgba()]),
             "size": size,
         }
+        obstacle_body = self._model_dm.worldbody.add(
+                "body",
+                name=obst.name(),
+                pos=obst.position().tolist(),
+                mocap=True,
+        )
+        obstacle_body.add("geom", **geom_values)
 
-        body = ET.SubElement(worldbody, "body")
-        body.set("name", obst.name())
-        body.set("mocap", "true")
-        body.set("pos", " ".join([str(i) for i in obst.position()]))
 
-        ET.SubElement(body, "geom", geom_values)
-
-    def add_sub_goal(self, sub_goal: SubGoal, worldbody: ET.Element) -> None:
+    def add_sub_goal(self, sub_goal: SubGoal) -> None:
         position = np.zeros(3)
         for index in sub_goal.indices():
             position[index] = sub_goal.position()[index]
@@ -395,7 +388,7 @@ class GenericMujocoEnv(Env):
             "pos": " ".join([str(i) for i in position.tolist()]),
             "size": str(sub_goal.epsilon()),
         }
-        ET.SubElement(worldbody, "site", geom_values)
+        self._model_dm.worldbody.add("site", **geom_values)
 
     def _get_obs(self):
         observation = {
@@ -411,3 +404,6 @@ class GenericMujocoEnv(Env):
     def close(self):
         if self.mujoco_renderer is not None:
             self.mujoco_renderer.close()
+
+    def xml(self):
+        return self._model_dm.to_xml_string()
