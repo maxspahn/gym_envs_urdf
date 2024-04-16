@@ -2076,13 +2076,13 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "robotmodels"
-version = "0.1.2"
+version = "0.1.3"
 description = "A collection of robot models"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "<4.0,>=3.8"
 files = [
-    {file = "robotmodels-0.1.2-py3-none-any.whl", hash = "sha256:ee05a1c764f96cc20322a5d70b79cc7fce64503ad4c1dfbd2b42653f8217d2fa"},
-    {file = "robotmodels-0.1.2.tar.gz", hash = "sha256:ad621e0c7f3917e1804cc10a38da7e9244088afb1a6c9db17702f8023beb6a2e"},
+    {file = "robotmodels-0.1.3-py3-none-any.whl", hash = "sha256:b5a25525b0c2fd73a9096c11c511b1ba9f3c4c8b0971ce3e96a6dd20f6c64cdf"},
+    {file = "robotmodels-0.1.3.tar.gz", hash = "sha256:7e57de382621b2b608e7d8013d8082fe3eede3c610b0a52b84a1570b9e12a745"},
 ]
 
 [package.dependencies]
@@ -2965,4 +2965,4 @@ keyboard = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "769c35d5d4e0e3449cc63733100d1c5b291055d5efad2298b1b724a0184f8f3e"
+content-hash = "2ebb723a412b0bb7848e9d07fa67a8914a1c05f2d8b29eb866b0a1539f7cb64c"
