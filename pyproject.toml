@@ -53,8 +53,8 @@ pynput = "^1.7.6"
 multiprocess = "^0.70.12"
 
 [tool.poetry.group.mujoco.dependencies]
-mujoco = "^3.0.0"
 imageio = "^2.14"
+dm-control = "^1.0.18"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
