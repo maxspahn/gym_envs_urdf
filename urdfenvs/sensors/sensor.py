@@ -43,8 +43,9 @@ class Sensor():
     def add_noise(self, exact_data: np.ndarray):
         """Add noise to the exact data."""
         noisy_data = np.random.normal(exact_data, self._variance)
-        if np.all(exact_data > self._observation_limits[0]) and np.all(exact_data < self._observation_limits[1]):
-            return np.clip(noisy_data, self._observation_limits[0], self._observation_limits[1])
+        if np.all(exact_data >= self._observation_limits[0]) and np.all(exact_data <= self._observation_limits[1]):
+            clipped = np.clip(noisy_data, self._observation_limits[0], self._observation_limits[1])
+            return clipped
         else:
             return noisy_data
 

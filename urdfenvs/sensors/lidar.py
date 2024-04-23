@@ -69,6 +69,12 @@ class Lidar(Sensor):
             -1,
         ] * self._nb_rays
 
+        self._observation_limits = np.repeat(
+                np.array([[-ray_length], [ray_length]]),
+                nb_rays * 2,
+                axis=1,
+                )
+
     def get_observation_size(self):
         """Getter for the dimension of the observation space."""
         if self._raw_data:
@@ -84,8 +90,8 @@ class Lidar(Sensor):
             shape=(self.get_observation_size(),),
             dtype=float,
         )
-        self._observation_limits = observation_space.low, observation_space.high
         return gym.spaces.Dict({self._name: observation_space})
+
 
 
     def sense(self, robot, obstacles: dict, goals: dict, t: float):
@@ -109,9 +115,8 @@ class Lidar(Sensor):
             )
 
             self._rel_positions[i, :] = true_rel_positions
-        if not self._raw_data:
-            noisy_rel_positions = self.add_noise(self._rel_positions.flatten()).reshape(self._nb_rays, 2)
-            self._rel_positions = noisy_rel_positions
+        noisy_rel_positions = self.add_noise(self._rel_positions.flatten()).reshape(self._nb_rays, 2)
+        self._rel_positions = noisy_rel_positions
 
         self._distances = np.linalg.norm(self._rel_positions, axis=1)
         if (
@@ -120,8 +125,7 @@ class Lidar(Sensor):
         ):
             self.update_lidar_spheres(lidar_position)
         if self._raw_data:
-            noisy_distances = self.add_noise(self._distances)
-            return noisy_distances
+            return self._distances
         return self._rel_positions.flatten()
 
     def init_lidar_spheres(self, lidar_position):
