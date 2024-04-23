@@ -63,11 +63,17 @@ class Lidar(Sensor):
             + i * (angle_limits[1] - angle_limits[0]) / self._nb_rays
             for i in range(self._nb_rays)
         ]
-        self._rel_positions = np.zeros(2 * nb_rays)
+        self._rel_positions = np.zeros((nb_rays, 2))
         self._distances = np.zeros(nb_rays)
         self._sphere_ids = [
             -1,
         ] * self._nb_rays
+
+        self._observation_limits = np.repeat(
+                np.array([[-ray_length], [ray_length]]),
+                nb_rays * 2,
+                axis=1,
+                )
 
     def get_observation_size(self):
         """Getter for the dimension of the observation space."""
@@ -85,6 +91,8 @@ class Lidar(Sensor):
             dtype=float,
         )
         return gym.spaces.Dict({self._name: observation_space})
+
+
 
     def sense(self, robot, obstacles: dict, goals: dict, t: float):
         """Sense the distance toward the next object with the Lidar."""
@@ -105,14 +113,12 @@ class Lidar(Sensor):
                 lidar
                 * np.array([np.cos(theta + yaw), np.sin(theta + yaw)])
             )
-            noisy_rel_positions = np.random.normal(
-                true_rel_positions, self._variance
-            )
 
-            self._rel_positions[2 * i : 2 * i + 2] = noisy_rel_positions
-            self._distances[i] = np.linalg.norm(
-                self._rel_positions[2 * i : 2 * i + 2]
-            )
+            self._rel_positions[i, :] = true_rel_positions
+        noisy_rel_positions = self.add_noise(self._rel_positions.flatten()).reshape(self._nb_rays, 2)
+        self._rel_positions = noisy_rel_positions
+
+        self._distances = np.linalg.norm(self._rel_positions, axis=1)
         if (
             self._plotting_interval > 0
             and self._call_counter % self._plotting_interval == 0
@@ -120,7 +126,7 @@ class Lidar(Sensor):
             self.update_lidar_spheres(lidar_position)
         if self._raw_data:
             return self._distances
-        return self._rel_positions
+        return self._rel_positions.flatten()
 
     def init_lidar_spheres(self, lidar_position):
         """
