@@ -165,7 +165,15 @@ class GenericMujocoEnv(Env):
     def _initialize_simulation(
         self,
     ):
-        self.model = mujoco.MjModel.from_xml_string(self._model_dm.to_xml_string())
+
+        file_name = self._xml_file.split('/')[-1]
+        mjcf.export_with_assets(
+            self._model_dm,
+            'xml_model',
+            out_file_name=file_name,
+        )
+        self.model = mujoco.MjModel.from_xml_path(f'xml_model/{file_name}')
+
 
         self.model.body_pos[0] = [0, 1, 1]
         self.model.vis.global_.offwidth = self.width

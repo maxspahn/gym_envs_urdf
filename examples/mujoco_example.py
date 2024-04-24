@@ -15,10 +15,6 @@ from urdfenvs.scene_examples.goal import goal1
 from gymnasium.wrappers import RecordVideo
 
 
-ROBOTTYPE = 'panda'
-ROBOTMODEL = 'panda_without_gripper'
-ROBOTTYPE = 'pointRobot'
-ROBOTMODEL = 'pointRobot'
 
 def get_index_from_coordinates(point, mesh) -> tuple:
     distances = np.linalg.norm(mesh - point, axis=3)
@@ -40,7 +36,14 @@ def evaluate_sdf(point, mesh, sdf, resolution) -> tuple:
     return value, gradient
 
 
-def run_generic_mujoco(n_steps: int = 1000, render: Union[str, bool] = True, goal: bool = False, obstacles: bool = False):
+def run_generic_mujoco(
+        robot_name: str = 'panda',
+        robot_model: str = 'panda_without_gripper',
+        n_steps: int = 1000,
+        render: Union[str, bool] = True,
+        goal: bool = False,
+        obstacles: bool = False
+    ):
     if goal:
         goal_list = [goal1]
     else:
@@ -83,18 +86,21 @@ def run_generic_mujoco(n_steps: int = 1000, render: Union[str, bool] = True, goa
         number_constraints=1,
         physics_engine_name='mujoco',
     )
-    robot_model = RobotModel(ROBOTTYPE, ROBOTMODEL)
+    robot_model = RobotModel(robot_name, robot_model)
 
     xml_file = robot_model.get_xml_path()
     robots  = [
         GenericMujocoRobot(xml_file=xml_file, mode="vel"),
     ]
-    env: GenericMujocoEnv = gym.make(
-        'generic-mujoco-env-v0',
+    if robot_name == 'pointRobot':
+        sensors=[lidar_sensor, full_sensor, free_space_decomp, sdf_sensor]
+    else:
+        sensors=[]
+    env = GenericMujocoEnv(
         robots=robots,
         obstacles=obstacle_list,
         goals=goal_list,
-        sensors=[lidar_sensor, full_sensor, free_space_decomp, sdf_sensor],
+        sensors=sensors,
         render=render,
         enforce_real_time=True,
     ).unwrapped
@@ -120,4 +126,11 @@ def run_generic_mujoco(n_steps: int = 1000, render: Union[str, bool] = True, goa
     return history
 
 if __name__ == "__main__":
-    run_generic_mujoco(n_steps=int(1e3), render='human', obstacles=True, goal=True)
+    run_generic_mujoco(
+        robot_name='panda',
+        robot_model='panda_without_gripper',
+        n_steps=int(1e3),
+        render='human',
+        obstacles=True,
+        goal=True
+    )

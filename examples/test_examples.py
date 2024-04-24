@@ -106,7 +106,39 @@ def test_serialization():
     from serializing_environments import run_serializing_example
     blueprint_test(run_serializing_example)
 
-def test_mujoco_example():
+def test_pointRobot_mujoco_example():
     from mujoco_example import run_generic_mujoco
-    blueprint_test(run_generic_mujoco)
+    def run_pointRobot_mujoco(
+        n_steps=int(1e3),
+        render='human',
+        obstacles=True,
+        goal=True
+    ):
+        return run_generic_mujoco(
+            robot_name='pointRobot',
+            robot_model='pointRobot',
+            n_steps=n_steps,
+            render=render,
+            obstacles=obstacles,
+            goal=goal
+        )
+    blueprint_test(run_pointRobot_mujoco)
+
+def test_panda_mujoco_example():
+    from mujoco_example import run_generic_mujoco
+    def run_panda_mujoco(
+        n_steps=int(1e3),
+        render='human',
+        obstacles=True,
+        goal=True
+    ):
+        return run_generic_mujoco(
+            robot_name='panda',
+            robot_model='panda_without_gripper',
+            n_steps=n_steps,
+            render=render,
+            obstacles=obstacles,
+            goal=goal
+        )
+    blueprint_test(run_panda_mujoco)
 
