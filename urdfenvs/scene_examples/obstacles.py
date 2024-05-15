@@ -10,6 +10,14 @@ obst1Dict = {
     "type": "sphere",
     "geometry": {"position": [2.0, 2.0, 1.0], "radius": 1.0},
     "rgba": [0.3, 0.5, 0.6, 1.0],
+    'low': {
+        'position' : [1.5, 0.0, 0.5],
+        'radius': 0.2,
+    },
+    'high': {
+         'position' : [5.0, 5.0, 1.0],
+        'radius': 0.8,
+    },
 }
 sphereObst1 = SphereObstacle(name="sphere_1", content_dict=obst1Dict)
 obst2Dict = {

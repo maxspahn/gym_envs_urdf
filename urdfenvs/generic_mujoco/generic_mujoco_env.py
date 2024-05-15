@@ -201,6 +201,10 @@ class GenericMujocoEnv(Env):
         for i, obstacle in enumerate(self._obstacles):
             self.data.mocap_pos[i] = obstacle.position(t=self.t)
 
+    def update_goals_position(self):
+        for i, goal in enumerate(self._goals):
+            self.data.site_xpos[i] = goal.position(t=self.t)
+
     def step(self, action: np.ndarray):
         step_start = time.perf_counter()
         self._t += self.dt
@@ -222,6 +226,7 @@ class GenericMujocoEnv(Env):
             info = {"Collision": message}
             self._done = True
         self.update_obstacles_position()
+        self.update_goals_position()
         if self.render_mode == "human":
             self.render()
 
@@ -257,6 +262,12 @@ class GenericMujocoEnv(Env):
         vel: Optional[np.ndarray] = None,
     ):
         super().reset(seed=seed, options=options)
+        if options and options.get("randomize_obstacles", False):
+            for obstacle in self._obstacles:
+                obstacle.shuffle()
+        if options and options.get("randomize_goals", False):
+            for goal in self._goals:
+                goal.shuffle()
         if pos is not None:
             qpos = pos
         else:
