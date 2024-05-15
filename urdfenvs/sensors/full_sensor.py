@@ -109,7 +109,8 @@ class FullSensor(Sensor):
             )
         if observation_space_goals:
             observation_space["goals"] = spaces.Dict(observation_space_goals)
-        return spaces.Dict({self._name: spaces.Dict(observation_space)})
+        self._observation_space = spaces.Dict({self._name: spaces.Dict(observation_space)})
+        return self._observation_space
 
 
 
@@ -139,9 +140,9 @@ class FullSensor(Sensor):
                 if isinstance(value, str):
                     observation[mask_item] = np.array([ord(c) for c in value])
                 else:
-                    observation[mask_item] = np.random.normal(
-                        np.array(value), self._variance
-                    ).astype("float32")
+                    obs = self._observation_space[self.name()]['obstacles'][obst_id][mask_item]
+                    limits = np.array([obs.low, obs.high])
+                    observation[mask_item] = self.add_noise(np.array(value), limits)
             observations[obst_id] = observation
 
         if observations:
@@ -166,9 +167,9 @@ class FullSensor(Sensor):
                 if isinstance(value, bool):
                     observation[mask_item] = np.array([value])
                 else:
-                    observation[mask_item] = np.random.normal(
-                        np.array(value), self._variance
-                    ).astype("float32")
+                    obs = self._observation_space[self.name()]['goals'][goal_id][mask_item]
+                    limits = np.array([obs.low, obs.high])
+                    observation[mask_item] = self.add_noise(np.array(value), limits)
             observations[goal_id] = observation
 
         if observations:

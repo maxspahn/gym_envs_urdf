@@ -1,5 +1,5 @@
 """Abstract class for sensor."""
-from typing import List
+from typing import Optional
 from abc import abstractmethod
 
 import numpy as np
@@ -40,11 +40,13 @@ class Sensor():
     def set_data(self, data):
         self._physics_engine.set_data(data)
 
-    def add_noise(self, exact_data: np.ndarray):
+    def add_noise(self, exact_data: np.ndarray, limits: Optional[np.ndarray] = None):
         """Add noise to the exact data."""
         noisy_data = np.random.normal(exact_data, self._variance)
-        if np.all(exact_data >= self._observation_limits[0]) and np.all(exact_data <= self._observation_limits[1]):
-            clipped = np.clip(noisy_data, self._observation_limits[0], self._observation_limits[1])
+        used_limits = limits if limits is not None else self._observation_limits
+        
+        if np.all(exact_data >= used_limits[0]) and np.all(exact_data <= used_limits[1]):
+            clipped = np.clip(noisy_data, used_limits[0], used_limits[1])
             return clipped
         else:
             return noisy_data
