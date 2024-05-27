@@ -1538,13 +1538,13 @@ validation = ["lxml"]
 
 [[package]]
 name = "pyglet"
-version = "1.5.28"
+version = "1.5.29"
 description = "Cross-platform windowing and multimedia library"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pyglet-1.5.28-py3-none-any.whl", hash = "sha256:ea312a553c266a0f45a9c209f565e3c02371c83d89fd8931422c6475ce4ecbae"},
-    {file = "pyglet-1.5.28.zip", hash = "sha256:68bff532226b0e8f54dfcc2f6df7d0e463b451fae97fe9fa4af4131d34afbc00"},
+    {file = "pyglet-1.5.29-py3-none-any.whl", hash = "sha256:c9bf6deab6add99e79d635dd74c2bf5a646f2c7fb1859d71f5042fb481d85cb6"},
+    {file = "pyglet-1.5.29.zip", hash = "sha256:397f40ebf147e7f63b1ba808b96daba1fa0c9e3855c98c9662f8c37325ff05b1"},
 ]
 
 [[package]]
@@ -1912,20 +1912,18 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "robotmodels"
-version = "0.1.8"
+version = "0.1.9"
 description = "A collection of robot models"
 optional = false
-python-versions = "^3.8"
-files = []
-develop = true
+python-versions = "<4.0,>=3.8"
+files = [
+    {file = "robotmodels-0.1.9-py3-none-any.whl", hash = "sha256:2bd4c6c5af13b277b0e7028ae122a4489df15aff9bb8ad29566fdbff700caf5d"},
+    {file = "robotmodels-0.1.9.tar.gz", hash = "sha256:162f68ef4aa8de048c278e8c657718fd5cd057c8eb9501f5c7a94ff74b7c3b00"},
+]
 
 [package.dependencies]
 pyglet = "<2"
-yourdfpy = "^0.0.56"
-
-[package.source]
-type = "directory"
-url = "../../../robotmodels"
+yourdfpy = ">=0.0.56,<0.0.57"
 
 [[package]]
 name = "rpds-py"
@@ -2647,4 +2645,4 @@ keyboard = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "5d19be3f6e144ba667f029cfcf3f304aed03f471420700db70d7c733820dfff1"
+content-hash = "d079bea33e5975ca9ee2abf5e1d9ea131f27f75511d1dc0234bfdb85af279389"
