@@ -42,6 +42,7 @@ class GenericMujocoEnv(Env):
         "render_fps": 20,
     }
     _t: float
+    _number_movable_obstacles: int
 
     def __init__(
         self,
@@ -67,6 +68,7 @@ class GenericMujocoEnv(Env):
             self._sensors = []
         else:
             self._sensors = sensors
+        self._number_movable_obstacles = 0
         self.add_scene()
         self._t = 0.0
 
@@ -154,7 +156,7 @@ class GenericMujocoEnv(Env):
         )
 
     def joint_limits(self) -> np.ndarray:
-        return self.model.jnt_range
+        return self.model.jnt_range[:self.nq]
 
     def actuator_limits(self) -> np.ndarray:
         return self.model.actuator_ctrlrange
@@ -198,7 +200,9 @@ class GenericMujocoEnv(Env):
         return {k: v for k, v in enumerate(self._goals)}
 
     def update_obstacles_position(self):
-        for i, obstacle in enumerate(self._obstacles):
+
+        non_movable_obstacles = [obstacle for obstacle in self._obstacles if not obstacle.movable()]
+        for i, obstacle in enumerate(non_movable_obstacles):
             self.data.mocap_pos[i] = obstacle.position(t=self.t)
 
     def update_goals_position(self):
@@ -219,6 +223,8 @@ class GenericMujocoEnv(Env):
         for contact in self.data.contact:
             body1 = self.model.geom(contact.geom1).name
             body2 = self.model.geom(contact.geom2).name
+            if 'movable' in body1 or 'movable' in body2:
+                continue
 
             message = f"Collision occured at {round(self.t, 2)} " \
                 f"between {body1} and obstacle " \
@@ -275,30 +281,30 @@ class GenericMujocoEnv(Env):
         if vel is not None:
             qvel = vel
         else:
-            qvel = np.zeros(self.model.nv)
+            qvel = np.zeros(self.nv)
         self.set_state(qpos, qvel)
         self._t = 0.0
         return self._get_obs(), {}
 
     def set_state(self, qpos, qvel):
-        assert qpos.shape == (self.model.nq,) and qvel.shape == (self.model.nv,)
-        self.data.qpos[:] = np.copy(qpos)
-        self.data.qvel[:] = np.copy(qvel)
+        assert qpos.shape == (self.nq,) and qvel.shape == (self.nv,)
+        self.data.qpos[:self.nq] = np.copy(qpos)
+        self.data.qvel[:self.nv] = np.copy(qvel)
         if self.model.na == 0:
             self.data.act[:] = None
         mujoco.mj_forward(self.model, self.data)
 
     @property
     def nu(self) -> int:
-        return self.model.nu
+        return self.model.nu 
 
     @property
     def nq(self) -> int:
-        return self.model.nq
+        return self.model.nq - 7 * self._number_movable_obstacles
 
     @property
     def nv(self) -> int:
-        return self.model.nv
+        return self.model.nv - 6 * self._number_movable_obstacles
 
     def do_simulation(self, ctrl, n_frames) -> None:
         """
@@ -391,8 +397,11 @@ class GenericMujocoEnv(Env):
                 "body",
                 name=obst.name(),
                 pos=obst.position().tolist(),
-                mocap=True,
+                mocap=not obst.movable()
         )
+        if obst.movable():
+            obstacle_body.add("freejoint", name=f"freejoint_{obst.name()}")
+            self._number_movable_obstacles += 1
         obstacle_body.add("geom", **geom_values)
 
 
@@ -412,8 +421,8 @@ class GenericMujocoEnv(Env):
     def _get_obs(self):
         observation = {
             "joint_state": {
-                "position": self.data.qpos,
-                "velocity": self.data.qvel,
+                "position": self.data.qpos[0:self.nq],
+                "velocity": self.data.qvel[0:self.nv],
             }
         }
         for sensor in self._sensors:

@@ -10,7 +10,7 @@ from urdfenvs.sensors.free_space_occupancy import FreeSpaceOccupancySensor
 from urdfenvs.sensors.full_sensor import FullSensor
 from urdfenvs.sensors.lidar import Lidar
 from urdfenvs.sensors.sdf_sensor import SDFSensor
-from urdfenvs.scene_examples.obstacles import sphereObst1, sphereObst2, wall_obstacles, cylinder_obstacle, dynamicSphereObst1
+from urdfenvs.scene_examples.obstacles import sphereObst1, sphereObst2, wall_obstacles, cylinder_obstacle, dynamicSphereObst1, movable_obstacle
 from urdfenvs.scene_examples.goal import goal1
 from gymnasium.wrappers import RecordVideo
 
@@ -49,7 +49,7 @@ def run_generic_mujoco(
     else:
         goal_list = []
     if obstacles:
-        obstacle_list= [sphereObst1, sphereObst2, cylinder_obstacle, dynamicSphereObst1] + wall_obstacles
+        obstacle_list= [movable_obstacle, sphereObst1, sphereObst2, cylinder_obstacle, dynamicSphereObst1] + wall_obstacles
     else:
         obstacle_list= []
     full_sensor = FullSensor(['position'], ['position', 'size', 'type', 'orientation'], variance=0.0, physics_engine_name='mujoco')
@@ -96,7 +96,7 @@ def run_generic_mujoco(
         sensors=[lidar_sensor, full_sensor, free_space_decomp, sdf_sensor]
     else:
         sensors=[]
-    env = GenericMujocoEnv(
+    env: GenericMujocoEnv = GenericMujocoEnv(
         robots=robots,
         obstacles=obstacle_list,
         goals=goal_list,
@@ -106,7 +106,7 @@ def run_generic_mujoco(
     ).unwrapped
     action_mag = np.random.rand(env.nu) * 1.0
     if render == 'rgb_array':
-        env = RecordVideo(env, video_folder=f'{ROBOTMODEL}.mp4')
+        env = RecordVideo(env, video_folder=f'{robot_model}.mp4')
     ob, info = env.reset(options={'randomize_obstacles': False})
 
     t = 0.0
@@ -114,6 +114,7 @@ def run_generic_mujoco(
     for i in range(n_steps):
         t0 = time.perf_counter()
         action = action_mag * np.cos(i/20)
+        action[-1] = 0.02
         ob, _, terminated, _, info = env.step(action)
         #print(ob['robot_0'])
         history.append(ob)
@@ -128,7 +129,7 @@ def run_generic_mujoco(
 if __name__ == "__main__":
     run_generic_mujoco(
         robot_name='panda',
-        robot_model='panda_without_gripper',
+        robot_model='panda_with_gripper',
         n_steps=int(1e3),
         render='human',
         obstacles=True,

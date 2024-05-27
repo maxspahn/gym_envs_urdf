@@ -20,11 +20,11 @@ class PhysicsEngineInterface():
         pass
 
     @abstractmethod
-    def get_obstacle_pose(self, *args) -> Tuple[List[float], List[float]]:
+    def get_obstacle_pose(self, *args, **kwargs) -> Tuple[List[float], List[float]]:
         pass
 
     @abstractmethod
-    def get_obstacle_velocity(self, *args) -> Tuple[List[float], List[float]]:
+    def get_obstacle_velocity(self, *args, **kwargs) -> Tuple[List[float], List[float]]:
         pass
 
     @abstractmethod
@@ -83,11 +83,11 @@ class PybulletInterface(PhysicsEngineInterface):
         )
 
 
-    def get_obstacle_pose(self, obst_id: int) -> Tuple[List[float], List[float]]:
+    def get_obstacle_pose(self, obst_id: int, obst_name: str, movable: bool = False) -> None:
         position, orientation = pybullet.getBasePositionAndOrientation(obst_id)
         return position, orientation
 
-    def get_obstacle_velocity(self, obst_id: int) -> Tuple[List[float], List[float]]:
+    def get_obstacle_velocity(self, obst_id: int, obst_name: str, movable: bool = False) -> None:
         linear, angular = pybullet.getBaseVelocity(obst_id)
         return linear, angular
 
@@ -144,9 +144,14 @@ class MujocoInterface(PhysicsEngineInterface):
         link_orientation_matrix = np.reshape(self._data.xmat[link_id], (3, 3))
         return Rotation.from_matrix(link_orientation_matrix).as_quat()
 
-    def get_obstacle_pose(self, obst_id: int) -> Tuple[List[float], List[float]]:
-        pos = self._data.mocap_pos[obst_id]
-        ori = self._data.mocap_quat[obst_id]
+    def get_obstacle_pose(self, obst_id: int, obst_name: str, movable: bool = False) -> Tuple[List[float], List[float]]:
+        if movable:
+
+            free_joint_data = self._data.jnt(f"freejoint_{obst_name}").qpos
+            print(free_joint_data)
+            return free_joint_data[0:3].tolist(), free_joint_data[3:].tolist()
+        pos = self._data.body(obst_name).xpos
+        ori = self._data.body(obst_name).xquat
         return pos.tolist(), ori.tolist()
 
     def get_goal_pose(self, goal_id: int) -> Tuple[List[float]]:
@@ -171,7 +176,7 @@ class MujocoInterface(PhysicsEngineInterface):
             ray_value = self._data.sensordata[ray_index] - (0.01 / 2)
         return ray_value
 
-    def get_obstacle_velocity(self, obst_id: int) -> None:
+    def get_obstacle_velocity(self, obst_id: int, obst_name: str, movable: bool = False) -> None:
         raise NotImplementedError(
             "Obstacle velocity not implemented for mujoco."
         )
