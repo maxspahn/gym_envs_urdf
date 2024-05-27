@@ -107,7 +107,7 @@ def run_generic_mujoco(
     action_mag = np.random.rand(env.nu) * 1.0
     if render == 'rgb_array':
         env = RecordVideo(env, video_folder=f'{ROBOTMODEL}.mp4')
-    ob, info = env.reset()
+    ob, info = env.reset(options={'randomize_obstacles': False})
 
     t = 0.0
     history = []
