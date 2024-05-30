@@ -28,6 +28,7 @@ DEFAULT_CAMERA_CONFIG = {
 
 DEFAULT_SIZE = 480
 
+
 class LinkIdNotFoundError(Exception):
     pass
 
@@ -72,20 +73,18 @@ class GenericMujocoEnv(Env):
         self.add_scene()
         self._t = 0.0
 
-
         render_mode = render
         if render is True:
-            render_mode = 'human'
+            render_mode = "human"
         if render is False:
             render_mode = None
-        if enforce_real_time and render_mode == 'human':
+        if enforce_real_time and render_mode == "human":
             self._enforce_real_time = True
         else:
             self._enforce_real_time = False
 
         self.width = width
         self.height = height
-
 
         self.frame_skip = frame_skip
         self._initialize_simulation()
@@ -111,41 +110,49 @@ class GenericMujocoEnv(Env):
         self.camera_id = camera_id
 
         self.mujoco_renderer = MujocoRenderer(
-            self.model, self.data, DEFAULT_CAMERA_CONFIG,
+            self.model,
+            self.data,
+            DEFAULT_CAMERA_CONFIG,
             height=DEFAULT_SIZE,
             width=DEFAULT_SIZE,
         )
 
     def render(self):
-        return self.mujoco_renderer.render(
-            self.render_mode
-        )
+        return self.mujoco_renderer.render(self.render_mode)
 
     def get_observation_space(self) -> gym.spaces.Dict:
         """Get observation space."""
-        observation_space_as_dict= dict(gym.spaces.Dict({
-            "joint_state": gym.spaces.Dict(
+        observation_space_as_dict = dict(
+            gym.spaces.Dict(
                 {
-                    "position": gym.spaces.Box(
-                        low=self.joint_limits()[:, 0],
-                        high=self.joint_limits()[:, 1],
-                        dtype=float,
-                    ),
-                    "velocity": gym.spaces.Box(
-                        low=np.ones_like(self.joint_limits()[:, 0])
-                        * -10.0,
-                        high=np.ones_like(self.joint_limits()[:, 0])
-                        * 10.0,
-                        dtype=float,
-                    ),
+                    "joint_state": gym.spaces.Dict(
+                        {
+                            "position": gym.spaces.Box(
+                                low=self.joint_limits()[:, 0],
+                                high=self.joint_limits()[:, 1],
+                                dtype=float,
+                            ),
+                            "velocity": gym.spaces.Box(
+                                low=np.ones_like(self.joint_limits()[:, 0])
+                                * -10.0,
+                                high=np.ones_like(self.joint_limits()[:, 0])
+                                * 10.0,
+                                dtype=float,
+                            ),
+                        }
+                    )
                 }
             )
-        }))
+        )
         for sensor in self._sensors:
             observation_space_as_dict.update(
-                sensor.get_observation_space(self.obstacles_dict, self.goals_dict)
+                sensor.get_observation_space(
+                    self.obstacles_dict, self.goals_dict
+                )
             )
-        observation_space = gym.spaces.Dict({'robot_0': gym.spaces.Dict(observation_space_as_dict)})
+        observation_space = gym.spaces.Dict(
+            {"robot_0": gym.spaces.Dict(observation_space_as_dict)}
+        )
         return observation_space
 
     def get_action_space(self) -> np.ndarray:
@@ -156,7 +163,7 @@ class GenericMujocoEnv(Env):
         )
 
     def joint_limits(self) -> np.ndarray:
-        return self.model.jnt_range[:self.nq]
+        return self.model.jnt_range[: self.nq]
 
     def actuator_limits(self) -> np.ndarray:
         return self.model.actuator_ctrlrange
@@ -168,20 +175,18 @@ class GenericMujocoEnv(Env):
         self,
     ):
 
-        file_name = self._xml_file.split('/')[-1]
+        file_name = self._xml_file.split("/")[-1]
         mjcf.export_with_assets(
             self._model_dm,
-            'xml_model',
+            "xml_model",
             out_file_name=file_name,
         )
-        self.model = mujoco.MjModel.from_xml_path(f'xml_model/{file_name}')
-
+        self.model = mujoco.MjModel.from_xml_path(f"xml_model/{file_name}")
 
         self.model.body_pos[0] = [0, 1, 1]
         self.model.vis.global_.offwidth = self.width
         self.model.vis.global_.offheight = self.height
         self.data = mujoco.MjData(self.model)
-
 
     @property
     def dt(self) -> float:
@@ -201,7 +206,9 @@ class GenericMujocoEnv(Env):
 
     def update_obstacles_position(self):
 
-        non_movable_obstacles = [obstacle for obstacle in self._obstacles if not obstacle.movable()]
+        non_movable_obstacles = [
+            obstacle for obstacle in self._obstacles if not obstacle.movable()
+        ]
         for i, obstacle in enumerate(non_movable_obstacles):
             self.data.mocap_pos[i] = obstacle.position(t=self.t)
 
@@ -223,12 +230,14 @@ class GenericMujocoEnv(Env):
         for contact in self.data.contact:
             body1 = self.model.geom(contact.geom1).name
             body2 = self.model.geom(contact.geom2).name
-            if 'movable' in body1 or 'movable' in body2:
+            if "movable" in body1 or "movable" in body2:
                 continue
 
-            message = f"Collision occured at {round(self.t, 2)} " \
-                f"between {body1} and obstacle " \
+            message = (
+                f"Collision occured at {round(self.t, 2)} "
+                f"between {body1} and obstacle "
                 f"with id {body2}"
+            )
             info = {"Collision": message}
             self._done = True
         self.update_obstacles_position()
@@ -250,7 +259,7 @@ class GenericMujocoEnv(Env):
             time.sleep(sleep_time)
         step_final_end = time.perf_counter()
         total_step_time = step_final_end - step_start
-        real_time_factor = self.dt/total_step_time
+        real_time_factor = self.dt / total_step_time
         logging.info(f"Real time factor {real_time_factor}")
         return (
             ob,
@@ -288,15 +297,15 @@ class GenericMujocoEnv(Env):
 
     def set_state(self, qpos, qvel):
         assert qpos.shape == (self.nq,) and qvel.shape == (self.nv,)
-        self.data.qpos[:self.nq] = np.copy(qpos)
-        self.data.qvel[:self.nv] = np.copy(qvel)
+        self.data.qpos[: self.nq] = np.copy(qpos)
+        self.data.qvel[: self.nv] = np.copy(qvel)
         if self.model.na == 0:
             self.data.act[:] = None
         mujoco.mj_forward(self.model, self.data)
 
     @property
     def nu(self) -> int:
-        return self.model.nu 
+        return self.model.nu
 
     @property
     def nq(self) -> int:
@@ -337,10 +346,9 @@ class GenericMujocoEnv(Env):
             if isinstance(sensor, Lidar):
                 self.add_range_finder(sensor)
 
-
     def add_range_finder(self, sensor: Lidar) -> None:
         try:
-            lidar_body = self._model_dm.find('body', sensor._link_name)
+            lidar_body = self._model_dm.find("body", sensor._link_name)
         except Exception as e:
             print(e)
             raise LinkIdNotFoundError(
@@ -348,40 +356,40 @@ class GenericMujocoEnv(Env):
             )
 
         for i in range(sensor._nb_rays):
-            angle = i/sensor._nb_rays * np.pi * 2
-            start_position = np.array([
-                np.cos(angle) * 0.00,
-                np.sin(angle) * 0.00,
-                0.0,
-            ])
-            end_position = np.array([
-                np.cos(angle) * 0.01,
-                np.sin(angle) * 0.01,
-                0.0,
-            ])
-            fromto_string = " ".join(map(str, start_position)) 
+            angle = i / sensor._nb_rays * np.pi * 2
+            start_position = np.array(
+                [
+                    np.cos(angle) * 0.00,
+                    np.sin(angle) * 0.00,
+                    0.0,
+                ]
+            )
+            end_position = np.array(
+                [
+                    np.cos(angle) * 0.01,
+                    np.sin(angle) * 0.01,
+                    0.0,
+                ]
+            )
+            fromto_string = " ".join(map(str, start_position))
             fromto_string += " " + " ".join(map(str, end_position))
 
             site_values = {
-              "name":f"{sensor.name()}_rf_{i}",
-              "type":"capsule",
-              "size":"0.01",
-              "fromto": fromto_string,
+                "name": f"{sensor.name()}_rf_{i}",
+                "type": "capsule",
+                "size": "0.01",
+                "fromto": fromto_string,
             }
             lidar_body.add("site", **site_values)
 
-
             rangefinder_values = {
-                'name': f'{sensor.name()}_{i}',
-                'site': f'{sensor.name()}_rf_{i}',
-                'cutoff': str(sensor._ray_length + 0.01/2),
+                "name": f"{sensor.name()}_{i}",
+                "site": f"{sensor.name()}_rf_{i}",
+                "cutoff": str(sensor._ray_length + 0.01 / 2),
             }
             self._model_dm.sensor.add("rangefinder", **rangefinder_values)
 
-
-    def add_obstacle(
-        self, obst: CollisionObstacle
-    ) -> None:
+    def add_obstacle(self, obst: CollisionObstacle) -> None:
         if obst.type() == "sphere":
             size = str(obst.size()[0])
         else:
@@ -394,16 +402,15 @@ class GenericMujocoEnv(Env):
             "size": size,
         }
         obstacle_body = self._model_dm.worldbody.add(
-                "body",
-                name=obst.name(),
-                pos=obst.position().tolist(),
-                mocap=not obst.movable()
+            "body",
+            name=obst.name(),
+            pos=obst.position().tolist(),
+            mocap=not obst.movable(),
         )
         if obst.movable():
             obstacle_body.add("freejoint", name=f"freejoint_{obst.name()}")
             self._number_movable_obstacles += 1
         obstacle_body.add("geom", **geom_values)
-
 
     def add_sub_goal(self, sub_goal: SubGoal) -> None:
         position = np.zeros(3)
@@ -421,12 +428,18 @@ class GenericMujocoEnv(Env):
     def _get_obs(self):
         observation = {
             "joint_state": {
-                "position": self.data.qpos[0:self.nq],
-                "velocity": self.data.qvel[0:self.nv],
+                "position": self.data.qpos[0 : self.nq],
+                "velocity": self.data.qvel[0 : self.nv],
             }
         }
         for sensor in self._sensors:
-            observation.update({sensor.name(): sensor.sense(0, self.obstacles_dict, self.goals_dict, self.t)})
+            observation.update(
+                {
+                    sensor.name(): sensor.sense(
+                        0, self.obstacles_dict, self.goals_dict, self.t
+                    )
+                }
+            )
         return {"robot_0": observation}
 
     def close(self):
@@ -436,8 +449,8 @@ class GenericMujocoEnv(Env):
     def xml(self) -> str:
         """Return the xml string of the model.
 
-        As the model from the xml file may be changed during the simulation, 
-        by adding obstacles, goals, sensors, etc., this method ensures that 
+        As the model from the xml file may be changed during the simulation,
+        by adding obstacles, goals, sensors, etc., this method ensures that
         the updated model can be saved as an xml file.
 
         """
