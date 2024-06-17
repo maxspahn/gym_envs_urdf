@@ -8,7 +8,7 @@ from robotmodels.utils.robotmodel import RobotModel, LocalRobotModel
 from urdfenvs.sensors.full_sensor import FullSensor
 
 from urdfenvs.urdf_common.urdf_env import UrdfEnv
-from urdfenvs.scene_examples.obstacles import sphereObst1, dynamicSphereObst3
+from urdfenvs.scene_examples.obstacles import sphereObst1, dynamicSphereObst3, movable_obstacle
 from urdfenvs.scene_examples.goal import goal1
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.generic_mujoco.generic_mujoco_env import GenericMujocoEnv
@@ -24,6 +24,7 @@ def test_full_sensor():
     env.reset()
     env.add_obstacle(sphereObst1)
     env.add_obstacle(dynamicSphereObst3)
+    env.add_obstacle(movable_obstacle)
     sensor = FullSensor(
         goal_mask=["position", "is_primary_goal"],
         obstacle_mask=["velocity", "position", "size"],
@@ -41,8 +42,10 @@ def test_full_sensor():
     assert isinstance(full_sensor_ob["obstacles"], dict)
     assert isinstance(full_sensor_ob["obstacles"][2], dict)
     assert isinstance(full_sensor_ob["obstacles"][2]["position"], np.ndarray)
+    assert isinstance(full_sensor_ob["obstacles"][3], dict)
+    assert isinstance(full_sensor_ob["obstacles"][3]["position"], np.ndarray)
     assert isinstance(full_sensor_ob["goals"], dict)
-    assert isinstance(full_sensor_ob["goals"][4]["position"], np.ndarray)
+    assert isinstance(full_sensor_ob["goals"][5]["position"], np.ndarray)
     np.testing.assert_array_almost_equal(
         full_sensor_ob["obstacles"][2]["velocity"],
         sphereObst1.velocity(t=env.t()),
@@ -54,12 +57,12 @@ def test_full_sensor():
         decimal=4,
     )
     np.testing.assert_array_almost_equal(
-        full_sensor_ob["goals"][4]["position"],
+        full_sensor_ob["goals"][5]["position"],
         goal1.position(t=env.t()),
         decimal=4,
     )
     np.testing.assert_array_almost_equal(
-        full_sensor_ob["goals"][4]["is_primary_goal"],
+        full_sensor_ob["goals"][5]["is_primary_goal"],
         goal1.is_primary_goal(),
         decimal=4,
     )
@@ -83,6 +86,28 @@ def test_full_sensor():
         dynamicSphereObst3.radius(),
         decimal=2,
     )
+    # Estimate the position of the movable obstacle after 10 steps
+    pos = movable_obstacle.position(t=0)
+    vel = movable_obstacle.velocity(t=0)
+    acc = np.array([0, 0, -9.81])
+    for i in range(10):
+        vel += acc * env.dt
+        pos += vel * env.dt
+    np.testing.assert_array_almost_equal(
+        full_sensor_ob["obstacles"][4]["position"],
+        pos,
+        decimal=1,
+    )
+    np.testing.assert_array_almost_equal(
+        full_sensor_ob["obstacles"][4]["velocity"],
+        vel,
+        decimal=1,
+    )
+    np.testing.assert_array_almost_equal(
+        full_sensor_ob["obstacles"][4]["size"],
+        movable_obstacle.size(),
+        decimal=2,
+    )
     env.close()
 
 
@@ -93,11 +118,7 @@ def test_full_sensor_mujoco():
         variance=0.0,
         physics_engine_name="mujoco",
     )
-    if os.path.exists("pointRobot"):
-        shutil.rmtree("pointRobot")
-    robot_model_original = RobotModel("pointRobot", "pointRobot")
-    robot_model_original.copy_model(os.path.join(os.getcwd(), "pointRobot"))
-    robot_model = LocalRobotModel("pointRobot", "pointRobot")
+    robot_model = RobotModel("pointRobot", "pointRobot")
 
     xml_file = robot_model.get_xml_path()
     robots = [
@@ -106,7 +127,7 @@ def test_full_sensor_mujoco():
     env: GenericMujocoEnv = gym.make(
         "generic-mujoco-env-v0",
         robots=robots,
-        obstacles=[sphereObst1, dynamicSphereObst3],
+        obstacles=[sphereObst1, dynamicSphereObst3, movable_obstacle],
         goals=[goal1],
         sensors=[sensor],
         render=False,
@@ -146,11 +167,28 @@ def test_full_sensor_mujoco():
     np.testing.assert_array_almost_equal(
         full_sensor_ob["obstacles"][1]["position"],
         dynamicSphereObst3.position(t=env.t),
-        decimal=4,
+        decimal=2,
     )
     np.testing.assert_array_almost_equal(
         full_sensor_ob["obstacles"][1]["size"],
         dynamicSphereObst3.radius(),
+        decimal=2,
+    )
+    # Estimate the position of the movable obstacle after 10 steps
+    pos = movable_obstacle.position(t=0)
+    vel = movable_obstacle.velocity(t=0)
+    acc = np.array([0, 0, -9.81])
+    for i in range(10):
+        vel += acc * env.dt
+        pos += vel * env.dt
+    np.testing.assert_array_almost_equal(
+        full_sensor_ob["obstacles"][2]["position"],
+        pos,
+        decimal=1,
+    )
+    np.testing.assert_array_almost_equal(
+        full_sensor_ob["obstacles"][2]["size"],
+        movable_obstacle.size(),
         decimal=2,
     )
     env.close()

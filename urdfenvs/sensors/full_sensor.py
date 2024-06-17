@@ -122,13 +122,25 @@ class FullSensor(Sensor):
             observation = {}
             for mask_item in self._obstacle_mask:
                 if mask_item == "position":
-                    value, _ = self._physics_engine.get_obstacle_pose(obst_id)
+                    value, _ = self._physics_engine.get_obstacle_pose(
+                        obst_id,
+                        obstacle.name(),
+                        movable=obstacle.movable(),
+                    )
                 elif mask_item == "orientation":
-                    _, value_raw = self._physics_engine.get_obstacle_pose(obst_id)
+                    _, value_raw = self._physics_engine.get_obstacle_pose(
+                        obst_id,
+                        obstacle.name(),
+                        movable=obstacle.movable(),
+                    )
                     value = value_raw[3:] + value_raw[:3]
 
                 elif mask_item == "velocity":
-                    value, _ = self._physics_engine.get_obstacle_velocity(obst_id)
+                    value, _ = self._physics_engine.get_obstacle_velocity(
+                        obst_id,
+                        obstacle.name(),
+                        movable=obstacle.movable(),
+                    )
 
                 else:
                     try:
