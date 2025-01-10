@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import time
 import logging
@@ -175,7 +176,10 @@ class GenericMujocoEnv(Env):
         self,
     ):
 
-        file_name = self._xml_file.split("/")[-1]
+        if sys.platform.startswith('win'):
+            file_name = self._xml_file.split("\\")[-1]
+        else:
+            file_name = self._xml_file.split("/")[-1]
         mjcf.export_with_assets(
             self._model_dm,
             "xml_model",
