@@ -2,7 +2,7 @@ import os
 from enum import Enum
 from abc import ABC, abstractmethod
 from typing import List, Optional
-import pybullet as p
+import pybullet
 import gymnasium as gym
 import numpy as np
 import yourdfpy
@@ -130,17 +130,17 @@ class GenericRobot(ABC):
         if hasattr(self, "_robot"):
             self._robot_joints = []
             self._castor_joints = []
-            num_joints = p.getNumJoints(self._robot)
+            num_joints = pybullet.getNumJoints(self._robot)
             for name in self._joint_names:
                 for i in range(num_joints):
-                    joint_info = p.getJointInfo(self._robot, i)
+                    joint_info = pybullet.getJointInfo(self._robot, i)
                     joint_name = joint_info[1].decode("UTF-8")
                     link_name = joint_info[12].decode("UTF-8")
                     if joint_name == name:
                         self._robot_joints.append(i)
                     self._link_names.append(link_name)
                 for i in range(num_joints):
-                    joint_info = p.getJointInfo(self._robot, i)
+                    joint_info = pybullet.getJointInfo(self._robot, i)
                     joint_name = joint_info[1].decode("UTF-8")
                     if joint_name in self._castor_wheels:
                         self._castor_joints.append(i)
@@ -213,10 +213,10 @@ class GenericRobot(ABC):
         """
         self._friction = 0.0
         for i in range(self._n):
-            p.setJointMotorControl2(
+            pybullet.setJointMotorControl2(
                 self._robot,
                 jointIndex=self._robot_joints[i],
-                controlMode=p.VELOCITY_CONTROL,
+                controlMode=pybullet.VELOCITY_CONTROL,
                 force=self._friction,
             )
 
