@@ -5,10 +5,10 @@ import numpy as np
 from robotmodels.utils.robotmodel import RobotModel, LocalRobotModel
 from urdfenvs.generic_mujoco.generic_mujoco_env import GenericMujocoEnv
 from urdfenvs.generic_mujoco.generic_mujoco_robot import GenericMujocoRobot
-from urdfenvs.sensors.free_space_decomposition import FreeSpaceDecompositionSensor
+from urdfenvs.sensors.mujoco.free_space_decomposition import FreeSpaceDecompositionSensorMujoco as FreeSpaceDecompositionSensor
 from urdfenvs.sensors.free_space_occupancy import FreeSpaceOccupancySensor
 from urdfenvs.sensors.full_sensor import FullSensor
-from urdfenvs.sensors.lidar import Lidar
+from urdfenvs.sensors.mujoco.lidar import LidarMujoco as Lidar
 from urdfenvs.sensors.sdf_sensor import SDFSensor
 from urdfenvs.scene_examples.obstacles import sphereObst1, sphereObst2, wall_obstacles, cylinder_obstacle, dynamicSphereObst1, movable_obstacle
 from urdfenvs.scene_examples.goal import goal1

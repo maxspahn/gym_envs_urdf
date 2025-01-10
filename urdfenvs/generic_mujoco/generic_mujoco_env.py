@@ -9,10 +9,10 @@ import gymnasium as gym
 from gymnasium import Env, utils
 import mujoco
 from dm_control import mjcf
-from urdfenvs.sensors.lidar import Lidar
+from urdfenvs.sensors.mujoco.lidar import LidarMujoco as Lidar
 from urdfenvs.sensors.sensor import Sensor
 
-from urdfenvs.urdf_common.urdf_env import (
+from urdfenvs.urdf_common.helpers import (
     check_observation,
     WrongObservationError,
 )

@@ -4,7 +4,7 @@ from abc import abstractmethod
 
 import numpy as np
 from scipy.spatial.transform import Rotation
-import pybullet
+#import pybullet
 
 class LinkIdNotFoundError(Exception):
     pass

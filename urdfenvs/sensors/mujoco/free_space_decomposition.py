@@ -1,11 +1,9 @@
-"""Module for fsd sensor based on lidar."""
 import numpy as np
 
-from urdfenvs.sensors.lidar import Lidar
-from urdfenvs.sensors.fsd_sensor import FSDSensor
+from urdfenvs.sensors.mujoco.fsd_sensor import FSDSensorMujoco
+from urdfenvs.sensors.mujoco.lidar import LidarMujoco
 
-
-class FreeSpaceDecompositionSensor(FSDSensor, Lidar):
+class FreeSpaceDecompositionSensorMujoco(FSDSensorMujoco, LidarMujoco):
     def __init__(
         self,
         link_name,
@@ -20,7 +18,7 @@ class FreeSpaceDecompositionSensor(FSDSensor, Lidar):
         planar_visualization: bool = True,
         physics_engine_name: str = 'pybullet'
     ):
-        FSDSensor.__init__(
+        FSDSensorMujoco.__init__(
             self,
             max_radius,
             number_constraints=number_constraints,
@@ -29,7 +27,7 @@ class FreeSpaceDecompositionSensor(FSDSensor, Lidar):
             planar_visualization=planar_visualization,
             physics_engine_name=physics_engine_name,
         )
-        Lidar.__init__(
+        LidarMujoco.__init__(
             self,
             link_name,
             nb_rays=nb_rays,
@@ -43,7 +41,7 @@ class FreeSpaceDecompositionSensor(FSDSensor, Lidar):
         self._name = "FreeSpaceDecompSensor"
 
     def sense(self, robot, obstacles: dict, goals: dict, t: float):
-        lidar_observation = Lidar.sense(
+        lidar_observation = LidarMujoco.sense(
             self, robot, obstacles, goals, t
         ).reshape((self._nb_rays, 2))
         lidar_position = self._physics_engine.get_link_position(robot, self._link_id)
