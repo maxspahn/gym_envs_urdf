@@ -5,7 +5,7 @@ import logging
 from typing import List, Type, Union, Optional, Tuple
 
 import dill
-import pybullet as p
+#import pybullet as p
 import numpy as np
 import gymnasium as gym
 
@@ -18,37 +18,8 @@ from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
 from urdfenvs.urdf_common.reward import Reward
 from urdfenvs.urdf_common.helpers import add_shape, get_transformation_matrix, matrix_to_quaternion
+from urdfenvs.urdf_common.helpers import WrongObservationError, check_observation
 
-
-class WrongObservationError(Exception):
-    pass
-
-
-class WrongActionError(Exception):
-    pass
-
-
-def check_observation(obs, ob):
-    for key, value in ob.items():
-        if isinstance(value, dict):
-            check_observation(obs[key], value)
-        elif isinstance(value, np.ndarray):
-            if isinstance(obs[key], gym.spaces.Discrete):
-                continue
-            if not obs[key].contains(value):
-                s = f"key: {key}: {value} not in {obs[key]}"
-                if np.any(value < obs[key].low):
-                    index = np.where(value < obs[key].low)[0]
-                    value_at_index = value[index]
-                    s += f"\nAt index {index.tolist()}: {value_at_index} < {obs[key].low[index]}"
-                if np.any(value > obs[key].high):
-                    index = np.where(value > obs[key].high)[0]
-                    value_at_index = value[index]
-                    s += f"\nAt index {index.tolist()}: {value_at_index} > {obs[key].high[index]}"
-
-                raise WrongObservationError(s)
-        else:
-            raise Exception(f"Observation checking failed for key:{key} value:{value}.")
 
 
 class UrdfEnv(gym.Env):
