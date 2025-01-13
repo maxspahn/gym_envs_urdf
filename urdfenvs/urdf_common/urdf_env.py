@@ -1,25 +1,26 @@
-import time
-from copy import deepcopy
-import warnings
 import logging
-from typing import List, Type, Union, Optional, Tuple
+import time
+import warnings
+from copy import deepcopy
+from typing import List, Optional, Tuple, Type, Union
 
 import dill
-#import pybullet as p
-import numpy as np
 import gymnasium as gym
-
-from mpscenes.obstacles.collision_obstacle import CollisionObstacle
+import numpy as np
+import pybullet
 from mpscenes.goals.goal_composition import GoalComposition
 from mpscenes.goals.sub_goal import SubGoal
+from mpscenes.obstacles.collision_obstacle import CollisionObstacle
 
-from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
+from urdfenvs.urdf_common.helpers import (WrongObservationError,
+                                          check_observation,
+                                          get_transformation_matrix,
+                                          matrix_to_quaternion)
+from urdfenvs.urdf_common.plane import Plane
+from urdfenvs.urdf_common.pybullet_helpers import add_shape
 from urdfenvs.urdf_common.reward import Reward
-from urdfenvs.urdf_common.helpers import add_shape, get_transformation_matrix, matrix_to_quaternion
-from urdfenvs.urdf_common.helpers import WrongObservationError, check_observation
-
 
 
 class UrdfEnv(gym.Env):
@@ -37,7 +38,7 @@ class UrdfEnv(gym.Env):
         """Constructor for environment.
 
         Variables are set and the pyhsics engine is initiated. Either with
-        rendering (p.GUI) or without (p.DIRECT). Note that rendering slows
+        rendering (pybullet.GUI) or without (pybullet.DIRECT). Note that rendering slows
         down the simulation.
 
         Parameters:
@@ -74,15 +75,15 @@ class UrdfEnv(gym.Env):
 
     def connect_physics_engine(self):
         if self._render:
-            self._cid = p.connect(p.GUI)
-            p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
+            self._cid = pybullet.connect(pybullet.GUI)
+            pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, 0)
         else:
-            self._cid = p.connect(p.DIRECT)
-        p.setPhysicsEngineParameter(
+            self._cid = pybullet.connect(pybullet.DIRECT)
+        pybullet.setPhysicsEngineParameter(
             fixedTimeStep=self._dt, numSubSteps=self._num_sub_steps
         )
         self.plane = Plane()
-        p.setGravity(0, 0, -10.0)
+        pybullet.setGravity(0, 0, -10.0)
 
     def load_environment(self):
         old_obsts = deepcopy(list(self._obsts.values()))
@@ -125,7 +126,7 @@ class UrdfEnv(gym.Env):
         return self._t
 
     def get_camera_configuration(self) -> tuple:
-        full_camera_configuration = p.getDebugVisualizerCamera()
+        full_camera_configuration = pybullet.getDebugVisualizerCamera()
         camera_yaw = full_camera_configuration[8]
         camera_pitch = full_camera_configuration[9]
         camera_distance = full_camera_configuration[10]
@@ -144,7 +145,7 @@ class UrdfEnv(gym.Env):
         camera_pitch: float,
         camera_target_position: tuple,
     ) -> None:
-        p.resetDebugVisualizerCamera(
+        pybullet.resetDebugVisualizerCamera(
             cameraDistance=camera_distance,
             cameraYaw=camera_yaw,
             cameraPitch=camera_pitch,
@@ -153,13 +154,13 @@ class UrdfEnv(gym.Env):
 
     def start_video_recording(self, file_name: str) -> None:
         if self._render:
-            p.startStateLogging(p.STATE_LOGGING_VIDEO_MP4, file_name)
+            pybullet.startStateLogging(pybullet.STATE_LOGGING_VIDEO_MP4, file_name)
         else:
             logging.warning("Video recording requires rendering to be active.")
 
     def stop_video_recording(self) -> None:
         if self._render:
-            p.stopStateLogging()
+            pybullet.stopStateLogging()
 
     def set_spaces(self) -> None:
         """Set observation and action space."""
@@ -202,9 +203,9 @@ class UrdfEnv(gym.Env):
         self.update_goals()
         self.update_collision_links()
 
-        p.stepSimulation(self._cid)
+        pybullet.stepSimulation(self._cid)
         for robot_id, robot in enumerate(self._robots):
-            contacts = p.getContactPoints(robot._robot)
+            contacts = pybullet.getContactPoints(robot._robot)
             for contact_info in contacts:
                 body_b = contact_info[2]
                 if body_b in self._obsts:
@@ -280,10 +281,10 @@ class UrdfEnv(gym.Env):
 
     def empty_scene(self) -> None:
         for goal_id in self._goals:
-            p.removeBody(goal_id)
+            pybullet.removeBody(goal_id)
         self._goals = {}
         for obst_id in self._obsts:
-            p.removeBody(obst_id)
+            pybullet.removeBody(obst_id)
         self._obsts = {}
 
     def update_obstacles(self):
@@ -295,21 +296,21 @@ class UrdfEnv(gym.Env):
                 vel = obst.velocity(t=self.t()).tolist()
                 ori = obst.orientation(t=self.t()).tolist()
                 ori = ori[1:] + ori[:1]
-                p.resetBasePositionAndOrientation(obst_id, pos, ori)
-                p.resetBaseVelocity(obst_id, linearVelocity=vel)
+                pybullet.resetBasePositionAndOrientation(obst_id, pos, ori)
+                pybullet.resetBaseVelocity(obst_id, linearVelocity=vel)
             except Exception:
                 continue
 
     def update_collision_links(self) -> None:
         for visual_shape_id, info in self._collision_links.items():
-            link_state = p.getLinkState(info[0], info[1])
+            link_state = pybullet.getLinkState(info[0], info[1])
             link_position = link_state[0]
             link_ori = np.array(link_state[1])
             transformation_matrix = get_transformation_matrix(link_ori, link_position)
             total_transformation = np.dot(transformation_matrix, info[2])
             self._collision_links_poses[f"{info[3]}_{info[1]}_{info[4]}"] = total_transformation
             translation, rotation = matrix_to_quaternion(total_transformation, ordering='xyzw')
-            p.resetBasePositionAndOrientation(
+            pybullet.resetBasePositionAndOrientation(
                 visual_shape_id, translation, rotation
             )
 
@@ -317,7 +318,7 @@ class UrdfEnv(gym.Env):
         for i, (visual_shape_id, info) in enumerate(self._visualizations.items()):
             position = positions[i]
             rotation = [1, 0, 0, 0]
-            p.resetBasePositionAndOrientation(
+            pybullet.resetBasePositionAndOrientation(
                 visual_shape_id, position, rotation
             )
 
@@ -338,8 +339,8 @@ class UrdfEnv(gym.Env):
                 pos = goal.position(t=self.t()).tolist()
                 vel = goal.velocity(t=self.t()).tolist()
                 ori = [0, 0, 0, 1]
-                p.resetBasePositionAndOrientation(goal_id, pos, ori)
-                p.resetBaseVelocity(goal_id, linearVelocity=vel)
+                pybullet.resetBasePositionAndOrientation(goal_id, pos, ori)
+                pybullet.resetBaseVelocity(goal_id, linearVelocity=vel)
             except Exception:
                 continue
 
@@ -377,16 +378,16 @@ class UrdfEnv(gym.Env):
                 vel = obstacle.velocity(t=0).tolist()
                 ori = obstacle.orientation(t=0).tolist()
             ori = ori[1:] + ori[:1]
-            p.resetBasePositionAndOrientation(obst_id, pos, ori)
-            p.resetBaseVelocity(obst_id, linearVelocity=vel)
+            pybullet.resetBasePositionAndOrientation(obst_id, pos, ori)
+            pybullet.resetBaseVelocity(obst_id, linearVelocity=vel)
 
     def reset_goals(self) -> None:
         for goal_id, goal in self._goals.items():
             pos = goal.position(t=0).tolist()
             vel = goal.velocity(t=0).tolist()
             ori = [0, 0, 0, 1]
-            p.resetBasePositionAndOrientation(goal_id, pos, ori)
-            p.resetBaseVelocity(goal_id, linearVelocity=vel)
+            pybullet.resetBasePositionAndOrientation(goal_id, pos, ori)
+            pybullet.resetBaseVelocity(goal_id, linearVelocity=vel)
 
     def get_obstacles(self) -> dict:
         return self._obsts
@@ -471,8 +472,8 @@ class UrdfEnv(gym.Env):
 
     def add_sub_goal(self, goal: SubGoal) -> int:
         rgba_color = [0.0, 1.0, 0.0, 0.3]
-        visual_shape_id = p.createVisualShape(
-            p.GEOM_SPHERE, rgbaColor=rgba_color, radius=goal.epsilon()
+        visual_shape_id = pybullet.createVisualShape(
+            pybullet.GEOM_SPHERE, rgbaColor=rgba_color, radius=goal.epsilon()
         )
         collision_shape = -1
         base_position = [
@@ -486,7 +487,7 @@ class UrdfEnv(gym.Env):
 
         assert isinstance(base_position, list)
         assert isinstance(base_orientation, list)
-        bullet_id = p.createMultiBody(
+        bullet_id = pybullet.createMultiBody(
             0,
             collision_shape,
             visual_shape_id,
@@ -563,7 +564,11 @@ class UrdfEnv(gym.Env):
         if len(vel.shape) == 1 and len(self._robots) == 1:
             vel = np.tile(vel, (1, 1))
         for i, robot in enumerate(self._robots):
-            checked_position, checked_velocity = robot.check_state(pos[i], vel[i])
+            if isinstance(pos[i], np.ndarray) and pos[i][0] is not None:
+                initial_position_i = pos[i][np.isfinite(pos[i])]
+            else:
+                initial_position_i = pos[i]
+            checked_position, checked_velocity = robot.check_state(initial_position_i, vel[i])
             robot.reset(
                 pos=checked_position,
                 vel=checked_velocity,
@@ -584,7 +589,7 @@ class UrdfEnv(gym.Env):
         """
 
     def close(self) -> None:
-        p.disconnect(self._cid)
+        pybullet.disconnect(self._cid)
 
 
     def dump(self, file_name: str) -> None:

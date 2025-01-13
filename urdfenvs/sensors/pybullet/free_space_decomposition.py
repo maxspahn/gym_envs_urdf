@@ -1,10 +1,10 @@
 import numpy as np
 
-from urdfenvs.sensors.pybullet.lidar import LidarPybullet
 from urdfenvs.sensors.pybullet.fsd_sensor import FSDSensorPybullet
+from urdfenvs.sensors.pybullet.lidar import LidarPybullet
 
 
-class FreeSpaceDecompositionSensor(FSDSensorPybullet, LidarPybullet):
+class FreeSpaceDecompositionSensorPybullet(FSDSensorPybullet, LidarPybullet):
     def __init__(
         self,
         link_name,

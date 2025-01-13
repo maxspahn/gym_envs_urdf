@@ -1,5 +1,8 @@
-from urdfenvs.sensors.occupancy_sensor import OccupancySensor
+import numpy as np
 import pybullet
+
+from urdfenvs.sensors.occupancy_sensor import OccupancySensor
+
 
 class OccupancySensorPybullet(OccupancySensor):
     def update_occupancy_visualization(self):
@@ -22,9 +25,7 @@ class OccupancySensorPybullet(OccupancySensor):
 
         nb_occupied_cells = len(voxel_positions)
         for i in range(0, nb_occupied_cells, 16):
-            voxel_positions_chunk = voxel_positions[
-                i : min(i + 16, nb_occupied_cells)
-            ]
+            voxel_positions_chunk = voxel_positions[i : min(i + 16, nb_occupied_cells)]
             half_extens = np.tile(
                 self._voxel_size * 0.5, (nb_occupied_cells, 1)
             ).tolist()
@@ -43,7 +44,6 @@ class OccupancySensorPybullet(OccupancySensor):
                 baseVisualShapeIndex=visual_shape_id,
                 useMaximalCoordinates=False,
             )
-            pybullet.changeVisualShape(
-                bullet_id, -1, rgbaColor=[0.0, 0.0, 0.0, 0.3]
-            )
+            pybullet.changeVisualShape(bullet_id, -1, rgbaColor=[0.0, 0.0, 0.0, 0.3])
             self._bullet_ids.append(bullet_id)
+

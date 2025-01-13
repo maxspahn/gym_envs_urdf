@@ -2,6 +2,7 @@ import numpy as np
 import pybullet
 
 from urdfenvs.sensors.lidar import Lidar
+from urdfenvs.urdf_common.pybullet_helpers import add_shape
 
 
 class LidarPybullet(Lidar):
