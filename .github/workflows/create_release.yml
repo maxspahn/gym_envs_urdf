@@ -24,7 +24,7 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.10
       - name: Install poetry
         uses: snok/install-poetry@v1
         with:
@@ -72,7 +72,7 @@ jobs:
       - name: Publish to pypi
         uses: JRubics/poetry-publish@v1.13
         with:
-          python_version: "3.8"
+          python_version: "3.10"
           pypi_token: ${{ secrets.PYPI_TOKEN }}
       - name: Update develop branch
         run: |

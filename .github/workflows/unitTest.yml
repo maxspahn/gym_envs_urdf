@@ -23,7 +23,7 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.10
       #----------------------------------------------
       #  -----  install & configure poetry  -----
       #----------------------------------------------
@@ -48,7 +48,7 @@ jobs:
       #----------------------------------------------
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root --with dev --with mujoco
+        run: poetry install --no-interaction --no-root --with dev --with mujoco --with pybullet
       #----------------------------------------------
       # install your root project, if required
       #----------------------------------------------
