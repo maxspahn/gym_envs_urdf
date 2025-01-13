@@ -10,13 +10,16 @@ import urdfenvs
 from urdfenvs.sensors.sensor import Sensor
 from robotmodels.utils.robotmodel import RobotModel
 
+
 class ControlMode(Enum):
-    torque = 'tor'
-    acceleration = 'acc'
-    velocity = 'vel'
+    torque = "tor"
+    acceleration = "acc"
+    velocity = "vel"
+
 
 class GenericRobot(ABC):
     """GenericRobot."""
+
     _castor_wheels = []
 
     def __init__(self, n: int, urdf_file: str, mode=ControlMode.velocity):
@@ -36,12 +39,16 @@ class GenericRobot(ABC):
             else:
                 robot_name = urdf_file.split(".")[0]
                 model_name = None
-            self._robot_model = RobotModel(robot_name = robot_name, model_name = model_name)
+            self._robot_model = RobotModel(
+                robot_name=robot_name, model_name=model_name
+            )
             try:
                 urdf_file = self._robot_model.get_urdf_path()
             except Exception as e:
                 print(e)
-                raise Exception(f"the request urdf {urdf_file} can not be found")
+                raise Exception(
+                    f"the request urdf {urdf_file} can not be found"
+                )
             self._urdf_file = urdf_file
         else:
             self._urdf_file = urdf_file
@@ -59,7 +66,9 @@ class GenericRobot(ABC):
             return self._robot_model
         except Exception as e:
             print(e)
-            print("RobotModel not available. Likely because you loaded a custom urdf.")
+            print(
+                "RobotModel not available. Likely because you loaded a custom urdf."
+            )
             return None
 
     def set_degrees_of_freedom(self, n):
@@ -76,11 +85,12 @@ class GenericRobot(ABC):
 
     @abstractmethod
     def reset(
-            self,
-            pos: np.ndarray,
-            vel: np.ndarray,
-            mount_position: np.ndarray,
-            mount_orientation: np.ndarray,) -> None:
+        self,
+        pos: np.ndarray,
+        vel: np.ndarray,
+        mount_position: np.ndarray,
+        mount_orientation: np.ndarray,
+    ) -> None:
         """Resets the robot to an initial state.
 
         Parameters
@@ -145,7 +155,6 @@ class GenericRobot(ABC):
                     if joint_name in self._castor_wheels:
                         self._castor_joints.append(i)
 
-
     def get_observation_space(self) -> gym.spaces.Dict:
         """Get observation space."""
         return gym.spaces.Dict(
@@ -153,10 +162,10 @@ class GenericRobot(ABC):
                 "joint_state": gym.spaces.Dict(
                     {
                         "position": gym.spaces.Box(
-                        low=self._limit_pos_j[0, :],
-                        high=self._limit_pos_j[1, :],
-                        dtype=float,
-                    ),
+                            low=self._limit_pos_j[0, :],
+                            high=self._limit_pos_j[1, :],
+                            dtype=float,
+                        ),
                         "velocity": gym.spaces.Box(
                             low=self._limit_vel_j[0, :],
                             high=self._limit_vel_j[1, :],
@@ -175,7 +184,6 @@ class GenericRobot(ABC):
         if not isinstance(vel, np.ndarray) or not vel.size == self.n():
             vel = np.zeros(self.n())
         return pos, vel
-
 
     def get_torque_spaces(self) -> tuple:
         """Get observation space and action space when using torque control."""
@@ -266,8 +274,10 @@ class GenericRobot(ABC):
         """Updates the sensing of the robot's sensors."""
         self.sensor_observation = {}
         for sensor in self._sensors:
-            self.sensor_observation[sensor.name()] = sensor.sense(self._robot, obstacles, goals, t)
-            #self.sensor_observation.update(sensor.sense(self._robot, obst_ids, goal_ids))
+            self.sensor_observation[sensor.name()] = sensor.sense(
+                self._robot, obstacles, goals, t
+            )
+            # self.sensor_observation.update(sensor.sense(self._robot, obst_ids, goal_ids))
 
     def get_observation(self, obstacles: dict, goals: dict, t: float) -> dict:
         """Updates all observation and concatenate joint states and sensor

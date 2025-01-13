@@ -14,10 +14,12 @@ from mpscenes.obstacles.collision_obstacle import CollisionObstacle
 
 from urdfenvs.sensors.sensor import Sensor
 from urdfenvs.urdf_common.generic_robot import GenericRobot
-from urdfenvs.urdf_common.helpers import (WrongObservationError,
-                                          check_observation,
-                                          get_transformation_matrix,
-                                          matrix_to_quaternion)
+from urdfenvs.urdf_common.helpers import (
+    WrongObservationError,
+    check_observation,
+    get_transformation_matrix,
+    matrix_to_quaternion,
+)
 from urdfenvs.urdf_common.plane import Plane
 from urdfenvs.urdf_common.pybullet_helpers import add_shape
 from urdfenvs.urdf_common.reward import Reward
@@ -52,7 +54,9 @@ class UrdfEnv(gym.Env):
         self._t: float = 0.0
         self._robots: List[GenericRobot] = robots
         self._render: bool = render
-        self._enforce_real_time: bool = render if enforce_real_time is None else enforce_real_time
+        self._enforce_real_time: bool = (
+            render if enforce_real_time is None else enforce_real_time
+        )
         self._done: bool = False
         self._info: dict = {}
         self._num_sub_steps: float = num_sub_steps
@@ -64,9 +68,7 @@ class UrdfEnv(gym.Env):
         self._space_set = False
         self._observation_checking = observation_checking
         self._reward_calculator = None
-        self.sensors = (
-            []
-        )
+        self.sensors = []
         self.connect_physics_engine()
         self._obsts = {}
         self._collision_links = {}
@@ -94,12 +96,14 @@ class UrdfEnv(gym.Env):
         self._goals = {}
         for goal in old_goals:
             self.add_goal(goal)
-        #TODO load collision links
+        # TODO load collision links
 
     @classmethod
-    def load(cls: Type["UrdfEnv"], file_name: str, render: bool = False) -> "UrdfEnv":
+    def load(
+        cls: Type["UrdfEnv"], file_name: str, render: bool = False
+    ) -> "UrdfEnv":
         with open(file_name, "rb") as f:
-            env: "UrdfEnv" =  dill.load(f)
+            env: "UrdfEnv" = dill.load(f)
         env._render = render
         env.connect_physics_engine()
         env.reset()
@@ -154,7 +158,9 @@ class UrdfEnv(gym.Env):
 
     def start_video_recording(self, file_name: str) -> None:
         if self._render:
-            pybullet.startStateLogging(pybullet.STATE_LOGGING_VIDEO_MP4, file_name)
+            pybullet.startStateLogging(
+                pybullet.STATE_LOGGING_VIDEO_MP4, file_name
+            )
         else:
             logging.warning("Video recording requires rendering to be active.")
 
@@ -172,12 +178,16 @@ class UrdfEnv(gym.Env):
             obs_space_robot_i = dict(obs_space_robot_i)
             for sensor in robot._sensors:
 
-                self.sensors.append(sensor)  # Add the sensor to the list of sensors.
+                self.sensors.append(
+                    sensor
+                )  # Add the sensor to the list of sensors.
 
                 obs_space_robot_i.update(
                     sensor.get_observation_space(self._obsts, self._goals)
                 )
-            observation_space_as_dict[f"robot_{i}"] = gym.spaces.Dict(obs_space_robot_i)
+            observation_space_as_dict[f"robot_{i}"] = gym.spaces.Dict(
+                obs_space_robot_i
+            )
             action_space_as_dict[f"robot_{i}"] = action_space_robot_i
 
         self.observation_space = gym.spaces.Dict(observation_space_as_dict)
@@ -191,7 +201,9 @@ class UrdfEnv(gym.Env):
 
         if not self.action_space.contains(action):
             self._done = True
-            self._info = {"action_limits": f"{action} not in {self.action_space}"}
+            self._info = {
+                "action_limits": f"{action} not in {self.action_space}"
+            }
 
         action_id = 0
         for robot in self._robots:
@@ -209,9 +221,11 @@ class UrdfEnv(gym.Env):
             for contact_info in contacts:
                 body_b = contact_info[2]
                 if body_b in self._obsts:
-                    message = f"Collision occured at {round(self.t(), 2)} " \
-                        f"between robot {robot_id} and obstacle " \
+                    message = (
+                        f"Collision occured at {round(self.t(), 2)} "
+                        f"between robot {robot_id} and obstacle "
                         f"with id {body_b}"
+                    )
                     self._info = {"Collision": message}
                     self._done = True
                     break
@@ -236,14 +250,14 @@ class UrdfEnv(gym.Env):
             time.sleep(sleep_time)
         step_final_end = time.perf_counter()
         total_step_time = step_final_end - step_start
-        real_time_factor = self.dt/total_step_time
+        real_time_factor = self.dt / total_step_time
         logging.info(f"Real time factor {real_time_factor}")
         return ob, reward, terminated, truncated, self._info
-    
+
     def _get_truncated(self) -> bool:
-        # TODO: Implement Truncated. 
+        # TODO: Implement Truncated.
         return False
-    
+
     def _get_ob(self) -> dict:
         """Compose the observation."""
         observation = {}
@@ -306,23 +320,31 @@ class UrdfEnv(gym.Env):
             link_state = pybullet.getLinkState(info[0], info[1])
             link_position = link_state[0]
             link_ori = np.array(link_state[1])
-            transformation_matrix = get_transformation_matrix(link_ori, link_position)
+            transformation_matrix = get_transformation_matrix(
+                link_ori, link_position
+            )
             total_transformation = np.dot(transformation_matrix, info[2])
-            self._collision_links_poses[f"{info[3]}_{info[1]}_{info[4]}"] = total_transformation
-            translation, rotation = matrix_to_quaternion(total_transformation, ordering='xyzw')
+            self._collision_links_poses[f"{info[3]}_{info[1]}_{info[4]}"] = (
+                total_transformation
+            )
+            translation, rotation = matrix_to_quaternion(
+                total_transformation, ordering="xyzw"
+            )
             pybullet.resetBasePositionAndOrientation(
                 visual_shape_id, translation, rotation
             )
 
     def update_visualizations(self, positions) -> None:
-        for i, (visual_shape_id, info) in enumerate(self._visualizations.items()):
+        for i, (visual_shape_id, info) in enumerate(
+            self._visualizations.items()
+        ):
             position = positions[i]
             rotation = [1, 0, 0, 0]
             pybullet.resetBasePositionAndOrientation(
                 visual_shape_id, position, rotation
             )
 
-    def collision_links_poses(self, position_only: bool=False) -> dict:
+    def collision_links_poses(self, position_only: bool = False) -> dict:
         if position_only:
             result_dict = {}
             for key, value in self._collision_links_poses.items():
@@ -366,7 +388,9 @@ class UrdfEnv(gym.Env):
             )
         self._obsts[obst_id] = obst
         if self._t != 0.0:
-            warnings.warn("Adding an object while the simulation already started")
+            warnings.warn(
+                "Adding an object while the simulation already started"
+            )
 
     def reset_obstacles(self) -> None:
         for obst_id, obstacle in self._obsts.items():
@@ -393,10 +417,11 @@ class UrdfEnv(gym.Env):
         return self._obsts
 
     def add_visualization(
-        self,shape_type: str = "cylinder",
+        self,
+        shape_type: str = "cylinder",
         size: Optional[List[float]] = None,
         rgba_color: Optional[np.ndarray] = [1.0, 1.0, 0.0, 0.3],
-        ) -> int:
+    ) -> int:
 
         length = [1.0]
         if size is None:
@@ -409,7 +434,7 @@ class UrdfEnv(gym.Env):
             with_collision_shape=False,
         )
 
-        self._visualizations[bullet_id] = (bullet_id)
+        self._visualizations[bullet_id] = bullet_id
 
         return bullet_id
 
@@ -417,7 +442,7 @@ class UrdfEnv(gym.Env):
         self,
         robot_index: int = 0,
         link_index: Union[int, str] = 0,
-        sphere_on_link_index: int=0,
+        sphere_on_link_index: int = 0,
         shape_type: str = "sphere",
         size: Optional[List[float]] = None,
         link_transformation: Optional[np.ndarray] = None,
@@ -428,11 +453,11 @@ class UrdfEnv(gym.Env):
             link_transformation = np.identity(4)
         rgba_color = [1.0, 1.0, 0.0, 0.3]
         bullet_id = add_shape(
-                shape_type,
-                size,
-                rgba_color,
-                with_collision_shape=False,
-            )
+            shape_type,
+            size,
+            rgba_color,
+            with_collision_shape=False,
+        )
         if isinstance(link_index, str):
             link_index = self._robots[robot_index]._link_names.index(link_index)
         self._collision_links[bullet_id] = (
@@ -440,7 +465,9 @@ class UrdfEnv(gym.Env):
             link_index,
             link_transformation,
         )
-        self._collision_links_poses[f"{robot_index}_{link_index}_{sphere_on_link_index}"] = None
+        self._collision_links_poses[
+            f"{robot_index}_{link_index}_{sphere_on_link_index}"
+        ] = None
         self._collision_links[bullet_id] = (
             self._robots[robot_index]._robot,
             link_index,
@@ -456,19 +483,18 @@ class UrdfEnv(gym.Env):
         orientation: Tuple[float],
         shape_type: str = "sphere",
         size: Optional[List[float]] = None,
-        rgba_color : Optional[List[float]] = None
+        rgba_color: Optional[List[float]] = None,
     ) -> None:
         if size is None:
             size = [1.0]
         add_shape(
-                shape_type,
-                size,
-                rgba_color,
-                with_collision_shape=False,
-                orientation=orientation,
-                position=position,
-            )
-
+            shape_type,
+            size,
+            rgba_color,
+            with_collision_shape=False,
+            orientation=orientation,
+            position=position,
+        )
 
     def add_sub_goal(self, goal: SubGoal) -> int:
         rgba_color = [0.0, 1.0, 0.0, 0.3]
@@ -511,7 +537,6 @@ class UrdfEnv(gym.Env):
         else:
             goal_id = self.add_sub_goal(goal)
             self._goals[goal_id] = goal
-
 
     def add_sensor(self, sensor: Sensor, robot_ids: List) -> None:
         """Adds sensor to the robot.
@@ -568,7 +593,9 @@ class UrdfEnv(gym.Env):
                 initial_position_i = pos[i][np.isfinite(pos[i])]
             else:
                 initial_position_i = pos[i]
-            checked_position, checked_velocity = robot.check_state(initial_position_i, vel[i])
+            checked_position, checked_velocity = robot.check_state(
+                initial_position_i, vel[i]
+            )
             robot.reset(
                 pos=checked_position,
                 vel=checked_velocity,
@@ -591,7 +618,6 @@ class UrdfEnv(gym.Env):
     def close(self) -> None:
         pybullet.disconnect(self._cid)
 
-
     def dump(self, file_name: str) -> None:
-        with open(file_name, 'wb') as f:
-            dill.dump(self,  f)
+        with open(file_name, "wb") as f:
+            dill.dump(self, f)
