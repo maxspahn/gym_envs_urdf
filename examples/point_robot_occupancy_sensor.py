@@ -1,35 +1,36 @@
 import gymnasium as gym
 import numpy as np
 
-from urdfenvs.urdf_common.urdf_env import UrdfEnv
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
-from urdfenvs.sensors.occupancy_sensor import OccupancySensor
 from urdfenvs.scene_examples.obstacles import (
     cylinder_obstacle,
-    sphereObst2,
-    sphereObst1,
     dynamicSphereObst1,
+    sphereObst1,
+    sphereObst2,
 )
+from urdfenvs.sensors.pybullet.occupancy_sensor import (
+    OccupancySensorPybullet as OccupancySensor,
+)
+from urdfenvs.urdf_common.urdf_env import UrdfEnv
 
 
 def get_index_from_coordinates(point, mesh) -> tuple:
     distances = np.linalg.norm(mesh - point, axis=3)
     return np.unravel_index(np.argmin(distances), mesh.shape[:-1])
 
+
 def evaluate_occupancy(point, mesh, occupancy, resolution) -> int:
     index = list(get_index_from_coordinates(point, mesh))
     return occupancy[tuple(index)]
 
 
-
-
-def run_point_robot_with_occupancy_sensor(n_steps=10, render=False, obstacles=True, goal=True):
+def run_point_robot_with_occupancy_sensor(
+    n_steps=10, render=False, obstacles=True, goal=True
+):
     robots = [
         GenericUrdfReacher(urdf="pointRobot.urdf", mode="vel"),
     ]
-    env: UrdfEnv = UrdfEnv(
-        dt=0.01, robots=robots, render=render
-    )
+    env: UrdfEnv = UrdfEnv(dt=0.01, robots=robots, render=render)
     env.add_obstacle(sphereObst2)
     env.add_obstacle(cylinder_obstacle)
     env.add_obstacle(sphereObst1)
@@ -38,8 +39,8 @@ def run_point_robot_with_occupancy_sensor(n_steps=10, render=False, obstacles=Tr
     # add sensor
     val = 40
     sensor = OccupancySensor(
-        limits =  np.array([[-5, 5], [-5, 5], [0, 50/val]]),
-        resolution = np.array([val + 1, val + 1, 5], dtype=int),
+        limits=np.array([[-5, 5], [-5, 5], [0, 50 / val]]),
+        resolution=np.array([val + 1, val + 1, 5], dtype=int),
         interval=100,
         plotting_interval=100,
     )
@@ -64,9 +65,11 @@ def run_point_robot_with_occupancy_sensor(n_steps=10, render=False, obstacles=Tr
     for _ in range(n_steps):
         action = defaultAction
         ob, *_ = env.step(action)
-        point = np.append(ob['robot_0']['joint_state']['position'][0:2], 0.0)
-        occupancy = ob['robot_0']['Occupancy']
-        occupancy_eval = evaluate_occupancy(point, sensor.mesh(), occupancy, [0.2, 0.2, 1])
+        point = np.append(ob["robot_0"]["joint_state"]["position"][0:2], 0.0)
+        occupancy = ob["robot_0"]["Occupancy"]
+        occupancy_eval = evaluate_occupancy(
+            point, sensor.mesh(), occupancy, [0.2, 0.2, 1]
+        )
         print(occupancy_eval)
         history.append(ob)
     env.close()
