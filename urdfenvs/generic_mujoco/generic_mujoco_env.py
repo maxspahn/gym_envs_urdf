@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import time
 import logging
@@ -8,10 +9,10 @@ import gymnasium as gym
 from gymnasium import Env, utils
 import mujoco
 from dm_control import mjcf
-from urdfenvs.sensors.lidar import Lidar
+from urdfenvs.sensors.mujoco.lidar import LidarMujoco as Lidar
 from urdfenvs.sensors.sensor import Sensor
 
-from urdfenvs.urdf_common.urdf_env import (
+from urdfenvs.urdf_common.helpers import (
     check_observation,
     WrongObservationError,
 )
@@ -175,7 +176,10 @@ class GenericMujocoEnv(Env):
         self,
     ):
 
-        file_name = self._xml_file.split("/")[-1]
+        if sys.platform.startswith('win'):
+            file_name = self._xml_file.split("\\")[-1]
+        else:
+            file_name = self._xml_file.split("/")[-1]
         mjcf.export_with_assets(
             self._model_dm,
             "xml_model",

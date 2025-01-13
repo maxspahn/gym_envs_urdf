@@ -1,17 +1,15 @@
-import gymnasium as gym
 import pprint
+
+import gymnasium as gym
 import numpy as np
-from urdfenvs.scene_examples.obstacles import (
-    sphereObst1,
-    sphereObst2,
-    urdfObst1,
-    dynamicSphereObst3,
-    dynamicSphereObst1,
-    wall_obstacles,
-)
 
 from urdfenvs.robots.generic_urdf import GenericUrdfReacher
-from urdfenvs.sensors.free_space_decomposition import FreeSpaceDecompositionSensor
+from urdfenvs.scene_examples.obstacles import (dynamicSphereObst1,
+                                               dynamicSphereObst3, sphereObst1,
+                                               sphereObst2, urdfObst1,
+                                               wall_obstacles)
+from urdfenvs.sensors.pybullet.free_space_decomposition import \
+    FreeSpaceDecompositionSensorPybullet as FreeSpaceDecompositionSensor
 from urdfenvs.urdf_common.urdf_env import UrdfEnv
 
 

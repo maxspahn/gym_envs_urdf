@@ -1,18 +1,21 @@
 import os
 import shutil
 
-import numpy as np
 import gymnasium as gym
+import numpy as np
+from robotmodels.utils.robotmodel import LocalRobotModel, RobotModel
 
-from robotmodels.utils.robotmodel import RobotModel, LocalRobotModel
-from urdfenvs.sensors.full_sensor import FullSensor
-
-from urdfenvs.urdf_common.urdf_env import UrdfEnv
-from urdfenvs.scene_examples.obstacles import sphereObst1, dynamicSphereObst3, movable_obstacle
-from urdfenvs.scene_examples.goal import goal1
-from urdfenvs.robots.generic_urdf import GenericUrdfReacher
 from urdfenvs.generic_mujoco.generic_mujoco_env import GenericMujocoEnv
 from urdfenvs.generic_mujoco.generic_mujoco_robot import GenericMujocoRobot
+from urdfenvs.robots.generic_urdf import GenericUrdfReacher
+from urdfenvs.scene_examples.goal import goal1
+from urdfenvs.scene_examples.obstacles import (
+    dynamicSphereObst3,
+    movable_obstacle,
+    sphereObst1,
+)
+from urdfenvs.sensors.full_sensor import FullSensor
+from urdfenvs.urdf_common.urdf_env import UrdfEnv
 
 
 def test_full_sensor():
@@ -124,15 +127,14 @@ def test_full_sensor_mujoco():
     robots = [
         GenericMujocoRobot(xml_file=xml_file, mode="vel"),
     ]
-    env: GenericMujocoEnv = gym.make(
-        "generic-mujoco-env-v0",
+    env: GenericMujocoEnv = GenericMujocoEnv(
         robots=robots,
         obstacles=[sphereObst1, dynamicSphereObst3, movable_obstacle],
         goals=[goal1],
         sensors=[sensor],
         render=False,
         enforce_real_time=False,
-    ).unwrapped
+    )
     action = np.random.random(env.nu)
     for _ in range(10):
         ob, *_ = env.step(action)

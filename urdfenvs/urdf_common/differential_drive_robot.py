@@ -7,6 +7,7 @@ import numpy as np
 
 from urdfenvs.urdf_common.generic_robot import ControlMode, GenericRobot
 
+
 class FacingDirectionUndefinedError(Exception):
     pass
 
@@ -25,22 +26,23 @@ class DifferentialDriveRobot(GenericRobot):
         The offset by which the initial position must be shifted to align
         observation with that position.
     """
+
     def __init__(
-            self,
-            n: int,
-            urdf_file: str,
-            mode: ControlMode,
-            actuated_wheels: List[str],
-            castor_wheels: List[str],
-            wheel_radius: float,
-            wheel_distance: float,
-            spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15]),
-            spawn_rotation: float = 0.0,
-            facing_direction: str = 'x',
-            not_actuated_joints: List[str] = []
+        self,
+        n: int,
+        urdf_file: str,
+        mode: ControlMode,
+        actuated_wheels: List[str],
+        castor_wheels: List[str],
+        wheel_radius: float,
+        wheel_distance: float,
+        spawn_offset: np.ndarray = np.array([0.0, 0.0, 0.15]),
+        spawn_rotation: float = 0.0,
+        facing_direction: str = "x",
+        not_actuated_joints: List[str] = [],
     ):
         """Constructor for differential drive robots."""
-        self._number_actuated_axes = int(len(actuated_wheels)/2)
+        self._number_actuated_axes = int(len(actuated_wheels) / 2)
         self._spawn_rotation = deepcopy(spawn_rotation)
         self._spawn_offset = deepcopy(spawn_offset)
         self._castor_wheels = castor_wheels
@@ -55,7 +57,14 @@ class DifferentialDriveRobot(GenericRobot):
         if n > 0:
             self._n = n
         else:
-            self._n: int = self._urdf_robot.num_actuated_joints - len(self._actuated_wheels) - len(self._castor_wheels) - len(self._not_actuated_joints) + 2
+            self._n: int = (
+                self._urdf_robot.num_actuated_joints
+                - len(self._actuated_wheels)
+                - len(self._castor_wheels)
+                - len(self._not_actuated_joints)
+                + 2
+            )
+
     def ns(self) -> int:
         """Returns the number of degrees of freedom.
 
@@ -69,7 +78,8 @@ class DifferentialDriveRobot(GenericRobot):
         control.
 
         Overrides velocity spaces from default, because a differential drive has limits in x,y and
-        theta direction, while the action space should be limited to the forward and angular velocity."""
+        theta direction, while the action space should be limited to the forward and angular velocity.
+        """
         ospace = self.get_observation_space()
         uu = np.concatenate(
             (self._limit_vel_forward_j[1, :], self._limit_vel_j[1, 3:]), axis=0
@@ -81,19 +91,22 @@ class DifferentialDriveRobot(GenericRobot):
         return (ospace, aspace)
 
     def reset(
-            self,
-            pos: np.ndarray,
-            vel: np.ndarray,
-            mount_position: np.ndarray,
-            mount_orientation: np.ndarray,) -> None:
-        """ Reset simulation and add robot """
+        self,
+        pos: np.ndarray,
+        vel: np.ndarray,
+        mount_position: np.ndarray,
+        mount_orientation: np.ndarray,
+    ) -> None:
+        """Reset simulation and add robot"""
         logging.warning(
             "The argument 'mount_position' and 'mount_orientation' are \
 ignored for differential drive robots."
         )
         if hasattr(self, "_robot"):
             p.removeBody(self._robot)
-        base_orientation = p.getQuaternionFromEuler([0, 0, self._spawn_rotation + pos[2]])
+        base_orientation = p.getQuaternionFromEuler(
+            [0, 0, self._spawn_rotation + pos[2]]
+        )
         spawn_position = self._spawn_offset
         spawn_position[0:2] += pos[0:2]
         self._robot = p.loadURDF(
@@ -137,8 +150,8 @@ ignored for differential drive robots."
         return pos, vel
 
     def read_limits(self) -> None:
-        """ Set position, velocity, acceleration
-        and motor torque lower en upper limits """
+        """Set position, velocity, acceleration
+        and motor torque lower en upper limits"""
         self._limit_pos_j = np.zeros((2, self.ns()))
         self._limit_vel_j = np.zeros((2, self.ns()))
         self._limit_tor_j = np.zeros((2, self.n()))
@@ -260,7 +273,7 @@ ignored for differential drive robots."
 
     def apply_velocity_action(self, vels: np.ndarray) -> None:
         """Applies angular velocities to the arm joints."""
-        self.apply_base_velocity(vels) 
+        self.apply_base_velocity(vels)
         for i in range(2, self._n):
             p.setJointMotorControl2(
                 self._robot,
@@ -278,7 +291,7 @@ ignored for differential drive robots."
         between -pi and pi.
         """
         pos_base[2] -= self._spawn_rotation
-        #TODO: The orientation is with respect to the spawn position
+        # TODO: The orientation is with respect to the spawn position
         # If this is changed as suggested below, it breaks the velocities.
         """
         if self._facing_direction == '-y':
@@ -335,24 +348,26 @@ ignored for differential drive robots."
             (v_right - v_left) * self._wheel_radius / self._wheel_distance
         )
 
-        if self._facing_direction == 'x':
+        if self._facing_direction == "x":
             jacobi_nonholonomic = np.array(
                 [[np.cos(pos_base[2]), 0], [np.sin(pos_base[2]), 0], [0, 1]]
             )
-        elif self._facing_direction == '-x':
+        elif self._facing_direction == "-x":
             jacobi_nonholonomic = np.array(
                 [[-np.cos(pos_base[2]), 0], [-np.sin(pos_base[2]), 0], [0, 1]]
             )
-        elif self._facing_direction == 'y':
+        elif self._facing_direction == "y":
             jacobi_nonholonomic = np.array(
                 [[-np.sin(pos_base[2]), 0], [np.cos(pos_base[2]), 0], [0, 1]]
             )
-        elif self._facing_direction == '-y':
+        elif self._facing_direction == "-y":
             jacobi_nonholonomic = np.array(
                 [[np.sin(pos_base[2]), 0], [-np.cos(pos_base[2]), 0], [0, 1]]
             )
         else:
-            raise FacingDirectionUndefinedError(f"Facing direction {self._facing_direction} undefined. Use 'x', '-x', 'y' or '-y'")
+            raise FacingDirectionUndefinedError(
+                f"Facing direction {self._facing_direction} undefined. Use 'x', '-x', 'y' or '-y'"
+            )
         velocity_base = np.dot(
             jacobi_nonholonomic, np.array([forward_velocity, angular_velocity])
         )
@@ -374,4 +389,3 @@ ignored for differential drive robots."
                 "forward_velocity": np.array([forward_velocity]),
             }
         }
-

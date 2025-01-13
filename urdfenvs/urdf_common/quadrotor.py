@@ -8,7 +8,7 @@ from urdfenvs.urdf_common.generic_robot import GenericRobot
 
 
 class QuadrotorModel(GenericRobot):
-    """ Quadrotor Model for drones
+    """Quadrotor Model for drones
 
     Attributes
     ----------
@@ -44,32 +44,39 @@ class QuadrotorModel(GenericRobot):
         """Constructor for quadrotor model robot."""
         super().__init__(n, urdf_file)
         self._swawn_offset: np.ndarray = np.array(
-            [0.0, 0.0, 0.15])  # TODO: check this value
+            [0.0, 0.0, 0.15]
+        )  # TODO: check this value
 
-        self._pos = np.zeros(3,dtype=float)
-        self._quat = np.array([0., 0., 0., 1.], dtype=float)
+        self._pos = np.zeros(3, dtype=float)
+        self._quat = np.array([0.0, 0.0, 0.0, 1.0], dtype=float)
         self._vel = np.zeros(3, dtype=float)
         self._omega = np.zeros(3, dtype=float)
         self._rotor_velocity = np.zeros(4, dtype=float)
-        self.state = {"joint_state": {"pose": np.zeros(7, dtype=float), "velocity":
-            np.zeros(6, dtype=float), "rotor_velocity": np.zeros(4, dtype=float)}}
+        self.state = {
+            "joint_state": {
+                "pose": np.zeros(7, dtype=float),
+                "velocity": np.zeros(6, dtype=float),
+                "rotor_velocity": np.zeros(4, dtype=float),
+            }
+        }
 
     def ns(self) -> int:
         """Returns the number of degrees of freedom.
 
         This is needed as number of actuated joints `_n` is lower that the
         number of degrees of freedom for quadrotor models.
-        
+
         """
         return 6
 
     def reset(
-            self,
-            pos: np.ndarray,
-            vel: np.ndarray,
-            mount_position: np.ndarray,
-            mount_orientation: np.ndarray,) -> None:
-        """ Reset simulation and add robot """
+        self,
+        pos: np.ndarray,
+        vel: np.ndarray,
+        mount_position: np.ndarray,
+        mount_orientation: np.ndarray,
+    ) -> None:
+        """Reset simulation and add robot"""
         logging.warning(
             "The argument 'mount_position' and 'mount_orientation' are \
 ignored for drones."
@@ -102,10 +109,7 @@ ignored for drones."
     def check_state(self, pos: np.ndarray, vel: np.ndarray) -> tuple:
         """Filters state of the robot and returns a valid state."""
 
-        if (
-            not isinstance(pos, np.ndarray)
-            or not pos.size == self.n() + 3
-        ):
+        if not isinstance(pos, np.ndarray) or not pos.size == self.n() + 3:
             pos = np.zeros(self.n() + 3)
         if not isinstance(vel, np.ndarray) or not vel.size == self.n():
             vel = np.zeros(self.n())
@@ -116,21 +120,21 @@ ignored for drones."
         self._limit_vel_j = np.zeros((2, self.ns()))
 
         # Position limits (x, y, z)
-        self._limit_pos_j[0, 0:3] = np.array([-1000., -1000., 0])
-        self._limit_pos_j[1, 0:3] = np.array([1000., 1000., 100.])
+        self._limit_pos_j[0, 0:3] = np.array([-1000.0, -1000.0, 0])
+        self._limit_pos_j[1, 0:3] = np.array([1000.0, 1000.0, 100.0])
 
         # Quaternion limits
         self._limit_pos_j[0, 3:7] = np.array([-1, -1, -1, -1])
         self._limit_pos_j[1, 3:7] = np.array([1, 1, 1, 1])
 
         # Velocity limits (x, y, z)
-        self._limit_vel_j[0, 0:3] = np.array([-40., -40., -40.])
-        self._limit_vel_j[1, 0:3] = np.array([40., 40., 40.])
-        
+        self._limit_vel_j[0, 0:3] = np.array([-40.0, -40.0, -40.0])
+        self._limit_vel_j[1, 0:3] = np.array([40.0, 40.0, 40.0])
+
         # body rate limits
-        self._limit_vel_j[0, 3:6] = np.array([-10., -10., -10.])
-        self._limit_vel_j[1, 3:6] = np.array([10., 10., 10.])
-        
+        self._limit_vel_j[0, 3:6] = np.array([-10.0, -10.0, -10.0])
+        self._limit_vel_j[1, 3:6] = np.array([10.0, 10.0, 10.0])
+
         # rotor limits
         self._limit_rotors_j = np.zeros((2, 4))
         self._limit_rotors_j[0, :] = np.ones(4) * self._rotor_min_rpm
@@ -146,23 +150,25 @@ ignored for drones."
         """
         return gym.spaces.Dict(
             {
-                "joint_state": gym.spaces.Dict({
-                    "pose": gym.spaces.Box(
-                        low=self._limit_pos_j[0, :],
-                        high=self._limit_pos_j[1, :],
-                        dtype=float,
-                    ),
-                    "velocity": gym.spaces.Box(
-                        low=self._limit_vel_j[0, :],
-                        high=self._limit_vel_j[1, :],
-                        dtype=float,
-                    ),
-                    "rotor_velocity": gym.spaces.Box(
-                        low=self._limit_rotors_j[0,:],
-                        high=self._limit_rotors_j[1,:],
-                        dtype=float,
-                    ),
-                }),
+                "joint_state": gym.spaces.Dict(
+                    {
+                        "pose": gym.spaces.Box(
+                            low=self._limit_pos_j[0, :],
+                            high=self._limit_pos_j[1, :],
+                            dtype=float,
+                        ),
+                        "velocity": gym.spaces.Box(
+                            low=self._limit_vel_j[0, :],
+                            high=self._limit_vel_j[1, :],
+                            dtype=float,
+                        ),
+                        "rotor_velocity": gym.spaces.Box(
+                            low=self._limit_rotors_j[0, :],
+                            high=self._limit_rotors_j[1, :],
+                            dtype=float,
+                        ),
+                    }
+                ),
             }
         )
 
@@ -176,8 +182,7 @@ ignored for drones."
         return (ospace, aspace)
 
     def apply_velocity_action(self, vels: np.ndarray) -> None:
-        """Applies the propeller speed action to the quadrotor.
-        """
+        """Applies the propeller speed action to the quadrotor."""
         direction = np.array([1, 1, -1, -1])
         for i in range(4):
 
@@ -187,7 +192,7 @@ ignored for drones."
                 controlMode=p.VELOCITY_CONTROL,
                 targetVelocity=vels[i] * direction[i],
             )
-        self._rotor_velocity = vels.astype('float32')
+        self._rotor_velocity = vels.astype("float32")
 
         self.apply_thrust(vels)
         # self.apply_drag_effect(vels)  # TODO: check literatures for the drag effect
@@ -196,8 +201,7 @@ ignored for drones."
         print("Acceleration control not implemented for quadrotor model.")
 
     def apply_torque_action(self, torques: np.ndarray) -> None:
-        """Applies the torques to the quadrotor model.
-        """
+        """Applies the torques to the quadrotor model."""
         print("Torque action is not available for quadrotor model.")
 
     def correct_base_orientation(self) -> None:
@@ -205,35 +209,35 @@ ignored for drones."
 
     def apply_thrust(self, rate: np.ndarray) -> None:
         """PyBullet implementation of a thrust model
-        
-        Given the rotor rate, calculate the thrust force and moment. 
+
+        Given the rotor rate, calculate the thrust force and moment.
         The implementation is following Upenn MEAM 620 project 1..
 
         Parameters
         ----------
         rate : ndarray
-            (4)-shaped array of ints containing the rate values of the 4 motors.        
+            (4)-shaped array of ints containing the rate values of the 4 motors.
         """
         thrusts = self._k_thrust * np.square(rate)
 
         k = self._k_drag / self._k_thrust
         l = self._arm_length
-        torque_mat = np.array([[1,  1,  1,  1],
-                               [0,  l,  0, -l],
-                               [-l,  0,  l,  0],
-                               [k, -k,  k, -k]])
+        torque_mat = np.array(
+            [[1, 1, 1, 1], [0, l, 0, -l], [-l, 0, l, 0], [k, -k, k, -k]]
+        )
         u = torque_mat @ thrusts
         torque = u[1:]
         for i in range(4):
-            p.applyExternalForce(self._robot,
-                                 self._robot_joints[i],
-                                 posObj=[0, 0, 0],
-                                 forceObj=[0, 0, thrusts[i]],
-                                 flags=p.LINK_FRAME)
-        p.applyExternalTorque(self._robot,
-                              0,
-                              torqueObj=torque,
-                              flags=p.LINK_FRAME)
+            p.applyExternalForce(
+                self._robot,
+                self._robot_joints[i],
+                posObj=[0, 0, 0],
+                forceObj=[0, 0, thrusts[i]],
+                flags=p.LINK_FRAME,
+            )
+        p.applyExternalTorque(
+            self._robot, 0, torqueObj=torque, flags=p.LINK_FRAME
+        )
 
     def apply_drag_effect(self, rate: np.ndarray) -> None:
         """PyBullet implementation of a drag model
@@ -246,15 +250,12 @@ ignored for drones."
             (4)-shaped array of ints containing the rate values of the 4 motors.
 
         """
-        base_rot = np.array(
-            p.getMatrixFromQuaternion(self._quat)).reshape(3, 3)
+        base_rot = np.array(p.getMatrixFromQuaternion(self._quat)).reshape(3, 3)
         drag_factors = -1 * self._k_drag * np.sum(rate)
         drag = np.dot(base_rot, drag_factors * np.array(self._vel))
-        p.applyExternalForce(self._robot,
-                             0,
-                             forceObj=drag,
-                             posObj=[0, 0, 0],
-                             flags=p.LINK_FRAME)
+        p.applyExternalForce(
+            self._robot, 0, forceObj=drag, posObj=[0, 0, 0], flags=p.LINK_FRAME
+        )
 
     def update_state(self) -> None:
         """Update the robot state.
@@ -275,7 +276,10 @@ ignored for drones."
         self._vel = np.array(link_state[6], dtype=float)
         self._omega = np.array(link_state[7], dtype=float)
 
-        self.state['joint_state']['pose'] = np.concatenate((self._pos, self._quat))
-        self.state['joint_state']['velocity'] = np.concatenate((self._vel, self._omega))
-        self.state['joint_state']['rotor_velocity'] = self._rotor_velocity
-
+        self.state["joint_state"]["pose"] = np.concatenate(
+            (self._pos, self._quat)
+        )
+        self.state["joint_state"]["velocity"] = np.concatenate(
+            (self._vel, self._omega)
+        )
+        self.state["joint_state"]["rotor_velocity"] = self._rotor_velocity

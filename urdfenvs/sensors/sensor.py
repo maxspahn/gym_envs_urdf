@@ -1,10 +1,11 @@
 """Abstract class for sensor."""
-from typing import Optional
 from abc import abstractmethod
+from typing import Optional
 
 import numpy as np
 
-from urdfenvs.sensors.physics_engine_interface import PhysicsEngineInterface, PybulletInterface, MujocoInterface
+from urdfenvs.sensors.physics_engine_interface import PhysicsEngineInterface
+
 
 class Sensor():
     """Abstract sensor class.
@@ -30,8 +31,10 @@ class Sensor():
         self._plotting_interval = plotting_interval
         self._call_counter = plotting_interval - 1
         if physics_engine_name == 'pybullet':
+            from urdfenvs.sensors.pybullet_interface import PybulletInterface
             self._physics_engine = PybulletInterface()
         elif physics_engine_name == 'mujoco':
+            from urdfenvs.sensors.mujoco_interface import MujocoInterface
             self._physics_engine = MujocoInterface()
 
     def name(self):

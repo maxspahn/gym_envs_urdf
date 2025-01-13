@@ -1,9 +1,10 @@
 import os
+
 import numpy as np
 
+from urdfenvs.robots.generic_urdf import GenericDiffDriveRobot, GenericUrdfReacher
 from urdfenvs.urdf_common.urdf_env import UrdfEnv
-from urdfenvs.robots.generic_urdf import GenericUrdfReacher
-from urdfenvs.robots.generic_urdf import GenericDiffDriveRobot
+
 
 def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
     jackal_1 = GenericDiffDriveRobot(
@@ -16,8 +17,8 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
             "front_left_wheel",
         ],
         castor_wheels=[],
-        wheel_radius = 0.098,
-        wheel_distance = 2 * 0.187795 + 0.08,
+        wheel_radius=0.098,
+        wheel_distance=2 * 0.187795 + 0.08,
     )
     jackal_2 = GenericDiffDriveRobot(
         urdf="jackal.urdf",
@@ -29,16 +30,16 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
             "front_left_wheel",
         ],
         castor_wheels=[],
-        wheel_radius = 0.098,
-        wheel_distance = 2 * 0.187795 + 0.08,
+        wheel_radius=0.098,
+        wheel_distance=2 * 0.187795 + 0.08,
     )
     boxer = GenericDiffDriveRobot(
         urdf="boxer.urdf",
         mode="vel",
         actuated_wheels=["wheel_right_joint", "wheel_left_joint"],
         castor_wheels=["rotacastor_right_joint", "rotacastor_left_joint"],
-        wheel_radius = 0.08,
-        wheel_distance = 0.494,
+        wheel_radius=0.08,
+        wheel_distance=0.494,
     )
     ur5_urdf_file = os.path.dirname(os.path.abspath(__file__)) + "/ur5.urdf"
     robots = [
@@ -49,32 +50,43 @@ def run_multi_robot(n_steps=1000, render=False, obstacles=False, goal=False):
         boxer,
     ]
 
-    env: UrdfEnv = UrdfEnv(
-        dt=0.01, robots=robots, render=render
-    )
+    env: UrdfEnv = UrdfEnv(dt=0.01, robots=robots, render=render)
     n = env.n()
     action = np.ones(n) * -0.2
     pos0 = np.zeros(n)
     pos0[1] = -0.0
     ns_per_robot = env.ns_per_robot()
     n_per_robot = env.n_per_robot()
-    initial_positions = np.array([np.zeros(n) for n in ns_per_robot])
-    for i in range(len(initial_positions)):
-        if ns_per_robot[i] != n_per_robot[i]:
-            initial_positions[i][0:2] = np.array([0.0, i])
-    mount_positions = np.array(
+    initial_positions = [np.zeros(n) for n in ns_per_robot]
+    max_len = max([len(arr) for arr in initial_positions])
+    padded_initial_positions = np.array(
         [
-            np.array([0.0, i, 0.0]) for i in range(len(ns_per_robot))
+            np.pad(
+                arr,
+                (0, max_len - len(arr)),
+                mode="constant",
+                constant_values=np.nan,
+            )
+            for arr in initial_positions
         ]
     )
-    ob = env.reset(pos=initial_positions,mount_positions=mount_positions)
+
+    for i in range(len(initial_positions)):
+        if ns_per_robot[i] != n_per_robot[i]:
+            padded_initial_positions[i][0:2] = np.array([0.0, i])
+    mount_positions = np.array(
+        [np.array([0.0, i, 0.0]) for i in range(len(ns_per_robot))]
+    )
+    ob = env.reset(pos=padded_initial_positions, mount_positions=mount_positions)
     print(f"Initial observation : {ob}")
     if goal:
         from urdfenvs.scene_examples.goal import dynamicGoal
+
         env.add_goal(dynamicGoal)
 
     if obstacles:
         from urdfenvs.scene_examples.obstacles import dynamicSphereObst2
+
         env.add_obstacle(dynamicSphereObst2)
 
     print("Starting episode")
