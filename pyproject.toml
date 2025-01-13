@@ -37,10 +37,15 @@ optional = true
 pylint = "^3.0"
 autopep8 = "^1.6.0"
 pytest = "^6.2.5"
+black = "^24.2.0"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
 Sphinx = "4.2.0"
 sphinx-rtd-theme = "1.0.0"
 sphinxcontrib-napoleon = "0.7"
-black = "^24.2.0"
 
 [tool.poetry.group.keyboard]
 optional = true
