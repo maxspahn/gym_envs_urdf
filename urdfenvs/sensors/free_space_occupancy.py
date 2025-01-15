@@ -28,6 +28,7 @@ class FreeSpaceOccupancySensor(FSDSensor, OccupancySensor):
             plotting_interval_fsd=plotting_interval_fsd,
             planar_visualization=planar_visualization,
             variance=variance,
+            physics_engine_name=physics_engine_name,
         )
         OccupancySensor.__init__(
             self,
