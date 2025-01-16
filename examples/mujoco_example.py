@@ -112,8 +112,7 @@ def run_generic_mujoco(
     t = 0.0
     history = []
     for i in range(n_steps):
-        t0 = time.perf_counter()
-        action = action_mag * np.cos(i/20)
+        action = action_mag * np.cos(env.t)
         action[-1] = 0.02
         ob, _, terminated, _, info = env.step(action)
         #print(ob['robot_0'])
@@ -121,7 +120,6 @@ def run_generic_mujoco(
         if terminated:
             print(info)
             break
-        t1 = time.perf_counter()
 
     env.close()
     return history

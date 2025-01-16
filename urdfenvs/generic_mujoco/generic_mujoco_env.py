@@ -41,7 +41,6 @@ class GenericMujocoEnv(Env):
             "rgb_array",
             "depth_array",
         ],
-        "render_fps": 20,
     }
     _t: float
     _number_movable_obstacles: int
@@ -53,7 +52,8 @@ class GenericMujocoEnv(Env):
         goals: List[SubGoal],
         sensors: Optional[List[Sensor]] = None,
         render: Optional[Union[str, bool]] = None,
-        frame_skip: int = 5,
+        dt: float = 0.01,
+        n_sub_steps: int = 1,
         width: int = DEFAULT_SIZE,
         height: int = DEFAULT_SIZE,
         camera_id: Optional[int] = None,
@@ -83,11 +83,13 @@ class GenericMujocoEnv(Env):
             self._enforce_real_time = True
         else:
             self._enforce_real_time = False
+        self._sleep_offset = 0.0
 
         self.width = width
         self.height = height
 
-        self.frame_skip = frame_skip
+        self._dt = dt
+        self._n_sub_steps = n_sub_steps
         self._initialize_simulation()
 
         for sensor in self._sensors:
@@ -98,11 +100,6 @@ class GenericMujocoEnv(Env):
             "rgb_array",
             "depth_array",
         ], self.metadata["render_modes"]
-        if "render_fps" in self.metadata:
-            assert (
-                int(np.round(1.0 / self.dt)) == self.metadata["render_fps"]
-            ), f'Expected value: {int(np.round(1.0 / self.dt))}, Actual value: {self.metadata["render_fps"]}'
-
         self.observation_space = self.get_observation_space()
         self.action_space = self.get_action_space()
 
@@ -117,6 +114,7 @@ class GenericMujocoEnv(Env):
             height=DEFAULT_SIZE,
             width=DEFAULT_SIZE,
         )
+        self._end_last_step_time = time.time()
 
     def render(self):
         return self.mujoco_renderer.render(self.render_mode)
@@ -190,11 +188,12 @@ class GenericMujocoEnv(Env):
         self.model.body_pos[0] = [0, 1, 1]
         self.model.vis.global_.offwidth = self.width
         self.model.vis.global_.offheight = self.height
+        self.model.opt.timestep = self._dt / self._n_sub_steps
         self.data = mujoco.MjData(self.model)
 
     @property
     def dt(self) -> float:
-        return self.model.opt.timestep * self.frame_skip
+        return self._dt
 
     @property
     def t(self) -> float:
@@ -221,7 +220,8 @@ class GenericMujocoEnv(Env):
             self.data.site_xpos[i] = goal.position(t=self.t)
 
     def step(self, action: np.ndarray):
-        step_start = time.perf_counter()
+        target_end_step_time = self._end_last_step_time + self.dt
+
         self._t += self.dt
         truncated = False
         info = {}
@@ -230,7 +230,7 @@ class GenericMujocoEnv(Env):
             self._done = True
             info = {"action_limits": f"{action} not in {self.action_space}"}
 
-        self.do_simulation(action, self.frame_skip)
+        self.do_simulation(action)
         for contact in self.data.contact:
             body1 = self.model.geom(contact.geom1).name
             body2 = self.model.geom(contact.geom2).name
@@ -256,15 +256,20 @@ class GenericMujocoEnv(Env):
             except WrongObservationError as e:
                 self._done = True
                 info = {"observation_limits": str(e)}
-        step_end = time.perf_counter()
-        step_time = step_end - step_start
-        if self._enforce_real_time:
-            sleep_time = max(0.0, self.dt - step_time)
+        time_before_sleep = time.time()
+        sleep_time = target_end_step_time - time_before_sleep - self._sleep_offset
+        if self._enforce_real_time and sleep_time > 0:
             time.sleep(sleep_time)
-        step_final_end = time.perf_counter()
-        total_step_time = step_final_end - step_start
-        real_time_factor = self.dt / total_step_time
-        logging.info(f"Real time factor {real_time_factor}")
+        time_after_sleep = time.time()
+        # Compute the real-time factor (RTF)
+        real_time_step = time_after_sleep - self._end_last_step_time
+        rtf = self.dt / (real_time_step)
+        if real_time_step < self.dt:
+            self._sleep_offset -= 0.0001
+        else:
+            self._sleep_offset += 0.0001
+        logging.info(f"Real time factor {rtf:.4f}")
+        self._end_last_step_time = time.time()
         return (
             ob,
             reward,
@@ -297,6 +302,7 @@ class GenericMujocoEnv(Env):
             qvel = np.zeros(self.nv)
         self.set_state(qpos, qvel)
         self._t = 0.0
+        self._end_last_step_time = time.time()
         return self._get_obs(), {}
 
     def set_state(self, qpos, qvel):
@@ -319,21 +325,18 @@ class GenericMujocoEnv(Env):
     def nv(self) -> int:
         return self.model.nv - 6 * self._number_movable_obstacles
 
-    def do_simulation(self, ctrl, n_frames) -> None:
-        """
-        Step the simulation n number of frames and applying a control action.
-        """
+    def do_simulation(self, ctrl) -> None:
         # Check control input is contained in the action space
         if np.array(ctrl).shape != (self.model.nu,):
             raise ValueError(
                 f"Action dimension mismatch. Expected {(self.model.nu,)}, found {np.array(ctrl).shape}"
             )
-        self._step_mujoco_simulation(ctrl, n_frames)
+        self._step_mujoco_simulation(ctrl)
 
-    def _step_mujoco_simulation(self, ctrl, n_frames):
+    def _step_mujoco_simulation(self, ctrl):
         self.data.ctrl[:] = ctrl
 
-        mujoco.mj_step(self.model, self.data, nstep=n_frames)
+        mujoco.mj_step(self.model, self.data, nstep=self._n_sub_steps)
 
         # As of MuJoCo 2.0, force-related quantities like cacc are not computed
         # unless there's a force sensor in the model.

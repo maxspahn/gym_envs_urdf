@@ -34,7 +34,6 @@ class MujocoInterface(PhysicsEngineInterface):
         if movable:
 
             free_joint_data = self._data.jnt(f"freejoint_{obst_name}").qpos
-            print(free_joint_data)
             return free_joint_data[0:3].tolist(), free_joint_data[3:].tolist()
         pos = self._data.body(obst_name).xpos
         ori = self._data.body(obst_name).xquat
