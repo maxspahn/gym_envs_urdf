@@ -114,6 +114,7 @@ class GenericMujocoEnv(Env):
             height=DEFAULT_SIZE,
             width=DEFAULT_SIZE,
         )
+        self._end_last_step_time = time.time()
 
     def render(self):
         return self.mujoco_renderer.render(self.render_mode)
