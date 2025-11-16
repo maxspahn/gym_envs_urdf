@@ -396,7 +396,8 @@ class UrdfEnv(gym.Env):
         for obst_id, obstacle in self._obsts.items():
             if obstacle.type() == "urdf":
                 pos = obstacle.position()
-                vel = obstacle.position()
+                vel = obstacle.velocity()
+                ori = [1.0, 0.0, 0.0, 0.0]
             else:
                 pos = obstacle.position(t=0).tolist()
                 vel = obstacle.velocity(t=0).tolist()
