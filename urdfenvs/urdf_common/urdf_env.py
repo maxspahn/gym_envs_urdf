@@ -217,7 +217,10 @@ class UrdfEnv(gym.Env):
 
         pybullet.stepSimulation(self._cid)
         for robot_id, robot in enumerate(self._robots):
-            contacts = pybullet.getContactPoints(robot._robot)
+            contacts = pybullet.getContactPoints(
+                bodyA=robot._robot,
+                physicsClientId=self._cid
+            ) or []
             for contact_info in contacts:
                 body_b = contact_info[2]
                 if body_b in self._obsts:
